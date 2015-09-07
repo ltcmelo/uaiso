@@ -1,0 +1,11 @@
+=== TODO ===
+
+- Variable-size pool allocator for the ASTs such as the one in
+  http://www.ibm.com/developerworks/aix/tutorials/au-memorymanager/
+- Filter only relevant tokens for a particular .y grammar (in generation).
+- Extract a "TypeOfExpr" component out of TypeChecker.
+- An API for reuse of Bison's action rules (lightweight, inteligible, generic).
+- Assemble Python helper scripts into a lib.
+- Expand the project to also model an abstract text editor API.
+- Replace D's parser for a recurse-descent one?
+- A bunch of TODOs in the code and incomplete implementations.

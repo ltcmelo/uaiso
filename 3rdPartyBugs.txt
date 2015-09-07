@@ -1,0 +1,6 @@
+Bugs in used 3rd party software
+
++++ Flex +++
+(1) [no yyset_column prototype] http://sourceforge.net/p/flex/mailman/message/25967956/
+(2) [yylineno not initialized] http://sourceforge.net/p/flex/mailman/message/21207318/
+(3) [yy_top_state crashes] http://sourceforge.net/p/flex/bugs/131/

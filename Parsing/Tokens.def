@@ -1,0 +1,370 @@
+/******************************************************************************
+ * Copyright (c) 2015 Leandro T. C. Melo (ltcmelo@gmail.com)
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
+ *****************************************************************************/
+
+/*--------------------------*/
+/*--- The UaiSo! Project ---*/
+/*--------------------------*/
+
+    /*
+       Tokens names are defined as according to their meaning, not
+       to their spelling in a particular language. For example, in
+       D an 64-bit integer is `long`, but it should be mapped to
+       token INT64. Sometimes the name will "coincidently" match,
+       given that in Go an 64-bit integer is indeed `int64`. This
+       strategy allows simplified generic handline in higher level
+       layers. When the actual spelling of a token is necessary, it
+       can always be recovered from the source from the editor (look
+       token maps and phrasing).
+    */
+
+    //--- ASCII (consistent with Bison) ---//
+
+TOKEN BEGIN_ASCII "$ascii_begin_marker$" 1
+TOKEN EXCLAM "!" 33
+TOKEN POUND "#" 35
+TOKEN DOLLAR "$" 36
+TOKEN PERCENT "%" 37
+TOKEN AMPER "&" 38
+TOKEN LPAREN "(" 40
+TOKEN RPAREN ")" 41
+TOKEN ASTERISK "*" 42
+TOKEN STAR "*" ASTERISK
+TOKEN PLUS "+" 43
+TOKEN COMMA "," 44
+TOKEN DASH "-" 45
+TOKEN MINUS "-" DASH
+TOKEN DOT "." 46
+TOKEN PERIOD "." DOT
+TOKEN SLASH "/" 47
+TOKEN COLON ":" 58
+TOKEN SEMICOLON ";" 59
+TOKEN LESS "<" 60
+TOKEN EQUAL "=" 61
+TOKEN GREATER ">" 62
+TOKEN QUESTION "?" 63
+TOKEN AT_SYMBOL "@" 64
+TOKEN LBRACKET "[" 91
+TOKEN RBRACKET "]" 93
+TOKEN CARET "^" 94
+TOKEN CIRCUMFLEX "^" CARET
+TOKEN UNDERSCORE "_" 95
+TOKEN BACKTICK "`" 96
+TOKEN LBRACE "{" 123
+TOKEN PIPE "|" 124
+TOKEN RBRACE "}" 125
+TOKEN TILDE "~" 126
+TOKEN END_ASCII "$ascii_end_marker$"
+
+    //--- Special purpose (start at 258) ---//
+
+TOKEN EOP "<end_of_program>" 258
+TOKEN INVALID "<invalid>"
+TOKEN COMPLETION "<completion>"
+
+    //--- Identifier ---//
+
+TOKEN IDENTIFIER "<identifier>"
+
+    //--- Comments ---//
+
+TOKEN BEGIN_COMMENT "$comments_begin_marker$"
+TOKEN COMMENT "<comment>"
+TOKEN DOXY_COMMENT "<doxy_comment>"
+TOKEN MULTILINE_COMMENT "<multiline_comment>"
+TOKEN MULTILINE_DOXY_COMMENT "<multiline_doxy_comment>"
+TOKEN NESTING_COMMENT "<nesting_comment>"
+TOKEN END_COMMENT "$comments_end_marker$"
+
+    //--- Literals ---//
+
+TOKEN BEGIN_LITERAL "$literal_begin_marker$"
+TOKEN BEGIN_NUMERIC_LITERAL "$numeric_literal_begin_marker$"
+TOKEN INTEGER_LITERAL "<integer_literal>"
+TOKEN FLOAT32_LITERAL "<float_literal>"
+TOKEN END_NUMERIC_LITERAL "$numeric_literal_end_marker$"
+TOKEN BEGIN_CHAR_LITERAL "$char_literal_begin_marker$"
+TOKEN CHAR_LITERAL "<char_literal>"
+TOKEN CHAR_UTF16_LITERAL "<char_utf16_literal>"
+TOKEN CHAR_UTF32_LITERAL "<char_utf32_literal>"
+TOKEN END_CHAR_LITERAL "$char_literal_end_marker$"
+TOKEN BEGIN_STRING_LITERAL "$string_literal_begin_marker$"
+TOKEN STRING_LITERAL "<string_literal>"
+TOKEN STRING_UTF8_LITERAL "<string_utf8_literal>"
+TOKEN STRING_UTF16_LITERAL "<string_utf16_literal>"
+TOKEN STRING_UTF32_LITERAL "<string_utf32_literal>"
+TOKEN RAW_STRING_LITERAL "<raw_string_literal>"
+TOKEN RAW_UTF8_STRING_LITERAL "<raw_utf8_string_literal>"
+TOKEN RAW_UTF16_STRING_LITERAL "<raw_utf16_string_literal>"
+TOKEN RAW_UTF32_STRING_LITERAL "<raw_utf32_string_literal>"
+TOKEN END_STRING_LITERAL "$string_literal_end_marker$"
+TOKEN NULL_LITERAL "<null_literal>"
+TOKEN FALSE_LITERAL "<false_literal>"
+TOKEN TRUE_LITERAL "<true_literal>"
+TOKEN END_LITERAL "$literal_end_marker$"
+
+    //--- Multi-character operators ---//
+
+TOKEN BEGIN_MULTICHAR_OPERATOR "$multichar_operator_begin_marker$"
+TOKEN AMPER_AMPER "&&"
+TOKEN AMPER_CARET "&^"
+TOKEN AMPER_CARET_EQUAL "&^="
+TOKEN AMPER_EQUAL "&="
+TOKEN ARROW_DASH "<-"
+TOKEN DASH_ARROW "->"
+TOKEN DASH_ARROW_STAR "->*"
+TOKEN CARET_CARET "^^"
+TOKEN CARET_CARET_EQUAL "^^="
+TOKEN CARET_EQUAL "^="
+TOKEN COLON_COLON "::"
+TOKEN COLON_EQUAL ":="
+TOKEN SLASH_EQUAL "/="
+TOKEN DOT_DOT ".."
+TOKEN DOT_DOT_DOT "..."
+TOKEN DOT_STAR ".*"
+TOKEN EQUAL_EQUAL "=="
+TOKEN EQUAL_ARROW "=>"
+TOKEN EXCLAM_EQUAL "!="
+TOKEN EXCLAM_GREATER "!>"
+TOKEN EXCLAM_GREATER_EQUAL "!>="
+TOKEN EXCLAM_LESS "!<"
+TOKEN EXCLAM_LESS_EQUAL "!<="
+TOKEN EXCLAM_LESS_GREATER "!<>"
+TOKEN EXCLAM_LESS_GREATER_EQUAL "!<>="
+TOKEN GREATER_EQUAL ">="
+TOKEN GREATER_GREATER ">>"
+TOKEN GREATER_GREATER_GREATER ">>>"
+TOKEN GREATER_GREATER_GREATER_EQUAL ">>>="
+TOKEN GREATER_GREATER_EQUAL ">>="
+TOKEN LESS_EQUAL "<="
+TOKEN LESS_LESS "<<"
+TOKEN LESS_LESS_EQUAL "<<="
+TOKEN LESS_GREATER "<>"
+TOKEN LESS_GREATER_EQUAL "<>="
+TOKEN MINUS_EQUAL "-="
+TOKEN MINUS_MINUS "--"
+TOKEN PERCENT_EQUAL "%="
+TOKEN PIPE_EQUAL "|="
+TOKEN PIPE_PIPE "||"
+TOKEN PLUS_EQUAL "+="
+TOKEN PLUS_PLUS "++"
+TOKEN POUND_POUND "##"
+TOKEN STAR_EQUAL "*="
+TOKEN TILDE_EQUAL "~="
+TOKEN END_MULTICHAR_OPERATOR "$multichar_operator_end_marker$"
+
+    //--- Keywords ---//
+
+TOKEN BEGIN_KEYWORD "$keyword_begin_marker$"
+TOKEN ABSTRACT "abstract"
+TOKEN ALIAS "alias"
+TOKEN ALIGN "align"
+TOKEN ALIGNAS "alignas"
+TOKEN ALIGNOF "aligonf"
+TOKEN ASM "asm"
+TOKEN ASSERT "assert"
+TOKEN AUTO "auto"
+TOKEN BODY "body"
+TOKEN BREAK "break"
+TOKEN CASE "case"
+TOKEN CHAN "chan"
+TOKEN CAST "cast"
+TOKEN CATCH "catch"
+TOKEN CLASS "class"
+TOKEN CONST "const"
+TOKEN CONST_CAST "const_cast"
+TOKEN CONSTEXPR "constexpr"
+TOKEN CONTINUE "continue"
+TOKEN DEBUG "debug"
+TOKEN DECLTYPE "decltype"
+TOKEN DEFAULT "default"
+TOKEN DEFER "defer"
+TOKEN DELEGATE "delegate"
+TOKEN DELETE "delete"
+TOKEN DEPRECATED "deprecated"
+TOKEN DISABLE "disable"
+TOKEN DO "do"
+TOKEN DYNAMIC_CAST "dynamic_cast"
+TOKEN ELSE "else"
+TOKEN ENUM "enum"
+TOKEN EXPLICIT "explicit"
+TOKEN EXPORT "export"
+TOKEN EXTERN "extern"
+TOKEN FALLTHROUGH "fallthrough"
+TOKEN FINAL "final"
+TOKEN FINALLY "finally"
+TOKEN FOR "for"
+TOKEN FOREACH "foreach"
+TOKEN FOREACH_REVERSE "foreach_reverse"
+TOKEN FRIEND "friend"
+TOKEN FUNC "func"
+TOKEN FUNCTION "function"
+TOKEN GO "go"
+TOKEN GOTO "goto"
+TOKEN IF "if"
+TOKEN IMMUTABLE "immutable"
+TOKEN IMPORT "import"
+TOKEN IN "in"
+TOKEN IN_LBRACE_HACK "in_{_hack"
+TOKEN INLINE "inline"
+TOKEN INOUT "inout"
+TOKEN INTERFACE "interface"
+TOKEN INVARIANT "invariant"
+TOKEN IS "is"
+TOKEN LAZY "lazy"
+TOKEN MACRO "macro"
+TOKEN MAP "map"
+TOKEN MIXIN "mixin"
+TOKEN MODULE "module"
+TOKEN MUTABLE "mutable"
+TOKEN NAMESPACE "namespace"
+TOKEN NEW "new"
+TOKEN NOEXCEPT "noexcept"
+TOKEN NOGC "nogc"
+TOKEN NOTHROW "nothrow"
+TOKEN NOT_IN_HACK "!_in_hack"
+TOKEN NOT_IS_HACK "!_is_hack"
+TOKEN OPERATOR "operator"
+TOKEN OUT "out"
+TOKEN OVERRIDE "override"
+TOKEN PACKAGE "package"
+TOKEN PRAGMA "pragma"
+TOKEN PRIVATE "private"
+TOKEN PROPERTY "property"
+TOKEN PROTECTED "protected"
+TOKEN PUBLIC "public"
+TOKEN PURE "pure"
+TOKEN RANGE "range"
+TOKEN REF "ref"
+TOKEN REGISTER "register"
+TOKEN REINTERPRET_CAST "reinterpret_cast"
+TOKEN RETURN "return"
+TOKEN SAFE "safe"
+TOKEN SCOPE "scope"
+TOKEN SELECT "select"
+TOKEN SHARED "shared"
+TOKEN SIZEOF "sizeof"
+TOKEN STATIC "static"
+TOKEN STATIC_ASSERT "static_assert"
+TOKEN STATIC_CAST "static_cast"
+TOKEN STRUCT "struct"
+TOKEN SUPER "super"
+TOKEN SWITCH "switch"
+TOKEN SYNCHRONIZED "synchronized"
+TOKEN SYSTEM "system"
+TOKEN TEMPLATE "template"
+TOKEN THIS "this"
+TOKEN THREAD_LOCAL "thread_local"
+TOKEN THROW "throw"
+TOKEN TRUSTED "trusted"
+TOKEN TRY "try"
+TOKEN TYPE "type"
+TOKEN TYPEDEF "typedef"
+TOKEN TYPEID "typeid"
+TOKEN TYPENAME "typename"
+TOKEN TYPEOF "typeof"
+TOKEN UNION "union"
+TOKEN UNITTEST "unittest"
+TOKEN USING "using"
+TOKEN VAR "var"
+TOKEN VERSION "version"
+TOKEN VIRTUAL "virtual"
+TOKEN VOLATILE "volatile"
+TOKEN WHILE "while"
+TOKEN WITH "with"
+TOKEN END_KEYWORD "$keyword_end_marker$"
+
+    //--- Builtins ---//
+
+TOKEN BEGIN_BUILTIN_TYPES "$builtin_types_begin_marker$"
+TOKEN BOOL "bool"
+TOKEN BYTE "byte"
+TOKEN CENT "cent"
+TOKEN COMPLEX_FLOAT64 "complex_float64"
+TOKEN COMPLEX_FLOAT32 "complex_float32"
+TOKEN COMPLEX_REAL "complex_real"
+TOKEN CHAR "char"
+TOKEN CHAR_UTF16 "char_utf16"
+TOKEN CHAR_UTF32 "char_utf32"
+TOKEN FLOAT64 "float64"
+TOKEN FLOAT32 "float32"
+TOKEN IMAG_FLOAT64 "imaginary_float64"
+TOKEN IMAG_FLOAT32 "imaginary_float32"
+TOKEN IMAG_REAL "imaginary_real"
+TOKEN INT "int"
+TOKEN INT8 "int8"
+TOKEN INT16 "int16"
+TOKEN INT32 "int32"
+TOKEN INT64 "int64"
+TOKEN REAL "real"
+TOKEN RUNE "rune"
+TOKEN UBYTE "ubyte"
+TOKEN UCENT "ucent"
+TOKEN UINT "uint"
+TOKEN UINT8 "uint8"
+TOKEN UINT16 "uint16"
+TOKEN UINT32 "uint32"
+TOKEN UINT64 "uint64"
+TOKEN VOID "void"
+TOKEN END_BUILTIN_TYPES "$builtin_types_end_marker$"
+
+    //--- Misc ---//
+
+TOKEN OR "||" PIPE_PIPE
+TOKEN AND "&&" AMPER_AMPER
+TOKEN NOT "!" EXCLAM
+TOKEN XOR "^" CARET
+TOKEN BITOR "|" PIPE
+TOKEN COMPL "~" TILDE
+TOKEN OR_EQ "|=" PIPE_EQUAL
+TOKEN AND_EQ "&=" AMPER_EQUAL
+TOKEN BITAND "&" AMPER
+TOKEN NOT_EQ "!=" EXCLAM_EQUAL
+TOKEN XOR_EQ "^=" CARET_EQUAL
+
+    //--- Special ---//
+
+TOKEN __ASM "__asm" ASM
+TOKEN __ASM__ "__asm" ASM
+TOKEN __ATTRIBUTE__ "__attribute__"
+TOKEN __ATTRIBUTE "__attribute__" __ATTRIBUTE__
+TOKEN __CONST "__const" CONST
+TOKEN __CONST__ "__const__" CONST
+TOKEN __DATE__MACRO "__date__"
+TOKEN __DECLTYPE "__decltype" DECLTYPE
+TOKEN __EOF__MACRO "__eof__"
+TOKEN __FILE__MACRO "__file__"
+TOKEN __FUNCTION__MACRO "__function__"
+TOKEN __GSHARED "__gshared"
+TOKEN __INLINE "__inline" INLINE
+TOKEN __INLINE__ "__inline__" INLINE
+TOKEN __LINE__MACRO "__line__"
+TOKEN __MODULE__MACRO "__module__"
+TOKEN __PARAMETERS "__parameters"
+TOKEN __PRETTY_FUNCTION__MACRO "__pretty_function__"
+TOKEN __THREAD "__thread"
+TOKEN __TIME__MACRO "__time__"
+TOKEN __TIMESTAMP__MACRO "__timestamp__"
+TOKEN __TRAITS "__traits"
+TOKEN __TYPEOF "__typeof" TYPEOF
+TOKEN __TYPEOF__ "__typeof__" TYPEOF
+TOKEN __VECTOR "__vector"
+TOKEN __VENDOR__MACRO "__vendor__"
+TOKEN __VERSION__MACRO "__version__"
+TOKEN __VOLATILE "__volatile" VOLATILE
+TOKEN __VOLATILE__ "__volatile__" VOLATILE

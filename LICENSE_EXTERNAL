@@ -1,0 +1,11 @@
+External source files used in the Uaiso project.
+
+    - $UAISO_PATH/External/StringUtils
+      License: MIT
+      Copyright: Leandro T. C. Melo
+
+    - $UAISO_PATH/External/Tinydir
+      License: BSD 2
+      Copyright: Cong Xu, Baudouin Feildel
+
+For Uaiso's own license see $UAISO_PATH/LICENSE.

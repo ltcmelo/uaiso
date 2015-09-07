@@ -1,0 +1,94 @@
+The Uaiso project: A language-unifying source code modelling engine
+
+You can think of a source code modelling engine as a tool that understands
+your software's source code. It implements the infra-structure necessary for
+IDEs or text editors to provide you with features such as syntax highlighting,
+semantic information, code completion, and others. Essentially, it performs a
+task similar to what a compiler front-end would do.
+
+What problem does Uaiso wanna solve?
+
+  - Reimplementation of code modelling engines for different languages when, in
+    fact, many languages share a lot of features. Uaiso offers a pragmatic
+    approach based on common language principles, but still allows for any
+    language to define specific behavior.
+
+  - Reimplementation of the same code modelling engine for different IDEs or
+    code editors. Uaiso is agnostic of any GUI component, it's a self-standing
+    library that relies on basic concepts such as line and columns of a file.
+
+What benefits does Uaiso bring?
+
+  - Quicker and easier startup for tool creators when adding support for new
+    languages in their tools or to expand their tools to new environments.
+
+  - Consistent development experience for end-users throughout IDEs and code
+    editors, and even accross different programming languages.
+
+The Uaiso project is in conception phase, but you can already try it out. The
+programming languages being initially integrated are D and Go (Rust is on the
+way). Expect to find bugs and missing functionality, but I hope you enjoy what's
+already there. Contributions are welcome.
+
+Design overview: https://goo.gl/VBQzJW
+
+
+-----------
+Quick Start
+-----------
+
+The Uaiso project is written in Standard C++. Although you should be able to
+build it cross-platform, I'm developing on OS X and I have not tested it
+elsewhere. There's some code that assumes a Unix-like system, for instance the
+`/` as a directory separator. I'll work on such "details" eventually.
+
+This is a hobby project. Nevertheless, I'd like to make it easy for anyone to
+build and run it. Here are the guidelines (an out-of-source build is not
+possible yet because a few Python scripts still need work). Feel free to drop
+me an email for questions or feedback.
+
+$git clone --recursive git@github.com:ltcmelo/uaiso.git
+$cmake --version
+cmake version 2.8.10.2
+$flex --version
+flex 2.5.35 Apple(flex-31)
+$bison --version
+bison (GNU Bison) 2.7.12-4996
+$python --version
+Python 2.7.5
+$clang --version
+Apple LLVM version 6.0 (clang-600.0.54) (based on LLVM 3.5svn)
+$cmake .
+$make
+$./UaiSoEngineTest
+
+Note 1: The reason for using `recursive` in git clone is due to an string utils
+library I'm using as a submodule. It's also written by me and it's pure C++.
+
+Note 2: The current D and Go parsers are Bison-based. It's typically harder to
+get LR parsers working on an interactive environment. However, this decision was
+convenient to me in order to "quickly" sketch a prototype. I plan to replace
+those for LL parsers eventually - in particular for D, due to its grammar
+characteristics. Nevertheless, as you can see in the videos below, it's still
+possible to do error recovery at the right places so completion works descently.
+
+
+-----------------------
+Prototype in Qt Creator
+-----------------------
+
+I opted for Qt Creator as a "validation" platform for the Uaiso project. I find
+it a beautiful IDE and I already know the code - I was one of the Qt Creator
+developers.
+
+A few videos that demonstrate Uaiso's implementation on Qt Creator.
+
+Go language: https://youtu.be/nUpcVBAw0DM
+
+D language: https://youtu.be/ZwMQ_GB-Zv0
+
+Fork at: git@github.com:ltcmelo/qt-creator.git
+
+
+Leandro T. C. Melo
+ltcmelo.com

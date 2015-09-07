@@ -1,0 +1,3 @@
+[submodule "External/StringUtils"]
+	path = External/StringUtils
+	url = git@github.com:ltcmelo/string_utils.git

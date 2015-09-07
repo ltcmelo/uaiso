@@ -1,0 +1,44 @@
+# Uaiso generated
+Ast/AstCast.h
+D/DLexer.cpp
+D/DLexer.h
+D/DParser.cpp
+D/DParser.h
+D/DParser.output
+Go/GoLexer.cpp
+Go/GoLexer.h
+Go/GoParser.cpp
+Go/GoParser.h
+Go/GoParser.output
+Parsing/Token.h
+Parsing/TokenName.cpp
+
+# Local test data config
+TestDataAbsPath.txt
+
+# CMake, make
+cmake_install.cmake
+CMakeCache.txt
+CMakeFiles
+Makefile
+
+# Object files
+*.lo
+*.o
+*.obj
+*.pyc
+*.slo
+
+# Libraries and executables
+*.a
+*.app
+*.dll
+*.dylib
+*.la
+*.lib
+*.out
+*.so
+UaiSoEngineTest
+
+# Misc
+MyTODO.txt
