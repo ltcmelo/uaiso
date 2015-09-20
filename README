@@ -11,11 +11,9 @@ What problem does Uaiso wanna solve?
   - Reimplementation of code modelling engines for different languages when, in
     fact, many languages share a lot of features. Uaiso offers a pragmatic
     approach based on common language principles, but still allows for any
-    language to define specific behavior.
-
-  - Reimplementation of the same code modelling engine for different IDEs or
-    code editors. Uaiso is agnostic of any GUI component, it's a self-standing
-    library that relies on basic concepts such as line and columns of a file.
+    language to define specific behavior. Uaiso is also a self-standing library,
+    agnostic of a particular IDE or text editor, with its own pipeline of
+    parsing, binding, type checking, and so on.
 
 What benefits does Uaiso bring?
 
@@ -91,4 +89,4 @@ Fork at: git@github.com:ltcmelo/qt-creator.git
 
 
 Leandro T. C. Melo
-ltcmelo.com
+http://ltcmelo.com
