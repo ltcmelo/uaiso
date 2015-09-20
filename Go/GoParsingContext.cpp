@@ -58,8 +58,10 @@ int GoParsingContext::interceptRawToken(int token)
     case TK_BYTE:
     case TK_COMPLEX_FLOAT32:
     case TK_COMPLEX_FLOAT64:
+    case TK_COMPLEX_REAL:
     case TK_FLOAT32:
     case TK_FLOAT64:
+    case TK_REAL:
     case TK_INT:
     case TK_INT8:
     case TK_INT16:
