@@ -213,12 +213,12 @@ int go_yyxprevstate; /* Previous state (valid under certain conditions) */
 <QCHAR>"\'" { BEGIN INITIAL; LEAVE_STATE; PROCESS_CHAR_LITERAL; }
 <QCHAR>. { yymore(); };
 <ESCSEQ>. { BEGIN go_yyxprevstate; yymore(); }
--?[0-9][0-9_]*[i]? |
--?0[xX][0-9a-fA-F_]*[i]? {  PROCESS_INTEGER_LITERAL; }
--?([0-9]+[0-9_]*\.)/[^\.0-9_]{1} |
--?([0-9]+[0-9_]*\.?[0-9_]+)((E|e)(\+|\-)?[0-9_]+)?[i]? |
--?([0-9]+[0-9_]*)(E|e)(\+|\-)?[0-9_]+[i]? |
--?(\.[0-9]+[0-9_]*)((E|e)(\+|\-)?[0-9_]+)?[i]? { PROCESS_FLOAT32_LITERAL; }
+[0-9][0-9_]*[i]? |
+0[xX][0-9a-fA-F_]*[i]? {  PROCESS_INTEGER_LITERAL; }
+([0-9]+[0-9_]*\.)/[^\.0-9_]{1} |
+([0-9]+[0-9_]*\.?[0-9_]+)((E|e)(\+|\-)?[0-9_]+)?[i]? |
+([0-9]+[0-9_]*)(E|e)(\+|\-)?[0-9_]+[i]? |
+(\.[0-9]+[0-9_]*)((E|e)(\+|\-)?[0-9_]+)?[i]? { PROCESS_FLOAT32_LITERAL; }
 
     /*--- Identifier ---*/
 
