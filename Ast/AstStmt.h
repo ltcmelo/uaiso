@@ -411,6 +411,11 @@ public:
     SourceLoc terminLoc_;
 };
 
+/*!
+ * \brief The SwitchStmtAst class
+ *
+ * A traditional expression switch statement.
+ */
 class UAISO_API SwitchStmtAst final : public StmtAst
 {
 public:
@@ -431,6 +436,33 @@ public:
     std::unique_ptr<StmtAst> preamble_;
     SourceLoc lDelimLoc_;
     std::unique_ptr<ExprAst> expr_;
+    SourceLoc rDelimLoc_;
+    std::unique_ptr<StmtAst> stmt_;
+};
+
+/*!
+ * \brief The SwitchStmtAst class
+ *
+ * A type switch statement, as in Go.
+ */
+class UAISO_API TypeSwitchStmtAst final : public StmtAst
+{
+public:
+    using Self = TypeSwitchStmtAst;
+
+    TypeSwitchStmtAst()
+        : StmtAst(Kind::TypeSwitchStmt)
+    {}
+
+    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(setLDelim, lDelim)
+    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_AST_PARAM(setSpec, spec, SpecAst)
+    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+
+    SourceLoc keyLoc_;
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<SpecAst> spec_;
     SourceLoc rDelimLoc_;
     std::unique_ptr<StmtAst> stmt_;
 };

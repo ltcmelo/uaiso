@@ -1254,217 +1254,12 @@ Binder::VisitResult Binder::traverseUnitTestDecl(UnitTestDeclAst* ast)
     //--- Expressions ---//
     //-------------------//
 
-Binder::VisitResult Binder::visitStrLitExpr(StrLitExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitNumLitExpr(NumLitExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitCharLitExpr(CharLitExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitNullLitExpr(NullLitExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitBoolLitExpr(BoolLitExprAst* ast)
-{
-    return Skip;
-}
-
 Binder::VisitResult Binder::visitFuncLitExpr(FuncLitExprAst* ast)
 {
     return Skip;
 }
 
-Binder::VisitResult Binder::visitAddExpr(AddExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitAddrOfExpr(AddrOfExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitArrayInitExpr(ArrayInitExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitArrayLengthExpr(ArrayLengthExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitArraySliceExpr(ArraySliceExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitArrayIndexExpr(ArrayIndexExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitAssertExpr(AssertExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitAssignExpr(AssignExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitBinaryExpr(BinaryExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitBitAndExpr(BitAndExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitBitCompExpr(BitCompExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitBitOrExpr(BitOrExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitBitXorExpr(BitXorExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitCallExpr(CallExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitCommaExpr(CommaExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitConcatExpr(ConcatExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitDelExpr(DelExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitDesignateExpr(DesignateExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitDivExpr(DivExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitEqExpr(EqExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitIdentExpr(IdentExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitInExpr(InExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitIncDecExpr(IncDecExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitIsExpr(IsExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitLogicAndExpr(LogicAndExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitLogicNotExpr(LogicNotExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitLogicOrExpr(LogicOrExprAst* ast)
-{
-    return Skip;
-}
-
 Binder::VisitResult Binder::visitMemberAccessExpr(MemberAccessExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitMinusExpr(MinusExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitModExpr(ModExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitMulExpr(MulExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitCondExpr(CondExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitPlusExpr(PlusExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitPrimaryExpr(PrimaryExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitPowerExpr(PowerExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitPtrDerefExpr(PtrDerefExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitChanExpr(ChanExprAst* ast)
 {
     return Skip;
 }
@@ -1477,73 +1272,6 @@ Binder::VisitResult Binder::visitRecordInitExpr(RecordInitExprAst* ast)
 Binder::VisitResult Binder::visitRecordLitExpr(RecordLitExprAst* ast)
 {
     return Skip;
-}
-
-Binder::VisitResult Binder::visitRelExpr(RelExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitShiftExpr(ShiftExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitSubExpr(SubExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitSubrangeExpr(SubrangeExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitSuperExpr(SuperExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitThisExpr(ThisExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitTypeidExpr(TypeidExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitUnaryExpr(UnaryExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitUnpackExpr(UnpackExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitMixinExpr(MixinExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitVoidInitExpr(VoidInitExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::visitWrappedExpr(WrappedExprAst* ast)
-{
-    return Skip;
-}
-
-Binder::VisitResult Binder::traverseNestedNewExpr(NestedNewExprAst* ast)
-{
-    UAISO_ASSERT(ast->nestedNew_->kind() == Ast::Kind::NewExpr, return Skip);
-
-    return traverseNewExpr(NewExpr_Cast(ast->nestedNew_.get()));
 }
 
 template <class AstT>
@@ -1566,6 +1294,13 @@ Binder::VisitResult Binder::traverseNewExpr(NewExprAst* ast)
     return keepTypeOfExprSpec(ast);
 }
 
+Binder::VisitResult Binder::traverseNestedNewExpr(NestedNewExprAst* ast)
+{
+    UAISO_ASSERT(ast->nestedNew_->kind() == Ast::Kind::NewExpr, return Skip);
+
+    return traverseNewExpr(NewExpr_Cast(ast->nestedNew_.get()));
+}
+
 Binder::VisitResult Binder::traverseCastExpr(CastExprAst* ast)
 {
     return keepTypeOfExprSpec(ast);
@@ -1579,6 +1314,18 @@ Binder::VisitResult Binder::traverseTypeQueryExpr(TypeQueryExprAst* ast)
 Binder::VisitResult Binder::traverseTypeAssertExpr(TypeAssertExprAst* ast)
 {
     return keepTypeOfExprSpec(ast);
+}
+
+Binder::VisitResult Binder::traverseTypeidExpr(TypeidExprAst* ast)
+{
+    // TODO: See comment in TypeidExprAst.
+    if (ast->exprOrSpec_->isSpec()) {
+        VIS_CALL(traverseSpec(Spec_Cast(ast->exprOrSpec_.get())));
+        ENSURE_NONEMPTY_TYPE_STACK;
+        P->popDeclType<>();
+    }
+
+    return Continue;
 }
 
     //------------------//
@@ -1601,4 +1348,10 @@ Binder::VisitResult Binder::traverseBlockStmt(BlockStmtAst* ast)
         ast->env_.nestIntoOuterEnv();
 
     return Continue;
+}
+
+Binder::VisitResult Binder::traverseTypeSwitchStmt(TypeSwitchStmtAst* ast)
+{
+    VIS_CALL(traverseStmt(ast->stmt_.get()));
+    return Skip;
 }

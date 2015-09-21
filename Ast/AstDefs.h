@@ -192,6 +192,7 @@
     GEN_CODE_FOR(Switch, Stmt) \
     GEN_CODE_FOR(Throw, Stmt) \
     GEN_CODE_FOR(Try, Stmt) \
+    GEN_CODE_FOR(TypeSwitch, Stmt) \
     GEN_CODE_FOR(While, Stmt) \
     GEN_CODE_FOR(With, Stmt)
 

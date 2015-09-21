@@ -566,10 +566,7 @@ TRIVIAL_VISIT(ThisExpr)
 TRIVIAL_VISIT(SuperExpr)
 TRIVIAL_VISIT(ErrorExpr)
 
-// TODO: Later...
-TRIVIAL_VISIT(TypeidExpr)
 TRIVIAL_VISIT(MixinExpr)
-TRIVIAL_VISIT(TypeAssertExpr)
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseUnaryExpr(UnaryExprAst *ast)
@@ -915,6 +912,26 @@ AstVisitor<DerivedT>::traverseTypeQueryExpr(TypeQueryExprAst *ast)
 }
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseTypeAssertExpr(TypeAssertExprAst *ast)
+{
+    EVAL_RESULT_0(recursivelyVisitTypeAssertExpr(ast));
+    EVAL_RESULT_N(traverseExpr(ast->base_.get()));
+    EVAL_RESULT_N(traverseSpec(ast->spec_.get()));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseTypeidExpr(TypeidExprAst *ast)
+{
+    EVAL_RESULT_0(recursivelyVisitTypeidExpr(ast));
+    if (ast->exprOrSpec_->isExpr())
+        EVAL_RESULT_N(traverseExpr(Expr_Cast(ast->exprOrSpec_.get())));
+    else
+        EVAL_RESULT_N(traverseSpec(Spec_Cast(ast->exprOrSpec_.get())));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseMemberAccessExpr(MemberAccessExprAst *ast)
 {
     EVAL_RESULT_0(recursivelyVisitMemberAccessExpr(ast));
@@ -1150,8 +1167,17 @@ template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseSwitchStmt(SwitchStmtAst* ast)
 {
     EVAL_RESULT_0(recursivelyVisitSwitchStmt(ast));
-    EVAL_RESULT_N(traverseStmt(ast->stmt_.get()));
+    EVAL_RESULT_N(traverseStmt(ast->preamble_.get()));
     EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
+    EVAL_RESULT_N(traverseStmt(ast->stmt_.get()));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseTypeSwitchStmt(TypeSwitchStmtAst* ast)
+{
+    EVAL_RESULT_0(recursivelyVisitTypeSwitchStmt(ast));
+    EVAL_RESULT_N(traverseSpec(ast->spec_.get()));
     EVAL_RESULT_N(traverseStmt(ast->stmt_.get()));
     return Continue;
 }

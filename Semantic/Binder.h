@@ -130,63 +130,10 @@ private:
 
     //--- Expressions ---//
 
-    VisitResult visitAddExpr(AddExprAst* ast);
-    VisitResult visitAddrOfExpr(AddrOfExprAst* ast);
     VisitResult visitRecordLitExpr(RecordLitExprAst* ast);
-    VisitResult visitArrayInitExpr(ArrayInitExprAst* ast);
-    VisitResult visitArrayLengthExpr(ArrayLengthExprAst* ast);
-    VisitResult visitArraySliceExpr(ArraySliceExprAst* ast);
-    VisitResult visitArrayIndexExpr(ArrayIndexExprAst* ast);
-    VisitResult visitAssertExpr(AssertExprAst* ast);
-    VisitResult visitAssignExpr(AssignExprAst* ast);
-    VisitResult visitBinaryExpr(BinaryExprAst* ast);
-    VisitResult visitBitAndExpr(BitAndExprAst* ast);
-    VisitResult visitBitCompExpr(BitCompExprAst* ast);
-    VisitResult visitBitOrExpr(BitOrExprAst* ast);
-    VisitResult visitBitXorExpr(BitXorExprAst* ast);
-    VisitResult visitBoolLitExpr(BoolLitExprAst* ast);
-    VisitResult visitCallExpr(CallExprAst* ast);
-    VisitResult visitCharLitExpr(CharLitExprAst* ast);
-    VisitResult visitCommaExpr(CommaExprAst* ast);
-    VisitResult visitConcatExpr(ConcatExprAst* ast);
-    VisitResult visitCondExpr(CondExprAst* ast);
-    VisitResult visitDelExpr(DelExprAst* ast);
-    VisitResult visitDesignateExpr(DesignateExprAst* ast);
-    VisitResult visitDivExpr(DivExprAst* ast);
-    VisitResult visitEqExpr(EqExprAst* ast);
     VisitResult visitFuncLitExpr(FuncLitExprAst* ast);
-    VisitResult visitIdentExpr(IdentExprAst* ast);
-    VisitResult visitInExpr(InExprAst* ast);
-    VisitResult visitIncDecExpr(IncDecExprAst* ast);
-    VisitResult visitIsExpr(IsExprAst* ast);
-    VisitResult visitLogicAndExpr(LogicAndExprAst* ast);
-    VisitResult visitLogicNotExpr(LogicNotExprAst* ast);
-    VisitResult visitLogicOrExpr(LogicOrExprAst* ast);
     VisitResult visitMemberAccessExpr(MemberAccessExprAst* ast);
-    VisitResult visitMinusExpr(MinusExprAst* ast);
-    VisitResult visitMixinExpr(MixinExprAst* ast);
-    VisitResult visitModExpr(ModExprAst* ast);
-    VisitResult visitMulExpr(MulExprAst* ast);
-    VisitResult visitNullLitExpr(NullLitExprAst* ast);
-    VisitResult visitNumLitExpr(NumLitExprAst* ast);
-    VisitResult visitPlusExpr(PlusExprAst* ast);
-    VisitResult visitPrimaryExpr(PrimaryExprAst* ast);
-    VisitResult visitPowerExpr(PowerExprAst* ast);
-    VisitResult visitPtrDerefExpr(PtrDerefExprAst* ast);
-    VisitResult visitChanExpr(ChanExprAst* ast);
     VisitResult visitRecordInitExpr(RecordInitExprAst* ast);
-    VisitResult visitRelExpr(RelExprAst* ast);
-    VisitResult visitShiftExpr(ShiftExprAst* ast);
-    VisitResult visitStrLitExpr(StrLitExprAst* ast);
-    VisitResult visitSubExpr(SubExprAst* ast);
-    VisitResult visitSubrangeExpr(SubrangeExprAst* ast);
-    VisitResult visitSuperExpr(SuperExprAst* ast);
-    VisitResult visitThisExpr(ThisExprAst* ast);
-    VisitResult visitTypeidExpr(TypeidExprAst* ast);
-    VisitResult visitUnaryExpr(UnaryExprAst* ast);
-    VisitResult visitUnpackExpr(UnpackExprAst* ast);
-    VisitResult visitVoidInitExpr(VoidInitExprAst* ast);
-    VisitResult visitWrappedExpr(WrappedExprAst* ast);
 
     // Annotate type of type-specifying exprs.
     VisitResult traverseMakeExpr(MakeExprAst* ast);
@@ -195,9 +142,11 @@ private:
     VisitResult traverseCastExpr(CastExprAst* ast);
     VisitResult traverseTypeQueryExpr(TypeQueryExprAst* ast);
     VisitResult traverseTypeAssertExpr(TypeAssertExprAst* ast);
+    VisitResult traverseTypeidExpr(TypeidExprAst* ast);
 
     //--- Statements ---//
 
+    VisitResult traverseTypeSwitchStmt(TypeSwitchStmtAst* ast);
     VisitResult traverseBlockStmt(BlockStmtAst* ast);
 };
 

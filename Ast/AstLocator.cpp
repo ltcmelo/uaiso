@@ -1513,6 +1513,16 @@ const SourceLoc& AstLocator::lastLoc(SwitchStmtAst* ast) const
     return lastLoc(ast->stmt_.get());
 }
 
+const SourceLoc& AstLocator::loc(TypeSwitchStmtAst* ast) const
+{
+    return ast->keyLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(TypeSwitchStmtAst* ast) const
+{
+    return lastLoc(ast->stmt_.get());
+}
+
 const SourceLoc& AstLocator::loc(CaseClauseStmtAst* ast) const
 {
     return ast->keyLoc_;

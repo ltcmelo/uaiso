@@ -920,6 +920,7 @@ public:
     SourceLoc rDelimLoc_;
 };
 
+// TODO: Kepp only spec...
 class UAISO_API TypeidExprAst final : public ExprAst
 {
 public:

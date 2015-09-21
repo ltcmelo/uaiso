@@ -23,12 +23,13 @@
 
 %glr-parser
 
-%expect 1
+%expect 2
 /* Expected shift/reduce conflicts:
    - Ambiguity with opening braces, which might initiate a composite literal
      or a block statement. From Go's website: if (x == T{a,b,c}[i]) {...}
      Official Go's parser is not GLR, but it handles the issue lexically
-     by introducing an artificial `{` token for blocks. */
+     by introducing an artificial `{` token for blocks.
+   - In the expression part of a type switch statement. */
 
 
 %define api.prefix "GO_yy"
@@ -140,6 +141,7 @@ void GO_yyerror(const YYLTYPE* yylloc,
 %type <spec_> Type BuiltinType PlainType CompositeType PointerType CastType
 %type <spec_> StructType InterfaceType SpecialArgType Signature FuncType
 %type <spec_> SenderChanType RecvChanType BidirChanType NonExprType
+%type <specs_> NonExprTypeList
 
 %type <decl_> Decl VarGroupDecl VarDecl VarSectionDecl
 %type <decl_> FieldDecl RecordDecl TypeGroupDecl ConstDecl InterfaceDesc
@@ -879,13 +881,35 @@ Init:
     }
 |   Expr ':' '{' InitList '}'
     {
-        DECL_3_LOC(@1, @2, @4);
+        DECL_3_LOC(@2, @3, @5);
         auto init = make<RecordInitExprAst>()->setLDelimLoc(locB)->setInits($4)->setRDelimLoc(locC);
         $$ = make<DesignateExprAst>()->setId($1)->setDelimLoc(locA)->setValue(init);
+    }
+|   Expr ':' '{' InitList ',' '}'
+    {
+        DECL_3_LOC(@2, @3, @6);
+        auto init = make<RecordInitExprAst>()->setLDelimLoc(locB)->setInits($4)->setRDelimLoc(locC);
+        $$ = make<DesignateExprAst>()->setId($1)->setDelimLoc(locA)->setValue(init);
+    }
+|   Expr ':' '{' '}'
+    {
+        DECL_3_LOC(@2, @3, @4);
+        auto init = make<RecordInitExprAst>()->setLDelimLoc(locB)->setRDelimLoc(locC);
+        $$ = make<DesignateExprAst>()->setId($1)->setDelimLoc(locA)->setValue(init);
+    }
+|   '{' '}'
+    {
+        DECL_2_LOC(@1, @2);
+        $$ = make<RecordInitExprAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
     }
 |   '{' InitList '}'
     {
         DECL_2_LOC(@1, @3);
+        $$ = make<RecordInitExprAst>()->setLDelimLoc(locA)->setInits($2)->setRDelimLoc(locB);
+    }
+|   '{' InitList ',' '}'
+    {
+        DECL_2_LOC(@1, @4);
         $$ = make<RecordInitExprAst>()->setLDelimLoc(locA)->setInits($2)->setRDelimLoc(locB);
     }
 ;
@@ -1048,11 +1072,28 @@ PlainType:
 NonExprType:
     BuiltinType
 |   FuncType
-|   PointerType
+|   '*' NonExprType
+    {
+        DECL_1_LOC(@1);
+        $$ = make<PtrSpecAst>()->setOprLoc(locA)->setBaseSpec($2);
+    }
 |   CompositeType
 |   SenderChanType
 |   RecvChanType
 |   BidirChanType
+;
+
+NonExprTypeList:
+    NonExprType
+    {
+        $$ = SpecAstList::createSR($1);
+    }
+|   NonExprTypeList ',' NonExprType
+    {
+        DECL_1_LOC(@2);
+        $1->delim_ = locA;
+        $$ = $1->handleSR($3);
+    }
 ;
 
 CastType:
@@ -1061,6 +1102,15 @@ CastType:
 |   CompositeType
 |   SenderChanType
 |   BidirChanType
+|   '(' CastType ')'
+    {
+        $$ = $2;
+    }
+|   '(' '*' CastType ')'
+    {
+        DECL_1_LOC(@1);
+        $$ = make<PtrSpecAst>()->setOprLoc(locA)->setBaseSpec($3);
+    }
 ;
 
 SpecialArgType:
@@ -2117,6 +2167,35 @@ SwitchStmt:
         auto stmt = make<BlockStmtAst>()->setLDelimLoc(locB)->setStmts($4)->setRDelimLoc(locC);
         $$ = make<SwitchStmtAst>()->setKeyLoc(locA)->setExpr($2)->setStmt(stmt);
     }
+|   SWITCH Ident ":=" PostfixExpr '.' '(' TYPE ')' '{' '}'
+    {
+        IGNORE_FOR_NOW($2);
+        DECL_6_LOC(@1, @3, @6, @8, @9, @10);
+        auto spec = make<TypeofSpecAst>()->setOprLoc(locC)->setLDelimLoc(locB)->setExpr($4)
+                ->setRDelimLoc(locD);
+        $$ = make<TypeSwitchStmtAst>()->setKeyLoc(locA)->setSpec(spec);
+    }
+|   SWITCH Ident ":=" PostfixExpr '.' '(' TYPE ')' '{' CaseClauseStmts '}'
+    {
+        IGNORE_FOR_NOW($2);
+        DECL_6_LOC(@1, @3, @6, @8, @9, @11);
+        auto spec = make<TypeofSpecAst>()->setOprLoc(locC)->setLDelimLoc(locB)->setExpr($4)
+                ->setRDelimLoc(locD);
+        auto stmt = make<BlockStmtAst>()->setLDelimLoc(locB)->setStmts($10)->setRDelimLoc(locC);
+        $$ = make<TypeSwitchStmtAst>()->setKeyLoc(locA)->setSpec(spec)->setStmt(stmt);
+    }
+|   SWITCH EffectExpr ';' '{' '}'
+    {
+        DECL_3_LOC(@1, @4, @5);
+        auto stmt = make<BlockStmtAst>()->setLDelimLoc(locB)->setRDelimLoc(locC);
+        $$ = make<SwitchStmtAst>()->setKeyLoc(locA)->setExpr($2)->setStmt(stmt);
+    }
+|   SWITCH EffectExpr ';' '{' CaseClauseStmts '}'
+    {
+        DECL_3_LOC(@1, @4, @6);
+        auto stmt = make<BlockStmtAst>()->setLDelimLoc(locB)->setStmts($5)->setRDelimLoc(locC);
+        $$ = make<SwitchStmtAst>()->setKeyLoc(locA)->setExpr($2)->setStmt(stmt);
+    }
 |   SWITCH EffectExpr ';' Expr '{' '}'
     {
         DECL_4_LOC(@1, @3, @5, @6);
@@ -2164,15 +2243,34 @@ CaseClauseStmts:
 ;
 
 CaseClauseStmt:
-    CASE ExprList ':' StmtList ';'
+    CASE ExprList ':'
+    {
+        DECL_2_LOC(@1, @3);
+        $$ = make<CaseClauseStmtAst>()->setKeyLoc(locA)->setExprs($2)->setDelimLoc(locB);
+    }
+|   CASE ExprList ':' StmtList ';'
     {
         DECL_2_LOC(@1, @3);
         $$ = make<CaseClauseStmtAst>()->setKeyLoc(locA)->setExprs($2)->setDelimLoc(locB)
                 ->setStmts($4);
     }
+|   CASE ExprList '=' Expr ':'
+    {
+        IGNORE_LIST_FOR_NOW($2); IGNORE_FOR_NOW($4);
+
+        // TODO: This applies only to select statements.
+        $$ = make<CaseClauseStmtAst>();
+    }
 |   CASE ExprList '=' Expr ':' StmtList ';'
     {
         IGNORE_LIST_FOR_NOW($2); IGNORE_FOR_NOW($4); IGNORE_LIST_FOR_NOW($6);
+
+        // TODO: This applies only to select statements.
+        $$ = make<CaseClauseStmtAst>();
+    }
+|   CASE ExprList ":=" Expr ':'
+    {
+        IGNORE_LIST_FOR_NOW($2); IGNORE_FOR_NOW($4);
 
         // TODO: This applies only to select statements.
         $$ = make<CaseClauseStmtAst>();
@@ -2184,12 +2282,38 @@ CaseClauseStmt:
         // TODO: This applies only to select statements.
         $$ = make<CaseClauseStmtAst>();
     }
+|   CASE Expr "<-" Expr ':'
+    {
+        IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($4);
+
+        // TODO: This applies only to select statements.
+        $$ = make<CaseClauseStmtAst>();
+    }
 |   CASE Expr "<-" Expr ':' StmtList ';'
     {
         IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($4); IGNORE_LIST_FOR_NOW($6);
 
         // TODO: This applies only to select statements.
         $$ = make<CaseClauseStmtAst>();
+    }
+|   CASE NonExprTypeList ':'
+    {
+        IGNORE_LIST_FOR_NOW($2);
+
+        // TODO: Clause of a type switch
+        $$ = make<CaseClauseStmtAst>();
+    }
+|   CASE NonExprTypeList ':' StmtList ';'
+    {
+        IGNORE_LIST_FOR_NOW($2); IGNORE_LIST_FOR_NOW($4);
+
+        // TODO: Clause of a type switch
+        $$ = make<CaseClauseStmtAst>();
+    }
+|   DEFAULT ':'
+    {
+        DECL_2_LOC(@1, @2);
+        $$ = make<DefaultClauseStmtAst>()->setKeyLoc(locA)->setDelimLoc(locB);
     }
 |   DEFAULT ':' StmtList ';'
     {

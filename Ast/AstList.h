@@ -210,7 +210,7 @@ protected:
 
 template <class AstT>
 class UAISO_API TrivialAstList : public AstList<TrivialAstList<AstT>,
-                                      ListTraits<AstT>>
+                                        ListTraits<AstT>>
 {
 public:
     typedef TrivialAstList<AstT> Self;
@@ -225,7 +225,7 @@ public:
 
 template <class AstT>
 class UAISO_API DelimAstList : public AstList<DelimAstList<AstT>,
-                                    ListTraits<AstT>>
+                                      ListTraits<AstT>>
 {
 public:
     typedef DelimAstList<AstT> Self;
@@ -241,7 +241,7 @@ public:
 };
 
 typedef DelimAstList<NameAst> NameAstList;
-typedef TrivialAstList<SpecAst> SpecAstList;
+typedef DelimAstList<SpecAst> SpecAstList;
 typedef TrivialAstList<AttrAst> AttrAstList;
 typedef DelimAstList<DeclAst> DeclAstList;
 typedef DelimAstList<ExprAst> ExprAstList;
