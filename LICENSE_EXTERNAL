@@ -8,4 +8,8 @@ External source files used in the Uaiso project.
       License: BSD 2
       Copyright: Cong Xu, Baudouin Feildel
 
+    - $UAISO_PATH/TestData/Go/
+      Test files for the parser (copied from Go Tour and Go's standard lib).
+      Copyright: Go authors
+
 For Uaiso's own license see $UAISO_PATH/LICENSE.

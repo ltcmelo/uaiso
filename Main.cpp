@@ -135,7 +135,7 @@ public:
         unit->setFileName(fileName_);
         unit->assignInput(file_);
         unit->parse(&tokens_, &lexemes_);
-        DiagnosticReports* reports = unit->releaseReports();
+        std::unique_ptr<DiagnosticReports> reports(unit->releaseReports());
         UAISO_EXPECT_INT_EQ(0, reports->size());
         UAISO_EXPECT_TRUE(unit->ast());
         ProgramAst* progAst = Program_Cast(unit->ast());
@@ -144,7 +144,7 @@ public:
         Binder binder(factory.get());
         binder.setLexemes(&lexemes_);
         binder.setTokens(&tokens_);
-        binder.collectDiagnostics(reports);
+        binder.collectDiagnostics(reports.get());
         UAISO_EXPECT_INT_EQ(0, reports->size());
         std::unique_ptr<Program> prog(binder.bind(progAst, fileName_));
         UAISO_EXPECT_TRUE(prog);
@@ -153,7 +153,7 @@ public:
         TypeChecker typeChecker(factory.get());
         typeChecker.setLexemes(&lexemes_);
         typeChecker.setTokens(&tokens_);
-        typeChecker.collectDiagnostics(reports);
+        typeChecker.collectDiagnostics(reports.get());
         UAISO_EXPECT_INT_EQ(0, reports->size());
         typeChecker.check(progAst);
     }
@@ -233,6 +233,82 @@ public:
         "TestData/Go/testGoTour_Zero.go",
         "TestData/Go/testMyOwn.go",
         "TestData/Go/testGoSource_runtime.go",
+        "TestData/Go/Stdlib/fmt/export_test.go",
+        "TestData/Go/Stdlib/fmt/fmt_test.go",
+        "TestData/Go/Stdlib/fmt/format.go",
+        "TestData/Go/Stdlib/fmt/print.go",
+        "TestData/Go/Stdlib/fmt/scan.go",
+        "TestData/Go/Stdlib/fmt/scan_test.go",
+        "TestData/Go/Stdlib/fmt/stringer_test.go",
+        "TestData/Go/Stdlib/math/abs.go",
+        "TestData/Go/Stdlib/math/acosh.go",
+        "TestData/Go/Stdlib/math/all_test.go",
+        "TestData/Go/Stdlib/math/asin.go",
+        "TestData/Go/Stdlib/math/asinh.go",
+        "TestData/Go/Stdlib/math/atan.go",
+        "TestData/Go/Stdlib/math/atan2.go",
+        "TestData/Go/Stdlib/math/atanh.go",
+        "TestData/Go/Stdlib/math/bits.go",
+        "TestData/Go/Stdlib/math/cbrt.go",
+        "TestData/Go/Stdlib/math/const.go",
+        "TestData/Go/Stdlib/math/copysign.go",
+        "TestData/Go/Stdlib/math/dim.go",
+        "TestData/Go/Stdlib/math/erf.go",
+        "TestData/Go/Stdlib/math/exp.go",
+        "TestData/Go/Stdlib/math/expm1.go",
+        "TestData/Go/Stdlib/math/export_test.go",
+        "TestData/Go/Stdlib/math/floor.go",
+        "TestData/Go/Stdlib/math/frexp.go",
+        "TestData/Go/Stdlib/math/gamma.go",
+        "TestData/Go/Stdlib/math/hypot.go",
+        "TestData/Go/Stdlib/math/j0.go",
+        "TestData/Go/Stdlib/math/j1.go",
+        "TestData/Go/Stdlib/math/jn.go",
+        "TestData/Go/Stdlib/math/ldexp.go",
+        "TestData/Go/Stdlib/math/lgamma.go",
+        "TestData/Go/Stdlib/math/log.go",
+        "TestData/Go/Stdlib/math/log10.go",
+        "TestData/Go/Stdlib/math/log1p.go",
+        "TestData/Go/Stdlib/math/logb.go",
+        "TestData/Go/Stdlib/math/mod.go",
+        "TestData/Go/Stdlib/math/nextafter.go",
+        "TestData/Go/Stdlib/math/pow.go",
+        "TestData/Go/Stdlib/math/pow10.go",
+        "TestData/Go/Stdlib/math/remainder.go",
+        "TestData/Go/Stdlib/math/signbit.go",
+        "TestData/Go/Stdlib/math/sin.go",
+        "TestData/Go/Stdlib/math/sincos.go",
+        "TestData/Go/Stdlib/math/sinh.go",
+        "TestData/Go/Stdlib/math/sqrt.go",
+        "TestData/Go/Stdlib/math/tan.go",
+        "TestData/Go/Stdlib/math/tanh.go",
+        "TestData/Go/Stdlib/math/unsafe.go",
+        "TestData/Go/Stdlib/math/big/arith.go",
+        "TestData/Go/Stdlib/math/big/arith_decl.go",
+        "TestData/Go/Stdlib/math/big/arith_test.go",
+        "TestData/Go/Stdlib/math/big/calibrate_test.go",
+        "TestData/Go/Stdlib/math/big/example_test.go",
+        "TestData/Go/Stdlib/math/big/gcd_test.go",
+        "TestData/Go/Stdlib/math/big/hilbert_test.go",
+        "TestData/Go/Stdlib/math/big/int.go",
+        "TestData/Go/Stdlib/math/big/int_test.go",
+        "TestData/Go/Stdlib/math/big/nat.go",
+        "TestData/Go/Stdlib/math/big/nat_test.go",
+        "TestData/Go/Stdlib/math/big/rat.go",
+        "TestData/Go/Stdlib/math/big/rat_test.go",
+        "TestData/Go/Stdlib/math/cmplx/abs.go",
+        "TestData/Go/Stdlib/math/cmplx/asin.go",
+        "TestData/Go/Stdlib/math/cmplx/cmath_test.go",
+        "TestData/Go/Stdlib/math/cmplx/conj.go",
+        "TestData/Go/Stdlib/math/cmplx/exp.go",
+        "TestData/Go/Stdlib/math/cmplx/isinf.go",
+        "TestData/Go/Stdlib/math/cmplx/isnan.go",
+        "TestData/Go/Stdlib/math/cmplx/log.go",
+        "TestData/Go/Stdlib/math/cmplx/phase.go",
+        "TestData/Go/Stdlib/math/cmplx/pow.go",
+        "TestData/Go/Stdlib/math/cmplx/sin.go",
+        "TestData/Go/Stdlib/math/cmplx/sqrt.go",
+        "TestData/Go/Stdlib/math/cmplx/tan.go",
 
         //--- D files ---//
 
