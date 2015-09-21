@@ -376,8 +376,6 @@ Environment Namespace::env() const
 struct Record::RecordImpl : TypeSymbol::TypeSymbolImpl
 {
     using TypeSymbolImpl::TypeSymbolImpl;
-
-    std::vector<std::unique_ptr<BaseRecord>> bases_;
 };
 
 DEF_PIMPL_CAST(Record)
@@ -388,11 +386,6 @@ Record::Record(const Ident* name)
 
 Record::~Record()
 {}
-
-void Record::addBase(std::unique_ptr<BaseRecord> base)
-{
-    P_CAST->bases_.push_back(std::move(base));
-}
 
 void Record::setType(std::unique_ptr<RecordType> type)
 {

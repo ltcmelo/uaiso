@@ -32,6 +32,7 @@
 
 namespace uaiso {
 
+class BaseRecord;
 class Environment;
 class Ident;
 enum class Precision : char;
@@ -303,6 +304,8 @@ public:
 
     void setEnv(Environment env);
     Environment env() const;
+
+    void addBase(std::unique_ptr<BaseRecord> base);
 
     RecordType* clone() const override;
 

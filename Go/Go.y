@@ -144,10 +144,10 @@ void GO_yyerror(const YYLTYPE* yylloc,
 %type <specs_> NonExprTypeList
 
 %type <decl_> Decl VarGroupDecl VarDecl VarSectionDecl
-%type <decl_> FieldDecl RecordDecl TypeGroupDecl ConstDecl InterfaceDesc
+%type <decl_> FieldDecl RecordDecl TypeGroupDecl ConstDecl InterfaceMember
 %type <decl_> FuncDecl FuncRecvDecl ParamGroupDecl ParamClauseDecl ParamDecl
 %type <decl_> ImportDecl Import
-%type <decls_> FieldDecls InterfaceDescs VarGroupDeclList RecordDeclList
+%type <decls_> FieldDecls InterfaceMembers VarGroupDeclList RecordDeclList
 %type <decls_> ParamGroupDeclList ParamDeclList VarDeclList Decls ImportList
 
 %type <expr_> Expr UnaryExpr PostfixExpr PrimaryExpr SubrangeExpr ConvExpr Init
@@ -1241,22 +1241,24 @@ StructType:
     STRUCT '{' '}'
     {
         DECL_3_LOC(@1, @2, @3);
-        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC);
-        type->setVariety(RecordVariety::Struct);
+        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)
+            ->setVariety(RecordVariety::Struct);
         $$ = type;
     }
 |   STRUCT '{' FieldDecls '}'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecls($3)->setRDelimLoc(locC);
-        type->setVariety(RecordVariety::Struct);
+        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)
+            ->setVariety(RecordVariety::Struct);
+        detail::splitBaseDeclsAndFields(type, $3->finishSR());
         $$ = type;
     }
 |   STRUCT '{' FieldDecls ';' '}'
     {
         DECL_3_LOC(@1, @2, @5);
-        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecls($3)->setRDelimLoc(locC);
-        type->setVariety(RecordVariety::Struct);
+        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)
+            ->setVariety(RecordVariety::Struct);
+        detail::splitBaseDeclsAndFields(type, $3->finishSR());
         $$ = type;
     }
 ;
@@ -1265,22 +1267,24 @@ InterfaceType:
     INTERFACE '{' '}'
     {
         DECL_3_LOC(@1, @2, @3);
-        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC);
-        type->setVariety(RecordVariety::Interface);
+        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)
+            ->setVariety(RecordVariety::Interface);
         $$ = type;
     }
-|   INTERFACE '{' InterfaceDescs '}'
+|   INTERFACE '{' InterfaceMembers '}'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecls($3)->setRDelimLoc(locC);
-        type->setVariety(RecordVariety::Interface);
+        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)
+            ->setVariety(RecordVariety::Interface);
+        detail::splitBaseDeclsAndFields(type, $3->finishSR());
         $$ = type;
     }
-|   INTERFACE '{' InterfaceDescs ';' '}'
+|   INTERFACE '{' InterfaceMembers ';' '}'
     {
         DECL_3_LOC(@1, @2, @5);
-        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecls($3)->setRDelimLoc(locC);
-        type->setVariety(RecordVariety::Interface);
+        auto type = make<RecordSpecAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)
+            ->setVariety(RecordVariety::Interface);
+        detail::splitBaseDeclsAndFields(type, $3->finishSR());
         $$ = type;
     }
 ;
@@ -1518,28 +1522,34 @@ FieldDecl:
     }
 |   '*' NestedIdent
     {
-        DECL_1_LOC(@1);
         auto name = make<NestedNameAst>()->setNames($2);
-        auto baseSpec = make<NamedSpecAst>()->setName(name);
-        auto spec = make<PtrSpecAst>()->setOprLoc(locA)->setBaseSpec(baseSpec);
-        $$ = make<VarGroupDeclAst>()->setSpec(spec);
+        $$ = make<BaseDeclAst>()->setName(name);
     }
 |   '*' NestedIdent StringLit
     {
-        DECL_1_LOC(@1);
+        IGNORE_FOR_NOW($3);
         auto name = make<NestedNameAst>()->setNames($2);
-        auto baseSpec = make<NamedSpecAst>()->setName(name);
-        auto spec = make<PtrSpecAst>()->setOprLoc(locA)->setBaseSpec(baseSpec);
-        $$ = make<VarTagDeclAst>()->setSpec(spec)->setTag($3);
+        $$ = make<BaseDeclAst>()->setName(name);
+    }
+|   NestedIdent
+    {
+        auto name = make<NestedNameAst>()->setNames($1);
+        $$ = make<BaseDeclAst>()->setName(name);
+    }
+|   NestedIdent StringLit
+    {
+        IGNORE_FOR_NOW($2);
+        auto name = make<NestedNameAst>()->setNames($1);
+        $$ = make<BaseDeclAst>()->setName(name);
     }
 ;
 
-InterfaceDescs:
-    InterfaceDesc
+InterfaceMembers:
+    InterfaceMember
     {
         $$ = DeclAstList::createSR($1);
     }
-|   InterfaceDescs ';' InterfaceDesc
+|   InterfaceMembers ';' InterfaceMember
     {
         DECL_1_LOC(@2);
         $1->delim_ = locA;
@@ -1547,7 +1557,7 @@ InterfaceDescs:
     }
 ;
 
-InterfaceDesc:
+InterfaceMember:
     Ident
     {
         /* Embedding the name of another interface */
@@ -1709,6 +1719,14 @@ ParamGroupDecl:
     NonExprType
     {
         $$ = make<ParamGroupDeclAst>()->setSpec($1);
+    }
+|   '*' NestedIdent
+    {
+        DECL_1_LOC(@1);
+        auto name = make<NestedNameAst>()->setNames($2);
+        auto namedSpec = make<NamedSpecAst>()->setName(name);
+        auto ptrSpec = make<PtrSpecAst>()->setOprLoc(locA)->setBaseSpec(namedSpec);
+        $$ = make<ParamGroupDeclAst>()->setSpec(ptrSpec);
     }
 |   ParamDeclList %prec PREFER_SHIFT
     {
@@ -1936,13 +1954,10 @@ RecordDeclList:
 RecordDecl:
     Ident Type
     {
-        if ($2->kind() == Ast::Kind::RecordSpec) {
-            auto record = make<RecordDeclAst>()->setName($1);
-            detail::splitBaseDeclsFromSpec(record, RecordSpec_Cast($2));
-            $$ = record;
-        } else {
+        if ($2->kind() == Ast::Kind::RecordSpec)
+            $$ = make<RecordDeclAst>()->setName($1)->setSpec($2);
+        else
             $$ = make<AliasDeclAst>()->setName($1)->setSpec($2);
-        }
     }
 ;
 

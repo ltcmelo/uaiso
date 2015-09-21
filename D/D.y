@@ -2946,9 +2946,8 @@ RecordDecl:
         DECL_1_LOC(@3);
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = make<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)
-                ->setDelimLoc(locA)->setBases($4)->setSpec($5);
-        RecordSpec_Cast($5)->setVariety(RecordVariety(data->variety_));
+        auto record = make<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($5);
+        RecordSpec_Cast($5)->setVariety(RecordVariety(data->variety_))->setDelimLoc(locA)->setBases($4);
         $$ = record;
     }
 |   RecordKey RecordType
@@ -2992,9 +2991,8 @@ RecordTemplateDecl:
         DECL_1_LOC(@5);
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = make<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)
-                ->setDelimLoc(locA)->setBases($6)->setSpec($7);
-        RecordSpec_Cast($7)->setVariety(RecordVariety(data->variety_));
+        auto record = make<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($7);
+        RecordSpec_Cast($7)->setVariety(RecordVariety(data->variety_))->setDelimLoc(locA)->setBases($6);
         $$ = record;
     }
 |   RecordKey Ident TemplateParamClause ':' BaseRecordList RecordType
@@ -3004,9 +3002,8 @@ RecordTemplateDecl:
         DECL_1_LOC(@4);
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = make<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)
-                ->setDelimLoc(locA)->setBases($5)->setSpec($6);
-        RecordSpec_Cast($6)->setVariety(RecordVariety(data->variety_));
+        auto record = make<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($6);
+        RecordSpec_Cast($6)->setVariety(RecordVariety(data->variety_))->setDelimLoc(locA)->setBases($5);
         $$ = record;
     }
 |   RecordKey Ident TemplateParamClause ':' BaseRecordList Constraint RecordType
@@ -3016,9 +3013,8 @@ RecordTemplateDecl:
         DECL_1_LOC(@4);
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = make<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)
-                ->setDelimLoc(locA)->setBases($5)->setSpec($7);
-        RecordSpec_Cast($7)->setVariety(RecordVariety(data->variety_));
+        auto record = make<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($7);
+        RecordSpec_Cast($7)->setVariety(RecordVariety(data->variety_))->setDelimLoc(locA)->setBases($5);
         $$ = record;
     }
 ;

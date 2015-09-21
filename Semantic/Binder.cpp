@@ -506,7 +506,6 @@ Binder::VisitResult Binder::traverseRecordSpec(RecordSpecAst* ast)
 {
     P->declTy_.emplace(new RecordType);
     P->enterSubEnv();
-
     VIS_CALL(Base::traverseRecordSpec(ast));
 
     ENSURE_TOP_TYPE_IS(Record);
@@ -1091,8 +1090,6 @@ Binder::VisitResult Binder::traverseRecordDecl(RecordDeclAst* ast)
 
     P->sym_.push(std::move(record));
 
-    for (auto base : *ast->bases_.get())
-        VIS_CALL(traverseDecl(base));
     VIS_CALL(traverseSpec(ast->spec_.get()));
 
     ENSURE_TOP_SYMBOL_IS(Record);
@@ -1113,9 +1110,9 @@ Binder::VisitResult Binder::traverseBaseDecl(BaseDeclAst* ast)
     std::unique_ptr<BaseRecord> base(new BaseRecord(P->declId_.back()));
     base->setSourceLoc(fullLoc(ast, P->locator_.get()));
 
-    ENSURE_TOP_SYMBOL_IS(Record)
-    Record* record = Record_Cast(P->sym_.top().get());
-    record->addBase(std::move(base));
+    ENSURE_TOP_TYPE_IS(Record);
+    RecordType* ty = RecordType_Cast(P->declTy_.top().get());
+    ty->addBase(std::move(base));
 
     return Continue;
 }

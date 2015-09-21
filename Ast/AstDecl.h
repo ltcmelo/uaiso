@@ -981,15 +981,11 @@ public:
 
     NAMED_LOC_PARAM(setKey, key)
     NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setDelim, delim)
-    NAMED_AST_LIST_PARAM(setBases, bases, DeclAst)
     NAMED_AST_PARAM(setSpec, spec, SpecAst)
     NAMED_LOC_PARAM(setTermin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
-    SourceLoc delimLoc_;
-    std::unique_ptr<DeclAstList> bases_;
     std::unique_ptr<SpecAst> spec_;
     SourceLoc terminLoc_;
 

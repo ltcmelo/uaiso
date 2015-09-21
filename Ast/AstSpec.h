@@ -130,6 +130,8 @@ public:
     APPLY_VARIETY(RecordVariety)
 
     NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(setDelim, delim)
+    NAMED_AST_LIST_PARAM(setBases, bases, DeclAst)
     NAMED_LOC_PARAM(setLDelim, lDelim)
     NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
     NAMED_LOC_PARAM(setRDelim, rDelim)
@@ -151,6 +153,8 @@ public:
     bool isEmpty() const { return !decls_; }
 
     SourceLoc keyLoc_;
+    SourceLoc delimLoc_;
+    std::unique_ptr<DeclAstList> bases_;
     std::unique_ptr<DeclAst> templ_;
     SourceLoc lDelimLoc_;
     std::unique_ptr<DeclAstList> decls_;

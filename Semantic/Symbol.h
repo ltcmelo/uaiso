@@ -295,8 +295,6 @@ public:
     Record(const Ident* name);
     ~Record();
 
-    void addBase(std::unique_ptr<BaseRecord> base);
-
     void setType(std::unique_ptr<RecordType> type);
     const RecordType* type() const;
 

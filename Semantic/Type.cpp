@@ -25,6 +25,7 @@
 #include "Semantic/Environment.h"
 #include "Semantic/Precision.h"
 #include "Semantic/Signedness.h"
+#include "Semantic/Symbol.h"
 #include "Semantic/TypeCast.h"
 #include "Semantic/TypeQuals.h"
 #include "Common/Assert.h"
@@ -289,6 +290,7 @@ struct uaiso::RecordType::RecordTypeImpl : Type::TypeImpl
     using TypeImpl::TypeImpl;
 
     Environment env_;
+    std::vector<std::unique_ptr<BaseRecord>> bases_;
 };
 
 DEF_PIMPL_CAST(RecordType)
@@ -297,6 +299,8 @@ RecordType* RecordType::clone() const
 {
     auto ty = trivialClone<RecordType>();
     ty->P_CAST->env_ = P_CAST->env_;
+    for (auto& base : P_CAST->bases_)
+        ty->P_CAST->bases_.emplace_back(new BaseRecord(base->name()));
     return ty;
 }
 
@@ -306,6 +310,11 @@ RecordType::RecordType()
 
 RecordType::~RecordType()
 {}
+
+void RecordType::addBase(std::unique_ptr<BaseRecord> base)
+{
+    P_CAST->bases_.push_back(std::move(base));
+}
 
 void RecordType::setVariety(RecordVariety variety)
 {

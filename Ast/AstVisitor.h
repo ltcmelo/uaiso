@@ -260,6 +260,7 @@ AstVisitor<DerivedT>::traverseRecordSpec(RecordSpecAst *ast)
 {
     EVAL_RESULT_0(recursivelyVisitRecordSpec(ast));
     EVAL_RESULT_N(traverseDecl(ast->templ_.get()));
+    EVAL_RESULT_LIST_N(traverseList<DeclAst>(ast->bases_.get(), &DerivedT::traverseDecl));
     EVAL_RESULT_LIST_N(traverseList<DeclAst>(ast->decls_.get(), &DerivedT::traverseDecl));
     return Continue;
 }
@@ -323,7 +324,6 @@ AstVisitor<DerivedT>::traverseRecordDecl(RecordDeclAst* decl)
 {
     EVAL_RESULT_0(recursivelyVisitRecordDecl(decl));
     EVAL_RESULT_N(traverseName(decl->name_.get()));
-    EVAL_RESULT_LIST_N(traverseList<DeclAst>(decl->bases_.get(), &DerivedT::traverseDecl));
     EVAL_RESULT_N(traverseSpec(decl->spec_.get()));
     return Continue;
 }

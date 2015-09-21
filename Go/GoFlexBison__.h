@@ -109,7 +109,7 @@ VarGroupDeclAst* turnExprsIntoVarGroupDecl(ExprAstList* exprs);
 
 void constifyVarGroupDecl(DeclAst* decl, const SourceLoc& loc);
 
-void splitBaseDeclsFromSpec(RecordDeclAst* record, RecordSpecAst* spec);
+void splitBaseDeclsAndFields(RecordSpecAst* spec, DeclAstList* decls);
 
 SpecAst* extractSpecFromExpr(ExprAst* nameExpr);
 

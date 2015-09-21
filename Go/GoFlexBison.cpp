@@ -72,22 +72,21 @@ void constifyVarGroupDecl(DeclAst* decl, const SourceLoc& loc)
     group->setAllocScheme(AllocScheme::CompileTime);
 }
 
-void splitBaseDeclsFromSpec(RecordDeclAst* record, RecordSpecAst* spec)
+void splitBaseDeclsAndFields(RecordSpecAst* spec, DeclAstList* decls)
 {
-    auto decls = spec->decls_.release();
+    auto root = decls;
     while (decls) {
         auto decl = decls->releaseHead().release();
         if (decl->kind() == Ast::Kind::BaseDecl) {
-            record->bases_ ? record->bases_->pushBack(decl) :
-                             record->bases_.reset(DeclAstList::create(decl));
+            spec->bases_ ? spec->bases_->pushBack(decl) :
+                           spec->bases_.reset(DeclAstList::create(decl));
         } else {
             spec->decls_ ? spec->decls_->pushBack(decl) :
                            spec->decls_.reset(DeclAstList::create(decl));
         }
         decls = decls->subList();
     }
-    delete decls;
-    record->setSpec(spec);
+    delete root;
 }
 
 SpecAst* extractSpecFromExpr(ExprAst* nameExpr) {
