@@ -44,7 +44,7 @@ DIncrementalLexer::DIncrementalLexer()
 DIncrementalLexer::~DIncrementalLexer()
 {}
 
-void DIncrementalLexer::tokenize(const std::string& source)
+void DIncrementalLexer::lex(const std::string& source)
 {
     P->phrasing_.reset(new Phrasing);
     P->context_->collectPhrasing(P->phrasing_.get());

@@ -46,7 +46,7 @@ GoIncrementalLexer::GoIncrementalLexer()
 GoIncrementalLexer::~GoIncrementalLexer()
 {}
 
-void GoIncrementalLexer::tokenize(const std::string& source)
+void GoIncrementalLexer::lex(const std::string& source)
 {
     P->phrasing_.reset(new Phrasing);
     auto goContext = static_cast<GoParsingContext*>(P->context_.get());

@@ -21,22 +21,30 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_GOFACTORY_H__
-#define UAISO_GOFACTORY_H__
+#ifndef UAISO_PYKEYWORDS_H__
+#define UAISO_PYKEYWORDS_H__
 
-#include "Parsing/Factory.h"
+#include "Common/Config.h"
+#include "Parsing/Token.h"
+#include <cstddef>
 
 namespace uaiso {
 
-class UAISO_API GoFactory final : public Factory
+class UAISO_API PyKeywords final
 {
 public:
-    std::unique_ptr<Unit> makeUnit() override;
-    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
-    std::unique_ptr<AstLocator> makeAstLocator() override;
-    std::unique_ptr<Sanitizer> makeSanitizer() override;
-    std::unique_ptr<TypeSystem> makeTypeSystem() override;
-    std::unique_ptr<Syntax> makeSyntax() override;
+    PyKeywords() = delete;
+
+    static Token classify(const char* spell, size_t length);
+
+private:
+    static Token classify2(const char* spell);
+    static Token classify3(const char* spell);
+    static Token classify4(const char* spell);
+    static Token classify5(const char* spell);
+    static Token classify6(const char* spell);
+    static Token classify7(const char* spell);
+    static Token classify8(const char* spell);
 };
 
 } // namespace uaiso

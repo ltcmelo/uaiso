@@ -14,6 +14,7 @@ set(COMMON_PATH Common)
 set(SEMANTIC_PATH Semantic)
 set(D_PARSER_PATH D)
 set(GO_PARSER_PATH Go)
+set(PY_PARSER_PATH Python)
 
 # File generation.
 add_custom_command(
@@ -51,6 +52,8 @@ set(UAISO_TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoUnitTest.cpp
     # Parsing
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/UnitTest.h
+    # Python
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyLexerTest.cpp
     # Semantic
     ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/BinderTest.h
     ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/CompletionTest.cpp
@@ -112,8 +115,8 @@ set(UAISO_SOURCES
     ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DParsingContext.h
     ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DSanitizer.cpp
     ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DSanitizer.h
-    ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DThesaurus.cpp
-    ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DThesaurus.h
+    ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DSyntax.cpp
+    ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DSyntax.h
     ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DTypeSystem.cpp
     ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DTypeSystem.h
     ${PROJECT_SOURCE_DIR}/${D_PARSER_PATH}/DUnit.cpp
@@ -135,8 +138,8 @@ set(UAISO_SOURCES
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoParsingContext.h
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoSanitizer.cpp
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoSanitizer.h
-    ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoThesaurus.cpp
-    ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoThesaurus.h
+    ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoSyntax.cpp
+    ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoSyntax.h
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoTypeSystem.cpp
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoTypeSystem.h
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoUnit.cpp
@@ -154,19 +157,28 @@ set(UAISO_SOURCES
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Lexeme.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Lexeme.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/LexemeMap.h
+    ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Lexer.cpp
+    ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Lexer.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Phrasing.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Phrasing.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/ParsingContext.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/ParsingContext.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/SourceLoc.h
-    ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Thesaurus.cpp
-    ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Thesaurus.h
+    ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Syntax.cpp
+    ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Syntax.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Token.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/TokenMap.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/TokenName.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Unit.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Unit.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Unit__.h
+    # Python
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyKeywords.cpp
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyKeywords.h
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyLexer.cpp
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyLexer.h
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PySyntax.cpp
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PySyntax.h
     # Semantic
     ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/Binder.cpp
     ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/Binder.h

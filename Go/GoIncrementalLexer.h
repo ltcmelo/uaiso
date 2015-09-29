@@ -36,7 +36,7 @@ public:
     GoIncrementalLexer();
     virtual ~GoIncrementalLexer();
 
-    void tokenize(const std::string& source) override;
+    void lex(const std::string& source) override;
 
 private:
     DECL_CLASS_TEST(GoIncrementalLexer)

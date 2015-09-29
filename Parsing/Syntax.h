@@ -21,17 +21,43 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_GOTHESAURUS_H__
-#define UAISO_GOTHESAURUS_H__
+#ifndef UAISO_SYNTAX_H__
+#define UAISO_SYNTAX_H__
 
-#include "Parsing/Thesaurus.h"
+#include "Common/Config.h"
+#include "Parsing/Token.h"
+#include <string>
 
 namespace uaiso {
 
-class UAISO_API GoThesaurus final : public Thesaurus
+class UAISO_API Syntax
 {
 public:
-    std::string sourceFileSuffix() const override;
+    virtual ~Syntax();
+
+    virtual std::string sourceFileSuffix() const = 0;
+
+    virtual std::string packageSeparator() const;
+
+    virtual std::string memberAccessOprtr() const;
+
+    virtual std::string funcCallDelim() const;
+
+    virtual bool isIdentFirstChar(char ch) const;
+
+    virtual bool isIdentChar(char ch) const;
+
+    virtual Token classifyIdent(const char* spell, size_t length) const;
+
+    virtual bool isStrLitQuote(char ch) const;
+
+    virtual bool isOctalPrefix(char ch) const;
+
+    virtual bool isHexPrefix(char ch) const;
+
+    virtual bool isBinPrefix(char ch) const;
+
+    virtual bool isExponent(char ch) const;
 };
 
 } // namespace uaiso

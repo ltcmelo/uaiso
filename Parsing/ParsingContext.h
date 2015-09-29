@@ -151,12 +151,12 @@ public:
      * \brief notifyProgramMatched
      *
      * Informs that the a ProgramAst has been successfully parsed. Future
-     * attemps from the lexer to postponeEOF will fail.
+     * attemps from the lexer to postponeEoF will fail.
      */
     void notifyProgramMatched();
 
     /*!
-     * \brief postponeEOF
+     * \brief postponeEoF
      * \return
      *
      * We use an EOP (End-Of-Program) token to signal to a Bison parser that
@@ -169,7 +169,7 @@ public:
      *
      * \sa notifyProgramMatched
      */
-    bool postponeEOF();
+    bool postponeEoF();
 
     void enterTokenState();
     void leaveTokenState();

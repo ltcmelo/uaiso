@@ -37,6 +37,7 @@
 #include "Parsing/LexemeMap.h"
 #include "Parsing/TokenMap.h"
 #include "Parsing/Unit.h"
+#include "Python/PyLexer.h"
 #include "Semantic/Binder.h"
 #include "Semantic/CompletionProposer.h"
 #include "Semantic/CompletionTest.h"
@@ -78,15 +79,16 @@ std::vector<std::string> readSearchPaths()
     return paths;
 }
 
-CALL_CLASS_TEST(FileInfo)
-CALL_CLASS_TEST(Environment)
 CALL_CLASS_TEST(Binder)
-CALL_CLASS_TEST(TypeChecker)
-CALL_CLASS_TEST(GoIncrementalLexer)
+CALL_CLASS_TEST(CompletionProposer)
 CALL_CLASS_TEST(DIncrementalLexer)
 CALL_CLASS_TEST(DUnit)
+CALL_CLASS_TEST(Environment)
+CALL_CLASS_TEST(FileInfo)
+CALL_CLASS_TEST(GoIncrementalLexer)
 CALL_CLASS_TEST(GoUnit)
-CALL_CLASS_TEST(CompletionProposer)
+CALL_CLASS_TEST(PyLexer)
+CALL_CLASS_TEST(TypeChecker)
 
 class WorkflowTest : public Test
 {
@@ -362,6 +364,7 @@ int main(int argc, char* argv[])
         test_GoIncrementalLexer();
         test_GoUnit();
         test_CompletionProposer();
+        test_PyLexer();
     }
 
     Test::printStats();

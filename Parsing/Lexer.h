@@ -21,22 +21,44 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_GOFACTORY_H__
-#define UAISO_GOFACTORY_H__
+#ifndef UAISO_LEXER_H__
+#define UAISO_LEXER_H__
 
-#include "Parsing/Factory.h"
+#include "Common/Config.h"
+#include "Parsing/Token.h"
+#include <cstddef>
+#include <memory>
 
 namespace uaiso {
 
-class UAISO_API GoFactory final : public Factory
+class Syntax;
+
+class UAISO_API Lexer
 {
 public:
-    std::unique_ptr<Unit> makeUnit() override;
-    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
-    std::unique_ptr<AstLocator> makeAstLocator() override;
-    std::unique_ptr<Sanitizer> makeSanitizer() override;
-    std::unique_ptr<TypeSystem> makeTypeSystem() override;
-    std::unique_ptr<Syntax> makeSyntax() override;
+    virtual ~Lexer();
+
+    void setBuffer(const char* buff, size_t length);
+
+    virtual Token lex() = 0;
+
+protected:
+    Lexer();
+
+    char peekChar(size_t dist = 0) const;
+    void consumeChar(size_t dist = 0);
+    char consumeCharPeekNext(size_t dist = 0);
+
+    Token lexStrLit(char& ch, const char quote, const bool mayBreak, const Syntax* syntax);
+    Token lexIdentOrKeyword(char& ch, const Syntax* syntax);
+    Token lexNumLit(char& ch, const Syntax* syntax);
+
+    const char* buff_ { nullptr };
+    const char* curr_ { nullptr };
+    const char* eof_ { nullptr };
+
+    size_t line_ { 0 };
+    size_t col_ { 0 };
 };
 
 } // namespace uaiso

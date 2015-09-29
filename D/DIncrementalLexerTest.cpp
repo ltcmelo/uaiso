@@ -49,7 +49,7 @@ public:
 
     std::unique_ptr<Phrasing> core(const std::string& code)
     {
-        lexer_.tokenize(code);
+        lexer_.lex(code);
         return std::unique_ptr<Phrasing>(lexer_.releasePhrasing());
     }
 

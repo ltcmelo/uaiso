@@ -21,17 +21,21 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_DTHESAURUS_H__
-#define UAISO_DTHESAURUS_H__
+#ifndef UAISO_PYSYNTAX_H__
+#define UAISO_PYSYNTAX_H__
 
-#include "Parsing/Thesaurus.h"
+#include "Parsing/Syntax.h"
 
 namespace uaiso {
 
-class UAISO_API DThesaurus final : public Thesaurus
+class UAISO_API PySyntax final : public Syntax
 {
 public:
     std::string sourceFileSuffix() const override;
+
+    Token classifyIdent(const char* spell, size_t length) const override;
+
+    bool isStrLitQuote(char ch) const override;
 };
 
 } // namespace uaiso

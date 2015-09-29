@@ -24,9 +24,9 @@ What benefits does Uaiso bring?
     editors, and even accross different programming languages.
 
 The Uaiso project is in conception phase, but you can already try it out. The
-programming languages being initially integrated are D and Go (Rust is on the
-way). Expect to find bugs and missing functionality, but I hope you enjoy what's
-already there. Contributions are welcome.
+programming languages being initially integrated are D, Go, and Python (Rust is
+on the line). Expect to find bugs and missing functionality, but I hope you
+enjoy what's already there. Contributions are welcome.
 
 Design overview: https://goo.gl/VBQzJW
 

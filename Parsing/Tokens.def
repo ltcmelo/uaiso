@@ -22,15 +22,15 @@
 /*--------------------------*/
 
     /*
-       Tokens names are defined as according to their meaning, not
-       to their spelling in a particular language. For example, in
-       D an 64-bit integer is `long`, but it should be mapped to
-       token INT64. Sometimes the name will "coincidently" match,
-       given that in Go an 64-bit integer is indeed `int64`. This
-       strategy allows simplified generic handline in higher level
-       layers. When the actual spelling of a token is necessary, it
-       can always be recovered from the source from the editor (look
-       token maps and phrasing).
+       Tokens are possibly defined as according to their meaning, not
+       to their spelling in a particular language. For example, in D
+       a 64-bit integer is `long`, but it should be mapped to token
+       INT64. Sometimes the name will "coincidently" match, given that
+       in Go an 64-bit integer is indeed `int64`. This strategy allows
+       simplified generic handline in higher level layers. When the
+       actual spelling of a token is necessary, it can always be
+       recovered from the source from the editor (look token maps and
+       phrasing).
     */
 
     //--- ASCII (consistent with Bison) ---//
@@ -75,6 +75,9 @@ TOKEN END_ASCII "$ascii_end_marker$"
 
 TOKEN EOP "<end_of_program>" 258
 TOKEN INVALID "<invalid>"
+TOKEN INDENT "<indent>"
+TOKEN DEDENT "<dedent>"
+TOKEN NEWLINE "<newline>"
 TOKEN COMPLETION "<completion>"
 
     //--- Identifier ---//
@@ -96,7 +99,7 @@ TOKEN END_COMMENT "$comments_end_marker$"
 TOKEN BEGIN_LITERAL "$literal_begin_marker$"
 TOKEN BEGIN_NUMERIC_LITERAL "$numeric_literal_begin_marker$"
 TOKEN INTEGER_LITERAL "<integer_literal>"
-TOKEN FLOAT32_LITERAL "<float_literal>"
+TOKEN FLOAT_LITERAL "<float_literal>"
 TOKEN END_NUMERIC_LITERAL "$numeric_literal_end_marker$"
 TOKEN BEGIN_CHAR_LITERAL "$char_literal_begin_marker$"
 TOKEN CHAR_LITERAL "<char_literal>"
@@ -134,6 +137,8 @@ TOKEN CARET_EQUAL "^="
 TOKEN COLON_COLON "::"
 TOKEN COLON_EQUAL ":="
 TOKEN SLASH_EQUAL "/="
+TOKEN SLASH_SLASH "//"
+TOKEN SLASH_SLASH_EQUAL "//="
 TOKEN DOT_DOT ".."
 TOKEN DOT_DOT_DOT "..."
 TOKEN DOT_STAR ".*"
@@ -165,6 +170,8 @@ TOKEN PLUS_EQUAL "+="
 TOKEN PLUS_PLUS "++"
 TOKEN POUND_POUND "##"
 TOKEN STAR_EQUAL "*="
+TOKEN STAR_STAR "**"
+TOKEN STAR_STAR_EQUAL "**="
 TOKEN TILDE_EQUAL "~="
 TOKEN END_MULTICHAR_OPERATOR "$multichar_operator_end_marker$"
 
@@ -176,6 +183,7 @@ TOKEN ALIAS "alias"
 TOKEN ALIGN "align"
 TOKEN ALIGNAS "alignas"
 TOKEN ALIGNOF "aligonf"
+TOKEN AS "as"
 TOKEN ASM "asm"
 TOKEN ASSERT "assert"
 TOKEN AUTO "auto"
@@ -192,6 +200,7 @@ TOKEN CONSTEXPR "constexpr"
 TOKEN CONTINUE "continue"
 TOKEN DEBUG "debug"
 TOKEN DECLTYPE "decltype"
+TOKEN DEF "def"
 TOKEN DEFAULT "default"
 TOKEN DEFER "defer"
 TOKEN DELEGATE "delegate"
@@ -200,6 +209,7 @@ TOKEN DEPRECATED "deprecated"
 TOKEN DISABLE "disable"
 TOKEN DO "do"
 TOKEN DYNAMIC_CAST "dynamic_cast"
+TOKEN ELIF "elif"
 TOKEN ELSE "else"
 TOKEN ENUM "enum"
 TOKEN EXPLICIT "explicit"
@@ -212,8 +222,10 @@ TOKEN FOR "for"
 TOKEN FOREACH "foreach"
 TOKEN FOREACH_REVERSE "foreach_reverse"
 TOKEN FRIEND "friend"
+TOKEN FROM "from"
 TOKEN FUNC "func"
 TOKEN FUNCTION "function"
+TOKEN GLOBAL "global"
 TOKEN GO "go"
 TOKEN GOTO "goto"
 TOKEN IF "if"
@@ -226,6 +238,7 @@ TOKEN INOUT "inout"
 TOKEN INTERFACE "interface"
 TOKEN INVARIANT "invariant"
 TOKEN IS "is"
+TOKEN LAMBDA "lambda"
 TOKEN LAZY "lazy"
 TOKEN MACRO "macro"
 TOKEN MAP "map"
@@ -236,6 +249,7 @@ TOKEN NAMESPACE "namespace"
 TOKEN NEW "new"
 TOKEN NOEXCEPT "noexcept"
 TOKEN NOGC "nogc"
+TOKEN NONLOCAL "nonlocal"
 TOKEN NOTHROW "nothrow"
 TOKEN NOT_IN_HACK "!_in_hack"
 TOKEN NOT_IS_HACK "!_is_hack"
@@ -243,6 +257,7 @@ TOKEN OPERATOR "operator"
 TOKEN OUT "out"
 TOKEN OVERRIDE "override"
 TOKEN PACKAGE "package"
+TOKEN PASS "pass"
 TOKEN PRAGMA "pragma"
 TOKEN PRIVATE "private"
 TOKEN PROPERTY "property"
@@ -285,6 +300,7 @@ TOKEN VAR "var"
 TOKEN VERSION "version"
 TOKEN VIRTUAL "virtual"
 TOKEN VOLATILE "volatile"
+TOKEN YIELD "yield"
 TOKEN WHILE "while"
 TOKEN WITH "with"
 TOKEN END_KEYWORD "$keyword_end_marker$"

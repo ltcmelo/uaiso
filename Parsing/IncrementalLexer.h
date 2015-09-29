@@ -40,7 +40,6 @@ class Phrasing;
 class UAISO_API IncrementalLexer
 {
 public:
-    IncrementalLexer();
     virtual ~IncrementalLexer();
 
     // TODO: For nested comments we need to be able to count.
@@ -50,15 +49,17 @@ public:
         InMultilineComment
     };
 
-    virtual void tokenize(const std::string& source) = 0;
+    virtual void lex(const std::string& source) = 0;
 
-    void tokenize(const std::string& source, State state);
+    void lex(const std::string& source, State state);
 
     Phrasing* releasePhrasing();
 
     State state() const;
 
 protected:
+    IncrementalLexer();
+
     void decideState();
 
     DECL_PIMPL(IncrementalLexer)

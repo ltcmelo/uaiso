@@ -25,7 +25,7 @@
 #include "Go/GoAstLocator.h"
 #include "Go/GoIncrementalLexer.h"
 #include "Go/GoSanitizer.h"
-#include "Go/GoThesaurus.h"
+#include "Go/GoSyntax.h"
 #include "Go/GoTypeSystem.h"
 #include "Go/GoUnit.h"
 
@@ -56,7 +56,7 @@ std::unique_ptr<TypeSystem> GoFactory::makeTypeSystem()
     return std::unique_ptr<TypeSystem>(new GoTypeSystem);
 }
 
-std::unique_ptr<Thesaurus> GoFactory::makeThesaurus()
+std::unique_ptr<Syntax> GoFactory::makeSyntax()
 {
-    return std::unique_ptr<Thesaurus>(new GoThesaurus);
+    return std::unique_ptr<Syntax>(new GoSyntax);
 }

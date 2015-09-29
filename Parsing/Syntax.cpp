@@ -21,32 +21,65 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_THESAURUS_H__
-#define UAISO_THESAURUS_H__
+#include "Parsing/Syntax.h"
+#include <cctype>
 
-#include "Common/Config.h"
-#include <string>
+using namespace uaiso;
 
-namespace uaiso {
+Syntax::~Syntax()
+{}
 
-class UAISO_API Thesaurus
+std::string Syntax::packageSeparator() const
 {
-public:
-    virtual ~Thesaurus();
+    return ".";
+}
 
-    virtual std::string sourceFileSuffix() const = 0;
+std::string Syntax::memberAccessOprtr() const
+{
+    return ".";
+}
 
-    virtual std::string packageSeparator() const;
+std::string Syntax::funcCallDelim() const
+{
+    return "(";
+}
 
-    virtual std::string memberAccessOperator() const;
+bool Syntax::isIdentFirstChar(char ch) const
+{
+    return std::isalpha(ch) || ch == '_';
+}
 
-    virtual std::string funcCallDelim() const;
+bool Syntax::isIdentChar(char ch) const
+{
+    return std::isalnum(ch) || ch == '_';
+}
 
-    virtual bool isIdentFirstChar(char ch) const;
+Token Syntax::classifyIdent(const char* spell, size_t length) const
+{
+    return TK_IDENTIFIER;
+}
 
-    virtual bool isIdentChar(char ch) const;
-};
+bool Syntax::isStrLitQuote(char ch) const
+{
+    return ch == '"';
+}
 
-} // namespace uaiso
+bool Syntax::isOctalPrefix(char ch) const
+{
+    return ch == 'o' || ch == 'O';
+}
 
-#endif
+bool Syntax::isHexPrefix(char ch) const
+{
+    return ch == 'x' || ch == 'X';
+}
+
+bool Syntax::isBinPrefix(char ch) const
+{
+    return ch == 'b' || ch == 'B';
+}
+
+bool Syntax::isExponent(char ch) const
+{
+    return ch == 'e' || ch == 'E';
+}

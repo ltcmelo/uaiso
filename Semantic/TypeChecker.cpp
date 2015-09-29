@@ -469,7 +469,7 @@ TypeChecker::VisitResult TypeChecker::visitNumLitExpr(NumLitExprAst* ast)
     case TK_INTEGER_LITERAL:
         P->exprTy_.emplace(new IntType);
         break;
-    case TK_FLOAT32_LITERAL:
+    case TK_FLOAT_LITERAL:
         P->exprTy_.emplace(new FloatType);
         break;
     default:

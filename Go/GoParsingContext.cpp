@@ -40,7 +40,7 @@ int GoParsingContext::interceptRawToken(int token)
     case TK_STRING_LITERAL:
     case TK_CHAR_LITERAL:
     case TK_INTEGER_LITERAL:
-    case TK_FLOAT32_LITERAL:
+    case TK_FLOAT_LITERAL:
     case TK_TRUE_LITERAL:
     case TK_FALSE_LITERAL:
     case TK_NULL_LITERAL:

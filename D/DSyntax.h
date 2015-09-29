@@ -21,11 +21,19 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Go/GoThesaurus.h"
+#ifndef UAISO_DSYNTAX_H__
+#define UAISO_DSYNTAX_H__
 
-using namespace uaiso;
+#include "Parsing/Syntax.h"
 
-std::string GoThesaurus::sourceFileSuffix() const
+namespace uaiso {
+
+class UAISO_API DSyntax final : public Syntax
 {
-    return ".go";
-}
+public:
+    std::string sourceFileSuffix() const override;
+};
+
+} // namespace uaiso
+
+#endif

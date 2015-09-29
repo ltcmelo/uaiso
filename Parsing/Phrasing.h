@@ -100,7 +100,7 @@ inline std::ostream& operator<<(std::ostream& os, const Phrasing& phrasing)
     return os;
 }
 
-inline std::ostream& operator<<(std::ostream& os, const std::vector<Token> v)
+inline std::ostream& operator<<(std::ostream& os, const std::vector<Token>& v)
 {
     std::copy(v.begin(), v.end(), std::ostream_iterator<Token>(os));
     return os;

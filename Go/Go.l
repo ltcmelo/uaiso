@@ -218,7 +218,7 @@ int go_yyxprevstate; /* Previous state (valid under certain conditions) */
 ([0-9]+[0-9_]*\.)/[^\.0-9_]{1} |
 ([0-9]+[0-9_]*\.?[0-9_]+)((E|e)(\+|\-)?[0-9_]+)?[i]? |
 ([0-9]+[0-9_]*)(E|e)(\+|\-)?[0-9_]+[i]? |
-(\.[0-9]+[0-9_]*)((E|e)(\+|\-)?[0-9_]+)?[i]? { PROCESS_FLOAT32_LITERAL; }
+(\.[0-9]+[0-9_]*)((E|e)(\+|\-)?[0-9_]+)?[i]? { PROCESS_FLOAT_LITERAL; }
 
     /*--- Identifier ---*/
 

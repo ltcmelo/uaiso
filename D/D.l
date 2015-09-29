@@ -312,7 +312,7 @@ int yyxprevstate; /* Previous state (valid under certain conditions) */
 0[xX]([0-9a-fA-F]+[0-9a-fA-F]*\.)/[^\.0-9_]{1} |
 0[xX]([0-9a-fA-F]+[0-9a-fA-F]*\.?[0-9a-fA-F_]+)((P|p)(\+|\-)?[0-9_]+)?([fFLi]{0,2})? |
 0[xX]([0-9a-fA-F]+[0-9a-fA-F]*)(P|p)(\+|\-)?[0-9_]+([fFLi]{0,2})? |
-0[xX](\.[0-9a-fA-F]+[0-9a-fA-F]*)((P|p)(\+|\-)?[0-9_]+)?([fFLi]{0,2})? { PROCESS_FLOAT32_LITERAL; }
+0[xX](\.[0-9a-fA-F]+[0-9a-fA-F]*)((P|p)(\+|\-)?[0-9_]+)?([fFLi]{0,2})? { PROCESS_FLOAT_LITERAL; }
 
     /*--- Identifier ---*/
 

@@ -40,7 +40,7 @@
 #include "Parsing/Lexeme.h"
 #include "Parsing/LexemeMap.h"
 #include "Parsing/SourceLoc.h"
-#include "Parsing/Thesaurus.h"
+#include "Parsing/Syntax.h"
 #include "Parsing/Token.h"
 #include "Parsing/TokenMap.h"
 #include "Parsing/Unit.h"
@@ -168,7 +168,7 @@ struct uaiso::Binder::BinderImpl
         , ownedBlocks_(0)
         , sanitizer_(factory->makeSanitizer())
         , locator_(factory->makeAstLocator())
-        , thesaurus_(factory->makeThesaurus())
+        , syntax_(factory->makeSyntax())
         , reports_(nullptr)
     {}
 
@@ -234,8 +234,8 @@ struct uaiso::Binder::BinderImpl
     //! Language-specific AST locator.
     std::unique_ptr<const AstLocator> locator_;
 
-    //! Language-specific thesaurus.
-    std::unique_ptr<const Thesaurus> thesaurus_;
+    //! Language-specific syntax.
+    std::unique_ptr<const Syntax> syntax_;
 
     //! Diagnostic reports collected.
     DiagnosticReports* reports_;
@@ -940,7 +940,7 @@ Binder::VisitResult Binder::traverseImportDecl(ImportDeclAst* ast)
     }
 
     const std::string& moduleName =
-            joinLexemes(lexemes, P->thesaurus_->packageSeparator());
+            joinLexemes(lexemes, P->syntax_->packageSeparator());
 
     const Ident* localName = nullptr;
     if (ast->localName_) {
@@ -955,7 +955,7 @@ Binder::VisitResult Binder::traverseImportDecl(ImportDeclAst* ast)
 
     // By default, if local name is empty, assign the module name to it.
     if (!localName) {
-        auto pos = moduleName.find_last_of(P->thesaurus_->packageSeparator());
+        auto pos = moduleName.find_last_of(P->syntax_->packageSeparator());
         auto sss = moduleName.substr(pos == std::string::npos ? 0 : pos);
         localName = const_cast<LexemeMap*>(P->lexemes_)->insertOrFind<Ident>(
                     sss, P->fileName_, ast->bindLoc_.lineCol());

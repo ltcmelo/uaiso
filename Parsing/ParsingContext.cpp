@@ -94,7 +94,7 @@ void ParsingContext::notifyProgramMatched()
     bit_.acceptEOF_ = true;
 }
 
-bool ParsingContext::postponeEOF()
+bool ParsingContext::postponeEoF()
 {
     if (--toleranceCounter_ == 0)
         bit_.acceptEOF_ = true;

@@ -32,10 +32,10 @@ IncrementalLexer::IncrementalLexer()
 IncrementalLexer::~IncrementalLexer()
 {}
 
-void IncrementalLexer::tokenize(const std::string& source, State state)
+void IncrementalLexer::lex(const std::string& source, State state)
 {
     P->state_ = state;
-    tokenize(source);
+    lex(source);
 }
 
 Phrasing* IncrementalLexer::releasePhrasing()

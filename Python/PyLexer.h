@@ -21,22 +21,37 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_GOFACTORY_H__
-#define UAISO_GOFACTORY_H__
+#ifndef UAISO_PYLEXER_H__
+#define UAISO_PYLEXER_H__
 
-#include "Parsing/Factory.h"
+#include "Common/Config.h"
+#include "Common/Test.h"
+#include "Parsing/Lexer.h"
+#include <stack>
 
 namespace uaiso {
 
-class UAISO_API GoFactory final : public Factory
+class Syntax;
+
+class UAISO_API PyLexer final : public Lexer
 {
 public:
-    std::unique_ptr<Unit> makeUnit() override;
-    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
-    std::unique_ptr<AstLocator> makeAstLocator() override;
-    std::unique_ptr<Sanitizer> makeSanitizer() override;
-    std::unique_ptr<TypeSystem> makeTypeSystem() override;
-    std::unique_ptr<Syntax> makeSyntax() override;
+    PyLexer();
+
+    Token lex() override;
+
+private:
+    DECL_CLASS_TEST(PyLexer)
+
+    using Base = Lexer;
+
+    Token lexStrLit(char& ch);
+    Token lexOprtrOrDelim(char& ch);
+
+    bool atLineStart_;
+    size_t indent_;
+    std::stack<size_t> indentStack_;
+    std::unique_ptr<Syntax> syntax_;
 };
 
 } // namespace uaiso

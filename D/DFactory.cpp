@@ -25,7 +25,7 @@
 #include "D/DAstLocator.h"
 #include "D/DIncrementalLexer.h"
 #include "D/DSanitizer.h"
-#include "D/DThesaurus.h"
+#include "D/DSyntax.h"
 #include "D/DTypeSystem.h"
 #include "D/DUnit.h"
 
@@ -56,7 +56,7 @@ std::unique_ptr<TypeSystem> DFactory::makeTypeSystem()
     return std::unique_ptr<TypeSystem>(new DTypeSystem);
 }
 
-std::unique_ptr<Thesaurus> DFactory::makeThesaurus()
+std::unique_ptr<Syntax> DFactory::makeSyntax()
 {
-    return std::unique_ptr<Thesaurus>(new DThesaurus);
+    return std::unique_ptr<Syntax>(new DSyntax);
 }

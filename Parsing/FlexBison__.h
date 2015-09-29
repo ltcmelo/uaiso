@@ -135,11 +135,11 @@ struct PartialParse {};
 #define PROCESS_STRING_LITERAL PROCESS_LEXEME(StrLit, STRING_LITERAL)
 #define PROCESS_INTEGER_LITERAL PROCESS_LEXEME(NumLit, INTEGER_LITERAL)
 #define PROCESS_CHAR_LITERAL PROCESS_LEXEME(NumLit, CHAR_LITERAL)
-#define PROCESS_FLOAT32_LITERAL PROCESS_LEXEME(NumLit, FLOAT32_LITERAL)
+#define PROCESS_FLOAT_LITERAL PROCESS_LEXEME(NumLit, FLOAT_LITERAL)
 
 #define FINISH_OR_POSTPONE \
     do { \
-        if (yyextra->postponeEOF()) \
+        if (yyextra->postponeEoF()) \
             return EOP; \
         return 0; \
     } while (0)

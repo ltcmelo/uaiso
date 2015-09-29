@@ -21,11 +21,11 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "D/DThesaurus.h"
+#include "Go/GoSyntax.h"
 
 using namespace uaiso;
 
-std::string DThesaurus::sourceFileSuffix() const
+std::string GoSyntax::sourceFileSuffix() const
 {
-    return ".d";
+    return ".go";
 }

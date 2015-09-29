@@ -36,7 +36,7 @@ public:
     std::unique_ptr<AstLocator> makeAstLocator() override;
     std::unique_ptr<Sanitizer> makeSanitizer() override;
     std::unique_ptr<TypeSystem> makeTypeSystem() override;
-    std::unique_ptr<Thesaurus> makeThesaurus() override;
+    std::unique_ptr<Syntax> makeSyntax() override;
 };
 
 } // namespace uaiso

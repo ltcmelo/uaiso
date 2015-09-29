@@ -21,22 +21,17 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_GOFACTORY_H__
-#define UAISO_GOFACTORY_H__
+#ifndef UAISO_GOSYNTAX_H__
+#define UAISO_GOSYNTAX_H__
 
-#include "Parsing/Factory.h"
+#include "Parsing/Syntax.h"
 
 namespace uaiso {
 
-class UAISO_API GoFactory final : public Factory
+class UAISO_API GoSyntax final : public Syntax
 {
 public:
-    std::unique_ptr<Unit> makeUnit() override;
-    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
-    std::unique_ptr<AstLocator> makeAstLocator() override;
-    std::unique_ptr<Sanitizer> makeSanitizer() override;
-    std::unique_ptr<TypeSystem> makeTypeSystem() override;
-    std::unique_ptr<Syntax> makeSyntax() override;
+    std::string sourceFileSuffix() const override;
 };
 
 } // namespace uaiso

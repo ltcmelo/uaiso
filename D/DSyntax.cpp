@@ -21,35 +21,11 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Parsing/Thesaurus.h"
-#include <cctype>
+#include "D/DSyntax.h"
 
 using namespace uaiso;
 
-Thesaurus::~Thesaurus()
-{}
-
-std::string Thesaurus::packageSeparator() const
+std::string DSyntax::sourceFileSuffix() const
 {
-    return ".";
-}
-
-std::string Thesaurus::memberAccessOperator() const
-{
-    return ".";
-}
-
-std::string Thesaurus::funcCallDelim() const
-{
-    return "(";
-}
-
-bool Thesaurus::isIdentFirstChar(char ch) const
-{
-    return std::isalpha(ch) || ch == '_';
-}
-
-bool Thesaurus::isIdentChar(char ch) const
-{
-    return std::isalnum(ch) || ch == '_';
+    return ".d";
 }

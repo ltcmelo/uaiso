@@ -28,7 +28,7 @@
 #include "Common/Util__.h"
 #include "Tinydir/Tinydir.h"
 #include "Parsing/Factory.h"
-#include "Parsing/Thesaurus.h"
+#include "Parsing/Syntax.h"
 #include "StringUtils/predicate.hpp"
 #include <fstream>
 #include <iostream>
@@ -39,23 +39,23 @@ using namespace str;
 struct ImportResolver::ImportResolverImpl
 {
     ImportResolverImpl(Factory* factory)
-        : thesaurus_(factory->makeThesaurus())
+        : syntax_(factory->makeSyntax())
         , sanitizer_(factory->makeSanitizer())
     {}
 
     std::vector<std::string> searchFile(std::string relPath,
                                         const std::string& basePath)
     {
-        auto pos = relPath.find(thesaurus_->packageSeparator());
+        auto pos = relPath.find(syntax_->packageSeparator());
         while (pos != std::string::npos) {
             relPath.replace(pos, 1, std::string(1, FileInfo::dirSeparator()));
-            pos = relPath.find(thesaurus_->packageSeparator(), pos + 1);
+            pos = relPath.find(syntax_->packageSeparator(), pos + 1);
         }
 
         std::vector<std::string> result;
 
         if (sanitizer_->hasModuleImport()) {
-            auto moduleFile = basePath + relPath + thesaurus_->sourceFileSuffix();
+            auto moduleFile = basePath + relPath + syntax_->sourceFileSuffix();
             std::ifstream ifs(moduleFile);
             if (ifs.is_open()) {
                 ifs.close();
@@ -73,7 +73,7 @@ struct ImportResolver::ImportResolverImpl
 
             std::string fileInDirName(fileInDir.name);
             if (!fileInDir.is_dir
-                    && iends_with(fileInDirName, thesaurus_->sourceFileSuffix())) {
+                    && iends_with(fileInDirName, syntax_->sourceFileSuffix())) {
                 result.emplace_back(dirPath + "/" + fileInDirName);
             }
             tinydir_next(&dir);
@@ -83,7 +83,7 @@ struct ImportResolver::ImportResolverImpl
         return result;
     }
 
-    std::unique_ptr<Thesaurus> thesaurus_;
+    std::unique_ptr<Syntax> syntax_;
     std::unique_ptr<Sanitizer> sanitizer_;
 };
 

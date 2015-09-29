@@ -21,24 +21,22 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_GOFACTORY_H__
-#define UAISO_GOFACTORY_H__
+#include "Python/PySyntax.h"
+#include "Python/PyKeywords.h"
 
-#include "Parsing/Factory.h"
+using namespace uaiso;
 
-namespace uaiso {
-
-class UAISO_API GoFactory final : public Factory
+std::string PySyntax::sourceFileSuffix() const
 {
-public:
-    std::unique_ptr<Unit> makeUnit() override;
-    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
-    std::unique_ptr<AstLocator> makeAstLocator() override;
-    std::unique_ptr<Sanitizer> makeSanitizer() override;
-    std::unique_ptr<TypeSystem> makeTypeSystem() override;
-    std::unique_ptr<Syntax> makeSyntax() override;
-};
+    return ".py";
+}
 
-} // namespace uaiso
+Token PySyntax::classifyIdent(const char* spell, size_t length) const
+{
+    return PyKeywords::classify(spell, length);
+}
 
-#endif
+bool PySyntax::isStrLitQuote(char ch) const
+{
+    return ch == '"' || ch == '\'';
+}

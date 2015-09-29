@@ -34,7 +34,7 @@ namespace uaiso {
 class AstLocator;
 class IncrementalLexer;
 class Sanitizer;
-class Thesaurus;
+class Syntax;
 class TypeSystem;
 class Unit;
 
@@ -51,7 +51,7 @@ public:
 
     virtual std::unique_ptr<TypeSystem> makeTypeSystem() = 0;
 
-    virtual std::unique_ptr<Thesaurus> makeThesaurus() = 0;
+    virtual std::unique_ptr<Syntax> makeSyntax() = 0;
 
     virtual std::unique_ptr<Unit> makeUnit() = 0;
 };
