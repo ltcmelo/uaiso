@@ -124,6 +124,10 @@ Token PyKeywords::classify4(const char* s)
                 if (s[3] == 'e')
                     return TK_ELSE;
             }
+        } else if (s[1] == 'x') {
+            if (s[2] == 'e')
+                if (s[3] == 'c')
+                    return TK_EXEC;
         }
     } else if (s[0] == 'f') {
         if (s[1] == 'r') {
@@ -177,6 +181,15 @@ Token PyKeywords::classify5(const char* s)
                 if (s[3] == 's') {
                     if (s[4] == 's')
                         return TK_CLASS;
+                }
+            }
+        }
+    } else if (s[0] == 'p') {
+        if (s[1] == 'r') {
+            if (s[2] == 'i') {
+                if (s[3] == 'n') {
+                    if (s[4] == 't')
+                        return TK_PRINT;
                 }
             }
         }
