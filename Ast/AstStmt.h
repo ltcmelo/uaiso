@@ -46,7 +46,7 @@ public:
         : StmtAst(Kind::EmptyStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -60,8 +60,8 @@ public:
         : StmtAst(Kind::ExprStmt)
     {}
 
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     std::unique_ptr<ExprAst> expr_;
     SourceLoc terminLoc_;
@@ -76,7 +76,7 @@ public:
         : StmtAst(Kind::DeclStmt)
     {}
 
-    NAMED_AST_PARAM(setDecl, decl, DeclAst)
+    NAMED_AST_PARAM(Decl, decl, DeclAst)
 
     std::unique_ptr<DeclAst> decl_;
 };
@@ -90,9 +90,9 @@ public:
         : StmtAst(Kind::BlockStmt)
     {}
 
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_LIST_PARAM(setStmts, stmts, StmtAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Stmt, stmts, StmtAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
     SourceLoc lDelimLoc_;
     std::unique_ptr<StmtAstList> stmts_;
@@ -110,8 +110,8 @@ public:
         : StmtAst(Kind::InStmt)
     {}
 
-    NAMED_LOC_PARAM(setIn, in)
-    NAMED_AST_PARAM(setBlock, block, StmtAst)
+    NAMED_LOC_PARAM(In, in)
+    NAMED_AST_PARAM(Block, block, StmtAst)
 
     SourceLoc inLoc_;
     std::unique_ptr<StmtAst> block_;
@@ -126,11 +126,11 @@ public:
         : StmtAst(Kind::OutStmt)
     {}
 
-    NAMED_LOC_PARAM(setOut, out)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setBlock, block, StmtAst)
+    NAMED_LOC_PARAM(Out, out)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Block, block, StmtAst)
 
     SourceLoc outLoc_;
     SourceLoc lDelimLoc_;
@@ -148,8 +148,8 @@ public:
         : StmtAst(Kind::BodyStmt)
     {}
 
-    NAMED_LOC_PARAM(setBody, body)
-    NAMED_AST_PARAM(setBlock, block, StmtAst)
+    NAMED_LOC_PARAM(Body, body)
+    NAMED_AST_PARAM(Block, block, StmtAst)
 
     SourceLoc bodyLoc_;
     std::unique_ptr<StmtAst> block_;
@@ -164,9 +164,9 @@ public:
         : StmtAst(Kind::ContractStmt)
     {}
 
-    NAMED_AST_PARAM(setStmt1, stmt1, StmtAst)
-    NAMED_AST_PARAM(setStmt2, stmt2, StmtAst)
-    NAMED_AST_PARAM(setStmt3, stmt3, StmtAst)
+    NAMED_AST_PARAM(Stmt1, stmt1, StmtAst)
+    NAMED_AST_PARAM(Stmt2, stmt2, StmtAst)
+    NAMED_AST_PARAM(Stmt3, stmt3, StmtAst)
 
     std::unique_ptr<StmtAst> stmt1_;
     std::unique_ptr<StmtAst> stmt2_;
@@ -182,9 +182,9 @@ public:
         : StmtAst(Kind::LabeledStmt)
     {}
 
-    NAMED_AST_PARAM(setLabel, label, NameAst)
-    NAMED_LOC_PARAM(setDelim, delim)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_AST_PARAM(Label, label, NameAst)
+    NAMED_LOC_PARAM(Delim, delim)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     std::unique_ptr<NameAst> label_;
     SourceLoc delimLoc_;
@@ -200,14 +200,14 @@ public:
         : StmtAst(Kind::IfStmt)
     {}
 
-    NAMED_LOC_PARAM(setIf, if)
-    NAMED_LOC_PARAM(setElse, else)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setPreamble, preamble, StmtAst)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_AST_PARAM(setThen, then, StmtAst)
-    NAMED_AST_PARAM(setElse, else, StmtAst)
+    NAMED_LOC_PARAM(If, if)
+    NAMED_LOC_PARAM(Else, else)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Preamble, preamble, StmtAst)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_PARAM(Then, then, StmtAst)
+    NAMED_AST_PARAM(Else, else, StmtAst)
 
     SourceLoc ifLoc_;
     SourceLoc lDelimLoc_;
@@ -228,11 +228,11 @@ public:
         : StmtAst(Kind::WhileStmt)
     {}
 
-    NAMED_LOC_PARAM(setWhile, while)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(While, while)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc whileLoc_;
     SourceLoc lDelimLoc_;
@@ -250,13 +250,13 @@ public:
         : StmtAst(Kind::DoWhileStmt)
     {}
 
-    NAMED_LOC_PARAM(setDo, do)
-    NAMED_LOC_PARAM(setWhile, while)
-    NAMED_LOC_PARAM(setTermin, termin)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Do, do)
+    NAMED_LOC_PARAM(While, while)
+    NAMED_LOC_PARAM(Termin, termin)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc doLoc_;
     std::unique_ptr<StmtAst> stmt_;
@@ -276,14 +276,14 @@ public:
         : StmtAst(Kind::ForStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_LOC_PARAM(setDelim, delim)
-    NAMED_AST_PARAM(setPreamble, preamble, StmtAst)
-    NAMED_AST_PARAM(setCond, cond, ExprAst)
-    NAMED_AST_PARAM(setPost, post, ExprAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_LOC_PARAM(Delim, delim)
+    NAMED_AST_PARAM(Preamble, preamble, StmtAst)
+    NAMED_AST_PARAM(Cond, cond, ExprAst)
+    NAMED_AST_PARAM(Post, post, ExprAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -306,12 +306,12 @@ public:
 
     // Variety Direct or Reverse
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setDecl, decl, DeclAst)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Decl, decl, DeclAst)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -330,9 +330,9 @@ public:
         : StmtAst(Kind::ContinueStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
@@ -348,9 +348,9 @@ public:
         : StmtAst(Kind::BreakStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
@@ -366,9 +366,9 @@ public:
         : StmtAst(Kind::ReturnStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_LIST_PARAM(setExprs, exprs, ExprAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_LIST_PARAM(Expr, exprs, ExprAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<ExprAstList> exprs_;
@@ -384,9 +384,9 @@ public:
         : StmtAst(Kind::GotoStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
@@ -402,9 +402,9 @@ public:
         : StmtAst(Kind::ThrowStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<ExprAst> expr_;
@@ -425,12 +425,12 @@ public:
         : StmtAst(Kind::SwitchStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setPreamble, preamble, StmtAst)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Preamble, preamble, StmtAst)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     std::unique_ptr<StmtAst> preamble_;
@@ -454,11 +454,11 @@ public:
         : StmtAst(Kind::TypeSwitchStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -476,10 +476,10 @@ public:
         : StmtAst(Kind::CaseClauseStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setDelim, delim)
-    NAMED_AST_LIST_PARAM(setExprs, exprs, ExprAst)
-    NAMED_AST_LIST_PARAM(setStmts, stmts, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Delim, delim)
+    NAMED_AST_LIST_PARAM(Expr, exprs, ExprAst)
+    NAMED_AST_LIST_PARAM(Stmt, stmts, StmtAst)
 
     SourceLoc keyLoc_;
     std::unique_ptr<ExprAstList> exprs_;
@@ -496,9 +496,9 @@ public:
         : StmtAst(Kind::DefaultClauseStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setDelim, delim)
-    NAMED_AST_LIST_PARAM(setStmts, stmts, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Delim, delim)
+    NAMED_AST_LIST_PARAM(Stmt, stmts, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc delimLoc_;
@@ -519,11 +519,11 @@ public:
         : StmtAst(Kind::SyncedStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -541,11 +541,11 @@ public:
         : StmtAst(Kind::WithStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -563,10 +563,10 @@ public:
         : StmtAst(Kind::TryStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
-    NAMED_AST_LIST_PARAM(setCatchs, catchs, StmtAst)
-    NAMED_AST_PARAM(setFinal, final, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
+    NAMED_AST_LIST_PARAM(Catch, catchs, StmtAst)
+    NAMED_AST_PARAM(Final, final, StmtAst)
 
     SourceLoc keyLoc_;
     std::unique_ptr<StmtAst> stmt_;
@@ -583,11 +583,11 @@ public:
         : StmtAst(Kind::CatchClauseStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setDecl, decl, DeclAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Decl, decl, DeclAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -605,8 +605,8 @@ public:
         : StmtAst(Kind::FinallyClauseStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     std::unique_ptr<StmtAst> stmt_;
@@ -628,13 +628,13 @@ public:
 
     APPLY_VARIETY(SelectiveVariety)
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setIfStmt, ifStmt, StmtAst)
-    NAMED_LOC_PARAM(setOtherKey, otherKey)
-    NAMED_AST_PARAM(setElseStmt, elseStmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(IfStmt, ifStmt, StmtAst)
+    NAMED_LOC_PARAM(OtherKey, otherKey)
+    NAMED_AST_PARAM(ElseStmt, elseStmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -654,7 +654,7 @@ public:
         : StmtAst(Kind::ErrorStmt)
     {}
 
-    NAMED_LOC_PARAM(setError, error)
+    NAMED_LOC_PARAM(Error, error)
 
     SourceLoc errorLoc_;
 };
@@ -668,9 +668,9 @@ public:
         : StmtAst(Kind::AsyncStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setTermin, termin)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Termin, termin)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
 
     SourceLoc keyLoc_;
     std::unique_ptr<ExprAst> expr_;
@@ -686,11 +686,11 @@ public:
         : StmtAst(Kind::DeferredStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -708,7 +708,7 @@ public:
         : StmtAst(Kind::FallthroughStmt)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };

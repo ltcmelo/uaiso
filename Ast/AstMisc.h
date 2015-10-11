@@ -42,9 +42,9 @@ public:
         , program_(nullptr)
     {}
 
-    NAMED_AST_PARAM(setModule, module, DeclAst)
-    NAMED_AST_PARAM(setPackage, package, DeclAst)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
+    NAMED_AST_PARAM(Module, module, DeclAst)
+    NAMED_AST_PARAM(Package, package, DeclAst)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
 
     std::unique_ptr<DeclAst> module_;
     std::unique_ptr<DeclAst> package_;
@@ -83,7 +83,7 @@ public:
         bit_.variety = static_cast<char>(TemplateArgVariety::Unknown);
     }
 
-    NAMED_AST_PARAM(setArg, arg, Ast)
+    NAMED_AST_PARAM(Arg, arg, Ast)
 
     void setVariety(TemplateArgVariety v)
     {

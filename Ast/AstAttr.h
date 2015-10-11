@@ -45,7 +45,7 @@ public:
         : AttrAst(Kind::StorageClassAttr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -59,7 +59,7 @@ public:
         : AttrAst(Kind::LinkageAttr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -79,7 +79,7 @@ public:
         : AttrAst(Kind::VisibilityAttr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -96,7 +96,7 @@ public:
         : AttrAst(Kind::DeclAttr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -110,7 +110,7 @@ public:
         : AttrAst(Kind::AutoAttr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -127,7 +127,7 @@ public:
         : AttrAst(Kind::TypeQualAttr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -141,7 +141,7 @@ public:
         : AttrAst(Kind::ParamDirAttr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -155,7 +155,7 @@ public:
         : AttrAst(Kind::EvalStrategyAttr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -174,8 +174,8 @@ public:
         : AttrAst(Kind::AnnotAttr)
     {}
 
-    NAMED_LOC_PARAM(setAt, at)
-    NAMED_LOC_PARAM(setText, text)
+    NAMED_LOC_PARAM(At, at)
+    NAMED_LOC_PARAM(Text, text)
 
     SourceLoc atLoc_;
     SourceLoc textLoc_;
@@ -193,10 +193,10 @@ public:
         : AttrAst(Kind::CodegenAttr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;

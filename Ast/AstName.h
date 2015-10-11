@@ -46,7 +46,7 @@ public:
         : NameAst(Kind::SimpleName)
     {}
 
-    NAMED_LOC_PARAM(setName, name)
+    NAMED_LOC_PARAM(Name, name)
 
     SourceLoc nameLoc_;
 };
@@ -60,7 +60,7 @@ public:
         : NameAst(Kind::NestedName)
     {}
 
-    NAMED_AST_LIST_PARAM(setNames, names, NameAst)
+    NAMED_AST_LIST_PARAM(Name, names, NameAst)
 
     std::unique_ptr<NameAstList> names_;
 };
@@ -74,11 +74,11 @@ public:
         : NameAst(Kind::TemplateInstName)
     {}
 
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setMark, mark)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_LIST_PARAM(setArgs, args, TemplateArgAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Mark, mark)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Arg, args, TemplateArgAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
     std::unique_ptr<NameAst> name_;
     SourceLoc markLoc_;
@@ -106,7 +106,7 @@ public:
         , str_(name)
     {}
 
-    NAMED_LOC_PARAM(setGen, gen)
+    NAMED_LOC_PARAM(Gen, gen)
 
     SourceLoc genLoc_;
     std::string str_;
@@ -121,7 +121,7 @@ public:
         : NameAst(Kind::CompletionName)
     {}
 
-    NAMED_LOC_PARAM(setName, name)
+    NAMED_LOC_PARAM(Name, name)
 
     SourceLoc nameLoc_;
 };

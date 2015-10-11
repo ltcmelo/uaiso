@@ -51,7 +51,7 @@ public:
         : SpecAst(Kind::VoidSpec)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -68,7 +68,7 @@ public:
         : SpecAst(Kind::BuiltinSpec)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
 };
@@ -85,7 +85,7 @@ public:
         : SpecAst(Kind::NamedSpec)
     {}
 
-    NAMED_AST_PARAM(setName, name, NameAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
 
     std::unique_ptr<NameAst> name_;
 };
@@ -102,10 +102,10 @@ public:
         : SpecAst(Kind::TypeofSpec)
     {}
 
-    NAMED_LOC_PARAM(setOpr, opr)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_LOC_PARAM(Opr, opr)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
     SourceLoc oprLoc_;
     SourceLoc lDelimLoc_;
@@ -129,12 +129,12 @@ public:
 
     APPLY_VARIETY(RecordVariety)
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setDelim, delim)
-    NAMED_AST_LIST_PARAM(setBases, bases, DeclAst)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Delim, delim)
+    NAMED_AST_LIST_PARAM(Base, bases, DeclAst)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
     /*!
      * \brief isTemplate
@@ -178,10 +178,10 @@ public:
         : SpecAst(Kind::FuncSpec)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setParam, param, DeclAst)
-    NAMED_AST_PARAM(setResult, result, DeclAst)
-    NAMED_AST_PARAM__BASE__(setTemplateParam, DeclAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Param, param, DeclAst)
+    NAMED_AST_PARAM(Result, result, DeclAst)
+    NAMED_AST_PARAM__BASE__(TemplateParam, DeclAst)
 
     /*!
      * \brief setResult
@@ -246,12 +246,12 @@ public:
     using Self = FuncSpecAst__<TemplateParamT>;
     using FuncSpecAst::FuncSpecAst;
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setParam, param, DeclAst)
-    NAMED_AST_PARAM(setResult, result, DeclAst)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM__(setTemplateParam, TemplateParamT, DeclAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Param, param, DeclAst)
+    NAMED_AST_PARAM(Result, result, DeclAst)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM__(TemplateParam, TemplateParamT, DeclAst)
 
     bool isTemplate() const override { return TemplateParamT::checkTemplateParam__(); }
     DeclAst* templateParam() const override { return TemplateParamT::templateParam__(); }
@@ -269,7 +269,7 @@ public:
     using Self = OpaqueSpecAst;
     using SpecAst::SpecAst;
 
-    NAMED_AST_PARAM(setBaseSpec, baseSpec, SpecAst)
+    NAMED_AST_PARAM(BaseSpec, baseSpec, SpecAst)
 
     std::unique_ptr<SpecAst> baseSpec_;
 };
@@ -286,8 +286,8 @@ public:
         : OpaqueSpecAst(Kind::PtrSpec)
     {}
 
-    NAMED_LOC_PARAM(setOpr, opr)
-    NAMED_AST_PARAM(setBaseSpec, baseSpec, SpecAst)
+    NAMED_LOC_PARAM(Opr, opr)
+    NAMED_AST_PARAM(BaseSpec, baseSpec, SpecAst)
 
     SourceLoc oprLoc_;
 };
@@ -308,10 +308,10 @@ public:
 
     APPLY_VARIETY(ArrayVariety)
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setBaseSpec, baseSpec, SpecAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(BaseSpec, baseSpec, SpecAst)
 
     Self* setSpec(SpecAst* spec);
     Self* setExpr(ExprAst* spec);
@@ -338,9 +338,9 @@ public:
 
     APPLY_VARIETY(ChanVariety)
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setDir, dir)
-    NAMED_AST_PARAM(setBaseSpec, baseSpec, SpecAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Dir, dir)
+    NAMED_AST_PARAM(BaseSpec, baseSpec, SpecAst)
 
     SourceLoc keyLoc_;
     SourceLoc dirLoc_;
@@ -358,7 +358,7 @@ public:
         : SpecAst(Kind::InferredSpec)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
+    NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_; // Dummy
 };
@@ -375,8 +375,8 @@ public:
         : SpecAst(Kind::DecoratedSpec)
     {}
 
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_AST_LIST_PARAM(setAttrs, attrs, AttrAst)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_LIST_PARAM(Attr, attrs, AttrAst)
 
     std::unique_ptr<SpecAst> spec_;
     std::unique_ptr<AttrAstList> attrs_;

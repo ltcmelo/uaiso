@@ -67,7 +67,7 @@ void constifyVarGroupDecl(DeclAst* decl, const SourceLoc& loc)
 {
     auto group = static_cast<VarGroupDeclAst*>(decl);
     auto qual = (new TypeQualAttrAst)->setKeyLoc(loc);
-    auto spec = (new DecoratedSpecAst)->setAttrs(qual)->setSpec(group->spec_.release());
+    auto spec = (new DecoratedSpecAst)->addAttr(qual)->setSpec(group->spec_.release());
     group->spec_.reset(spec);
     group->setAllocScheme(AllocScheme::CompileTime);
 }
@@ -99,7 +99,7 @@ SpecAst* extractSpecFromExpr(ExprAst* nameExpr) {
             auto names = NameAstList::create(IdentExpr_Cast(memberExpr->exprOrSpec_.get())
                                              ->name_.release());
             names->pushBack(memberExpr->name_.release());
-            name = make<NestedNameAst>()->setNames(names);
+            name = make<NestedNameAst>()->setNamesSR(names);
         }
     }
     SpecAst* spec = nullptr;
@@ -127,7 +127,7 @@ void actionProgram(ParsingContext* context, const SourceLoc& locA, NameAst* name
 {
     auto package = make<PackageDeclAst>();
     package->setKeyLoc(locA)->setName(name)->setTerminLoc(locB);
-    auto program = make<ProgramAst>()->setPackage(package)->setDecls(decls);
+    auto program = make<ProgramAst>()->setPackage(package)->setDeclsSR(decls);
     context->takeAst(std::unique_ptr<Ast>(program));
     context->notifyProgramMatched();
 }

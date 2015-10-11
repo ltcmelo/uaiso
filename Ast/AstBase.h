@@ -196,64 +196,71 @@ AstT* make()
 // Macros for named parameters AST functions
 
 #define NAMED_AST_PARAM(NAME, MEMBER, PARAM_TYPE) \
-    Self* NAME(PARAM_TYPE* param) \
+    Self* set##NAME(PARAM_TYPE* param) \
     { \
         MEMBER##_.reset(param); \
         return this; \
     }
 
 #define NAMED_AST_PARAM__BASE__(NAME, PARAM_TYPE) \
-    virtual Self* NAME(PARAM_TYPE*) { return nullptr; }
+    virtual Self* set##NAME(PARAM_TYPE*) { return nullptr; }
 
 #define NAMED_AST_PARAM__(NAME, TEMPLATE, PARAM_TYPE) \
-    Self* NAME(PARAM_TYPE* param) override \
+    Self* set##NAME(PARAM_TYPE* param) override \
     { \
-        TEMPLATE::NAME##__(param); \
+        TEMPLATE::set##NAME##__(param); \
         return this; \
     }
 
 #define NAMED_AST_LIST_PARAM(NAME, MEMBER, PARAM_TYPE) \
-    Self* NAME(PARAM_TYPE* param) \
+    Self* add##NAME(PARAM_TYPE* param) \
     { \
-        MEMBER##_.reset(PARAM_TYPE##List::create(param)); \
+        MEMBER##_ ? \
+            MEMBER##_->pushBack(param) : \
+            MEMBER##_.reset(PARAM_TYPE##List::create(param)); \
         return this; \
     } \
-    Self* NAME(PARAM_TYPE##List* param) \
+    Self* set##NAME##s(PARAM_TYPE##List* param) \
+    { \
+        MEMBER##_.reset(param); \
+        return this; \
+    } \
+    Self* set##NAME##s##SR(PARAM_TYPE##List* param) \
     { \
         MEMBER##_.reset(param->finishSR()); \
         return this; \
-    } \
+    }
 
 #define NAMED_AST_LIST_PARAM__BASE__(NAME, PARAM_TYPE) \
-    virtual Self* NAME(PARAM_TYPE##List*) { return nullptr; } \
-    virtual Self* NAME(PARAM_TYPE*) { return nullptr; } \
+    virtual Self* set##NAME##s(PARAM_TYPE##List*) { return nullptr; } \
+    virtual Self* set##NAME##s##SR(PARAM_TYPE##List*) { return nullptr; }
 
 #define NAMED_AST_LIST_PARAM__(NAME, TEMPLATE, PARAM_TYPE) \
-    Self* NAME(PARAM_TYPE* param) override \
+    Self* set##NAME##s(PARAM_TYPE##List* param) override \
     { \
-        TEMPLATE::NAME##__(PARAM_TYPE##List::create(param)); \
+        TEMPLATE::set##NAME##s##__(param); \
         return this; \
     } \
-    Self* NAME(PARAM_TYPE##List* param) override \
+    Self* set##NAME##s##SR(PARAM_TYPE##List* param) override \
     { \
-        TEMPLATE::NAME##__(param->finishSR()); \
+        TEMPLATE::set##NAME##s##__(param->finishSR()); \
         return this; \
     }
 
 #define NAMED_LOC_PARAM(NAME, MEMBER) \
-    Self* NAME##Loc(const SourceLoc& param) \
+    Self* set##NAME##Loc(const SourceLoc& param) \
     { \
         MEMBER##Loc_ = param; \
         return this; \
     }
 
 #define NAMED_LOC_PARAM__BASE__(NAME) \
-    virtual Self* NAME(const SourceLoc&) { return nullptr; } \
+    virtual Self* set##NAME(const SourceLoc&) { return nullptr; } \
 
 #define NAMED_LOC_PARAM__(NAME, BASE_TEMPLATE) \
-    Self* NAME(const SourceLoc& param) override \
+    Self* set##NAME(const SourceLoc& param) override \
     { \
-        BASE_TEMPLATE::NAME##__(param); \
+        BASE_TEMPLATE::set##NAME##__(param); \
         return this; \
     }
 

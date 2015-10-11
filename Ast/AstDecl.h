@@ -47,7 +47,7 @@ public:
         : DeclAst(Kind::ErrorDecl)
     {}
 
-    NAMED_LOC_PARAM(setError, error)
+    NAMED_LOC_PARAM(Error, error)
 
     SourceLoc errorLoc_;
 };
@@ -62,9 +62,9 @@ public:
         , sym_(nullptr)
     {}
 
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM__BASE__(setAssignLoc)
-    NAMED_AST_PARAM__BASE__(setInit, ExprAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM__BASE__(AssignLoc)
+    NAMED_AST_PARAM__BASE__(Init, ExprAst)
 
     virtual bool hasInit() const { return false; }
     virtual ExprAst* init() const { return nullptr; }
@@ -113,9 +113,9 @@ public:
     using Self = VarDeclAst__<InitT>;
     using VarDeclAst::VarDeclAst;
 
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM__(setAssignLoc, InitT)
-    NAMED_AST_PARAM__(setInit, InitT, ExprAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM__(AssignLoc, InitT)
+    NAMED_AST_PARAM__(Init, InitT, ExprAst)
 
     bool hasInit() const override { return InitT::checkInitializer__(); }
     ExprAst* init() const override { return InitT::init__(); }
@@ -139,12 +139,12 @@ public:
         bit_.alloc = static_cast<char>(AllocScheme::Unknown);
     }
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_LOC_PARAM(setTermin, termin)
-    NAMED_LOC_PARAM__BASE__(setAssignLoc)
-    NAMED_AST_LIST_PARAM__BASE__(setInits, ExprAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_LOC_PARAM(Termin, termin)
+    NAMED_LOC_PARAM__BASE__(AssignLoc)
+    NAMED_AST_LIST_PARAM__BASE__(Init, ExprAst)
 
     void setAllocScheme(AllocScheme v)
     {
@@ -198,12 +198,12 @@ public:
     using Self = VarGroupDeclAst__<InitsT>;
     using VarGroupDeclAst::VarGroupDeclAst;
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_LOC_PARAM(setTermin, termin)
-    NAMED_LOC_PARAM__(setAssignLoc, InitsT)
-    NAMED_AST_LIST_PARAM__(setInits, InitsT, ExprAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_LOC_PARAM(Termin, termin)
+    NAMED_LOC_PARAM__(AssignLoc, InitsT)
+    NAMED_AST_LIST_PARAM__(Init, InitsT, ExprAst)
 
     bool hasInits() const override { return InitsT::checkInits__(); }
     ExprAstList* inits() const override { return InitsT::inits__(); }
@@ -220,11 +220,11 @@ public:
     using Self = VarTagDeclAst;
     using VarGroupDeclAst::VarGroupDeclAst;
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
-    NAMED_LOC_PARAM(setTermin, termin)
-    NAMED_AST_PARAM(setTag, tag, ExprAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_LOC_PARAM(Termin, termin)
+    NAMED_AST_PARAM(Tag, tag, ExprAst)
 
     std::unique_ptr<ExprAst> tag_;
 };
@@ -238,10 +238,10 @@ public:
         : DeclAst(Kind::ParamClauseDecl)
     {}
 
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
-    NAMED_LOC_PARAM(setVariadic, variadic)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_LOC_PARAM(Variadic, variadic)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
     bool isVariadic() const; // If has variadic loc or if it's variadic typesafe
     bool isVariadicTypesafe() const;
@@ -266,8 +266,8 @@ public:
         : DeclAst(Kind::ParamGroupDecl)
     {}
 
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
 
     std::unique_ptr<SpecAst> spec_;
     std::unique_ptr<DeclAstList> decls_;
@@ -282,10 +282,10 @@ public:
         : DeclAst(Kind::ParamDecl)
     {}
 
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM__BASE__(setVariadicLoc)
-    NAMED_LOC_PARAM__BASE__(setAssignLoc)
-    NAMED_AST_PARAM__BASE__(setDefaultArg, ExprAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM__BASE__(VariadicLoc)
+    NAMED_LOC_PARAM__BASE__(AssignLoc)
+    NAMED_AST_PARAM__BASE__(DefaultArg, ExprAst)
 
     virtual bool hasDefaultArg() const { return false; }
     virtual ExprAst* defaultArg() const { return nullptr; }
@@ -351,10 +351,10 @@ public:
     using Self = ParamDeclAst__<VariadicT, DefaultArgT>;
     using ParamDeclAst::ParamDeclAst;
 
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM__(setVariadicLoc, VariadicT)
-    NAMED_LOC_PARAM__(setAssignLoc, DefaultArgT)
-    NAMED_AST_PARAM__(setDefaultArg, DefaultArgT, ExprAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM__(VariadicLoc, VariadicT)
+    NAMED_LOC_PARAM__(AssignLoc, DefaultArgT)
+    NAMED_AST_PARAM__(DefaultArg, DefaultArgT, ExprAst)
 
     bool hasDefaultArg() const override { return DefaultArgT::checkDefaultArg__(); }
     ExprAst* defaultArg() const override { return DefaultArgT::defaultArg__(); }
@@ -372,9 +372,9 @@ public:
         : DeclAst(Kind::TemplateParamClauseDecl)
     {}
 
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
     SourceLoc lDelimLoc_;
     std::unique_ptr<DeclAstList> decls_;
@@ -390,13 +390,13 @@ public:
         : DeclAst(Kind::TemplateParamDecl)
     {}
 
-    NAMED_LOC_PARAM(setPack, pack)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM__BASE__(setAssignLoc)
-    NAMED_AST_PARAM__BASE__(setDefaultArg, Ast)
-    NAMED_LOC_PARAM__BASE__(setBindLoc)
-    NAMED_AST_PARAM__BASE__(setSpecialization, Ast)
+    NAMED_LOC_PARAM(Pack, pack)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM__BASE__(AssignLoc)
+    NAMED_AST_PARAM__BASE__(DefaultArg, Ast)
+    NAMED_LOC_PARAM__BASE__(BindLoc)
+    NAMED_AST_PARAM__BASE__(Specialization, Ast)
 
     virtual bool hasDefaultArg() const { return false; }
     virtual Ast* defaultArg() const { return nullptr; }
@@ -474,13 +474,13 @@ public:
     using Self = TemplateParamDeclAst__<DefaultArgT, SpecializationT>;
     using TemplateParamDeclAst::TemplateParamDeclAst;
 
-    NAMED_LOC_PARAM(setPack, pack)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM__(setAssignLoc, DefaultArgT)
-    NAMED_AST_PARAM__(setDefaultArg, DefaultArgT, Ast)
-    NAMED_LOC_PARAM__(setBindLoc, SpecializationT)
-    NAMED_AST_PARAM__(setSpecialization, SpecializationT, Ast)
+    NAMED_LOC_PARAM(Pack, pack)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM__(AssignLoc, DefaultArgT)
+    NAMED_AST_PARAM__(DefaultArg, DefaultArgT, Ast)
+    NAMED_LOC_PARAM__(BindLoc, SpecializationT)
+    NAMED_AST_PARAM__(Specialization, SpecializationT, Ast)
 
     virtual bool hasDefaultArg() const { return DefaultArgT::checkDefaultArg__(); }
     virtual Ast* defaultArg() const { return DefaultArgT::defaultArg__(); }
@@ -495,9 +495,9 @@ public:
     using Self = TemplateParamAliasDeclAst;
     using TemplateParamDeclAst::TemplateParamDeclAst;
 
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setAlias, alias)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Alias, alias)
 
     SourceLoc aliasLoc_;
 };
@@ -508,9 +508,9 @@ public:
     using Self = TemplateParamThisDeclAst;
     using TemplateParamDeclAst::TemplateParamDeclAst;
 
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setThiss, thiss)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Thiss, thiss)
 
     SourceLoc thissLoc_;
 };
@@ -529,9 +529,9 @@ public:
 
     APPLY_VARIETY(FuncVariety)
 
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     virtual bool hasExplicitReceiver() const { return false; }
 
@@ -551,9 +551,9 @@ public:
     using Self = FuncRecvDeclAst;
     using FuncDeclAst::FuncDeclAst;
 
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
-    NAMED_AST_PARAM(setRecv, recv, DeclAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
+    NAMED_AST_PARAM(Recv, recv, DeclAst)
 
     bool hasExplicitReceiver() const override { return true; }
 
@@ -574,8 +574,8 @@ public:
         : DeclAst(Kind::TemplateDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
@@ -596,10 +596,10 @@ public:
         : DeclAst(Kind::BlockDecl)
     {}
 
-    NAMED_AST_LIST_PARAM(setAttrs, attrs, AttrAst)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_AST_LIST_PARAM(Attr, attrs, AttrAst)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
     std::unique_ptr<AttrAstList> attrs_;
     SourceLoc lDelimLoc_;
@@ -616,10 +616,10 @@ public:
         : DeclAst(Kind::ConstraintDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -636,11 +636,11 @@ public:
         : DeclAst(Kind::AliasDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setEq, eq)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Eq, eq)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
@@ -665,9 +665,9 @@ public:
         : DeclAst(Kind::PackageDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
@@ -691,9 +691,9 @@ public:
         : DeclAst(Kind::ModuleDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
@@ -709,9 +709,9 @@ public:
         : DeclAst(Kind::ImportDecl)
     {}
 
-    NAMED_AST_PARAM(setModule, module, ExprAst)
-    NAMED_LOC_PARAM(setBind, bind)
-    NAMED_AST_PARAM(setLocalName, localName, NameAst)
+    NAMED_AST_PARAM(Module, module, ExprAst)
+    NAMED_LOC_PARAM(Bind, bind)
+    NAMED_AST_PARAM(LocalName, localName, NameAst)
 
     std::unique_ptr<ExprAst> module_;
     SourceLoc bindLoc_;
@@ -727,11 +727,11 @@ public:
     using Self = ImportDistinctDeclAst;
     using ImportDeclAst::ImportDeclAst;
 
-    NAMED_AST_PARAM(setLocalName, localName, NameAst)
-    NAMED_LOC_PARAM(setBind, bind)
-    NAMED_AST_PARAM(setModule, module, ExprAst)
-    NAMED_LOC_PARAM(setSelec, selec)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
+    NAMED_AST_PARAM(LocalName, localName, NameAst)
+    NAMED_LOC_PARAM(Bind, bind)
+    NAMED_AST_PARAM(Module, module, ExprAst)
+    NAMED_LOC_PARAM(Selec, selec)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
 
     SourceLoc selecLoc_;
     std::unique_ptr<DeclAstList> decls_;
@@ -755,11 +755,11 @@ public:
 
     APPLY_VARIETY(SectionVariety)
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_LOC_PARAM(Termin, termin)
 
     bool isEmpty() const;
 
@@ -779,13 +779,13 @@ public:
         : DeclAst(Kind::StaticAssertDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setMDelim, mDelim)
-    NAMED_AST_PARAM(setMessage, message, ExprAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(MDelim, mDelim)
+    NAMED_AST_PARAM(Message, message, ExprAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -808,10 +808,10 @@ public:
         : DeclAst(Kind::VersionDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setDelim, delim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Delim, delim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     SourceLoc delimLoc_;
@@ -831,10 +831,10 @@ public:
         : DeclAst(Kind::DebugDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setDelim, delim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Delim, delim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     SourceLoc delimLoc_;
@@ -851,10 +851,10 @@ public:
         : DeclAst(Kind::InvariantDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -871,8 +871,8 @@ public:
         : DeclAst(Kind::UnitTestDecl)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setStmt, stmt, StmtAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     std::unique_ptr<StmtAst> stmt_;
@@ -896,13 +896,13 @@ public:
 
     APPLY_VARIETY(SelectiveVariety)
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_PARAM(setExpr, expr, ExprAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_AST_PARAM(setIfDecl, ifDecl, DeclAst)
-    NAMED_LOC_PARAM(setOtherKey, otherKey)
-    NAMED_AST_PARAM(setElseDecl, elseDecl, DeclAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_PARAM(IfDecl, ifDecl, DeclAst)
+    NAMED_LOC_PARAM(OtherKey, otherKey)
+    NAMED_AST_PARAM(ElseDecl, elseDecl, DeclAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -923,14 +923,14 @@ public:
         , sym_(nullptr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setSep, sep)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_LOC_PARAM(setLDelim, lDelim)
-    NAMED_AST_LIST_PARAM(setDecls, decls, DeclAst)
-    NAMED_LOC_PARAM(setRDelim, rDelim)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Sep, sep)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
@@ -954,9 +954,9 @@ public:
         , sym_(nullptr)
     {}
 
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setAssign, assign)
-    NAMED_AST_PARAM(setInit, init, ExprAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Assign, assign)
+    NAMED_AST_PARAM(Init, init, ExprAst)
 
     bool hasInit() const { return init_.get(); }
 
@@ -979,10 +979,10 @@ public:
         , sym_(nullptr)
     {}
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_AST_PARAM(setSpec, spec, SpecAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
@@ -1006,7 +1006,7 @@ public:
         : DeclAst(Kind::BaseDecl)
     {}
 
-    NAMED_AST_PARAM(setName, name, NameAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
 
     std::unique_ptr<NameAst> name_;
 };
@@ -1024,9 +1024,9 @@ public:
 
     APPLY_VARIETY(RecordVariety)
 
-    NAMED_LOC_PARAM(setKey, key)
-    NAMED_AST_PARAM(setName, name, NameAst)
-    NAMED_LOC_PARAM(setTermin, termin)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
