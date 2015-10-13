@@ -33,6 +33,11 @@ namespace uaiso {
 
 class Syntax;
 
+/*!
+ * \brief The PyLexer class
+ *
+ * Based on https://docs.python.org/2/reference/lexical_analysis.html
+ */
 class UAISO_API PyLexer final : public Lexer
 {
 public:

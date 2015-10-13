@@ -34,7 +34,7 @@ detail::FullParam::~FullParam()
 
 void detail::actionProgram(ParsingContext* context, DeclAstList* decls)
 {
-    auto program = make<ProgramAst>()->setDeclsSR(decls);
+    auto program = makeAstRaw<ProgramAst>()->setDeclsSR(decls);
     context->takeAst(std::unique_ptr<Ast>(program));
     context->notifyProgramMatched();
 }
@@ -42,11 +42,11 @@ void detail::actionProgram(ParsingContext* context, DeclAstList* decls)
 void detail::actionProgram(ParsingContext* context, const SourceLoc& locA,
                            NameAstList* names, const SourceLoc& locB, DeclAstList* decls)
 {
-    auto name = make<NestedNameAst>();
+    auto name = makeAstRaw<NestedNameAst>();
     name->setNamesSR(names);
-    auto module = make<ModuleDeclAst>();
+    auto module = makeAstRaw<ModuleDeclAst>();
     module->setKeyLoc(locA)->setName(name)->setTerminLoc(locB);
-    auto program = make<ProgramAst>();
+    auto program = makeAstRaw<ProgramAst>();
     program->setModule(module)->setDeclsSR(decls);
     context->takeAst(std::unique_ptr<Ast>(program));
     context->notifyProgramMatched();
@@ -54,17 +54,17 @@ void detail::actionProgram(ParsingContext* context, const SourceLoc& locA,
 
 DeclAst* detail::actionVarGroupDecl(SpecAst* spec, DeclAstList* decls, const SourceLoc& locA)
 {
-    auto group = make<VarGroupDeclAst>();
+    auto group = makeAstRaw<VarGroupDeclAst>();
     group->setSpec(spec)->setDeclsSR(decls)->setTerminLoc(locA);
     return group;
 }
 
 DeclAst* detail::actionVarGroupDecl(AttrAstList* attrs, DeclAstList* decls, const SourceLoc& locA)
 {
-    auto spec = make<DecoratedSpecAst>();
-    auto inferred = make<InferredSpecAst>()->setKeyLoc(locA);
+    auto spec = makeAstRaw<DecoratedSpecAst>();
+    auto inferred = makeAstRaw<InferredSpecAst>()->setKeyLoc(locA);
     spec->setSpec(inferred)->setAttrsSR(attrs);
-    auto group = make<VarGroupDeclAst>();
+    auto group = makeAstRaw<VarGroupDeclAst>();
     group->setSpec(spec)->setDeclsSR(decls)->setTerminLoc(locA);
     return group;
 }

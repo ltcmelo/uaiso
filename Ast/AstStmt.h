@@ -207,16 +207,16 @@ public:
     NAMED_AST_PARAM(Preamble, preamble, StmtAst)
     NAMED_AST_PARAM(Expr, expr, ExprAst)
     NAMED_AST_PARAM(Then, then, StmtAst)
-    NAMED_AST_PARAM(Else, else, StmtAst)
+    NAMED_AST_PARAM(NotThen, notThen, StmtAst)
 
     SourceLoc ifLoc_;
+    SourceLoc elseLoc_;
     SourceLoc lDelimLoc_;
+    SourceLoc rDelimLoc_;
     std::unique_ptr<StmtAst> preamble_;
     std::unique_ptr<ExprAst> expr_;
-    SourceLoc rDelimLoc_;
     std::unique_ptr<StmtAst> then_;
-    SourceLoc elseLoc_;
-    std::unique_ptr<StmtAst> else_;
+    std::unique_ptr<StmtAst> notThen_;
 };
 
 class UAISO_API WhileStmtAst final : public StmtAst

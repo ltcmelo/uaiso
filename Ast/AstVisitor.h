@@ -1034,6 +1034,31 @@ AstVisitor<DerivedT>::traverseUnpackExpr(UnpackExprAst* ast)
     return Continue;
 }
 
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traversePrintExpr(PrintExprAst* ast)
+{
+    EVAL_RESULT_0(recursivelyVisitPrintExpr(ast));
+    EVAL_RESULT_LIST_N(traverseList<ExprAst>(ast->exprs_.get(), &DerivedT::traverseExpr));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseYieldExpr(YieldExprAst* ast)
+{
+    EVAL_RESULT_0(recursivelyVisitYieldExpr(ast));
+    EVAL_RESULT_LIST_N(traverseList<ExprAst>(ast->exprs_.get(), &DerivedT::traverseExpr));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseListCompreExpr(ListCompreExprAst* ast)
+{
+    EVAL_RESULT_0(recursivelyVisitListCompreExpr(ast));
+    EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
+    // TODO
+    return Continue;
+}
+
     /*--- Statements traversal ---*/
 
 TRIVIAL_VISIT(EmptyStmt)
@@ -1080,7 +1105,7 @@ AstVisitor<DerivedT>::traverseIfStmt(IfStmtAst* ast)
     EVAL_RESULT_N(traverseStmt(ast->preamble_.get()));
     EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
     EVAL_RESULT_N(traverseStmt(ast->then_.get()));
-    EVAL_RESULT_N(traverseStmt(ast->else_.get()));
+    EVAL_RESULT_N(traverseStmt(ast->notThen_.get()));
     return Continue;
 }
 

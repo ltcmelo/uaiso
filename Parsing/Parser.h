@@ -21,27 +21,27 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Ast/Ast.h"
+#ifndef UAISO_PARSER_H__
+#define UAISO_PARSER_H__
 
-using namespace uaiso;
+#include "Common/Config.h"
 
-FuncSpecAst* FuncSpecAst::setResult(SpecAst* spec)
+namespace uaiso {
+
+class Lexer;
+class ParsingContext;
+
+class UAISO_API Parser
 {
-    auto group = makeAstRaw<ParamGroupDeclAst>()->setSpec(spec);
-    auto clause = makeAstRaw<ParamClauseDeclAst>();
-    clause->decls_.reset(DeclAstList::create(group));
-    result_.reset(clause);
-    return this;
-}
+public:
+    virtual ~Parser() = default;
 
-ArraySpecAst* ArraySpecAst::setSpec(SpecAst* spec)
-{
-    exprOrSpec_.reset(spec);
-    return this;
-}
+    virtual bool parse(Lexer* lexer, ParsingContext* context) = 0;
 
-ArraySpecAst* ArraySpecAst::setExpr(ExprAst* expr)
-{
-    exprOrSpec_.reset(expr);
-    return this;
-}
+protected:
+    Parser() = default;
+};
+
+} // namespace uaiso
+
+#endif

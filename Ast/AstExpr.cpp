@@ -27,7 +27,7 @@ using namespace uaiso;
 
 IdentExprAst* IdentExprAst::setName(NameAstList *names)
 {
-    name_.reset(make<NestedNameAst>()->setNamesSR(names));
+    name_.reset(makeAstRaw<NestedNameAst>()->setNamesSR(names));
     return this;
 }
 

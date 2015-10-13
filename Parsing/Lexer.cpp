@@ -43,6 +43,25 @@ void Lexer::setBuffer(const char* buff, size_t length)
     eof_ = buff + length;
 }
 
+SourceLoc Lexer::tokenLoc() const
+{
+    return SourceLoc(line_, col_, line_ + breaks_, col_ + leng_, "");
+}
+
+void Lexer::updatePos()
+{
+    line_ = line_ + breaks_;
+    breaks_ = 0;
+    col_ = col_ + leng_;
+    leng_ = 0;
+}
+
+void Lexer::handleNewLine()
+{
+    ++breaks_;
+    col_ = 0;
+}
+
 char Lexer::peekChar(size_t dist) const
 {
     if (curr_ + dist >= eof_)
@@ -55,7 +74,9 @@ void Lexer::consumeChar(size_t dist)
     UAISO_ASSERT(peekChar(dist), return);
 
     ++curr_;
+    ++leng_;
     curr_ += dist;
+    leng_ += dist;
 }
 
 char Lexer::consumeCharPeekNext(size_t dist)
@@ -74,6 +95,7 @@ Token Lexer::lexStrLit(char& ch, const char quote, const bool mayBreak,
                 // TODO: Error, unknown escape sequence.
             }
         } else if (ch == '\n' && !mayBreak) {
+            handleNewLine();
             // TODO: Error, unterminated string.
         }
         ch = consumeCharPeekNext();

@@ -31,6 +31,7 @@
 #include "Common/Config.h"
 #include "Parsing/SourceLoc.h"
 #include <cstdint>
+#include <memory>
 #include <type_traits>
 
 namespace uaiso {
@@ -69,7 +70,9 @@ EXPR_AST_MIXIN(MAKE_EXPR_CASE)
         FirstStmtMarker__,
 STMT_AST_MIXIN(MAKE_STMT_CASE)
         LastStmtMarker__,
-        Program
+        Program,
+        Generator,
+        Filter
 
 #undef MAKE_CASE
     };
@@ -158,11 +161,6 @@ STMT_AST_MIXIN(MAKE_STMT_CASE)
         return checkKind(Kind::FirstStmtMarker__, Kind::LastStmtMarker__);
     }
 
-    bool isModule() const
-    {
-        return bit_.kind == static_cast<KindType>(Kind::Program);
-    }
-
 protected:
     // Bits are assigned by specific AST nodes.
     struct BitFields
@@ -186,9 +184,15 @@ private:
 };
 
 template <class AstT>
-AstT* make()
+AstT* makeAstRaw()
 {
     return new AstT;
+}
+
+template <class AstT>
+std::unique_ptr<AstT> makeAst()
+{
+    return std::unique_ptr<AstT>(new AstT);
 }
 
 } // namespace uaiso
@@ -200,7 +204,8 @@ AstT* make()
     { \
         MEMBER##_.reset(param); \
         return this; \
-    }
+    } \
+    PARAM_TYPE* MEMBER() const { return MEMBER##_.get(); }
 
 #define NAMED_AST_PARAM__BASE__(NAME, PARAM_TYPE) \
     virtual Self* set##NAME(PARAM_TYPE*) { return nullptr; }
@@ -215,9 +220,20 @@ AstT* make()
 #define NAMED_AST_LIST_PARAM(NAME, MEMBER, PARAM_TYPE) \
     Self* add##NAME(PARAM_TYPE* param) \
     { \
-        MEMBER##_ ? \
-            MEMBER##_->pushBack(param) : \
-            MEMBER##_.reset(PARAM_TYPE##List::create(param)); \
+        if (param) { \
+            MEMBER##_ ? \
+                MEMBER##_->pushBack(param) : \
+                MEMBER##_.reset(PARAM_TYPE##List::create(param)); \
+        } \
+        return this; \
+    } \
+    Self* merge##NAME##s(PARAM_TYPE##List* param) \
+    { \
+        if (param) { \
+            MEMBER##_ ? \
+                MEMBER##_->merge(param) : \
+                MEMBER##_.reset(param); \
+        } \
         return this; \
     } \
     Self* set##NAME##s(PARAM_TYPE##List* param) \
@@ -229,7 +245,8 @@ AstT* make()
     { \
         MEMBER##_.reset(param->finishSR()); \
         return this; \
-    }
+    } \
+    PARAM_TYPE##List* MEMBER() const { return MEMBER##_.get(); }
 
 #define NAMED_AST_LIST_PARAM__BASE__(NAME, PARAM_TYPE) \
     virtual Self* set##NAME##s(PARAM_TYPE##List*) { return nullptr; } \
@@ -252,7 +269,8 @@ AstT* make()
     { \
         MEMBER##Loc_ = param; \
         return this; \
-    }
+    } \
+    const SourceLoc& MEMBER##Loc() const { return MEMBER##Loc_; }
 
 #define NAMED_LOC_PARAM__BASE__(NAME) \
     virtual Self* set##NAME(const SourceLoc&) { return nullptr; } \

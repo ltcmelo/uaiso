@@ -25,6 +25,7 @@
 #define UAISO_LEXER_H__
 
 #include "Common/Config.h"
+#include "Parsing/SourceLoc.h"
 #include "Parsing/Token.h"
 #include <cstddef>
 #include <memory>
@@ -33,17 +34,44 @@ namespace uaiso {
 
 class Syntax;
 
+/*!
+ * \brief The Lexer class
+ */
 class UAISO_API Lexer
 {
 public:
     virtual ~Lexer();
 
+    /*!
+     * \brief setBuffer
+     * \param buff
+     * \param length
+     */
     void setBuffer(const char* buff, size_t length);
 
+    /*!
+     * \brief lex
+     * \return
+     *
+     * Lex the next token.
+     */
     virtual Token lex() = 0;
+
+    /*!
+     * \brief tokenLoc
+     * \return
+     *
+     * Return the location of the lastly lexed token.
+     *
+     * \note The location will have no file information associated with it.
+     */
+    SourceLoc tokenLoc() const;
 
 protected:
     Lexer();
+
+    virtual void updatePos();
+    virtual void handleNewLine();
 
     char peekChar(size_t dist = 0) const;
     void consumeChar(size_t dist = 0);
@@ -57,8 +85,11 @@ protected:
     const char* curr_ { nullptr };
     const char* eof_ { nullptr };
 
-    size_t line_ { 0 };
-    size_t col_ { 0 };
+    // Position control
+    int line_ { 0 };
+    int col_ { 0 };
+    int leng_ { 0 };
+    int breaks_ { 0 };
 };
 
 } // namespace uaiso

@@ -1025,6 +1025,61 @@ public:
     SourceLoc errorLoc_;
 };
 
+class UAISO_API PrintExprAst final : public ExprAst
+{
+public:
+    using Self = PrintExprAst;
+
+    PrintExprAst()
+        : ExprAst(Kind::PrintExpr)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Opr, opr)
+    NAMED_AST_LIST_PARAM(Expr, exprs, ExprAst)
+
+    SourceLoc keyLoc_;
+    SourceLoc oprLoc_;
+    std::unique_ptr<ExprAstList> exprs_;
+};
+
+class UAISO_API YieldExprAst final : public ExprAst
+{
+public:
+    using Self = YieldExprAst;
+
+    YieldExprAst()
+        : ExprAst(Kind::YieldExpr)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_LIST_PARAM(Expr, exprs, ExprAst)
+
+    SourceLoc keyLoc_;
+    std::unique_ptr<ExprAstList> exprs_;
+};
+
+/*!
+ * \brief The ListCompreExprAst class
+ *
+ * A list comprehension.
+ */
+class UAISO_API ListCompreExprAst final : public ExprAst
+{
+public:
+    using Self = ListCompreExprAst;
+
+    ListCompreExprAst()
+        : ExprAst(Kind::ListCompreExpr)
+    {}
+
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_LIST_PARAM(Gen, gens, GeneratorAst)
+
+    std::unique_ptr<ExprAst> expr_;
+    std::unique_ptr<GeneratorAstList> gens_;
+};
+
 } // namespace uaiso
 
 #endif

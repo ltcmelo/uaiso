@@ -38,6 +38,7 @@
 #include "Parsing/TokenMap.h"
 #include "Parsing/Unit.h"
 #include "Python/PyLexer.h"
+#include "Python/PyParser.h"
 #include "Semantic/Binder.h"
 #include "Semantic/CompletionProposer.h"
 #include "Semantic/CompletionTest.h"
@@ -88,6 +89,7 @@ CALL_CLASS_TEST(FileInfo)
 CALL_CLASS_TEST(GoIncrementalLexer)
 CALL_CLASS_TEST(GoUnit)
 CALL_CLASS_TEST(PyLexer)
+CALL_CLASS_TEST(PyParser)
 CALL_CLASS_TEST(TypeChecker)
 
 class WorkflowTest : public Test
@@ -365,6 +367,7 @@ int main(int argc, char* argv[])
         test_GoUnit();
         test_CompletionProposer();
         test_PyLexer();
+        test_PyParser();
     }
 
     Test::printStats();

@@ -121,7 +121,7 @@ const SourceLoc& AstLocator::loc(NestedNameAst* ast) const
 
 const SourceLoc& AstLocator::lastLoc(NestedNameAst* ast) const
 {
-    return loc(ast->names_->back());
+    return lastLoc(ast->names_->back());
 }
 
 const SourceLoc& AstLocator::loc(RecordSpecAst* ast) const
@@ -1311,6 +1311,41 @@ const SourceLoc& AstLocator::lastLoc(UnpackExprAst* ast) const
     return lastLoc(ast->expr_.get());
 }
 
+const SourceLoc& AstLocator::loc(PrintExprAst* ast) const
+{
+    return ast->keyLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(PrintExprAst* ast) const
+{
+    return lastLoc(ast->exprs_->back());
+}
+
+const SourceLoc& AstLocator::loc(YieldExprAst* ast) const
+{
+    return ast->keyLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(YieldExprAst* ast) const
+{
+    return lastLoc(ast->exprs_->back());
+}
+
+const SourceLoc& AstLocator::loc(ListCompreExprAst* ast) const
+{
+    return loc(ast->expr_.get());
+}
+
+const SourceLoc& AstLocator::lastLoc(ListCompreExprAst* ast) const
+{
+    if (ast->gens_) {
+        if (ast->gens_->back()->filters_)
+            return lastLoc(ast->gens_->back()->filters_->back());
+        return lastLoc(ast->gens_->back());
+    }
+    return lastLoc(ast->expr_.get());
+}
+
 const SourceLoc& AstLocator::loc(BlockStmtAst* ast) const
 {
     return ast->lDelimLoc_;
@@ -1408,8 +1443,8 @@ const SourceLoc& AstLocator::loc(IfStmtAst* ast) const
 
 const SourceLoc& AstLocator::lastLoc(IfStmtAst* ast) const
 {
-    if (ast->else_)
-        return lastLoc(ast->else_.get());
+    if (ast->notThen_)
+        return lastLoc(ast->notThen_.get());
     return lastLoc(ast->then_.get());
 }
 

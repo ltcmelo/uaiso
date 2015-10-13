@@ -960,8 +960,6 @@ public:
 
     bool hasInit() const { return init_.get(); }
 
-    ExprAst* init() const { return init_.get(); }
-
     std::unique_ptr<NameAst> name_;
     SourceLoc assignLoc_;
     std::unique_ptr<ExprAst> init_;

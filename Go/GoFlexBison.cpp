@@ -47,7 +47,7 @@ DeclAstList* adjustParamGroupDecl(DeclAstList* paramDeclList,
 
 VarGroupDeclAst* turnExprsIntoVarGroupDecl(ExprAstList* exprs)
 {
-    auto group = make<VarGroupDeclAst>()->setSpec(make<InferredSpecAst>());
+    auto group = makeAstRaw<VarGroupDeclAst>()->setSpec(makeAstRaw<InferredSpecAst>());
     for (auto expr : *exprs) {
         if (expr->kind() != Ast::Kind::IdentExpr) {
             // Don't care if there's a decl nested into deeper levels,
@@ -55,9 +55,9 @@ VarGroupDeclAst* turnExprsIntoVarGroupDecl(ExprAstList* exprs)
             continue;
         }
         auto name = IdentExpr_Cast(expr)->name_.release();
-        group->decls_ ? group->decls_->pushBack(make<VarDeclAst>()->setName(name)) :
+        group->decls_ ? group->decls_->pushBack(makeAstRaw<VarDeclAst>()->setName(name)) :
                         group->decls_.reset(DeclAstList::create(
-                                                make<VarDeclAst>()->setName(name)));
+                                                makeAstRaw<VarDeclAst>()->setName(name)));
     }
     delete exprs;
     return group;
@@ -99,12 +99,12 @@ SpecAst* extractSpecFromExpr(ExprAst* nameExpr) {
             auto names = NameAstList::create(IdentExpr_Cast(memberExpr->exprOrSpec_.get())
                                              ->name_.release());
             names->pushBack(memberExpr->name_.release());
-            name = make<NestedNameAst>()->setNamesSR(names);
+            name = makeAstRaw<NestedNameAst>()->setNamesSR(names);
         }
     }
     SpecAst* spec = nullptr;
     if (name)
-        spec = make<NamedSpecAst>()->setName(name);
+        spec = makeAstRaw<NamedSpecAst>()->setName(name);
     delete nameExpr;
 
     return spec;
@@ -115,9 +115,9 @@ SpecAst* extractSpecFromExpr(ExprAst* nameExpr) {
 void actionProgram(ParsingContext* context, const SourceLoc& locA, NameAst* name,
                    const SourceLoc& locB)
 {
-    auto package = make<PackageDeclAst>();
+    auto package = makeAstRaw<PackageDeclAst>();
     package->setKeyLoc(locA)->setName(name)->setTerminLoc(locB);
-    auto program = make<ProgramAst>()->setPackage(package);
+    auto program = makeAstRaw<ProgramAst>()->setPackage(package);
     context->takeAst(std::unique_ptr<Ast>(program));
     context->notifyProgramMatched();
 }
@@ -125,9 +125,9 @@ void actionProgram(ParsingContext* context, const SourceLoc& locA, NameAst* name
 void actionProgram(ParsingContext* context, const SourceLoc& locA, NameAst* name,
                    const SourceLoc& locB, DeclAstList* decls)
 {
-    auto package = make<PackageDeclAst>();
+    auto package = makeAstRaw<PackageDeclAst>();
     package->setKeyLoc(locA)->setName(name)->setTerminLoc(locB);
-    auto program = make<ProgramAst>()->setPackage(package)->setDeclsSR(decls);
+    auto program = makeAstRaw<ProgramAst>()->setPackage(package)->setDeclsSR(decls);
     context->takeAst(std::unique_ptr<Ast>(program));
     context->notifyProgramMatched();
 }

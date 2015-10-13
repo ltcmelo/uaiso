@@ -127,6 +127,7 @@
     GEN_CODE_FOR(In, BinaryExpr) \
     GEN_CODE_FOR(IncDec, UnaryExpr) \
     GEN_CODE_FOR(Is, BinaryExpr) \
+    GEN_CODE_FOR(ListCompre, Expr) \
     GEN_CODE_FOR(LogicAnd, BinaryExpr) \
     GEN_CODE_FOR(LogicNot, UnaryExpr) \
     GEN_CODE_FOR(LogicOr, BinaryExpr) \
@@ -141,6 +142,7 @@
     GEN_CODE_FOR(NumLit, PrimaryExpr) \
     GEN_CODE_FOR(Plus, UnaryExpr) \
     GEN_CODE_FOR(Primary, Expr) \
+    GEN_CODE_FOR(Print, Expr) \
     GEN_CODE_FOR(Power, BinaryExpr) \
     GEN_CODE_FOR(PtrDeref, UnaryExpr) \
     GEN_CODE_FOR(RecordLit, PrimaryExpr) \
@@ -159,7 +161,8 @@
     GEN_CODE_FOR(Unpack, Expr) \
     GEN_CODE_FOR(Mixin, Expr) \
     GEN_CODE_FOR(VoidInit, Expr) \
-    GEN_CODE_FOR(Wrapped, Expr)
+    GEN_CODE_FOR(Wrapped, Expr) \
+    GEN_CODE_FOR(Yield, Expr)
 
 #define STMT_AST_MIXIN(GEN_CODE_FOR) \
     GEN_CODE_FOR(Async, Stmt) \

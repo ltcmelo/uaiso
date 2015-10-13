@@ -83,6 +83,8 @@ const int oprtrDelimTable[] =
 
 Token PyLexer::lex()
 {
+    updatePos();
+
     Token tk = TK_INVALID;
 
 LexNextToken:
@@ -101,6 +103,7 @@ LexNextToken:
     case '\n':
         atLineStart_ = true;
         indent_ = 0;
+        handleNewLine();
         consumeChar();
         tk = TK_NEWLINE;
         return tk;
@@ -141,6 +144,7 @@ LexNextToken:
     case '\\':
         ch = consumeCharPeekNext();
         if (ch == '\n') {
+            handleNewLine();
             consumeChar();
             break;
         }
@@ -278,8 +282,10 @@ LexNextToken:
         while (ch && ch != '\n') {
             char prev = ch;
             ch = consumeCharPeekNext();
-            if (prev == '\\' && ch == '\n')
+            if (prev == '\\' && ch == '\n') {
+                handleNewLine();
                 ch = consumeCharPeekNext();
+            }
         }
         goto LexNextToken;
 

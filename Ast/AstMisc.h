@@ -32,6 +32,9 @@ namespace uaiso {
 
 class Program;
 
+/*!
+ * \brief The ProgramAst class
+ */
 class UAISO_API ProgramAst final : public Ast
 {
 public:
@@ -51,6 +54,54 @@ public:
     std::unique_ptr<DeclAstList> decls_;
 
     Program* program_;
+};
+
+/*!
+ * \brief The GeneratorAst class
+ *
+ * A generator in a list comprehension.
+ */
+class UAISO_API GeneratorAst final : public Ast
+{
+public:
+    using Self = GeneratorAst;
+
+    GeneratorAst()
+        : Ast(Kind::Generator)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Opr, opr)
+    NAMED_AST_LIST_PARAM(Pattern, patterns, ExprAst)
+    NAMED_AST_PARAM(Range, range, ExprAst)
+    NAMED_AST_LIST_PARAM(Filter, filters, FilterAst)
+
+    SourceLoc keyLoc_;
+    SourceLoc oprLoc_;
+    std::unique_ptr<ExprAstList> patterns_;
+    std::unique_ptr<ExprAst> range_;
+    std::unique_ptr<FilterAstList> filters_;
+};
+
+/*!
+ * \brief The FilterAst class
+ *
+ * A filter in a list comprehension.
+ */
+class UAISO_API FilterAst final : public Ast
+{
+public:
+    using Self = FilterAst;
+
+    FilterAst()
+        : Ast(Kind::Filter)
+    {}
+
+    NAMED_LOC_PARAM(Opr, opr)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+
+    SourceLoc oprLoc_;
+    std::unique_ptr<ExprAst> expr_;
 };
 
 /*!

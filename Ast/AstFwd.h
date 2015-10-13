@@ -28,20 +28,20 @@
 
 namespace uaiso {
 
-    //--- Top-level ---//
 class Ast;
 class ProgramAst;
+class TemplateArgAst;
+class GeneratorAst;
+class FilterAst;
 
     //--- Kinds ---//
+
 class NameAst;
 class AttrAst;
 class SpecAst;
 class DeclAst;
 class ExprAst;
 class StmtAst;
-
-    //--- Misc ---//
-class TemplateArgAst;
 
     //--- Nodes ---//
 

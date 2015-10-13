@@ -35,39 +35,40 @@ template <class AstT>
 class ListTraits
 {
 public:
-    typedef AstT AstType;
+    using AstType = AstT;
 };
 
 template <class DerivedListT, class ListTraitsT>
 class UAISO_API AstList
 {
 public:
-    typedef DerivedListT ListType;
-    typedef typename ListTraitsT::AstType AstType;
+    using ListType = DerivedListT;
+    using AstType = typename ListTraitsT::AstType;
 
     /*!
      * \brief createSR
+     * \param ast
+     * \return
      *
      * Create a list in such a way that it can be easily used for shift-
      * reduce (SR) parsing. In this list elements should be "added" by
      * calling handleSR. After parsing, the list must be put into linear
      * form by calling finishSR.
      *
-     * \param ast
-     * \return
-     *
-     * \warning It's a bug not to call finishSR after creating a list
-     * this way.
+     * \warning It's a bug not to call finishSR after creating a list this way.
      * \sa handleSR(), finishSR
-     *
      */
     static ListType* createSR(AstType* ast)
     {
+        UAISO_ASSERT(ast, return nullptr, "invalid ast");
+
         return new ListType(ast);
     }
 
     static ListType* create(AstType* ast)
     {
+        UAISO_ASSERT(ast, return nullptr, "invalid ast");
+
         return new ListType(ast, nullptr);
     }
 
@@ -97,6 +98,7 @@ public:
      */
     ListType* handleSR(AstType* ast)
     {
+        UAISO_ASSERT(ast, return nullptr, "invalid ast");
         UAISO_ASSERT(next_.get() != nullptr, return nullptr, "list is linear");
 
         auto node = new ListType(ast, next_.release());
@@ -129,6 +131,8 @@ public:
      */
     ListType* mergeSR(ListType* list)
     {
+        UAISO_ASSERT(list, return nullptr, "invalid list node");
+
         list->next_.release();
         list->next_.reset(next_.release());
         next_.reset(list);
@@ -138,6 +142,12 @@ public:
     ListType* subList() const
     {
         return next_.get();
+    }
+
+    ListType* lastSubList() const
+    {
+        return next_ ? next_->lastSubList() :
+                       const_cast<ListType*>(static_cast<const ListType*>(this));
     }
 
     AstType* head() const
@@ -157,10 +167,22 @@ public:
 
     void pushBack(AstType* ast)
     {
+        UAISO_ASSERT(ast, return, "invalid ast");
+
         if (next_)
             next_->pushBack(ast);
         else
             next_.reset(new ListType(ast, nullptr));
+    }
+
+    void merge(ListType* list)
+    {
+        UAISO_ASSERT(list, return, "invalid list node");
+
+        if (next_)
+            next_->merge(list);
+        else
+            next_.reset(list);
     }
 
     class Iterator
@@ -213,10 +235,10 @@ class UAISO_API TrivialAstList : public AstList<TrivialAstList<AstT>,
                                         ListTraits<AstT>>
 {
 public:
-    typedef TrivialAstList<AstT> Self;
-    typedef AstList<TrivialAstList<AstT>, ListTraits<AstT>> Base;
-    typedef AstT AstType;
-    typedef ListTraits<AstT> Traits;
+    using Self = TrivialAstList<AstT>;
+    using Base = AstList<TrivialAstList<AstT>, ListTraits<AstT>>;
+    using AstType = AstT;
+    using Traits = ListTraits<AstT>;
 
     template <class, class> friend class AstList;
 
@@ -228,10 +250,10 @@ class UAISO_API DelimAstList : public AstList<DelimAstList<AstT>,
                                       ListTraits<AstT>>
 {
 public:
-    typedef DelimAstList<AstT> Self;
-    typedef AstList<DelimAstList<AstT>, ListTraits<AstT>> Base;
-    typedef AstT AstType;
-    typedef ListTraits<AstT> Traits;
+    using Self = DelimAstList<AstT>;
+    using Base = AstList<DelimAstList<AstT>, ListTraits<AstT>>;
+    using AstType = AstT;
+    using Traits = ListTraits<AstT>;
 
     template <class, class> friend class AstList;
 
@@ -240,13 +262,31 @@ public:
     SourceLoc delim_;
 };
 
-typedef DelimAstList<NameAst> NameAstList;
-typedef DelimAstList<SpecAst> SpecAstList;
-typedef TrivialAstList<AttrAst> AttrAstList;
-typedef DelimAstList<DeclAst> DeclAstList;
-typedef DelimAstList<ExprAst> ExprAstList;
-typedef TrivialAstList<StmtAst> StmtAstList;
-typedef DelimAstList<TemplateArgAst> TemplateArgAstList;
+using NameAstList = DelimAstList<NameAst>;
+using SpecAstList = DelimAstList<SpecAst>;
+using AttrAstList = TrivialAstList<AttrAst>;
+using DeclAstList = DelimAstList<DeclAst>;
+using ExprAstList = DelimAstList<ExprAst>;
+using StmtAstList = TrivialAstList<StmtAst>;
+using TemplateArgAstList = DelimAstList<TemplateArgAst>;
+using GeneratorAstList = TrivialAstList<GeneratorAst>;
+using FilterAstList = TrivialAstList<FilterAst>;
+
+    //--- Convenience ---//
+
+template <class AstListT>
+void addToList(std::unique_ptr<AstListT>& list, typename AstListT::AstType* ast)
+{
+    if (ast)
+        list ? list->pushBack(ast) : list.reset(AstListT::create(ast));
+}
+
+template <class AstListT>
+void mergeList(std::unique_ptr<AstListT>& list, AstListT* otherList)
+{
+    if (otherList)
+        list ? list->merge(otherList) : list.reset(otherList);
+}
 
 } // namespace uaiso
 
