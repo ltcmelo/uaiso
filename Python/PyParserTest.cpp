@@ -56,6 +56,18 @@ public:
              , &PyParserTest::testCase18
              , &PyParserTest::testCase19
              , &PyParserTest::testCase20
+             , &PyParserTest::testCase21
+             , &PyParserTest::testCase22
+             , &PyParserTest::testCase23
+             , &PyParserTest::testCase24
+             , &PyParserTest::testCase25
+             , &PyParserTest::testCase26
+             , &PyParserTest::testCase27
+             , &PyParserTest::testCase28
+             , &PyParserTest::testCase29
+             , &PyParserTest::testCase30
+             , &PyParserTest::testCase31
+             , &PyParserTest::testCase32
             )
 
     void testCase1();
@@ -78,6 +90,18 @@ public:
     void testCase18();
     void testCase19();
     void testCase20();
+    void testCase21();
+    void testCase22();
+    void testCase23();
+    void testCase24();
+    void testCase25();
+    void testCase26();
+    void testCase27();
+    void testCase28();
+    void testCase29();
+    void testCase30();
+    void testCase31();
+    void testCase32();
 
     void core(const std::string& code, bool expectError = false)
     {
@@ -91,7 +115,9 @@ public:
         bool ok = parser.parse(&lexer, &context);
         UAISO_EXPECT_TRUE(ok);
 
-        if (!expectError)
+        if (expectError)
+            UAISO_EXPECT_TRUE(reports.size() > 0);
+        else
             UAISO_EXPECT_INT_EQ(0, reports.size());
 
         if (dumpAst_) {
@@ -211,4 +237,64 @@ void PyParser::PyParserTest::testCase19()
 void PyParser::PyParserTest::testCase20()
 {
     core("print f(x for x in Y if == 0)\n", true);
+}
+
+void PyParser::PyParserTest::testCase21()
+{
+    core("print x and y\n");
+}
+
+void PyParser::PyParserTest::testCase22()
+{
+    core("print x and ==\n", true);
+}
+
+void PyParser::PyParserTest::testCase23()
+{
+    core("print x and\n", true);
+}
+
+void PyParser::PyParserTest::testCase24()
+{
+    core("print x or y\n");
+}
+
+void PyParser::PyParserTest::testCase25()
+{
+    core("print x or ==\n", true);
+}
+
+void PyParser::PyParserTest::testCase26()
+{
+    core("print x or\n", true);
+}
+
+void PyParser::PyParserTest::testCase27()
+{
+    core("print x < y\n");
+}
+
+void PyParser::PyParserTest::testCase28()
+{
+    core("print x < ==\n", true);
+}
+
+void PyParser::PyParserTest::testCase29()
+{
+    core("print x <\n", true);
+}
+
+void PyParser::PyParserTest::testCase30()
+{
+    core("print 1 if a else 2\n");
+}
+
+void PyParser::PyParserTest::testCase31()
+{
+    core("print x.f()\n");
+}
+
+void PyParser::PyParserTest::testCase32()
+{
+    core("print x.f(]\n", true);
 }

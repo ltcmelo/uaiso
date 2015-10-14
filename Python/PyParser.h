@@ -72,15 +72,16 @@ private:
 
     std::pair<Precedence, std::unique_ptr<BinaryExprAst>> fetchPrecAhead() const;
 
+    using Name = std::unique_ptr<NameAst>;
     using Stmt = std::unique_ptr<StmtAst>;
     using Expr = std::unique_ptr<ExprAst>;
     using ExprList = std::unique_ptr<ExprAstList>;
 
     bool isTestAhead() const;
+    bool isNonLambdaTestAhead() const;
     bool isExprAhead() const;
     bool isFactorAhead() const;
     bool isAtomAhead() const;
-    bool isArgAhead() const;
 
     //--- Statements ---//
 
@@ -123,6 +124,7 @@ private:
     std::unique_ptr<ExprAst> parseNotTest();
     std::unique_ptr<ExprAst> parseComparison();
     std::unique_ptr<ExprAst> parseExpr();
+    std::unique_ptr<ExprAst> parseBinaryExpr(Precedence precedence);
     std::unique_ptr<ExprAst> parseFactor();
     std::unique_ptr<ExprAst> parsePower();
     std::unique_ptr<ExprAst> parseAtom();
@@ -132,17 +134,23 @@ private:
     std::unique_ptr<ListCompreExprAst> parseCompFor(std::unique_ptr<ListCompreExprAst>);
     std::unique_ptr<ListCompreExprAst> parseCompIf(std::unique_ptr<ListCompreExprAst>);
     std::unique_ptr<ExprAstList> parseExprList();
-    template <class LitAstT> std::unique_ptr<ExprAst> parseLitExpr();
-    template <class BinAstT>
-    std::unique_ptr<ExprAst> parseBinaryExpr(Expr expr, Expr (PyParser::*parseFunc) ());
-    std::unique_ptr<ExprAst> parseBinaryExpr(Precedence precedence);
-    std::unique_ptr<ExprAst> parseAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ());
 
-    //--- Common ---//
+    // Helpers
+
+    template <class LitAstT>
+    std::unique_ptr<ExprAst> completeLitExpr();
+    template <class UnaryAstT>
+    std::unique_ptr<ExprAst> completeUnaryExpr(Expr (PyParser::*parseFunc) ());
+    template <class BinaryAstT>
+    std::unique_ptr<ExprAst> completeBinaryExpr(Expr expr, Expr (PyParser::*parseFunc) ());
+    std::unique_ptr<ExprAst> completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ());
+    std::unique_ptr<NameAst> completeName();
 
     template <class AstListT>
     std::pair<std::unique_ptr<AstListT>, bool>
-    parseList(Token tk, std::unique_ptr<typename AstListT::AstType> (PyParser::*) ());
+    parseList(Token tk,
+              bool (PyParser::*checkAhead) () const,
+              std::unique_ptr<typename AstListT::AstType> (PyParser::*) ());
 
     Lexer* lexer_ { nullptr };
     ParsingContext* context_ { nullptr };
