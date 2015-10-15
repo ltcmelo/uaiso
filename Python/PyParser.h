@@ -82,75 +82,81 @@ private:
     bool isExprAhead() const;
     bool isFactorAhead() const;
     bool isAtomAhead() const;
+    bool isArgAhead() const;
+    bool isSubscriptAhead() const;
 
     //--- Statements ---//
 
-    std::unique_ptr<StmtAst> parseStmt();
-    std::unique_ptr<StmtAst> parseSimpleStmt();
-    std::unique_ptr<StmtAst> parseSmallStmt();
-    std::unique_ptr<StmtAst> parseExprStmt();
-    std::unique_ptr<StmtAst> parsePrintStmt();
-    std::unique_ptr<StmtAst> parseDelStmt();
-    std::unique_ptr<StmtAst> parsePassStmt();
-    std::unique_ptr<StmtAst> parseFlowStmt();
-    std::unique_ptr<StmtAst> parseImportStmt();
-    std::unique_ptr<StmtAst> parseGlobalStmt();
-    std::unique_ptr<StmtAst> parseExecStmt();
-    std::unique_ptr<StmtAst> parseAssertStmt();
-    std::unique_ptr<StmtAst> parseCompoundStmt();
-    std::unique_ptr<StmtAst> parseIfStmt();
-    std::unique_ptr<StmtAst> parseWhileStmt();
-    std::unique_ptr<StmtAst> parseForStmt();
-    std::unique_ptr<StmtAst> parseTryStmt();
-    std::unique_ptr<StmtAst> parseWithStmt();
-    std::unique_ptr<StmtAst> parseFuncDef();
-    std::unique_ptr<StmtAst> parseClassDef();
-    std::unique_ptr<StmtAst> parseDecorated();
-    std::unique_ptr<StmtAst> parseContinueStmt();
-    std::unique_ptr<StmtAst> parseBreakStmt();
-    std::unique_ptr<StmtAst> parseYieldStmt();
-    std::unique_ptr<StmtAst> parseThrowStmt();
-    std::unique_ptr<StmtAst> parseReturnStmt();
+    Stmt parseStmt();
+    Stmt parseSimpleStmt();
+    Stmt parseSmallStmt();
+    Stmt parseExprStmt();
+    Stmt parsePrintStmt();
+    Stmt parseDelStmt();
+    Stmt parsePassStmt();
+    Stmt parseFlowStmt();
+    Stmt parseImportStmt();
+    Stmt parseGlobalStmt();
+    Stmt parseExecStmt();
+    Stmt parseAssertStmt();
+    Stmt parseCompoundStmt();
+    Stmt parseIfStmt();
+    Stmt parseWhileStmt();
+    Stmt parseForStmt();
+    Stmt parseTryStmt();
+    Stmt parseWithStmt();
+    Stmt parseFuncDef();
+    Stmt parseClassDef();
+    Stmt parseDecorated();
+    Stmt parseContinueStmt();
+    Stmt parseBreakStmt();
+    Stmt parseYieldStmt();
+    Stmt parseThrowStmt();
+    Stmt parseReturnStmt();
 
     //--- Expressions ---//
 
-    std::unique_ptr<ExprAst> parseTest();
-    std::unique_ptr<ExprAst> parseOldTest();
-    std::unique_ptr<ExprAstList> parseTestList();
-    std::unique_ptr<ExprAst> parseLambdaDef();
-    std::unique_ptr<ExprAst> parseOldLambdaDef();
-    std::unique_ptr<ExprAst> parseOrTest();
-    std::unique_ptr<ExprAst> parseAndTest();
-    std::unique_ptr<ExprAst> parseNotTest();
-    std::unique_ptr<ExprAst> parseComparison();
-    std::unique_ptr<ExprAst> parseExpr();
-    std::unique_ptr<ExprAst> parseBinaryExpr(Precedence precedence);
-    std::unique_ptr<ExprAst> parseFactor();
-    std::unique_ptr<ExprAst> parsePower();
-    std::unique_ptr<ExprAst> parseAtom();
-    std::unique_ptr<ExprAst> parseArg();
-    std::unique_ptr<ExprAstList> parseArgList();
-    std::unique_ptr<ExprAstList> parseSubscriptList();
+    Expr parseTest();
+    Expr parseOldTest();
+    ExprList parseTestList();
+    ExprList parseTestList1();
+    Expr parseLambdaDef();
+    Expr parseOldLambdaDef();
+    Expr parseOrTest();
+    Expr parseAndTest();
+    Expr parseNotTest();
+    Expr parseComparison();
+    Expr parseExpr();
+    Expr parseBinaryExpr(Precedence precedence);
+    Expr parseFactor();
+    Expr parsePower();
+    Expr parseAtom();
+    Expr parseArg();
+    ExprList parseArgList();
+    Expr parseSubscript();
+    ExprList parseSubscriptList();
     std::unique_ptr<ListCompreExprAst> parseCompFor(std::unique_ptr<ListCompreExprAst>);
     std::unique_ptr<ListCompreExprAst> parseCompIf(std::unique_ptr<ListCompreExprAst>);
-    std::unique_ptr<ExprAstList> parseExprList();
+    ExprList parseExprList();
 
     // Helpers
 
     template <class LitAstT>
-    std::unique_ptr<ExprAst> completeLitExpr();
+    Expr completeLitExpr();
     template <class UnaryAstT>
-    std::unique_ptr<ExprAst> completeUnaryExpr(Expr (PyParser::*parseFunc) ());
+    Expr completeUnaryExpr(Expr (PyParser::*parseFunc) ());
     template <class BinaryAstT>
-    std::unique_ptr<ExprAst> completeBinaryExpr(Expr expr, Expr (PyParser::*parseFunc) ());
-    std::unique_ptr<ExprAst> completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ());
-    std::unique_ptr<NameAst> completeName();
+    Expr completeBinaryExpr(Expr expr, Expr (PyParser::*parseFunc) ());
+    Expr completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ());
+    Expr completeSubrangeExpr(Expr expr);
+    Name completeName();
 
     template <class AstListT>
     std::pair<std::unique_ptr<AstListT>, bool>
     parseList(Token tk,
               bool (PyParser::*checkAhead) () const,
-              std::unique_ptr<typename AstListT::AstType> (PyParser::*) ());
+              std::unique_ptr<typename AstListT::AstType> (PyParser::*) (),
+              bool acceptTrailing = true);
 
     Lexer* lexer_ { nullptr };
     ParsingContext* context_ { nullptr };

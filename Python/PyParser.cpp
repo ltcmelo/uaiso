@@ -159,6 +159,30 @@ bool PyParser::isAtomAhead() const
     }
 }
 
+bool PyParser::isArgAhead() const
+{
+    switch (ahead_) {
+    case TK_STAR:
+    case TK_STAR_STAR:
+        return true;
+
+    default:
+        return isTestAhead();
+    }
+}
+
+bool PyParser::isSubscriptAhead() const
+{
+    switch (ahead_) {
+    case TK_DOT_DOT_DOT:
+    case TK_COLON:
+        return true;
+
+    default:
+        return isTestAhead();
+    }
+}
+
 std::pair<PyParser::Precedence, std::unique_ptr<BinaryExprAst>>
 PyParser::fetchPrecAhead() const
 {
@@ -588,6 +612,17 @@ std::unique_ptr<ExprAstList> PyParser::parseTestList()
 }
 
 /*
+ * testlist1: test (',' test)*
+ */
+std::unique_ptr<ExprAstList> PyParser::parseTestList1()
+{
+    return parseList<ExprAstList>(TK_COMMA,
+                                  &PyParser::isTestAhead,
+                                  &PyParser::parseTest,
+                                  false).first;
+}
+
+/*
  * argument: test [comp_for] | test '=' test
  */
 std::unique_ptr<ExprAst> PyParser::parseArg()
@@ -871,7 +906,8 @@ std::unique_ptr<ExprAst> PyParser::parsePower()
             auto call = makeAst<CallExprAst>();
             call->setLDelimLoc(lastLoc_);
             call->setBase(atom.release());
-            call->setArgs(parseArgList().release());
+            if (isArgAhead())
+                call->setArgs(parseArgList().release());
             if (!match(TK_RPAREN)) {
                 DEBUG_TRACE("parsePower, skip to TK_RPAREN\n");
                 skipTo(TK_RPAREN);
@@ -881,18 +917,28 @@ std::unique_ptr<ExprAst> PyParser::parsePower()
             break;
         }
 
-        // TODO
-        case TK_LBRACKET:
+        case TK_LBRACKET: {
+            consumeToken();
+            auto arrayAccess = makeAst<ArraySliceExprAst>(); // See comment in this AST.
+            arrayAccess->setLDelimLoc(lastLoc_);
+            arrayAccess->setBase(atom.release());
+            arrayAccess->setRange(parseSubscript().release());
+            if (!match(TK_RBRACKET)) {
+                DEBUG_TRACE("parsePower, skip to TK_RBRACKET\n");
+                skipTo(TK_RBRACKET);
+            }
+            atom.reset(arrayAccess.release());
             break;
+        }
 
         case TK_DOT: {
             consumeToken();
-            auto access = makeAst<MemberAccessExprAst>();
-            access->setOprLoc(lastLoc_);
-            access->setExpr(atom.release());
+            auto member = makeAst<MemberAccessExprAst>();
+            member->setOprLoc(lastLoc_);
+            member->setExpr(atom.release());
             match(TK_IDENTIFIER);
-            access->setName(completeName().release());
-            atom.reset(access.release());
+            member->setName(completeName().release());
+            atom.reset(member.release());
             break;
         }
 
@@ -922,8 +968,20 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
     case TK_LPAREN:
     case TK_RPAREN:
     case TK_LBRACE:
-    case TK_BACKTICK:
         return Expr();
+
+    case TK_BACKTICK: {
+        consumeToken();
+        auto str = makeAst<StrLitExprAst>();
+        auto loc = lastLoc_;
+        parseTestList1(); // Let it die.
+        if (!match(TK_BACKTICK)) {
+            DEBUG_TRACE("parseAtom, skip to TK_BACKTICK\n");
+            skipTo(TK_BACKTICK);
+        }
+        str->setLitLoc(joinedLoc(loc, lastLoc_));
+        return Expr(str.release());
+    }
 
     case TK_IDENTIFIER: {
         consumeToken();
@@ -947,6 +1005,40 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
     }
 }
 
+/*
+ * subscript: '.' '.' '.' | test | [test] ':' [test] [sliceop]
+ * sliceop: ':' [test]
+ */
+std::unique_ptr<ExprAst> PyParser::parseSubscript()
+{
+    switch (ahead_) {
+    case TK_DOT_DOT_DOT:
+        // TODO: Model this kind of slice.
+        consumeToken();
+        return makeAst<SubrangeExprAst>();
+
+    case TK_COLON:
+        consumeToken();
+        return completeSubrangeExpr(Expr());
+
+    default:
+        auto test = parseTest();
+        if (maybeConsume(TK_COLON))
+            return completeSubrangeExpr(std::move(test));
+        return test;
+    }
+}
+
+/*
+ * subscriptlist: subscript (',' subscript)* [',']
+ */
+std::unique_ptr<ExprAstList> PyParser::parseSubscriptList()
+{
+    return parseList<ExprAstList>(TK_COMMA,
+                                  &PyParser::isSubscriptAhead,
+                                  &PyParser::parseSubscript).first;
+}
+
 std::unique_ptr<ExprAst> PyParser::parseLambdaDef()
 {
     UAISO_ASSERT(ahead_ == TK_LAMBDA, return Expr());
@@ -960,16 +1052,25 @@ std::unique_ptr<ExprAst> PyParser::parseOldLambdaDef()
     return Expr();
 }
 
-std::unique_ptr<ExprAstList> PyParser::parseSubscriptList()
-{
-    return ExprList();
-}
-
 std::unique_ptr<NameAst> PyParser::completeName()
 {
     auto name = makeAst<SimpleNameAst>();
     name->setNameLoc(lastLoc_);
     return Name(name.release());
+}
+
+std::unique_ptr<ExprAst> PyParser::completeSubrangeExpr(Expr expr)
+{
+    auto range = makeAst<SubrangeExprAst>();
+    range->setDelim1Loc(lastLoc_);
+    range->setLow(expr.release());
+    if (isTestAhead())
+        range->setHi(parseTest().release());
+    if (maybeConsume(TK_COLON))
+        range->setDelim2Loc(lastLoc_);
+    if (isTestAhead())
+        range->setMax(parseTest().release()); // TODO: In Go, this is max.
+    return Expr(range.release());
 }
 
 template <class LitAstT>
@@ -1009,13 +1110,11 @@ PyParser::completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ())
     return Expr(assign.release());
 }
 
-/*
- * Parse a list that accepts a trailing separator (like a comma): item (',' item)* [',']
- */
 template <class AstListT> std::pair<std::unique_ptr<AstListT>, bool>
 PyParser::parseList(Token tk,
                     bool (PyParser::*checkAhead) () const,
-                    std::unique_ptr<typename AstListT::AstType> (PyParser::*parseFunc) ())
+                    std::unique_ptr<typename AstListT::AstType> (PyParser::*parseFunc) (),
+                    bool trailingOK)
 {
     using List = std::unique_ptr<AstListT>;
 
@@ -1025,8 +1124,7 @@ PyParser::parseList(Token tk,
     while (maybeConsume(tk)) {
         if (list)
             list->delim_ = lastLoc_;
-        // A trailing separator is OK.
-        if (!(((this)->*(checkAhead))()))
+        if (trailingOK && !(((this)->*(checkAhead))()))
             return std::make_pair(std::move(list), true);
 
         addToList(list, (((this)->*(parseFunc))()).release());

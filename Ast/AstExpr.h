@@ -871,7 +871,7 @@ public:
     NAMED_LOC_PARAM(Delim1, delim1)
     NAMED_AST_PARAM(Hi, hi, ExprAst)
     NAMED_LOC_PARAM(Delim2, delim2)
-    NAMED_AST_PARAM(Max, max, ExprAst)
+    NAMED_AST_PARAM(Max, max, ExprAst) // TODO: In Python this is a step.
 
     std::unique_ptr<ExprAst> low_;
     SourceLoc delim1Loc_;
@@ -880,6 +880,7 @@ public:
     std::unique_ptr<ExprAst> max_;
 };
 
+// TODO: Merge this and slice into a common ArrayAccess.
 class UAISO_API ArrayIndexExprAst final : public ExprAst
 {
 public:
@@ -900,6 +901,7 @@ public:
     SourceLoc rDelimLoc_;
 };
 
+// TODO: Merge this and slice into a common ArrayAccess.
 class UAISO_API ArraySliceExprAst : public ExprAst
 {
 public:

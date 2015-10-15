@@ -68,6 +68,16 @@ public:
              , &PyParserTest::testCase30
              , &PyParserTest::testCase31
              , &PyParserTest::testCase32
+             , &PyParserTest::testCase33
+             , &PyParserTest::testCase34
+             , &PyParserTest::testCase35
+             , &PyParserTest::testCase36
+             , &PyParserTest::testCase37
+             , &PyParserTest::testCase38
+             , &PyParserTest::testCase39
+             , &PyParserTest::testCase40
+             , &PyParserTest::testCase41
+             , &PyParserTest::testCase42
             )
 
     void testCase1();
@@ -102,6 +112,16 @@ public:
     void testCase30();
     void testCase31();
     void testCase32();
+    void testCase33();
+    void testCase34();
+    void testCase35();
+    void testCase36();
+    void testCase37();
+    void testCase38();
+    void testCase39();
+    void testCase40();
+    void testCase41();
+    void testCase42();
 
     void core(const std::string& code, bool expectError = false)
     {
@@ -297,4 +317,54 @@ void PyParser::PyParserTest::testCase31()
 void PyParser::PyParserTest::testCase32()
 {
     core("print x.f(]\n", true);
+}
+
+void PyParser::PyParserTest::testCase33()
+{
+    core("print x.f()[]\n", true);
+}
+
+void PyParser::PyParserTest::testCase34()
+{
+    core("print x.f()[:]\n");
+}
+
+void PyParser::PyParserTest::testCase35()
+{
+    core("print x.f()[1:]\n");
+}
+
+void PyParser::PyParserTest::testCase36()
+{
+    core("print x.f()[1:1]\n");
+}
+
+void PyParser::PyParserTest::testCase37()
+{
+    core("print x.f()[:1]\n");
+}
+
+void PyParser::PyParserTest::testCase38()
+{
+    core("print x.f()[1:a:]\n");
+}
+
+void PyParser::PyParserTest::testCase39()
+{
+    core("print x.f()[1:a:1]\n");
+}
+
+void PyParser::PyParserTest::testCase40()
+{
+    core("print x.f()[::]\n");
+}
+
+void PyParser::PyParserTest::testCase41()
+{
+    core("print x.f()[::1]\n");
+}
+
+void PyParser::PyParserTest::testCase42()
+{
+    core("print x.f()[::1 a]\n", true);
 }
