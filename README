@@ -68,7 +68,7 @@ get LR parsers working on an interactive environment. However, this decision was
 convenient to me in order to "quickly" sketch a prototype. I plan to replace
 those for LL parsers eventually - in particular for D, due to its grammar
 characteristics. Nevertheless, as you can see in the videos below, it's still
-possible to do error recovery at the right places so completion works descently.
+possible to do error recovery at the right places so completion works decently.
 
 
 -----------------------
