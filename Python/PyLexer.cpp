@@ -33,7 +33,8 @@
 using namespace uaiso;
 
 PyLexer::PyLexer()
-    : indent_(0)
+    : atLineStart_(true)
+    , indent_(0)
     , syntax_(new PySyntax)
 {
     indentStack_.push(0);
@@ -101,12 +102,15 @@ LexNextToken:
         return tk;
 
     case '\n':
-        atLineStart_ = true;
         indent_ = 0;
         handleNewLine();
         consumeChar();
-        tk = TK_NEWLINE;
-        return tk;
+        if (!atLineStart_) {
+            atLineStart_ = true;
+            tk = TK_NEWLINE;
+            return tk;
+        }
+        goto LexNextToken;
 
     case '\t':
     case ' ':
