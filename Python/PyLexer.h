@@ -56,6 +56,7 @@ private:
     bool atLineStart_;
     size_t indent_;
     std::stack<size_t> indentStack_;
+    size_t brackets_;
     std::unique_ptr<Syntax> syntax_;
 };
 

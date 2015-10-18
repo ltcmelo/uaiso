@@ -63,6 +63,10 @@ public:
              , &PyLexerTest::testCase28
              , &PyLexerTest::testCase29
              , &PyLexerTest::testCase30
+             , &PyLexerTest::testCase31
+             , &PyLexerTest::testCase32
+             , &PyLexerTest::testCase33
+             , &PyLexerTest::testCase34
              )
 
     // Tests cases (with few exceptions) were taken from CPython.
@@ -97,7 +101,10 @@ public:
     void testCase28();
     void testCase29();
     void testCase30();
-
+    void testCase31();
+    void testCase32();
+    void testCase33();
+    void testCase34();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -425,7 +432,6 @@ x = sys.modules['time'].time()
         TK_LBRACKET, TK_STRING_LITERAL, TK_RBRACKET, TK_DOT, TK_IDENTIFIER,
         TK_LPAREN, TK_RPAREN, TK_NEWLINE, TK_EOP
     };
-    std::copy(tks.begin(), tks.end(), std::ostream_iterator<Token>(std::cout, " " ));
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }
@@ -484,5 +490,91 @@ async def foo():
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }
+
+void PyLexer::PyLexerTest::testCase31()
+{
+    auto tks = core(R"raw(
+
+a = [1, 2,
+     3, 4]
+
+)raw");
+
+    std::vector<Token> expected {
+        TK_IDENTIFIER, TK_EQUAL, TK_LBRACKET, TK_INTEGER_LITERAL, TK_COMMA,
+        TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL, TK_COMMA,
+        TK_INTEGER_LITERAL, TK_RBRACKET, TK_NEWLINE, TK_EOP
+    };
+    std::copy(tks.begin(), tks.end(), std::ostream_iterator<Token>(std::cout, " " ));
+
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase32()
+{
+    auto tks = core(R"raw(
+
+if a:
+    print [1, 2,
+3, 4]
+
+)raw");
+
+    std::vector<Token> expected {
+        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
+        TK_LBRACKET, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
+        TK_COMMA, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
+        TK_RBRACKET, TK_NEWLINE, TK_DEDENT, TK_EOP
+    };
+    std::copy(tks.begin(), tks.end(), std::ostream_iterator<Token>(std::cout, " " ));
+
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase33()
+{
+    auto tks = core(R"raw(
+
+if a:
+    print [1, 2,
+           3, 4]
+
+)raw");
+
+    std::vector<Token> expected {
+        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
+        TK_LBRACKET, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
+        TK_COMMA, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
+        TK_RBRACKET, TK_NEWLINE, TK_DEDENT, TK_EOP
+    };
+    std::copy(tks.begin(), tks.end(), std::ostream_iterator<Token>(std::cout, " " ));
+
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase34()
+{
+    auto tks = core(R"raw(
+
+if a:
+    print 1
+else:
+    print 2
+
+)raw");
+
+    std::vector<Token> expected {
+        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_INDENT,
+        TK_PRINT, TK_INTEGER_LITERAL, TK_NEWLINE, TK_DEDENT,
+        TK_ELSE, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
+        TK_INTEGER_LITERAL, TK_NEWLINE, TK_DEDENT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
 
 MAKE_CLASS_TEST(PyLexer)

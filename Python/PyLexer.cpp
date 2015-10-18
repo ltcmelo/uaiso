@@ -35,6 +35,7 @@ using namespace uaiso;
 PyLexer::PyLexer()
     : atLineStart_(true)
     , indent_(0)
+    , brackets_(0)
     , syntax_(new PySyntax)
 {
     indentStack_.push(0);
@@ -84,9 +85,19 @@ const int oprtrDelimTable[] =
 
 Token PyLexer::lex()
 {
+    Token tk = TK_INVALID;
     updatePos();
 
-    Token tk = TK_INVALID;
+    UAISO_ASSERT(!indentStack_.empty(), return tk);
+
+    // Handle dedents for completely unindented lines.
+    if (atLineStart_ && indentStack_.top() > 0) {
+        char ch = peekChar();
+        if (ch && !std::isspace(ch) && ch != '#') {
+            indentStack_.pop();
+            return TK_DEDENT;
+        }
+    }
 
 LexNextToken:
     UAISO_ASSERT(!indentStack_.empty(), return tk);
@@ -105,7 +116,7 @@ LexNextToken:
         indent_ = 0;
         handleNewLine();
         consumeChar();
-        if (!atLineStart_) {
+        if (!atLineStart_ && !brackets_) {
             atLineStart_ = true;
             tk = TK_NEWLINE;
             return tk;
@@ -242,31 +253,37 @@ LexNextToken:
         break;
 
     case '(':
+        ++brackets_;
         consumeChar();
         tk = TK_LPAREN;
         break;
 
     case ')':
+        --brackets_;
         consumeChar();
         tk = TK_RPAREN;
         break;
 
     case '[':
+        ++brackets_;
         consumeChar();
         tk = TK_LBRACKET;
         break;
 
     case ']':
+        --brackets_;
         consumeChar();
         tk = TK_RBRACKET;
         break;
 
     case '{':
+        ++brackets_;
         consumeChar();
         tk = TK_LBRACE;
         break;
 
     case '}':
+        --brackets_;
         consumeChar();
         tk = TK_RBRACE;
         break;
