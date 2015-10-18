@@ -78,6 +78,24 @@ public:
              , &PyParserTest::testCase40
              , &PyParserTest::testCase41
              , &PyParserTest::testCase42
+             , &PyParserTest::testCase43
+             , &PyParserTest::testCase44
+             , &PyParserTest::testCase45
+             , &PyParserTest::testCase46
+             , &PyParserTest::testCase47
+             , &PyParserTest::testCase48
+             , &PyParserTest::testCase49
+             , &PyParserTest::testCase50
+             , &PyParserTest::testCase51
+             , &PyParserTest::testCase52
+             , &PyParserTest::testCase53
+             , &PyParserTest::testCase54
+             , &PyParserTest::testCase55
+             , &PyParserTest::testCase56
+             , &PyParserTest::testCase57
+             , &PyParserTest::testCase58
+             , &PyParserTest::testCase59
+             , &PyParserTest::testCase60
             )
 
     void testCase1();
@@ -122,6 +140,24 @@ public:
     void testCase40();
     void testCase41();
     void testCase42();
+    void testCase43();
+    void testCase44();
+    void testCase45();
+    void testCase46();
+    void testCase47();
+    void testCase48();
+    void testCase49();
+    void testCase50();
+    void testCase51();
+    void testCase52();
+    void testCase53();
+    void testCase54();
+    void testCase55();
+    void testCase56();
+    void testCase57();
+    void testCase58();
+    void testCase59();
+    void testCase60();
 
     void core(const std::string& code, bool expectError = false)
     {
@@ -276,7 +312,7 @@ void PyParser::PyParserTest::testCase23()
 
 void PyParser::PyParserTest::testCase24()
 {
-    core("print x or y\n");
+    core("print 1 or y\n");
 }
 
 void PyParser::PyParserTest::testCase25()
@@ -367,4 +403,134 @@ void PyParser::PyParserTest::testCase41()
 void PyParser::PyParserTest::testCase42()
 {
     core("print x.f()[::1 a]\n", true);
+}
+
+void PyParser::PyParserTest::testCase43()
+{
+    core("a\n");
+}
+
+void PyParser::PyParserTest::testCase44()
+{
+    core("a, b, c\n");
+}
+
+void PyParser::PyParserTest::testCase45()
+{
+    core("yield a\n");
+}
+
+void PyParser::PyParserTest::testCase46()
+{
+    core("yield a, b\n");
+}
+
+void PyParser::PyParserTest::testCase47()
+{
+    core("yield a b\n", true);
+}
+
+void PyParser::PyParserTest::testCase48()
+{
+    core("global a\n");
+}
+
+void PyParser::PyParserTest::testCase49()
+{
+    core("global a, b\n");
+}
+
+void PyParser::PyParserTest::testCase50()
+{
+    core("global a, 1\n", true);
+}
+
+void PyParser::PyParserTest::testCase51()
+{
+    core("if a: pass\n");
+}
+
+void PyParser::PyParserTest::testCase52()
+{
+    core(R"raw(
+
+if a:
+    pass
+
+)raw");
+}
+
+void PyParser::PyParserTest::testCase53()
+{
+    core(R"raw(
+
+if a:
+    print 1
+else:
+    print 2
+
+)raw");
+}
+
+void PyParser::PyParserTest::testCase54()
+{
+    core(R"raw(
+
+if a:
+    print 1
+elif b:
+    print 2
+elif c:
+    print 3
+else:
+    print 4
+
+)raw");
+}
+
+void PyParser::PyParserTest::testCase55()
+{
+    core("if a pass\n", true);
+}
+
+void PyParser::PyParserTest::testCase56()
+{
+    core(R"raw(
+
+while a:
+    print 1
+
+)raw");
+}
+
+void PyParser::PyParserTest::testCase57()
+{
+    core(R"raw(
+
+while a:
+    print 1
+else:
+    print 2
+
+)raw");
+}
+
+void PyParser::PyParserTest::testCase58()
+{
+    core(R"raw(
+
+while a
+    print 1
+
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase59()
+{
+
+}
+
+void PyParser::PyParserTest::testCase60()
+{
+
 }

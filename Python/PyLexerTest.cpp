@@ -505,8 +505,6 @@ a = [1, 2,
         TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL, TK_COMMA,
         TK_INTEGER_LITERAL, TK_RBRACKET, TK_NEWLINE, TK_EOP
     };
-    std::copy(tks.begin(), tks.end(), std::ostream_iterator<Token>(std::cout, " " ));
-
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }
@@ -527,8 +525,6 @@ if a:
         TK_COMMA, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
         TK_RBRACKET, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
-    std::copy(tks.begin(), tks.end(), std::ostream_iterator<Token>(std::cout, " " ));
-
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }
@@ -549,8 +545,6 @@ if a:
         TK_COMMA, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
         TK_RBRACKET, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
-    std::copy(tks.begin(), tks.end(), std::ostream_iterator<Token>(std::cout, " " ));
-
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }

@@ -62,7 +62,7 @@ public:
             return makeAstRaw<DeclStmtAst>()->setDecl(decl_.release());
         }
 
-        return makeAstRaw<ExprStmtAst>()->setExpr(ast)->setTerminLoc(loc);
+        return makeAstRaw<ExprStmtAst>()->addExpr(ast)->setTerminLoc(loc);
     }
 
 private:

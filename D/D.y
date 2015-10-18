@@ -826,7 +826,7 @@ UnaryExpr:
 |   DELETE UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<DelExprAst>()->setOprLoc(locA)->setExpr($2);
+        $$ = makeAstRaw<DelExprAst>()->setKeyLoc(locA)->addExpr($2);
     }
 |   CAST '(' Type ')' UnaryExpr
     {
@@ -3389,18 +3389,18 @@ ExprStmt:
     Expr ';'
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ExprStmtAst>()->setExpr($1)->setTerminLoc(locA);
+        $$ = makeAstRaw<ExprStmtAst>()->addExpr($1)->setTerminLoc(locA);
     }
 |   Expr EOP
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ExprStmtAst>()->setExpr($1)->setTerminLoc(locA);
+        $$ = makeAstRaw<ExprStmtAst>()->addExpr($1)->setTerminLoc(locA);
         yyerror(&yylloc, scanner, context, "unexpected <end_of_program>");
     }
 |   Expr error ExprStmtSync
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ExprStmtAst>()->setExpr($1)->setTerminLoc(locA);
+        $$ = makeAstRaw<ExprStmtAst>()->addExpr($1)->setTerminLoc(locA);
         yyerror(&yylloc, scanner, context, "unexpected token");
         yyerrok;
     }

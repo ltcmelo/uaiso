@@ -900,12 +900,12 @@ const SourceLoc& AstLocator::lastLoc(CondExprAst* ast) const
 
 const SourceLoc& AstLocator::loc(DelExprAst* ast) const
 {
-    return ast->oprLoc_;
+    return ast->keyLoc_;
 }
 
 const SourceLoc& AstLocator::lastLoc(DelExprAst* ast) const
 {
-    return lastLoc(ast->expr_.get());
+    return lastLoc(ast->exprs_->back());
 }
 
 const SourceLoc& AstLocator::loc(DesignateExprAst* ast) const
@@ -1378,7 +1378,9 @@ const SourceLoc& AstLocator::lastLoc(ContractStmtAst* ast) const
 
 const SourceLoc& AstLocator::loc(ExprStmtAst* ast) const
 {
-    return loc(ast->expr_.get());
+    if (ast->exprs_)
+        return loc(ast->exprs_->back());
+    return ast->terminLoc_;
 }
 
 const SourceLoc& AstLocator::lastLoc(ExprStmtAst* ast) const
@@ -1664,6 +1666,26 @@ const SourceLoc& AstLocator::loc(AsyncStmtAst* ast) const
 }
 
 const SourceLoc& AstLocator::lastLoc(AsyncStmtAst* ast) const
+{
+    return lastLoc(ast->expr_.get());
+}
+
+const SourceLoc& AstLocator::loc(YieldStmtAst* ast) const
+{
+    return ast->keyLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(YieldStmtAst* ast) const
+{
+    return lastLoc(ast->expr_.get());
+}
+
+const SourceLoc& AstLocator::loc(EvalStmtAst* ast) const
+{
+    return ast->keyLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(EvalStmtAst* ast) const
 {
     return lastLoc(ast->expr_.get());
 }

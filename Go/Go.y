@@ -2450,7 +2450,7 @@ DeferStmt:
     {
          // TODO: Report error if not callable expr.
          DECL_1_LOC(@1);
-         auto stmt = makeAstRaw<ExprStmtAst>()->setExpr($2);
+         auto stmt = makeAstRaw<ExprStmtAst>()->addExpr($2);
          $$ = makeAstRaw<DeferredStmtAst>()->setKeyLoc(locA)->setStmt(stmt);
     }
 ;

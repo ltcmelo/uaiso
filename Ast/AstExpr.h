@@ -302,16 +302,6 @@ public:
     {}
 };
 
-class UAISO_API DelExprAst final : public UnaryExprAst
-{
-public:
-    using Self = DelExprAst;
-
-    DelExprAst()
-        : UnaryExprAst(Kind::DelExpr)
-    {}
-};
-
 class UAISO_API PlusExprAst final : public UnaryExprAst
 {
 public:
@@ -585,6 +575,22 @@ public:
     PowerExprAst()
         : BinaryExprAst(Kind::PowerExpr)
     {}
+};
+
+class UAISO_API DelExprAst final : public ExprAst
+{
+public:
+    using Self = DelExprAst;
+
+    DelExprAst()
+        : ExprAst(Kind::DelExpr)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_LIST_PARAM(Expr, exprs, ExprAst)
+
+    SourceLoc keyLoc_;
+    std::unique_ptr<ExprAstList> exprs_;
 };
 
 class UAISO_API AssignExprAst final : public ExprAst

@@ -60,10 +60,10 @@ public:
         : StmtAst(Kind::ExprStmt)
     {}
 
-    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_LIST_PARAM(Expr, exprs, ExprAst)
     NAMED_LOC_PARAM(Termin, termin)
 
-    std::unique_ptr<ExprAst> expr_;
+    std::unique_ptr<ExprAstList> exprs_;
     SourceLoc terminLoc_;
 };
 
@@ -711,6 +711,42 @@ public:
     NAMED_LOC_PARAM(Key, key)
 
     SourceLoc keyLoc_;
+};
+
+class UAISO_API YieldStmtAst final : public StmtAst
+{
+public:
+    using Self = YieldStmtAst;
+
+    YieldStmtAst()
+        : StmtAst(Kind::YieldStmt)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Termin, termin)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+
+    SourceLoc keyLoc_;
+    std::unique_ptr<ExprAst> expr_;
+    SourceLoc terminLoc_;
+};
+
+class UAISO_API EvalStmtAst final : public StmtAst
+{
+public:
+    using Self = EvalStmtAst;
+
+    EvalStmtAst()
+        : StmtAst(Kind::EvalStmt)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Termin, termin)
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+
+    SourceLoc keyLoc_;
+    std::unique_ptr<ExprAst> expr_;
+    SourceLoc terminLoc_;
 };
 
 } // namespace uaiso

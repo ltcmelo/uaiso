@@ -117,7 +117,7 @@
     GEN_CODE_FOR(Comma, BinaryExpr) \
     GEN_CODE_FOR(Concat, BinaryExpr ) \
     GEN_CODE_FOR(Cond, Expr) \
-    GEN_CODE_FOR(Del, UnaryExpr) \
+    GEN_CODE_FOR(Del, Expr) \
     GEN_CODE_FOR(Designate, Expr) \
     GEN_CODE_FOR(Div, BinaryExpr) \
     GEN_CODE_FOR(Error, Expr) \
@@ -179,6 +179,7 @@
     GEN_CODE_FOR(DoWhile, Stmt) \
     GEN_CODE_FOR(Empty, Stmt) \
     GEN_CODE_FOR(Error, Stmt) \
+    GEN_CODE_FOR(Eval, Stmt) \
     GEN_CODE_FOR(Expr, Stmt) \
     GEN_CODE_FOR(Fallthrough, Stmt) \
     GEN_CODE_FOR(FinallyClause, Stmt) \
@@ -197,7 +198,8 @@
     GEN_CODE_FOR(Try, Stmt) \
     GEN_CODE_FOR(TypeSwitch, Stmt) \
     GEN_CODE_FOR(While, Stmt) \
-    GEN_CODE_FOR(With, Stmt)
+    GEN_CODE_FOR(With, Stmt) \
+    GEN_CODE_FOR(Yield, Stmt)
 
 #define MAKE_NAME_CASE(AST_NODE, UNUSED) MAKE_CASE(AST_NODE, Name)
 #define MAKE_SPEC_CASE(AST_NODE, UNUSED) MAKE_CASE(AST_NODE, Spec)

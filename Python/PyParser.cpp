@@ -369,9 +369,54 @@ std::unique_ptr<StmtAst> PyParser::parseSmallStmt()
     }
 }
 
+/*
+ * expr_stmt: testlist (augassign (yield_expr|testlist) |
+ *                      ('=' (yield_expr|testlist))*)
+ * augassign: ('+=' | '-=' | '*=' | '/=' | '%=' | '&=' | '|=' | '^=' |
+ *             '<<=' | '>>=' | '**=' | '//=')
+ */
 std::unique_ptr<StmtAst> PyParser::parseExprStmt()
 {
-    return Stmt();
+    auto exprs = parseTestList();
+    bool augmented = false;
+    while (true) {
+        switch (ahead_) {
+        case TK_PLUS_EQUAL:
+        case TK_MINUS_EQUAL:
+        case TK_STAR_EQUAL:
+        case TK_SLASH_EQUAL:
+        case TK_PERCENT_EQUAL:
+        case TK_AMPER_EQUAL:
+        case TK_PIPE_EQUAL:
+        case TK_CARET_EQUAL:
+        case TK_LESS_LESS_EQUAL:
+        case TK_GREATER_GREATER_EQUAL:
+        case TK_STAR_STAR_EQUAL:
+        case TK_SLASH_SLASH_EQUAL:
+            augmented = true;
+            // Fallthrough
+
+        case TK_EQUAL: {
+            consumeToken();
+            auto assign = makeAst<AssignExprAst>();
+            assign->setOprLoc(lastLoc_);
+            assign->setExpr1s(exprs.release());
+            if (ahead_ == TK_YIELD)
+                assign->setExpr2s(ExprAstList::create(parseYieldExpr().release()));
+            else
+                assign->setExpr2s(parseTestList().release());
+            exprs.reset(ExprAstList::create(assign.release()));
+
+            if (augmented || ahead_ != TK_EQUAL)
+                return Stmt(makeAstRaw<ExprStmtAst>()->setExprs(exprs.release()));
+
+            break;
+        }
+
+        default:
+            return Stmt(makeAstRaw<ExprStmtAst>()->setExprs(exprs.release()));
+        }
+    }
 }
 
 /*
@@ -382,7 +427,7 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
 {
     UAISO_ASSERT(ahead_ == TK_PRINT, return Stmt());
 
-    consumeToken();
+    match(TK_PRINT);
     auto print = makeAst<PrintExprAst>();
     print->setKeyLoc(lastLoc_);
 
@@ -391,7 +436,7 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
         print->setOprLoc(lastLoc_);
         print->addExpr(parseTest().release());
         if (!maybeConsume(TK_COMMA))
-            return Stmt(makeAstRaw<ExprStmtAst>()->setExpr(print.release()));
+            return Stmt(makeAstRaw<ExprStmtAst>()->addExpr(print.release()));
 
         if (print->exprs())
             print->exprs()->lastSubList()->delim_ = lastLoc_;
@@ -410,21 +455,37 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
         failMatch(true);
     }
 
-    return Stmt(makeAstRaw<ExprStmtAst>()->setExpr(print.release()));
+    return Stmt(makeAstRaw<ExprStmtAst>()->addExpr(print.release()));
 }
 
+/*
+ * del_stmt: 'del' exprlist
+ */
 std::unique_ptr<StmtAst> PyParser::parseDelStmt()
 {
     UAISO_ASSERT(ahead_ == TK_DELETE, return Stmt());
-    return Stmt();
+
+    match(TK_DELETE);
+    auto del = makeAst<DelExprAst>();
+    del->setKeyLoc(lastLoc_);
+    del->setExprs(parseExprList().release());
+    return Stmt(makeAst<ExprStmtAst>()->addExpr(del.release()));
 }
 
+/*
+ * pass_stmt: 'pass'
+ */
 std::unique_ptr<StmtAst> PyParser::parsePassStmt()
 {
     UAISO_ASSERT(ahead_ == TK_PASS, return Stmt());
-    return Stmt();
+
+    match(TK_PASS);
+    return Stmt(makeAstRaw<EmptyStmtAst>()->setKeyLoc(lastLoc_));
 }
 
+/*
+ * flow_stmt: break_stmt | continue_stmt | return_stmt | raise_stmt | yield_stmt
+ */
 std::unique_ptr<StmtAst> PyParser::parseFlowStmt()
 {
     switch (ahead_) {
@@ -438,7 +499,7 @@ std::unique_ptr<StmtAst> PyParser::parseFlowStmt()
         return parseReturnStmt();
 
     case TK_THROW:
-        return parseThrowStmt();
+        return parseRaiseStmt();
 
     case TK_YIELD:
         return parseYieldStmt();
@@ -455,41 +516,111 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
     return Stmt();
 }
 
+/*
+ * global_stmt: 'global' NAME (',' NAME)*
+ */
 std::unique_ptr<StmtAst> PyParser::parseGlobalStmt()
 {
+    using Decls = std::unique_ptr<DeclAstList>;
+
     UAISO_ASSERT(ahead_ == TK_GLOBAL, return Stmt());
-    return Stmt();
+
+    match(TK_GLOBAL);
+    auto group = makeAst<VarGroupDeclAst>();
+    group->setKeyLoc(lastLoc_);
+
+    Decls decls;
+    match(TK_IDENTIFIER);
+    addToList(decls, makeAstRaw<VarDeclAst>()->setName(completeName().release()));
+    while (maybeConsume(TK_COMMA)) {
+        if (decls)
+            decls->delim_ = lastLoc_;
+        match(TK_IDENTIFIER);
+        addToList(decls, makeAstRaw<VarDeclAst>()->setName(completeName().release()));
+    }
+    group->setDecls(decls.release());
+
+    return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(group.release()));
 }
 
+/*
+ * exec_stmt: 'exec' expr ['in' test [',' test]]
+ */
 std::unique_ptr<StmtAst> PyParser::parseExecStmt()
 {
     UAISO_ASSERT(ahead_ == TK_EXEC, return Stmt());
-    return Stmt();
+
+    match(TK_EXEC);
+    auto eval = makeAst<EvalStmtAst>();
+    eval->setKeyLoc(lastLoc_);
+    eval->setExpr(parseExpr().release());
+
+    // TODO: Model remaining items.
+    if (maybeConsume(TK_IN)) {
+        parseTest();
+        if (maybeConsume(TK_COMMA))
+            parseTest();
+    }
+
+    return Stmt(eval.release());
 }
 
+/*
+ * assert_stmt: 'assert' test [',' test]
+ */
 std::unique_ptr<StmtAst> PyParser::parseAssertStmt()
 {
     UAISO_ASSERT(ahead_ == TK_ASSERT, return Stmt());
-    return Stmt();
+
+    match(TK_ASSERT);
+    auto expr = makeAst<AssertExprAst>();
+    expr->setKeyLoc(lastLoc_);
+    expr->setExpr(parseTest().release());
+
+    // TODO: Generalize "message" from AssertExprAst to "action".
+    if (maybeConsume(TK_COMMA))
+        parseTest();
+
+    return Stmt(makeAst<ExprStmtAst>()->addExpr(expr.release()));
 }
 
-std::unique_ptr<StmtAst> PyParser::parseCompoundStmt()
-{
-    return Stmt();
-}
-
+/*
+ * if_stmt: 'if' test ':' suite ('elif' test ':' suite)* ['else' ':' suite]
+ */
 std::unique_ptr<StmtAst> PyParser::parseIfStmt()
 {
     UAISO_ASSERT(ahead_ == TK_IF, return Stmt());
-    return Stmt();
+
+    match(TK_IF);
+    return completeIfStmt();
 }
 
+/*
+ * while_stmt: 'while' test ':' suite ['else' ':' suite]
+ */
 std::unique_ptr<StmtAst> PyParser::parseWhileStmt()
 {
     UAISO_ASSERT(ahead_ == TK_WHILE, return Stmt());
-    return Stmt();
+
+    match(TK_WHILE);
+    auto whyle = makeAst<WhileStmtAst>();
+    whyle->setWhileLoc(lastLoc_);
+    whyle->setExpr(parseTest().release());
+    match(TK_COLON);
+    whyle->setStmt(parseSuite().release());
+
+    // TODO: Add else clause to WhileStmtAst.
+    if (maybeConsume(TK_ELSE)) {
+        match(TK_COLON);
+        parseSuite();
+    }
+
+    return Stmt(whyle.release());
 }
 
+/*
+ * for_stmt: 'for' exprlist 'in' testlist ':' suite ['else' ':' suite]
+ */
 std::unique_ptr<StmtAst> PyParser::parseForStmt()
 {
     UAISO_ASSERT(ahead_ == TK_FOR, return Stmt());
@@ -523,37 +654,99 @@ std::unique_ptr<StmtAst> PyParser::parseClassDef()
 std::unique_ptr<StmtAst> PyParser::parseDecorated()
 {
     UAISO_ASSERT(ahead_ == TK_AT_SYMBOL, return Stmt());
+
     return Stmt();
 }
 
+/*
+ * continue_stmt: 'continue'
+ */
 std::unique_ptr<StmtAst> PyParser::parseContinueStmt()
 {
     UAISO_ASSERT(ahead_ == TK_CONTINUE, return Stmt());
-    return Stmt();
+
+    match(TK_CONTINUE);
+    return Stmt(makeAstRaw<ContinueStmtAst>()->setKeyLoc(lastLoc_));
 }
 
+/*
+ * break_stmt: 'break'
+ */
 std::unique_ptr<StmtAst> PyParser::parseBreakStmt()
 {
     UAISO_ASSERT(ahead_ == TK_BREAK, return Stmt());
-    return Stmt();
+
+    match(TK_BREAK);
+    return Stmt(makeAstRaw<BreakStmtAst>()->setKeyLoc(lastLoc_));
 }
 
+/*
+ * yield_stmt: yield_expr
+ */
 std::unique_ptr<StmtAst> PyParser::parseYieldStmt()
 {
     UAISO_ASSERT(ahead_ == TK_YIELD, return Stmt());
-    return Stmt();
+
+    return Stmt(makeAstRaw<YieldStmtAst>()->setExpr(parseYieldExpr().release()));
 }
 
-std::unique_ptr<StmtAst> PyParser::parseThrowStmt()
+/*
+ * raise_stmt: 'raise' [test [',' test [',' test]]]
+ */
+std::unique_ptr<StmtAst> PyParser::parseRaiseStmt()
 {
     UAISO_ASSERT(ahead_ == TK_THROW, return Stmt());
-    return Stmt();
+
+    match(TK_THROW);
+    auto stmt = makeAst<ThrowStmtAst>();
+    stmt->setKeyLoc(lastLoc_);
+    if (isTestAhead()) {
+        stmt->setExpr(parseTest().release());
+
+        // TODO: Model remaining exprs.
+        if (ahead_ == TK_COMMA) {
+            parseTest();
+            if (ahead_ == TK_COMMA)
+                parseTest();
+        }
+    }
+
+    return Stmt(stmt.release());
 }
 
+/*
+ * return_stmt: 'return' [testlist]
+ */
 std::unique_ptr<StmtAst> PyParser::parseReturnStmt()
 {
     UAISO_ASSERT(ahead_ == TK_THROW, return Stmt());
-    return Stmt();
+
+    match(TK_RETURN);
+    auto stmt = makeAst<ReturnStmtAst>();
+    stmt->setKeyLoc(lastLoc_);
+    if (isTestAhead())
+        stmt->setExprs(parseTestList().release());
+    return Stmt(stmt.release());
+}
+
+/*
+ * suite: simple_stmt | NEWLINE INDENT stmt+ DEDENT
+ */
+std::unique_ptr<StmtAst> PyParser::parseSuite()
+{
+    if (!maybeConsume(TK_NEWLINE))
+        return parseSimpleStmt();
+
+    match(TK_INDENT);
+    auto block = makeAst<BlockStmtAst>();
+    block->addStmt(parseStmt().release());
+    while (!maybeConsume(TK_DEDENT)) {
+        if (ahead_ == TK_EOP)
+            break;
+        block->addStmt(parseStmt().release());
+    }
+
+    return Stmt(block.release());
 }
 
 /*
@@ -705,7 +898,7 @@ PyParser::parseCompFor(std::unique_ptr<ListCompreExprAst> listCompre)
     UAISO_ASSERT(ahead_ == TK_FOR, return listCompre);
     UAISO_ASSERT(listCompre, return listCompre);
 
-    consumeToken();
+    match(TK_FOR);
     listCompre->addGen(makeAstRaw<GeneratorAst>());
     auto gen = listCompre->gens()->back();
     gen->setKeyLoc(lastLoc_);
@@ -734,7 +927,7 @@ PyParser::parseCompIf(std::unique_ptr<ListCompreExprAst> listCompre)
     UAISO_ASSERT(listCompre, return listCompre);
     UAISO_ASSERT(listCompre->gens(), return listCompre);
 
-    consumeToken();
+    match(TK_IF);
     auto gen = listCompre->gens()->back();
     gen->addFilter(makeAstRaw<FilterAst>());
     auto filter = gen->filters()->back();
@@ -1039,6 +1232,21 @@ std::unique_ptr<ExprAstList> PyParser::parseSubscriptList()
                                   &PyParser::parseSubscript).first;
 }
 
+/*
+ * yield_expr: 'yield' [testlist]
+ */
+std::unique_ptr<ExprAst> PyParser::parseYieldExpr()
+{
+    UAISO_ASSERT(ahead_ == TK_YIELD, return Expr());
+
+    match(TK_YIELD);
+    auto yield = makeAst<YieldExprAst>();
+    yield->setKeyLoc(lastLoc_);
+    if (isTestAhead())
+        yield->setExprs(parseTestList().release());
+    return Expr(yield.release());
+}
+
 std::unique_ptr<ExprAst> PyParser::parseLambdaDef()
 {
     UAISO_ASSERT(ahead_ == TK_LAMBDA, return Expr());
@@ -1108,6 +1316,25 @@ PyParser::completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ())
     assign->setExpr1s(ExprAstList::create(expr.release()));
     assign->setExpr2s(ExprAstList::create((((this)->*(parseFunc))()).release()));
     return Expr(assign.release());
+}
+
+std::unique_ptr<StmtAst> PyParser::completeIfStmt()
+{
+    auto ef = makeAst<IfStmtAst>();
+    ef->setIfLoc(lastLoc_);
+    ef->setExpr(parseTest().release());
+    match(TK_COLON);
+    ef->setThen(parseSuite().release());
+    if (maybeConsume(TK_ELIF)) {
+        ef->setElseLoc(lastLoc_);
+        ef->setNotThen(completeIfStmt().release());
+    } else if (maybeConsume(TK_ELSE)) {
+        ef->setElseLoc(lastLoc_);
+        match(TK_COLON);
+        ef->setNotThen(parseSuite().release());
+    }
+
+    return Stmt(ef.release());
 }
 
 template <class AstListT> std::pair<std::unique_ptr<AstListT>, bool>

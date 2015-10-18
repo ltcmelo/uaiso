@@ -688,7 +688,7 @@ template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseDelExpr(DelExprAst *ast)
 {
     EVAL_RESULT_0(recursivelyVisitDelExpr(ast));
-    EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
+    EVAL_RESULT_LIST_N(traverseList<ExprAst>(ast->exprs_.get(), &DerivedT::traverseExpr));
     return Continue;
 }
 
@@ -1077,7 +1077,7 @@ template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseExprStmt(ExprStmtAst* ast)
 {
     EVAL_RESULT_0(recursivelyVisitExprStmt(ast));
-    EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
+    EVAL_RESULT_LIST_N(traverseList<ExprAst>(ast->exprs_.get(), &DerivedT::traverseExpr));
     return Continue;
 }
 
@@ -1292,6 +1292,22 @@ template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseAsyncStmt(AsyncStmtAst* ast)
 {
     EVAL_RESULT_0(recursivelyVisitAsyncStmt(ast));
+    EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseYieldStmt(YieldStmtAst* ast)
+{
+    EVAL_RESULT_0(recursivelyVisitYieldStmt(ast));
+    EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseEvalStmt(EvalStmtAst* ast)
+{
+    EVAL_RESULT_0(recursivelyVisitEvalStmt(ast));
     EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
     return Continue;
 }

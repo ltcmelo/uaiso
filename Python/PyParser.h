@@ -99,7 +99,6 @@ private:
     Stmt parseGlobalStmt();
     Stmt parseExecStmt();
     Stmt parseAssertStmt();
-    Stmt parseCompoundStmt();
     Stmt parseIfStmt();
     Stmt parseWhileStmt();
     Stmt parseForStmt();
@@ -111,8 +110,9 @@ private:
     Stmt parseContinueStmt();
     Stmt parseBreakStmt();
     Stmt parseYieldStmt();
-    Stmt parseThrowStmt();
+    Stmt parseRaiseStmt();
     Stmt parseReturnStmt();
+    Stmt parseSuite();
 
     //--- Expressions ---//
 
@@ -135,6 +135,7 @@ private:
     ExprList parseArgList();
     Expr parseSubscript();
     ExprList parseSubscriptList();
+    Expr parseYieldExpr();
     std::unique_ptr<ListCompreExprAst> parseCompFor(std::unique_ptr<ListCompreExprAst>);
     std::unique_ptr<ListCompreExprAst> parseCompIf(std::unique_ptr<ListCompreExprAst>);
     ExprList parseExprList();
@@ -149,6 +150,7 @@ private:
     Expr completeBinaryExpr(Expr expr, Expr (PyParser::*parseFunc) ());
     Expr completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ());
     Expr completeSubrangeExpr(Expr expr);
+    Stmt completeIfStmt();
     Name completeName();
 
     template <class AstListT>
