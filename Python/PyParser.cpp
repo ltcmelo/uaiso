@@ -145,7 +145,7 @@ bool PyParser::isAtomAhead() const
 {
     switch (ahead_) {
     case TK_LPAREN:
-    case TK_RPAREN:
+    case TK_LBRACKET:
     case TK_LBRACE:
     case TK_BACKTICK:
     case TK_IDENTIFIER:
@@ -1159,7 +1159,7 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
     switch (ahead_) {
     // TODO
     case TK_LPAREN:
-    case TK_RPAREN:
+    case TK_LBRACKET:
     case TK_LBRACE:
         return Expr();
 
