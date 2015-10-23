@@ -732,6 +732,24 @@ public:
     SourceLoc rDelimLoc_;
 };
 
+class UAISO_API TupleLitExprAst final : public ExprAst
+{
+public:
+    using Self = TupleLitExprAst;
+
+    TupleLitExprAst()
+        : ExprAst(Kind::TupleLitExpr)
+    {}
+
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Init, inits, ExprAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<ExprAstList> inits_;
+    SourceLoc rDelimLoc_;
+};
+
 class UAISO_API DesignateExprAst final : public ExprAst
 {
 public:
@@ -907,7 +925,7 @@ public:
     SourceLoc rDelimLoc_;
 };
 
-// TODO: Merge this and slice into a common ArrayAccess.
+// TODO: Merge this and index into a common ArrayAccess.
 class UAISO_API ArraySliceExprAst : public ExprAst
 {
 public:
@@ -1081,9 +1099,15 @@ public:
         : ExprAst(Kind::ListCompreExpr)
     {}
 
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_LOC_PARAM(Sep, sep)
     NAMED_AST_PARAM(Expr, expr, ExprAst)
     NAMED_AST_LIST_PARAM(Gen, gens, GeneratorAst)
 
+    SourceLoc lDelimLoc_;
+    SourceLoc rDelimLoc_;
+    SourceLoc sepLoc_;
     std::unique_ptr<ExprAst> expr_;
     std::unique_ptr<GeneratorAstList> gens_;
 };

@@ -155,6 +155,9 @@ public:
         return ast_.get();
     }
 
+    /*
+     * TODO: Remove, allows one to break list integrity.
+     */
     std::unique_ptr<AstType> releaseHead()
     {
         return std::move(ast_);

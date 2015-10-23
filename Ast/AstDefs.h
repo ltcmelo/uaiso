@@ -154,6 +154,7 @@
     GEN_CODE_FOR(Subrange, Expr) \
     GEN_CODE_FOR(Super, PrimaryExpr) \
     GEN_CODE_FOR(This, PrimaryExpr) \
+    GEN_CODE_FOR(TupleLit, Expr) \
     GEN_CODE_FOR(Typeid, Expr) \
     GEN_CODE_FOR(TypeAssert, Expr) \
     GEN_CODE_FOR(TypeQuery, PrimaryExpr) \
