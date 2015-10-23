@@ -96,6 +96,16 @@ public:
              , &PyParserTest::testCase58
              , &PyParserTest::testCase59
              , &PyParserTest::testCase60
+             , &PyParserTest::testCase61
+             , &PyParserTest::testCase62
+             , &PyParserTest::testCase63
+             , &PyParserTest::testCase64
+             , &PyParserTest::testCase65
+             , &PyParserTest::testCase66
+             , &PyParserTest::testCase67
+             , &PyParserTest::testCase68
+             , &PyParserTest::testCase69
+             , &PyParserTest::testCase70
             )
 
     void testCase1();
@@ -158,6 +168,16 @@ public:
     void testCase58();
     void testCase59();
     void testCase60();
+    void testCase61();
+    void testCase62();
+    void testCase63();
+    void testCase64();
+    void testCase65();
+    void testCase66();
+    void testCase67();
+    void testCase68();
+    void testCase69();
+    void testCase70();
 
     void core(const std::string& code, bool expectError = false)
     {
@@ -527,10 +547,70 @@ while a
 
 void PyParser::PyParserTest::testCase59()
 {
+    core(R"raw(
 
+for x in range(1, 10):
+    print 1
+
+)raw");
 }
 
 void PyParser::PyParserTest::testCase60()
 {
+    core(R"raw(
 
+for x, y in a, b:
+    print 1
+
+)raw");
+}
+
+void PyParser::PyParserTest::testCase61()
+{
+    core("a = []\n");
+}
+
+void PyParser::PyParserTest::testCase62()
+{
+    core("a = [1, 2]\n");
+}
+
+void PyParser::PyParserTest::testCase63()
+{
+    core("a = [x*2 for x in [1, 2]]\n");
+}
+
+void PyParser::PyParserTest::testCase64()
+{
+    core("a = {1 : 10}\n");
+}
+
+void PyParser::PyParserTest::testCase65()
+{
+    core("tel = {'jack': 4098, 'sape': 4139}\n");
+}
+
+void PyParser::PyParserTest::testCase66()
+{
+    core("{x: x**2 for x in (2, 4, 6)}\n");
+}
+
+void PyParser::PyParserTest::testCase67()
+{
+    core("{1, 2, 3}\n");
+}
+
+void PyParser::PyParserTest::testCase68()
+{
+    core("{1}\n"); // Singleton set.
+}
+
+void PyParser::PyParserTest::testCase69()
+{
+    core("{}\n");
+}
+
+void PyParser::PyParserTest::testCase70()
+{
+    core("[1]\n"); // Singleton list.
 }

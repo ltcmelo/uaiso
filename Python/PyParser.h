@@ -29,8 +29,8 @@
 #include "Ast/AstList.h"
 #include "Common/Test.h"
 #include "Parsing/Token.h"
-#include <utility>
 #include <initializer_list>
+#include <utility>
 
 namespace uaiso {
 
@@ -72,10 +72,14 @@ private:
 
     std::pair<Precedence, std::unique_ptr<BinaryExprAst>> fetchPrecAhead() const;
 
+    using Decl = std::unique_ptr<DeclAst>;
+    using Expr = std::unique_ptr<ExprAst>;
     using Name = std::unique_ptr<NameAst>;
     using Stmt = std::unique_ptr<StmtAst>;
-    using Expr = std::unique_ptr<ExprAst>;
+    using DeclList = std::unique_ptr<DeclAstList>;
     using ExprList = std::unique_ptr<ExprAstList>;
+
+    using ListCompre = std::unique_ptr<ListCompreExprAst>;
 
     bool isTestAhead() const;
     bool isNonLambdaTestAhead() const;
@@ -120,6 +124,7 @@ private:
     Expr parseOldTest();
     ExprList parseTestList();
     ExprList parseTestList1();
+    ExprList parseTestListSafe();
     Expr parseLambdaDef();
     Expr parseOldLambdaDef();
     Expr parseOrTest();
@@ -136,9 +141,17 @@ private:
     Expr parseSubscript();
     ExprList parseSubscriptList();
     Expr parseYieldExpr();
-    std::unique_ptr<ListCompreExprAst> parseCompFor(std::unique_ptr<ListCompreExprAst>);
-    std::unique_ptr<ListCompreExprAst> parseCompIf(std::unique_ptr<ListCompreExprAst>);
+    Expr parseListMaker();
+    Expr parseDictOrSetMaker();
+    Expr parseWrappedOrTuple();
     ExprList parseExprList();
+    ListCompre parseCompFor(ListCompre);
+    ListCompre parseCompIf(ListCompre);
+    ListCompre parseListFor(ListCompre);
+    ListCompre parseListIf(ListCompre);
+    ListCompre parseListOrCompIf(ListCompre listCompre,
+                                 ListCompre (PyParser::*genFunc) (ListCompre),
+                                 ListCompre (PyParser::*filterFunc) (ListCompre));
 
     // Helpers
 
@@ -152,6 +165,9 @@ private:
     Expr completeSubrangeExpr(Expr expr);
     Stmt completeIfStmt();
     Name completeName();
+    ListCompre completeListCompre(ListCompre listCompre,
+                                  ListCompre (PyParser::*genFunc) (ListCompre),
+                                  ListCompre (PyParser::*filterFunc) (ListCompre));
 
     template <class AstListT>
     std::pair<std::unique_ptr<AstListT>, bool>
