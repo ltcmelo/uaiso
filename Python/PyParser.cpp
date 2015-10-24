@@ -1334,14 +1334,14 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
     UAISO_ASSERT(ahead_ == TK_LBRACE, return Expr());
 
     match(TK_LBRACE);
-    auto expr = makeAst<ArrayInitExprAst>();
+    auto dictOrSet = makeAst<ArrayInitExprAst>();
     // DESIGN: Differentiate a set literal, `{1, 2}`, from a list literal,
     // `(1, 2)`. Both are parsed as ArrayInitExprAst. Perhaps add a variety
     // to the AST or handle through Syntax.
-    expr->setLDelimLoc(lastLoc_);
+    dictOrSet->setLDelimLoc(lastLoc_);
     if (maybeConsume(TK_RBRACE)) {
-        expr->setRDelimLoc(lastLoc_);
-        return Expr(expr.release());
+        dictOrSet->setRDelimLoc(lastLoc_);
+        return Expr(dictOrSet.release());
     }
 
     auto test = parseTest();
@@ -1355,7 +1355,7 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
 
         if (ahead_ == TK_FOR) {
             auto listCompre = parseListFor(makeAst<ListCompreExprAst>());
-            listCompre->setLDelimLoc(expr->lDelimLoc());
+            listCompre->setLDelimLoc(dictOrSet->lDelimLoc());
             listCompre->setExpr(desig.release());
             if (!match(TK_RBRACE)) {
                 DEBUG_TRACE("parseDictOrSetMaker, skip to TK_RBRACE\n");
@@ -1365,30 +1365,30 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
             return Expr(listCompre.release());
         }
 
-        addToList(expr->inits_, desig.release());
+        addToList(dictOrSet->inits_, desig.release());
         while (maybeConsume(TK_COMMA)) {
             if (!isTestAhead())
                 break;
-            if (expr->inits())
-                expr->inits()->delim_ = lastLoc_;
+            if (dictOrSet->inits())
+                dictOrSet->inits()->delim_ = lastLoc_;
             desig = makeAst<DesignateExprAst>();
             desig->setId(parseTest().release());
             match(TK_COLON);
             desig->setDelimLoc(lastLoc_);
             desig->setValue(parseTest().release());
-            addToList(expr->inits_, desig.release());
+            addToList(dictOrSet->inits_, desig.release());
         }
         if (!match(TK_RBRACE)) {
             DEBUG_TRACE("parseDictOrSetMaker, skip to TK_RBRACE\n");
             skipTo(TK_RBRACE);
         }
-        expr->setRDelimLoc(lastLoc_);
-        return Expr(expr.release());
+        dictOrSet->setRDelimLoc(lastLoc_);
+        return Expr(dictOrSet.release());
     }
 
     case TK_FOR:  {
         auto listCompre = parseListFor(makeAst<ListCompreExprAst>());
-        listCompre->setLDelimLoc(expr->lDelimLoc());
+        listCompre->setLDelimLoc(dictOrSet->lDelimLoc());
         listCompre->setExpr(test.release());
         if (!match(TK_RBRACE)) {
             DEBUG_TRACE("parseDictOrSetMaker, skip to TK_RBRACE\n");
@@ -1400,21 +1400,21 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
 
     case TK_COMMA:
         consumeToken();
-        if (expr->inits())
-            expr->inits()->delim_ = lastLoc_;
-        addToList(expr->inits_, test.release());
-        mergeList(expr->inits_, parseTestList().release());
+        if (dictOrSet->inits())
+            dictOrSet->inits()->delim_ = lastLoc_;
+        addToList(dictOrSet->inits_, test.release());
+        mergeList(dictOrSet->inits_, parseTestList().release());
         // Fallthrough
 
     default:
         if (test)
-            addToList(expr->inits_, test.release());
+            addToList(dictOrSet->inits_, test.release());
         if (!match(TK_RBRACE)) {
             DEBUG_TRACE("parseDictOrSetMaker, skip to TK_RBRACE\n");
             skipTo(TK_RBRACE);
         }
-        expr->setRDelimLoc(lastLoc_);
-        return Expr(expr.release());
+        dictOrSet->setRDelimLoc(lastLoc_);
+        return Expr(dictOrSet.release());
     }
 }
 
@@ -1428,18 +1428,18 @@ std::unique_ptr<ExprAst> PyParser::parseListMaker()
     UAISO_ASSERT(ahead_ == TK_LBRACKET, return Expr());
 
     match(TK_LBRACKET);
-    auto expr = makeAst<ArrayInitExprAst>();
-    expr->setLDelimLoc(lastLoc_);
+    auto list = makeAst<ArrayInitExprAst>();
+    list->setLDelimLoc(lastLoc_);
     if (maybeConsume(TK_RBRACKET)) {
-        expr->setRDelimLoc(lastLoc_);
-        return Expr(expr.release());
+        list->setRDelimLoc(lastLoc_);
+        return Expr(list.release());
     }
 
     auto test = parseTest();
     switch (ahead_) {
     case TK_FOR: {
         auto listCompre = parseListFor(makeAst<ListCompreExprAst>());
-        listCompre->setLDelimLoc(expr->lDelimLoc());
+        listCompre->setLDelimLoc(list->lDelimLoc());
         listCompre->setExpr(test.release());
         if (!match(TK_RBRACKET)) {
             DEBUG_TRACE("parseListMaker, skip to TK_RBRACKET\n");
@@ -1451,21 +1451,21 @@ std::unique_ptr<ExprAst> PyParser::parseListMaker()
 
     case TK_COMMA:
         consumeToken();
-        if (expr->inits())
-            expr->inits()->delim_ = lastLoc_;
-        addToList(expr->inits_, test.release());
-        mergeList(expr->inits_, parseTestList().release());
+        if (list->inits())
+            list->inits()->delim_ = lastLoc_;
+        addToList(list->inits_, test.release());
+        mergeList(list->inits_, parseTestList().release());
         // Fallthrough
 
     default:
         if (test)
-            addToList(expr->inits_, test.release());
+            addToList(list->inits_, test.release());
         if (!match(TK_RBRACKET)) {
             DEBUG_TRACE("parseListMaker, skip to TK_RBRACKET\n");
             skipTo(TK_RBRACKET);
         }
-        expr->setRDelimLoc(lastLoc_);
-        return Expr(expr.release());
+        list->setRDelimLoc(lastLoc_);
+        return Expr(list.release());
     }
 }
 
@@ -1473,7 +1473,7 @@ std::unique_ptr<ExprAst> PyParser::parseListMaker()
  * wrappedortuple: '(' [yield_expr|testlist_comp] ')'
  * testlist_comp: test ( comp_for | (',' test)* [','] )
  *
- * `()`     - Empty tuple
+ * `()`     - Tuple
  * `(1)`    - Wrapped expr
  * `(1,)`   - Tuple
  * `(1, 2)` - Tuple
@@ -1481,6 +1481,44 @@ std::unique_ptr<ExprAst> PyParser::parseListMaker()
 std::unique_ptr<ExprAst> PyParser::parseWrappedOrTuple()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Expr());
+
+    match(TK_LPAREN);
+    auto tuple = makeAst<TupleLitExprAst>();
+    tuple->setLDelimLoc(lastLoc_);
+    if (maybeConsume(TK_RPAREN)) {
+        tuple->setRDelimLoc(lastLoc_);
+        return Expr(tuple.release());
+    }
+
+    if (ahead_ == TK_YIELD)
+        return completeWrapped([this] () { return parseYieldExpr(); });
+
+    auto test = parseTest();
+    switch (ahead_) {
+    case TK_FOR:
+        return completeWrapped([&test, this] () {
+            auto listCompre = parseListFor(makeAst<ListCompreExprAst>());
+            listCompre->setExpr(test.release());
+            return listCompre;
+        });
+
+    case TK_COMMA:
+        consumeToken();
+        if (tuple->inits())
+            tuple->inits()->delim_ = lastLoc_;
+        addToList(tuple->inits_, test.release());
+        if (isTestAhead())
+            mergeList(tuple->inits_, parseTestList().release());
+        if (!match(TK_RPAREN)) {
+            DEBUG_TRACE("parseWrappedOrTuple, skip to TK_RPAREN\n");
+            skipTo(TK_RPAREN);
+        }
+        tuple->setRDelimLoc(lastLoc_);
+        return Expr(tuple.release());
+
+    default:
+        return completeWrapped([&test, this]() { return std::move(test); });
+    }
 
     return Expr();
 }
@@ -1532,6 +1570,20 @@ std::unique_ptr<ExprAst> PyParser::completeSubrangeExpr(Expr expr)
     if (isTestAhead())
         range->setMax(parseTest().release()); // TODO: In Go, this is max.
     return Expr(range.release());
+}
+
+std::unique_ptr<ExprAst>
+PyParser::completeWrapped(const std::function<Expr ()> exprFunc)
+{
+    auto wrap = makeAst<WrappedExprAst>();
+    wrap->setLDelimLoc(lastLoc_);
+    wrap->setExpr(exprFunc().release());
+    if (!match(TK_RPAREN)) {
+        DEBUG_TRACE("completeWrapped, skip to TK_PAREN\n");
+        skipTo(TK_RPAREN);
+    }
+    wrap->setRDelimLoc(lastLoc_);
+    return Expr(wrap.release());
 }
 
 template <class LitAstT>

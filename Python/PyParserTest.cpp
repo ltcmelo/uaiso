@@ -106,6 +106,16 @@ public:
              , &PyParserTest::testCase68
              , &PyParserTest::testCase69
              , &PyParserTest::testCase70
+             , &PyParserTest::testCase71
+             , &PyParserTest::testCase72
+             , &PyParserTest::testCase73
+             , &PyParserTest::testCase74
+             , &PyParserTest::testCase75
+             , &PyParserTest::testCase76
+             , &PyParserTest::testCase77
+             , &PyParserTest::testCase78
+             , &PyParserTest::testCase79
+             , &PyParserTest::testCase80
             )
 
     void testCase1();
@@ -178,6 +188,16 @@ public:
     void testCase68();
     void testCase69();
     void testCase70();
+    void testCase71();
+    void testCase72();
+    void testCase73();
+    void testCase74();
+    void testCase75();
+    void testCase76();
+    void testCase77();
+    void testCase78();
+    void testCase79();
+    void testCase80();
 
     void core(const std::string& code, bool expectError = false)
     {
@@ -613,4 +633,54 @@ void PyParser::PyParserTest::testCase69()
 void PyParser::PyParserTest::testCase70()
 {
     core("[1]\n"); // Singleton list.
+}
+
+void PyParser::PyParserTest::testCase71()
+{
+    core("()\n"); // Empty tuple
+}
+
+void PyParser::PyParserTest::testCase72()
+{
+    core("(1)\n"); // Not a tuple, a wrapped expr.
+}
+
+void PyParser::PyParserTest::testCase73()
+{
+    core("(1,)\n"); // A tuple
+}
+
+void PyParser::PyParserTest::testCase74()
+{
+    core("(1, 2)\n");
+}
+
+void PyParser::PyParserTest::testCase75()
+{
+    core("(1, 2, 3)\n");
+}
+
+void PyParser::PyParserTest::testCase76()
+{
+
+}
+
+void PyParser::PyParserTest::testCase77()
+{
+
+}
+
+void PyParser::PyParserTest::testCase78()
+{
+
+}
+
+void PyParser::PyParserTest::testCase79()
+{
+
+}
+
+void PyParser::PyParserTest::testCase80()
+{
+
 }

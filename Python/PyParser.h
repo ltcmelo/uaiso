@@ -29,6 +29,7 @@
 #include "Ast/AstList.h"
 #include "Common/Test.h"
 #include "Parsing/Token.h"
+#include <functional>
 #include <initializer_list>
 #include <utility>
 
@@ -168,6 +169,7 @@ private:
     ListCompre completeListCompre(ListCompre listCompre,
                                   ListCompre (PyParser::*genFunc) (ListCompre),
                                   ListCompre (PyParser::*filterFunc) (ListCompre));
+    Expr completeWrapped(const std::function<Expr ()> exprFunc);
 
     template <class AstListT>
     std::pair<std::unique_ptr<AstListT>, bool>
