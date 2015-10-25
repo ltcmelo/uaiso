@@ -126,6 +126,15 @@ public:
              , &PyParserTest::testCase88
              , &PyParserTest::testCase89
              , &PyParserTest::testCase90
+             , &PyParserTest::testCase91
+             , &PyParserTest::testCase92
+             , &PyParserTest::testCase93
+             , &PyParserTest::testCase94
+             , &PyParserTest::testCase95
+             , &PyParserTest::testCase96
+             , &PyParserTest::testCase97
+             , &PyParserTest::testCase98
+             , &PyParserTest::testCase99
             )
 
     void testCase1();
@@ -218,6 +227,15 @@ public:
     void testCase88();
     void testCase89();
     void testCase90();
+    void testCase91();
+    void testCase92();
+    void testCase93();
+    void testCase94();
+    void testCase95();
+    void testCase96();
+    void testCase97();
+    void testCase98();
+    void testCase99();
 
     void core(const std::string& code, bool expectError = false)
     {
@@ -832,6 +850,63 @@ finally:
 }
 
 void PyParser::PyParserTest::testCase90()
+{
+    core(R"raw(
+with A() as a:
+    suite
+)raw");
+}
+
+void PyParser::PyParserTest::testCase91()
+{
+    core(R"raw(
+with A() as a, B() as b:
+    suite
+)raw");
+}
+
+void PyParser::PyParserTest::testCase92()
+{
+    core(R"raw(
+with A():
+    suite
+)raw");
+}
+
+void PyParser::PyParserTest::testCase93()
+{
+    core(R"raw(
+with:
+    suite
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase94()
+{
+
+}
+
+void PyParser::PyParserTest::testCase95()
+{
+
+}
+
+void PyParser::PyParserTest::testCase96()
+{
+
+}
+
+void PyParser::PyParserTest::testCase97()
+{
+
+}
+
+void PyParser::PyParserTest::testCase98()
+{
+
+}
+
+void PyParser::PyParserTest::testCase99()
 {
 
 }

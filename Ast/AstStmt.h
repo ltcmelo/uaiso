@@ -544,12 +544,12 @@ public:
     NAMED_LOC_PARAM(Key, key)
     NAMED_LOC_PARAM(LDelim, lDelim)
     NAMED_LOC_PARAM(RDelim, rDelim)
-    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_LIST_PARAM(Expr, exprs, ExprAst)
     NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
-    std::unique_ptr<ExprAst> expr_;
+    std::unique_ptr<ExprAstList> exprs_;
     SourceLoc rDelimLoc_;
     std::unique_ptr<StmtAst> stmt_;
 };

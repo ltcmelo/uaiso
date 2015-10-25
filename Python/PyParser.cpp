@@ -731,10 +731,44 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
     }
 }
 
+/*
+ * with_stmt: 'with' with_item (',' with_item)* ':' suite
+ */
 std::unique_ptr<StmtAst> PyParser::parseWithStmt()
 {
     UAISO_ASSERT(ahead_ == TK_WITH, return Stmt());
-    return Stmt();
+
+    match(TK_WITH);
+    auto with = makeAst<WithStmtAst>();
+    with->setKeyLoc(lastLoc_);
+    with->setExprs(parseList<ExprAstList>(TK_COMMA,
+                                          &PyParser::isTestAhead,
+                                          &PyParser::parseWithItem,
+                                          false).first.release());
+    if (!with->exprs())
+        failMatch(true);
+
+    match(TK_COLON);
+    with->setStmt(parseSuite().release());
+
+    return Stmt(with.release());
+}
+
+/*
+ * with_item: test ['as' expr]
+ */
+std::unique_ptr<ExprAst> PyParser::parseWithItem()
+{
+    auto test = parseTest();
+    if (maybeConsume(TK_AS)) {
+        auto assign = makeAst<AssignExprAst>();
+        assign->setOprLoc(lastLoc_);
+        assign->addExpr1(test.release());
+        assign->addExpr2(parseExpr().release());
+        return Expr(assign.release());
+    }
+
+    return test;
 }
 
 std::unique_ptr<StmtAst> PyParser::parseFuncDef()

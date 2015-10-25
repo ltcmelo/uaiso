@@ -1245,7 +1245,7 @@ template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseWithStmt(WithStmtAst* ast)
 {
     EVAL_RESULT_0(recursivelyVisitWithStmt(ast));
-    EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
+    EVAL_RESULT_LIST_N(traverseList<ExprAst>(ast->exprs_.get(), &DerivedT::traverseExpr));
     EVAL_RESULT_N(traverseStmt(ast->stmt_.get()));
     return Continue;
 }

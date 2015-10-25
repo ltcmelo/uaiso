@@ -107,7 +107,6 @@ private:
     Stmt parseWhileStmt();
     Stmt parseForStmt();
     Stmt parseTryStmt();
-    Stmt parseWithStmt();
     Stmt parseFuncDef();
     Stmt parseClassDef();
     Stmt parseDecorated();
@@ -117,6 +116,7 @@ private:
     Stmt parseRaiseStmt();
     Stmt parseReturnStmt();
     Stmt parseSuite();
+    Stmt parseWithStmt();
 
     //--- Expressions ---//
 
@@ -145,6 +145,7 @@ private:
     Expr parseDictOrSetMaker();
     Expr parseWrappedOrTuple();
     ExprList parseExprList();
+    Expr parseWithItem();
     ListCompre parseCompFor(ListCompre);
     ListCompre parseCompIf(ListCompre);
     ListCompre parseListFor(ListCompre);

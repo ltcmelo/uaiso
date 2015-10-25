@@ -3616,8 +3616,8 @@ WithStmt:
     WITH '(' Expr ')' Stmt
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<WithStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
-                ->setRDelimLoc(locC)->setStmt($5);
+        $$ = makeAstRaw<WithStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)
+                ->addExpr($3)->setRDelimLoc(locC)->setStmt($5);
     }
 ;
 
