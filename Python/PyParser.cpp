@@ -59,18 +59,6 @@ bool PyParser::maybeConsume(Token tk)
     return false;
 }
 
-std::pair<bool, Token> PyParser::maybeConsume(const std::initializer_list<Token>& tks)
-{
-    for (auto tk : tks) {
-        if (ahead_ == tk) {
-            consumeToken();
-            return std::make_pair(true, tk);
-        }
-    }
-
-    return std::make_pair(false, TK_INVALID);
-}
-
 void PyParser::skipTo(Token tk)
 {
     while (!(ahead_ == tk || ahead_ == TK_EOP))
@@ -607,9 +595,9 @@ std::unique_ptr<StmtAst> PyParser::parseWhileStmt()
     match(TK_COLON);
     whyle->setStmt(parseSuite().release());
 
-    // TODO: Add else clause to WhileStmtAst.
     if (maybeConsume(TK_ELSE)) {
         match(TK_COLON);
+        // DESIGN: WhileStmtAst needs an else clause.
         parseSuite();
     }
 
@@ -639,25 +627,108 @@ std::unique_ptr<StmtAst> PyParser::parseForStmt()
 
     match(TK_IN);
     auto test = parseTestList();
-    // DESIGN: Extend ForeachStmtAst to allow expres? For now, take the first one.
+    // DESIGN: Extend ForeachStmtAst to allow exprs? For now, take the first one.
     if (test)
         four->setExpr(test->releaseHead().release());
     match(TK_COLON);
     four->setStmt(parseSuite().release());
 
-    // TODO: Add else clause to ForeachStmtAst.
     if (maybeConsume(TK_ELSE)) {
         match(TK_COLON);
+        // DESIGN: ForeachStmtAst needs an else clause.
         parseSuite();
     }
 
     return Stmt(four.release());
 }
 
+/*
+ * try_stmt: ('try' ':' suite
+ *            ((except_clause ':' suite)+
+ *             ['else' ':' suite]
+ *             ['finally' ':' suite] |
+ *             'finally' ':' suite))
+ * except_clause: 'except' [test [('as' | ',') test]]
+ */
 std::unique_ptr<StmtAst> PyParser::parseTryStmt()
 {
     UAISO_ASSERT(ahead_ == TK_TRY, return Stmt());
-    return Stmt();
+
+    match(TK_TRY);
+    auto trie = makeAst<TryStmtAst>();
+    trie->setKeyLoc(lastLoc_);
+    match(TK_COLON);
+    trie->setStmt(parseSuite().release());
+
+    bool seenElse = false;
+    while (true) {
+        switch (ahead_) {
+        case TK_CATCH: {
+            consumeToken();
+            auto catche = makeAst<CatchClauseStmtAst>();
+            catche->setKeyLoc(lastLoc_);
+            if (isTestAhead()) {
+                auto test = parseTest();
+                if (test) {
+                    auto group = makeAst<ParamGroupDeclAst>();
+                    if (test->kind() != Ast::Kind::IdentExpr) {
+                        // TODO: This is an error, right?
+                    } else {
+                        group->setSpec(makeAstRaw<NamedSpecAst>()->setName(
+                                IdentExpr_Cast(test.get())->name_.release()));
+                    }
+                    if (maybeConsume(TK_AS) || maybeConsume(TK_COMMA)) {
+                        auto ident = parseTest();
+                        if (ident) {
+                            if (ident->kind() != Ast::Kind::IdentExpr) {
+                                context_->trackReport(Diagnostic::NameRequired,
+                                                      lastLoc_);
+                            } else {
+                                group->addDecl(makeAstRaw<ParamDeclAst>()
+                                    ->setName(IdentExpr_Cast(ident.get())->name_.release()));
+                            }
+                        }
+                    }
+                    catche->setDecl(group.release());
+                }
+            }
+            match(TK_COLON);
+            catche->setStmt(parseSuite().release());
+            trie->addCatch(catche.release());
+            break;
+        }
+
+        case TK_FINALLY: {
+            consumeToken();
+            auto finaly = makeAst<FinallyClauseStmtAst>();
+            finaly->setKeyLoc(lastLoc_);
+            match(TK_COLON);
+            finaly->setStmt(parseSuite().release());
+            trie->setFinal(finaly.release());
+            return Stmt(trie.release());
+        }
+
+        case TK_ELSE: {
+            if (!trie->catchs() || seenElse) {
+                // TODO: Once else is added to stmt, check against it (no seenElse).
+                failMatch(true);
+            } else {
+                consumeToken();
+                match(TK_COLON);
+                // DESIGN: ForeachStmtAst needs an else clause.
+                parseSuite();
+                seenElse = true;
+            }
+            break;
+        }
+
+        default:
+            // Check for 'except' only ('finally' always returns).
+            if (!trie->catchs())
+                failMatch(true);
+            return Stmt(trie.release());
+        }
+    }
 }
 
 std::unique_ptr<StmtAst> PyParser::parseWithStmt()
@@ -1097,13 +1168,13 @@ std::unique_ptr<ExprAst> PyParser::parseComparison()
             expr = completeBinaryExpr<InExprAst>(std::move(expr), &PyParser::parseExpr);
             break;
 
-        case TK_IS: // May be followed by `not`.
+        case TK_IS: // May be followed by 'not'.
             consumeToken();
             maybeConsume(TK_NOT);
             expr = completeBinaryExpr<IsExprAst>(std::move(expr), &PyParser::parseExpr);
             break;
 
-        case TK_NOT: // Must be followed by `in`.
+        case TK_NOT: // Must be followed by 'in'.
             consumeToken();
             match(TK_IN);
             expr = completeBinaryExpr<InExprAst>(std::move(expr), &PyParser::parseExpr);
@@ -1335,8 +1406,8 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
 
     match(TK_LBRACE);
     auto dictOrSet = makeAst<ArrayInitExprAst>();
-    // DESIGN: Differentiate a set literal, `{1, 2}`, from a list literal,
-    // `(1, 2)`. Both are parsed as ArrayInitExprAst. Perhaps add a variety
+    // DESIGN: Differentiate a set literal, '{1, 2}', from a list literal,
+    // '(1, 2)'. Both are parsed as ArrayInitExprAst. Perhaps add a variety
     // to the AST or handle through Syntax.
     dictOrSet->setLDelimLoc(lastLoc_);
     if (maybeConsume(TK_RBRACE)) {
@@ -1473,10 +1544,10 @@ std::unique_ptr<ExprAst> PyParser::parseListMaker()
  * wrappedortuple: '(' [yield_expr|testlist_comp] ')'
  * testlist_comp: test ( comp_for | (',' test)* [','] )
  *
- * `()`     - Tuple
- * `(1)`    - Wrapped expr
- * `(1,)`   - Tuple
- * `(1, 2)` - Tuple
+ * '()'     - Tuple
+ * '(1)'    - Wrapped expr
+ * '(1,)'   - Tuple
+ * '(1, 2)' - Tuple
  */
 std::unique_ptr<ExprAst> PyParser::parseWrappedOrTuple()
 {

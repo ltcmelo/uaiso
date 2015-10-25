@@ -55,7 +55,6 @@ private:
 
     void consumeToken();
     bool maybeConsume(Token tk);
-    std::pair<bool, Token> maybeConsume(const std::initializer_list<Token>&);
     void skipTo(Token tk);
     bool match(Token tk);
     void failMatch(bool consume);

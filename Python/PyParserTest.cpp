@@ -116,6 +116,16 @@ public:
              , &PyParserTest::testCase78
              , &PyParserTest::testCase79
              , &PyParserTest::testCase80
+             , &PyParserTest::testCase81
+             , &PyParserTest::testCase82
+             , &PyParserTest::testCase83
+             , &PyParserTest::testCase84
+             , &PyParserTest::testCase85
+             , &PyParserTest::testCase86
+             , &PyParserTest::testCase87
+             , &PyParserTest::testCase88
+             , &PyParserTest::testCase89
+             , &PyParserTest::testCase90
             )
 
     void testCase1();
@@ -198,6 +208,16 @@ public:
     void testCase78();
     void testCase79();
     void testCase80();
+    void testCase81();
+    void testCase82();
+    void testCase83();
+    void testCase84();
+    void testCase85();
+    void testCase86();
+    void testCase87();
+    void testCase88();
+    void testCase89();
+    void testCase90();
 
     void core(const std::string& code, bool expectError = false)
     {
@@ -493,29 +513,24 @@ void PyParser::PyParserTest::testCase51()
 void PyParser::PyParserTest::testCase52()
 {
     core(R"raw(
-
 if a:
     pass
-
 )raw");
 }
 
 void PyParser::PyParserTest::testCase53()
 {
     core(R"raw(
-
 if a:
     print 1
 else:
     print 2
-
 )raw");
 }
 
 void PyParser::PyParserTest::testCase54()
 {
     core(R"raw(
-
 if a:
     print 1
 elif b:
@@ -524,7 +539,6 @@ elif c:
     print 3
 else:
     print 4
-
 )raw");
 }
 
@@ -536,52 +550,42 @@ void PyParser::PyParserTest::testCase55()
 void PyParser::PyParserTest::testCase56()
 {
     core(R"raw(
-
 while a:
     print 1
-
 )raw");
 }
 
 void PyParser::PyParserTest::testCase57()
 {
     core(R"raw(
-
 while a:
     print 1
 else:
     print 2
-
 )raw");
 }
 
 void PyParser::PyParserTest::testCase58()
 {
     core(R"raw(
-
 while a
     print 1
-
 )raw", true);
 }
 
 void PyParser::PyParserTest::testCase59()
 {
     core(R"raw(
-
 for x in range(1, 10):
     print 1
-
 )raw");
 }
 
 void PyParser::PyParserTest::testCase60()
 {
     core(R"raw(
-
 for x, y in a, b:
     print 1
-
 )raw");
 }
 
@@ -662,25 +666,172 @@ void PyParser::PyParserTest::testCase75()
 
 void PyParser::PyParserTest::testCase76()
 {
-
+    core(R"raw(
+try:
+    print 1
+)raw", true);
 }
 
 void PyParser::PyParserTest::testCase77()
 {
-
+    core(R"raw(
+try:
+    print 1
+except:
+    print 2
+)raw");
 }
 
 void PyParser::PyParserTest::testCase78()
 {
-
+    core(R"raw(
+try:
+    print 1
+except A:
+    print 2
+)raw");
 }
 
 void PyParser::PyParserTest::testCase79()
 {
-
+    core(R"raw(
+try:
+    print 1
+except A as a:
+    print 2
+)raw");
 }
 
 void PyParser::PyParserTest::testCase80()
+{
+    core(R"raw(
+try:
+    print 1
+finally A:
+    print 2
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase81()
+{
+    core(R"raw(
+try:
+    print 1
+finally:
+    print 2
+)raw");
+}
+
+void PyParser::PyParserTest::testCase82()
+{
+    core(R"raw(
+try:
+    print 1
+except A, a:
+    print 2
+finally:
+    print 3
+)raw");
+}
+
+void PyParser::PyParserTest::testCase83()
+{
+    core(R"raw(
+try:
+    print 1
+except A, a:
+    print 2
+except B, b:
+    print 3
+finally:
+    print 4
+)raw");
+}
+
+void PyParser::PyParserTest::testCase84()
+{
+    core(R"raw(
+try:
+    print 1
+except A, a:
+    print 2
+except B, b, nope:
+    print 3
+finally:
+    print 4
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase85()
+{
+    core(R"raw(
+try:
+    print 1
+except A, a:
+    print 2
+except B, b:
+    print 3
+    print 4
+    if (c):
+         print 5
+finally:
+    print 6
+)raw");
+}
+
+void PyParser::PyParserTest::testCase86()
+{
+    core(R"raw(
+try:
+    print 1
+else:
+    print 2
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase87()
+{
+    core(R"raw(
+try:
+    print 1
+except:
+    print 2
+else:
+    print 3
+)raw");
+}
+
+void PyParser::PyParserTest::testCase88()
+{
+    core(R"raw(
+try:
+    print 1
+except:
+    print 2
+else:
+    print 3
+finally:
+    print 4
+)raw");
+}
+
+void PyParser::PyParserTest::testCase89()
+{
+    core(R"raw(
+try:
+    print 1
+except:
+    print 2
+else:
+    print 3
+else:
+    print 4
+finally:
+    print 5
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase90()
 {
 
 }
