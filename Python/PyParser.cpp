@@ -171,6 +171,11 @@ bool PyParser::isSubscriptAhead() const
     }
 }
 
+bool PyParser::isNameAhead() const
+{
+    return ahead_ == TK_IDENTIFIER;
+}
+
 std::pair<PyParser::Precedence, std::unique_ptr<BinaryExprAst>>
 PyParser::fetchPrecAhead() const
 {
@@ -334,6 +339,7 @@ std::unique_ptr<StmtAst> PyParser::parseSmallStmt()
         return parsePassStmt();
 
     case TK_IMPORT:
+    case TK_FROM:
         return parseImportStmt();
 
     case TK_GLOBAL:
@@ -431,7 +437,7 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
         wantTest = true;
     }
 
-    if (isTestAhead()) {
+    if (wantTest || isTestAhead()) {
         print->addExpr(parseTest().release());
         if (maybeConsume(TK_COMMA)) {
             if (print->exprs())
@@ -439,8 +445,6 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
             if (isTestAhead())
                 print->mergeExprs(parseTestList().release());
         }
-    } else if (wantTest) {
-        failMatch(true);
     }
 
     return Stmt(makeAstRaw<ExprStmtAst>()->addExpr(print.release()));
@@ -476,6 +480,12 @@ std::unique_ptr<StmtAst> PyParser::parsePassStmt()
  */
 std::unique_ptr<StmtAst> PyParser::parseFlowStmt()
 {
+    UAISO_ASSERT(ahead_ == TK_BREAK
+                 || ahead_ == TK_CONTINUE
+                 || ahead_ == TK_RETURN
+                 || ahead_ == TK_THROW
+                 || ahead_ == TK_YIELD, return Stmt());
+
     switch (ahead_) {
     case TK_BREAK:
         return parseBreakStmt();
@@ -493,15 +503,167 @@ std::unique_ptr<StmtAst> PyParser::parseFlowStmt()
         return parseYieldStmt();
 
     default:
-        UAISO_ASSERT(false, {});
+        failMatch(true);
         return Stmt();
     }
 }
 
+/*
+ * import_stmt: import_name | import_from
+ * import_name: 'import' dotted_as_names
+ * import_from: 'from' ('.'* dotted_name | '.'+) 'import' sub_import
+ * dotted_name: NAME ('.' NAME)*
+ * dotted_as_name: dotted_name ['as' NAME]
+ * dotted_as_names: dotted_as_name (',' dotted_as_name)*
+ */
 std::unique_ptr<StmtAst> PyParser::parseImportStmt()
 {
-    UAISO_ASSERT(ahead_ == TK_IMPORT, return Stmt());
-    return Stmt();
+    UAISO_ASSERT(ahead_ == TK_IMPORT || ahead_ == TK_FROM, return Stmt());
+
+    switch (ahead_) {
+    case TK_IMPORT: {
+        consumeToken();
+        auto import = makeAst<ImportClauseDeclAst>();
+        import->setKeyLoc(lastLoc_);
+        do {
+            if (import->modules_)
+                import->modules_->delim_ = lastLoc_;
+            auto module = makeAst<ImportModuleDeclAst>();
+            module->setExpr(makeAstRaw<IdentExprAst>()->setName(parseDottedName().release()));
+            if (maybeConsume(TK_AS)) {
+                module->setAsLoc(lastLoc_);
+                module->setLocalName(parseName().release());
+            }
+            import->addModule(module.release());
+        } while (maybeConsume(TK_COMMA));
+        if (!import->modules_)
+            failMatch(true);
+
+        return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(import.release()));
+    }
+
+    case TK_FROM: {
+        consumeToken();
+        auto import = makeAst<ImportClauseDeclAst>();
+        import->setKeyLoc(lastLoc_);
+
+        // DESIGN: Store the dots (relative location info).
+        bool wantName = true;
+        while (maybeConsume(TK_DOT) || maybeConsume(TK_DOT_DOT_DOT))
+            wantName = false;
+
+        // Confusing rules... The thing comming after 'from' might be a module,
+        // preceeded or not by dots (relative indication), or dots alone. In
+        // this latter case, specifying the folder of the upcoming 'import'.
+        // Details in PEP 0328:
+        //
+        // package/
+        //     __init__.py
+        //     subpackage1/
+        //         __init__.py
+        //         moduleX.py
+        //         moduleY.py
+        //     subpackage2/
+        //         __init__.py
+        //         moduleZ.py
+        //     moduleA.py
+        //
+        // from .moduleY import spam
+        // from .moduleY import spam as ham
+        // from . import moduleY
+        // from ..subpackage1 import moduleY
+        // from ..subpackage2.moduleZ import eggs
+        // from ..moduleA import foo
+        // from ...package import bar
+        // from ...sys import path
+
+        if (wantName || isNameAhead()) {
+            // A selective import, members specified after 'import'.
+            auto module = makeAst<ImportModuleDeclAst>();
+            module->setExpr(makeAstRaw<IdentExprAst>()->setName(parseDottedName().release()));
+            match(TK_IMPORT);
+            module->setSelectLoc(lastLoc_);
+            module->setMembers(parseSubImports(true).release());
+            import->addModule(module.release());
+        } else {
+            // An "ordinary" (non-selective) import, 'from' is just to indicate
+            // the module after 'import' is relative.
+            match(TK_IMPORT);
+            import->setHintLoc(lastLoc_);
+            import->setModules(parseSubImports(false).release());
+        }
+
+        return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(import.release()));
+    }
+
+    default:
+        failMatch(true);
+        return Stmt();
+    }
+}
+
+/*
+ * sub_import: ('*' | '(' import_as_names ')' | import_as_names)
+ * import_as_name: NAME ['as' NAME]
+ * import_as_names: import_as_name (',' import_as_name)* [',']
+ */
+std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
+{
+    bool wantParen = false;
+    switch (ahead_) {
+    case TK_STAR:
+        consumeToken();
+        if (selective) {
+            auto star = makeAst<GenNameAst>();
+            star->setGenLoc(lastLoc_);
+            auto member = makeAst<ImportMemberDeclAst>();
+            member->setActualName(star.release());
+            return DeclList(DeclAstList::create(member.release()));
+        }
+        failMatch(false);
+        return DeclList();
+
+    case TK_LPAREN:
+        consumeToken();
+        wantParen = true;
+        // Fallthrough
+
+    default:
+        DeclList decls;
+        if (selective) {
+            do {
+                if (decls)
+                    decls->delim_ = lastLoc_;
+                auto member = makeAst<ImportMemberDeclAst>();
+                member->setActualName(parseName().release());
+                if (maybeConsume(TK_AS)) {
+                    member->setAsLoc(lastLoc_);
+                    member->setNickName(parseName().release());
+                }
+                addToList(decls, member.release());
+            } while (maybeConsume(TK_COMMA));
+        } else {
+            do {
+                if (decls)
+                    decls->delim_ = lastLoc_;
+                auto module = makeAst<ImportModuleDeclAst>();
+                module->setExpr(makeAstRaw<IdentExprAst>()->setName(parseName().release()));
+                if (maybeConsume(TK_AS)) {
+                    module->setAsLoc(lastLoc_);
+                    module->setLocalName(parseName().release());
+                }
+                addToList(decls, module.release());
+            } while (maybeConsume(TK_COMMA));
+        }
+        if (wantParen && !match(TK_RPAREN)) {
+            DEBUG_TRACE("parseSubImports, skip to TK_RPAREN\n");
+            skipTo(TK_RPAREN);
+        }
+        if (!decls)
+            failMatch(true);
+
+        return decls;
+    }
 }
 
 /*
@@ -514,17 +676,13 @@ std::unique_ptr<StmtAst> PyParser::parseGlobalStmt()
     match(TK_GLOBAL);
     auto group = makeAst<VarGroupDeclAst>();
     group->setKeyLoc(lastLoc_);
-
-    DeclList decls;
-    match(TK_IDENTIFIER);
-    addToList(decls, makeAstRaw<VarDeclAst>()->setName(completeName().release()));
-    while (maybeConsume(TK_COMMA)) {
-        if (decls)
-            decls->delim_ = lastLoc_;
-        match(TK_IDENTIFIER);
-        addToList(decls, makeAstRaw<VarDeclAst>()->setName(completeName().release()));
-    }
-    group->setDecls(decls.release());
+    do {
+        if (group->decls_)
+            group->decls_->delim_ = lastLoc_;
+        addToList(group->decls_, makeAstRaw<VarDeclAst>()->setName(parseName().release()));
+    } while (maybeConsume(TK_COMMA));
+    if (!group->decls())
+        failMatch(true);
 
     return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(group.release()));
 }
@@ -1322,8 +1480,7 @@ std::unique_ptr<ExprAst> PyParser::parsePower()
             auto member = makeAst<MemberAccessExprAst>();
             member->setOprLoc(lastLoc_);
             member->setExpr(atom.release());
-            match(TK_IDENTIFIER);
-            member->setName(completeName().release());
+            member->setName(parseName().release());
             atom.reset(member.release());
             break;
         }
@@ -1373,9 +1530,8 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
     }
 
     case TK_IDENTIFIER: {
-        consumeToken();
         auto ident = makeAst<IdentExprAst>();
-        ident->setName(completeName().release());
+        ident->setName(parseName().release());
         return Expr(ident.release());
     }
 
@@ -1656,8 +1812,19 @@ std::unique_ptr<ExprAst> PyParser::parseOldLambdaDef()
     return Expr();
 }
 
-std::unique_ptr<NameAst> PyParser::completeName()
+std::unique_ptr<NameAst> PyParser::parseDottedName()
 {
+    auto name = makeAst<NestedNameAst>();
+    name->setNames(parseList<NameAstList>(TK_DOT,
+                                          &PyParser::isNameAhead,
+                                          &PyParser::parseName,
+                                          false).first.release());
+    return Name(name.release());
+}
+
+std::unique_ptr<NameAst> PyParser::parseName()
+{
+    match(TK_IDENTIFIER);
     auto name = makeAst<SimpleNameAst>();
     name->setNameLoc(lastLoc_);
     return Name(name.release());

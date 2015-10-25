@@ -88,6 +88,16 @@ private:
     bool isAtomAhead() const;
     bool isArgAhead() const;
     bool isSubscriptAhead() const;
+    bool isNameAhead() const;
+
+    //--- Names ---//
+
+    Name parseName();
+    Name parseDottedName();
+
+    //--- Declarations ---//
+
+    DeclList parseSubImports(bool selective);
 
     //--- Statements ---//
 

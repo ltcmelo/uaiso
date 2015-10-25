@@ -710,16 +710,18 @@ public:
     {}
 
     NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(Hint, hint)
     NAMED_LOC_PARAM(LDelim, lDelim)
-    NAMED_AST_LIST_PARAM(Module, modules, DeclAst)
     NAMED_LOC_PARAM(RDelim, rDelim)
     NAMED_LOC_PARAM(Termin, termin)
+    NAMED_AST_LIST_PARAM(Module, modules, DeclAst)
 
     SourceLoc keyLoc_;
+    SourceLoc hintLoc_;
     SourceLoc lDelimLoc_;
-    std::unique_ptr<DeclAstList> modules_;
     SourceLoc rDelimLoc_;
     SourceLoc terminLoc_;
+    std::unique_ptr<DeclAstList> modules_;
 };
 
 class UAISO_API ImportModuleDeclAst : public DeclAst

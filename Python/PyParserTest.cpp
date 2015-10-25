@@ -135,6 +135,26 @@ public:
              , &PyParserTest::testCase97
              , &PyParserTest::testCase98
              , &PyParserTest::testCase99
+             , &PyParserTest::testCase100
+             , &PyParserTest::testCase101
+             , &PyParserTest::testCase102
+             , &PyParserTest::testCase103
+             , &PyParserTest::testCase104
+             , &PyParserTest::testCase105
+             , &PyParserTest::testCase106
+             , &PyParserTest::testCase107
+             , &PyParserTest::testCase108
+             , &PyParserTest::testCase109
+             , &PyParserTest::testCase110
+             , &PyParserTest::testCase111
+             , &PyParserTest::testCase112
+             , &PyParserTest::testCase113
+             , &PyParserTest::testCase114
+             , &PyParserTest::testCase115
+             , &PyParserTest::testCase116
+             , &PyParserTest::testCase117
+             , &PyParserTest::testCase118
+             , &PyParserTest::testCase119
             )
 
     void testCase1();
@@ -236,6 +256,26 @@ public:
     void testCase97();
     void testCase98();
     void testCase99();
+    void testCase100();
+    void testCase101();
+    void testCase102();
+    void testCase103();
+    void testCase104();
+    void testCase105();
+    void testCase106();
+    void testCase107();
+    void testCase108();
+    void testCase109();
+    void testCase110();
+    void testCase111();
+    void testCase112();
+    void testCase113();
+    void testCase114();
+    void testCase115();
+    void testCase116();
+    void testCase117();
+    void testCase118();
+    void testCase119();
 
     void core(const std::string& code, bool expectError = false)
     {
@@ -883,30 +923,130 @@ with:
 
 void PyParser::PyParserTest::testCase94()
 {
-
+    core("import a\n");
 }
 
 void PyParser::PyParserTest::testCase95()
 {
-
+    core("import a as la\n");
 }
 
 void PyParser::PyParserTest::testCase96()
 {
-
+    core("import a, b\n");
 }
 
 void PyParser::PyParserTest::testCase97()
 {
-
+    core("import a as la, b\n");
 }
 
 void PyParser::PyParserTest::testCase98()
 {
-
+    core("import a as la, b as lb\n");
 }
 
 void PyParser::PyParserTest::testCase99()
+{
+    core("import a, b as lb\n");
+}
+
+void PyParser::PyParserTest::testCase100()
+{
+    core("import a.b.c\n");
+}
+
+void PyParser::PyParserTest::testCase101()
+{
+    core("import a.b.c as abc\n");
+}
+
+void PyParser::PyParserTest::testCase102()
+{
+    core("from .moduleY import spam\n");
+}
+
+void PyParser::PyParserTest::testCase103()
+{
+    core("from .moduleY import spam as ham\n");
+}
+
+void PyParser::PyParserTest::testCase104()
+{
+    core("from . import moduleY\n");
+}
+
+void PyParser::PyParserTest::testCase105()
+{
+    core("from ..subpackage1 import moduleY\n");
+}
+
+void PyParser::PyParserTest::testCase106()
+{
+    core("from ..subpackage2.moduleZ import eggs\n");
+}
+
+void PyParser::PyParserTest::testCase107()
+{
+    core("from ..moduleA import foo\n");
+}
+
+void PyParser::PyParserTest::testCase108()
+{
+    core("from ...package import bar\n");
+}
+
+void PyParser::PyParserTest::testCase109()
+{
+    core("from ...sys import path\n");
+}
+
+void PyParser::PyParserTest::testCase110()
+{
+    core("from a import c\n");
+}
+
+void PyParser::PyParserTest::testCase111()
+{
+    core("from os import path as p\n");
+}
+
+void PyParser::PyParserTest::testCase112()
+{
+    core("from os import path as p, path2 as p2\n");
+}
+
+void PyParser::PyParserTest::testCase113()
+{
+    core("import 1\n", true);
+}
+
+void PyParser::PyParserTest::testCase114()
+{
+    core("import a b\n", true);
+}
+
+void PyParser::PyParserTest::testCase115()
+{
+    core("from import\n", true);
+}
+
+void PyParser::PyParserTest::testCase116()
+{
+    core("from a b import c\n", true);
+}
+
+void PyParser::PyParserTest::testCase117()
+{
+    core("from a import c d\n", true);
+}
+
+void PyParser::PyParserTest::testCase118()
+{
+    core("from a import *\n");
+}
+
+void PyParser::PyParserTest::testCase119()
 {
 
 }
