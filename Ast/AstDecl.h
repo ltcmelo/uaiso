@@ -700,41 +700,66 @@ public:
     SourceLoc terminLoc_;
 };
 
-class UAISO_API ImportDeclAst : public DeclAst
+class UAISO_API ImportClauseDeclAst : public DeclAst
 {
 public:
-    using Self = ImportDeclAst;
+    using Self = ImportClauseDeclAst;
 
-    ImportDeclAst()
-        : DeclAst(Kind::ImportDecl)
+    ImportClauseDeclAst()
+        : DeclAst(Kind::ImportClauseDecl)
     {}
 
-    NAMED_AST_PARAM(Module, module, ExprAst)
-    NAMED_LOC_PARAM(Bind, bind)
-    NAMED_AST_PARAM(LocalName, localName, NameAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Module, modules, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_LOC_PARAM(Termin, termin)
 
-    std::unique_ptr<ExprAst> module_;
-    SourceLoc bindLoc_;
-    std::unique_ptr<NameAst> localName_;
+    SourceLoc keyLoc_;
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<DeclAstList> modules_;
+    SourceLoc rDelimLoc_;
+    SourceLoc terminLoc_;
 };
 
-/*!
- * \brief The ImportDistinctDeclAst class
- */
-class UAISO_API ImportDistinctDeclAst final : public ImportDeclAst
+class UAISO_API ImportModuleDeclAst : public DeclAst
 {
 public:
-    using Self = ImportDistinctDeclAst;
-    using ImportDeclAst::ImportDeclAst;
+    using Self = ImportModuleDeclAst;
 
+    ImportModuleDeclAst()
+        : DeclAst(Kind::ImportModuleDecl)
+    {}
+
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_LOC_PARAM(As, as)
     NAMED_AST_PARAM(LocalName, localName, NameAst)
-    NAMED_LOC_PARAM(Bind, bind)
-    NAMED_AST_PARAM(Module, module, ExprAst)
-    NAMED_LOC_PARAM(Selec, selec)
-    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_LOC_PARAM(Select, select)
+    NAMED_AST_LIST_PARAM(Member, members, DeclAst)
 
-    SourceLoc selecLoc_;
-    std::unique_ptr<DeclAstList> decls_;
+    std::unique_ptr<ExprAst> expr_;
+    SourceLoc asLoc_;
+    std::unique_ptr<NameAst> localName_;
+    SourceLoc selectLoc_;
+    std::unique_ptr<DeclAstList> members_;
+};
+
+class UAISO_API ImportMemberDeclAst : public DeclAst
+{
+public:
+    using Self = ImportMemberDeclAst;
+
+    ImportMemberDeclAst()
+        : DeclAst(Kind::ImportMemberDecl)
+    {}
+
+    NAMED_AST_PARAM(ActualName, actualName, NameAst)
+    NAMED_LOC_PARAM(As, as)
+    NAMED_AST_PARAM(NickName, nickName, NameAst)
+
+    std::unique_ptr<NameAst> actualName_;
+    SourceLoc asLoc_;
+    std::unique_ptr<NameAst> nickName_;
 };
 
 /*!

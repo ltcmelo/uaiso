@@ -416,11 +416,29 @@ AstVisitor<DerivedT>::traverseForwardDecl(ForwardDeclAst* decl)
 }
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
-AstVisitor<DerivedT>::traverseImportDecl(ImportDeclAst* decl)
+AstVisitor<DerivedT>::traverseImportClauseDecl(ImportClauseDeclAst* decl)
 {
-    EVAL_RESULT_0(recursivelyVisitImportDecl(decl));
-    EVAL_RESULT_N(traverseExpr(decl->module_.get()));
+    EVAL_RESULT_0(recursivelyVisitImportClauseDecl(decl));
+    EVAL_RESULT_LIST_N(traverseList<DeclAst>(decl->modules_.get(), &DerivedT::traverseDecl));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseImportModuleDecl(ImportModuleDeclAst* decl)
+{
+    EVAL_RESULT_0(recursivelyVisitImportModuleDecl(decl));
+    EVAL_RESULT_N(traverseExpr(decl->expr_.get()));
     EVAL_RESULT_N(traverseName(decl->localName_.get()));
+    EVAL_RESULT_LIST_N(traverseList<DeclAst>(decl->members_.get(), &DerivedT::traverseDecl));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseImportMemberDecl(ImportMemberDeclAst* decl)
+{
+    EVAL_RESULT_0(recursivelyVisitImportMemberDecl(decl));
+    EVAL_RESULT_N(traverseName(decl->actualName_.get()));
+    EVAL_RESULT_N(traverseName(decl->nickName_.get()));
     return Continue;
 }
 

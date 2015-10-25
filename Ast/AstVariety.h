@@ -92,7 +92,6 @@ enum class SectionVariety : char
 {
     Unknown,
     Vars,
-    Imports,
     Types
 };
 

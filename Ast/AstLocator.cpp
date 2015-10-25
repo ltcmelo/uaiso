@@ -470,14 +470,40 @@ const SourceLoc& AstLocator::lastLoc(ForwardDeclAst* ast) const
     return lastLoc(ast->name_.get());
 }
 
-const SourceLoc& AstLocator::loc(ImportDeclAst* ast) const
+const SourceLoc& AstLocator::loc(ImportClauseDeclAst* ast) const
 {
-    return loc(ast->module_.get());
+    return ast->keyLoc_;
 }
 
-const SourceLoc& AstLocator::lastLoc(ImportDeclAst* ast) const
+const SourceLoc& AstLocator::lastLoc(ImportClauseDeclAst* ast) const
 {
-    return lastLoc(ast->module_.get());
+    return ast->terminLoc_;
+}
+
+const SourceLoc& AstLocator::loc(ImportModuleDeclAst* ast) const
+{
+    return loc(ast->expr_.get());
+}
+
+const SourceLoc& AstLocator::lastLoc(ImportModuleDeclAst* ast) const
+{
+    if (ast->members_)
+        return lastLoc(ast->members_->back());
+    if (ast->localName_)
+        return lastLoc(ast->localName_.get());
+    return lastLoc(ast->expr_.get());
+}
+
+const SourceLoc& AstLocator::loc(ImportMemberDeclAst* ast) const
+{
+    return loc(ast->actualName_.get());
+}
+
+const SourceLoc& AstLocator::lastLoc(ImportMemberDeclAst* ast) const
+{
+    if (ast->nickName_)
+        return lastLoc(ast->nickName_.get());
+    return lastLoc(ast->actualName_.get());
 }
 
 const SourceLoc& AstLocator::loc(InvariantDeclAst* ast) const

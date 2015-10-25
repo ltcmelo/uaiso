@@ -925,17 +925,17 @@ Binder::VisitResult Binder::traverseForwardDecl(ForwardDeclAst* ast)
     return Continue;
 }
 
-Binder::VisitResult Binder::traverseImportDecl(ImportDeclAst* ast)
+Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
 {
     // An import is not injected into the environment during binding. But
     // it's still evaluated so the module and given namespace are collected.
 
-    UAISO_ASSERT(ast->module_.get(), return Abort);
+    UAISO_ASSERT(ast->expr_.get(), return Abort);
     PickupName pickupName(P->lexemes_);
-    const auto& lexemes = pickupName.process(ast->module_.get());
+    const auto& lexemes = pickupName.process(ast->expr_.get());
 
     if (lexemes.empty()) {
-        P->report(Diagnostic::UnresolvedModule, ast->module_.get(), P->locator_.get());
+        P->report(Diagnostic::UnresolvedModule, ast->expr_.get(), P->locator_.get());
         return Continue;
     }
 
@@ -956,9 +956,10 @@ Binder::VisitResult Binder::traverseImportDecl(ImportDeclAst* ast)
     // By default, if local name is empty, assign the module name to it.
     if (!localName) {
         auto pos = moduleName.find_last_of(P->syntax_->packageSeparator());
-        auto sss = moduleName.substr(pos == std::string::npos ? 0 : pos);
-        localName = const_cast<LexemeMap*>(P->lexemes_)->insertOrFind<Ident>(
-                    sss, P->fileName_, ast->bindLoc_.lineCol());
+        auto ident = moduleName.substr(pos == std::string::npos ? 0 : pos);
+        localName =
+                const_cast<LexemeMap*>(P->lexemes_)->insertOrFind<Ident>(
+                        ident, P->fileName_, ast->asLoc_.lineCol());
     }
 
     std::unique_ptr<Import> import(

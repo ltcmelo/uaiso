@@ -415,10 +415,10 @@ AstSerializer::VisitResult AstSerializer::traverseForwardDecl(ForwardDeclAst* as
     return Continue;
 }
 
-AstSerializer::VisitResult AstSerializer::traverseImportDecl(ImportDeclAst* ast)
+AstSerializer::VisitResult AstSerializer::traverseImportModuleDecl(ImportModuleDeclAst* ast)
 {
     *output__ << "(" << static_cast<size_t>(ast->kind());
-    Base::traverseImportDecl(ast);
+    Base::traverseImportModuleDecl(ast);
     *output__ << ")";
     return Continue;
 }

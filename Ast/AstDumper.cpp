@@ -288,9 +288,9 @@ AstDumper::VisitResult AstDumper::visitVarDecl(VarDeclAst* ast)
     return Continue;
 }
 
-AstDumper::VisitResult AstDumper::visitImportDecl(ImportDeclAst* ast)
+AstDumper::VisitResult AstDumper::visitImportModuleDecl(ImportModuleDeclAst* ast)
 {
-    *output__ << level << "ImportDeclAst" << std::endl;
+    *output__ << level << "ImportModuleDeclAst" << std::endl;
     return Continue;
 }
 
@@ -315,9 +315,7 @@ AstDumper::VisitResult AstDumper::visitParamClauseDecl(ParamClauseDeclAst* ast)
 AstDumper::VisitResult AstDumper::visitSectionDecl(SectionDeclAst* ast)
 {
     *output__ << level << "SectionDeclAst";
-    if (ast->variety() == SectionVariety::Imports)
-        *output__ << "[Import]";
-    else if (ast->variety() == SectionVariety::Vars)
+    if (ast->variety() == SectionVariety::Vars)
         *output__ << "[Var]";
     else if (ast->variety() == SectionVariety::Types)
         *output__ << "[Type]";

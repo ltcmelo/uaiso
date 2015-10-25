@@ -146,7 +146,7 @@ void GO_yyerror(const YYLTYPE* yylloc,
 %type <decl_> Decl VarGroupDecl VarDecl VarSectionDecl
 %type <decl_> FieldDecl RecordDecl TypeGroupDecl ConstDecl InterfaceMember
 %type <decl_> FuncDecl FuncRecvDecl ParamGroupDecl ParamClauseDecl ParamDecl
-%type <decl_> ImportDecl Import
+%type <decl_> ImportClauseDecl ImportModuleDecl
 %type <decls_> FieldDecls InterfaceMembers VarGroupDeclList RecordDeclList
 %type <decls_> ParamGroupDeclList ParamDeclList VarDeclList Decls ImportList
 
@@ -1413,7 +1413,7 @@ BuiltinType:
        no closing brace after the statement list). */
 
 Decl:
-    ImportDecl
+    ImportClauseDecl
 |   FuncDecl
 |   FuncRecvDecl
 |   VarSectionDecl
@@ -1454,61 +1454,56 @@ Decls:
 
 DeclsSync: ';' | EOP;
 
-ImportDecl:
-    IMPORT Import
+ImportClauseDecl:
+    IMPORT ImportModuleDecl
     {
         DECL_1_LOC(@1);
-        auto sect = makeAstRaw<SectionDeclAst>()->setKeyLoc(locA)->addDecl($2);
-        sect->setVariety(SectionVariety::Imports);
-        $$ = sect;
+        $$ = makeAstRaw<ImportClauseDeclAst>()->setKeyLoc(locA)->addModule($2);
     }
 |   IMPORT '(' ')'
     {
         DECL_3_LOC(@1, @2, @3);
-        auto sect = makeAstRaw<SectionDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC);
-        sect->setVariety(SectionVariety::Imports);
-        $$ = sect;
+        $$ = makeAstRaw<ImportClauseDeclAst>()->setKeyLoc(locA)
+            ->setLDelimLoc(locB)->setRDelimLoc(locC);
     }
 |   IMPORT '(' ImportList ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto sect = makeAstRaw<SectionDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDeclsSR($3)->setRDelimLoc(locC);
-        sect->setVariety(SectionVariety::Imports);
-        $$ = sect;
+        $$ = makeAstRaw<ImportClauseDeclAst>()->setKeyLoc(locA)
+            ->setLDelimLoc(locB)->setModulesSR($3)->setRDelimLoc(locC);
     }
 |   IMPORT '(' ImportList ';' ')'
     {
         DECL_3_LOC(@1, @2, @5);
-        auto sect = makeAstRaw<SectionDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDeclsSR($3)->setRDelimLoc(locC);
-        sect->setVariety(SectionVariety::Imports);
-        $$ = sect;
+        $$ = makeAstRaw<ImportClauseDeclAst>()->setKeyLoc(locA)
+            ->setLDelimLoc(locB)->setModulesSR($3)->setRDelimLoc(locC);
     }
 ;
 
-Import:
+ImportModuleDecl:
     StringLit
     {
-        $$ = makeAstRaw<ImportDeclAst>()->setModule($1);
+        $$ = makeAstRaw<ImportModuleDeclAst>()->setExpr($1);
     }
 |   Ident StringLit
     {
-        $$ = makeAstRaw<ImportDeclAst>()->setLocalName($1)->setModule($2);
+        $$ = makeAstRaw<ImportModuleDeclAst>()->setLocalName($1)->setExpr($2);
     }
 |   '.' StringLit
     {
         DECL_1_LOC(@1);
         auto dot = makeAstRaw<GenNameAst>()->setGenLoc(locA);
         context->trackLexeme<Ident>(".", locA.fileName_.c_str(), locA.lineCol());
-        $$ = makeAstRaw<ImportDeclAst>()->setLocalName(dot)->setModule($2);
+        $$ = makeAstRaw<ImportModuleDeclAst>()->setLocalName(dot)->setExpr($2);
     }
 ;
 
 ImportList:
-    Import
+    ImportModuleDecl
     {
         $$ = DeclAstList::createSR($1);
     }
-|   ImportList ';' Import
+|   ImportList ';' ImportModuleDecl
     {
         DECL_1_LOC(@2);
         $1->delim_ = locA;
