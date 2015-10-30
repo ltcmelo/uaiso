@@ -42,10 +42,9 @@ void PyParser::consumeToken()
     if (ahead_ == TK_EOP)
         return;
 
-    // Track last location for further reference.
+    // Track previous token location.
     lastLoc_ = lexer_->tokenLoc();
     lastLoc_.fileName_ = context_->fileName();
-
     ahead_ = lexer_->lex();
 }
 
@@ -69,7 +68,6 @@ bool PyParser::match(Token tk)
 {
     auto actual = ahead_;
     consumeToken(); // Move on, regardless of a match.
-
     if (actual != tk) {
         failMatch(false);
         return false;
@@ -237,8 +235,6 @@ bool PyParser::parse(Lexer* lexer, ParsingContext* context)
 
     if (!stmts)
         return false;
-
-    // TODO: Wrap all into a declaration and make a program out of it.
 
     return true;
 }
@@ -512,9 +508,6 @@ std::unique_ptr<StmtAst> PyParser::parseFlowStmt()
  * import_stmt: import_name | import_from
  * import_name: 'import' dotted_as_names
  * import_from: 'from' ('.'* dotted_name | '.'+) 'import' sub_import
- * dotted_name: NAME ('.' NAME)*
- * dotted_as_name: dotted_name ['as' NAME]
- * dotted_as_names: dotted_as_name (',' dotted_as_name)*
  */
 std::unique_ptr<StmtAst> PyParser::parseImportStmt()
 {
@@ -929,23 +922,172 @@ std::unique_ptr<ExprAst> PyParser::parseWithItem()
     return test;
 }
 
+/*
+ * varargslist: (fpdef ['=' test] ',')*
+ *              ('*' NAME [',' '**' NAME] | '**' NAME) |
+ *              fpdef ['=' test] (',' fpdef ['=' test])* [',']
+ * fpdef: NAME | '(' fplist ')'
+ * fplist: fpdef (',' fpdef)* [',']
+ */
+std::unique_ptr<DeclAst> PyParser::parseVarArgsList(bool wantParen)
+{
+    auto clause = makeAst<ParamClauseDeclAst>();
+    if (wantParen) {
+        match(TK_LPAREN);
+        clause->setLDelimLoc(lastLoc_);
+    }
+
+    bool seenStar = false;
+    bool takeComma = true;
+    do {
+        if (clause->decls_)
+            clause->decls_->lastSubList()->delim_ = lastLoc_;
+
+        auto group = makeAst<ParamGroupDeclAst>();
+        group->setSpec(makeAstRaw<InferredSpecAst>());
+        switch (ahead_) {
+        case TK_IDENTIFIER: {
+            if (seenStar)
+                break;
+            auto name = parseName();
+            if (maybeConsume(TK_EQUAL)) {
+                auto param = makeAst<ParamDeclAst__<ParamVariadic__Empty__,
+                                                    ParamDefaultArg__>>();
+                param->setAssignLoc(lastLoc_);
+                param->setName(name.release());
+                param->setDefaultArg(parseTest().release());
+                group->addDecl(param.release());
+            } else {
+                group->addDecl(makeAstRaw<ParamDeclAst>()->setName(name.release()));
+            }
+            addToList(clause->decls_, group.release());
+            break;
+        }
+
+        case TK_STAR: {
+            if (seenStar)
+                break;
+            seenStar = true;
+            consumeToken();
+            addToList(clause->decls_, completeParam(std::move(group)).release());
+            break;
+        }
+
+        case TK_STAR_STAR: {
+            consumeToken();
+            addToList(clause->decls_, completeParam(std::move(group)).release());
+            // Fallthrough
+        }
+
+        default:
+            takeComma = false;
+            break;
+        }
+    } while (takeComma && maybeConsume(TK_COMMA));
+
+    if (wantParen && !match(TK_RPAREN)) {
+        DEBUG_TRACE("parseFuncDef, skip to TK_RPAREN\n");
+        skipTo(TK_RPAREN);
+    }
+
+    return Decl(clause.release());
+}
+
+/*
+ * funcdef: 'def' NAME parameters ':' suite
+ * parameters: '(' [varargslist] ')'
+ */
 std::unique_ptr<StmtAst> PyParser::parseFuncDef()
 {
     UAISO_ASSERT(ahead_ == TK_FUNC, return Stmt());
-    return Stmt();
+
+    match(TK_FUNC);
+    auto spec = makeAst<FuncSpecAst__<>>();
+    spec->setKeyLoc(lastLoc_);
+    auto decl = makeAst<FuncDeclAst>();
+    decl->setName(parseName().release());
+    spec->setParam(parseVarArgsList(true).release());
+
+    match(TK_COLON);
+    spec->setLDelimLoc(lastLoc_);
+    decl->setStmt(parseSuite().release());
+    decl->setSpec(spec.release());
+
+    return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(decl.release()));
 }
 
+/*
+ * classdef: 'class' NAME ['(' [testlist] ')'] ':' suite
+ */
 std::unique_ptr<StmtAst> PyParser::parseClassDef()
 {
     UAISO_ASSERT(ahead_ == TK_CLASS, return Stmt());
-    return Stmt();
+
+    match(TK_CLASS);
+    auto spec = makeAst<RecordSpecAst>();
+    spec->setKeyLoc(lastLoc_);
+    auto decl = makeAst<RecordDeclAst>();
+    decl->setName(parseName().release());
+
+    if (maybeConsume(TK_LPAREN)) {
+        auto bases = parseTestList();
+        for (auto base : *bases) {
+            if (base->kind() != Ast::Kind::IdentExpr)
+                continue;
+            auto name = IdentExpr_Cast(base)->name_.release();
+            addToList(spec->bases_, makeAstRaw<BaseDeclAst>()->setName(name));
+        }
+        if (!match(TK_RPAREN)) {
+            DEBUG_TRACE("parseClassDef, skip to TK_RPAREN\n");
+            skipTo(TK_RPAREN);
+        }
+    }
+
+    match(TK_COLON);
+    spec->setLDelimLoc(lastLoc_);
+    spec->setStmt(parseSuite().release());
+    decl->setSpec(spec.release());
+
+    return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(decl.release()));
 }
 
+/*
+ * decorated: decorators (classdef | funcdef)
+ * decorators: decorator+
+ * decorator: '@' dotted_name [ '(' [arglist] ')' ] NEWLINE
+ */
 std::unique_ptr<StmtAst> PyParser::parseDecorated()
 {
     UAISO_ASSERT(ahead_ == TK_AT_SYMBOL, return Stmt());
 
-    return Stmt();
+    match(TK_AT_SYMBOL);
+    do {
+        // TODO: Work on decorators.
+        parseDottedName();
+        if (maybeConsume(TK_LPAREN)) {
+            parseArgList();
+            if (!match(TK_RPAREN)) {
+                DEBUG_TRACE("parseDecorated, skip to TK_RPAREN\n");
+                skipTo(TK_RPAREN);
+            }
+        }
+        if (!match(TK_NEWLINE)) {
+            DEBUG_TRACE("parseDecorated, skip to TK_NEWLINE\n");
+            skipTo(TK_NEWLINE);
+        }
+    } while (maybeConsume(TK_AT_SYMBOL));
+
+    switch (ahead_) {
+    case TK_CLASS:
+        return parseClassDef();
+
+    case TK_FUNC:
+        return parseFuncDef();
+
+    default:
+        failMatch(true);
+        return Stmt();
+    }
 }
 
 /*
@@ -1080,7 +1222,6 @@ std::unique_ptr<ExprAst> PyParser::parseOldTest()
 {
     if (ahead_ == TK_LAMBDA)
         return parseOldLambdaDef();
-
     return parseOrTest();
 }
 
@@ -1443,7 +1584,7 @@ std::unique_ptr<ExprAst> PyParser::parsePower()
 {
     auto atom = parseAtom();
     bool trailer = true;
-    while (trailer) {
+    do {
         switch (ahead_) {
         case TK_LPAREN: {
             consumeToken();
@@ -1489,7 +1630,7 @@ std::unique_ptr<ExprAst> PyParser::parsePower()
             trailer = false;
             break;
         }
-    }
+    } while (trailer);
 
     if (maybeConsume(TK_STAR_STAR))
         return completeBinaryExpr<PowerExprAst>(std::move(atom), &PyParser::parseFactor);
@@ -1780,8 +1921,6 @@ std::unique_ptr<ExprAst> PyParser::parseWrappedOrTuple()
     default:
         return completeWrapped([&test, this]() { return std::move(test); });
     }
-
-    return Expr();
 }
 
 /*
@@ -1799,19 +1938,45 @@ std::unique_ptr<ExprAst> PyParser::parseYieldExpr()
     return Expr(yield.release());
 }
 
+/*
+ * lambdef: 'lambda' [varargslist] ':' test
+ */
 std::unique_ptr<ExprAst> PyParser::parseLambdaDef()
 {
-    UAISO_ASSERT(ahead_ == TK_LAMBDA, return Expr());
-    // TODO: FuncSpecAst in FuncLitExprAst
-    return Expr();
+    return parseLambdaCore(&PyParser::parseTest);
 }
 
+/*
+ * old_lambdef: 'lambda' [varargslist] ':' old_test
+ */
 std::unique_ptr<ExprAst> PyParser::parseOldLambdaDef()
 {
-    UAISO_ASSERT(ahead_ == TK_LAMBDA, return Expr());
-    return Expr();
+    return parseLambdaCore(&PyParser::parseOldTest);
 }
 
+std::unique_ptr<ExprAst> PyParser::parseLambdaCore(Expr (PyParser::*parseFunc) ())
+{
+    UAISO_ASSERT(ahead_ == TK_LAMBDA, return Expr());
+
+    match(TK_LAMBDA);
+    auto spec = makeAst<FuncSpecAst__<>>();
+    spec->setKeyLoc(lastLoc_);
+    spec->setParam(parseVarArgsList(false).release());
+
+    match(TK_COLON);
+    spec->setLDelimLoc(lastLoc_);
+    auto lambda = makeAst<FuncLitExprAst>();
+    lambda->setSpec(spec.release());
+    lambda->setStmt(makeAstRaw<ExprStmtAst>()->addExpr(((this)->*(parseFunc))().release()));
+
+    return Expr(lambda.release());
+}
+
+/*
+ * dotted_name: NAME ('.' NAME)*
+ * dotted_as_name: dotted_name ['as' NAME]
+ * dotted_as_names: dotted_as_name (',' dotted_as_name)*
+ */
 std::unique_ptr<NameAst> PyParser::parseDottedName()
 {
     auto name = makeAst<NestedNameAst>();
@@ -1912,6 +2077,15 @@ std::unique_ptr<StmtAst> PyParser::completeIfStmt()
     }
 
     return Stmt(ef.release());
+}
+
+std::unique_ptr<DeclAst> PyParser::completeParam(ParamGroup group)
+{
+    auto param = makeAst<ParamDeclAst__<ParamVariadic__>>();
+    param->setVariadicLoc(lastLoc_);
+    param->setName(parseName().release());
+    group->addDecl(param.release());
+    return std::move(group);
 }
 
 template <class AstListT> std::pair<std::unique_ptr<AstListT>, bool>

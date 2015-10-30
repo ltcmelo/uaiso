@@ -155,6 +155,47 @@ public:
              , &PyParserTest::testCase117
              , &PyParserTest::testCase118
              , &PyParserTest::testCase119
+             , &PyParserTest::testCase120
+             , &PyParserTest::testCase121
+             , &PyParserTest::testCase122
+             , &PyParserTest::testCase123
+             , &PyParserTest::testCase124
+             , &PyParserTest::testCase125
+             , &PyParserTest::testCase126
+             , &PyParserTest::testCase127
+             , &PyParserTest::testCase128
+             , &PyParserTest::testCase129
+             , &PyParserTest::testCase130
+             , &PyParserTest::testCase131
+             , &PyParserTest::testCase132
+             , &PyParserTest::testCase133
+             , &PyParserTest::testCase134
+             , &PyParserTest::testCase135
+             , &PyParserTest::testCase136
+             , &PyParserTest::testCase137
+             , &PyParserTest::testCase138
+             , &PyParserTest::testCase139
+             , &PyParserTest::testcase140
+             , &PyParserTest::testcase141
+             , &PyParserTest::testcase142
+             , &PyParserTest::testcase143
+             , &PyParserTest::testcase144
+             , &PyParserTest::testcase145
+             , &PyParserTest::testcase146
+             , &PyParserTest::testcase147
+             , &PyParserTest::testcase148
+             , &PyParserTest::testcase149
+             , &PyParserTest::testcase150
+             , &PyParserTest::testcase151
+             , &PyParserTest::testcase152
+             , &PyParserTest::testcase153
+             , &PyParserTest::testcase154
+             , &PyParserTest::testcase155
+             , &PyParserTest::testcase156
+             , &PyParserTest::testcase157
+             , &PyParserTest::testcase158
+             , &PyParserTest::testcase159
+
             )
 
     void testCase1();
@@ -276,6 +317,46 @@ public:
     void testCase117();
     void testCase118();
     void testCase119();
+    void testCase120();
+    void testCase121();
+    void testCase122();
+    void testCase123();
+    void testCase124();
+    void testCase125();
+    void testCase126();
+    void testCase127();
+    void testCase128();
+    void testCase129();
+    void testCase130();
+    void testCase131();
+    void testCase132();
+    void testCase133();
+    void testCase134();
+    void testCase135();
+    void testCase136();
+    void testCase137();
+    void testCase138();
+    void testCase139();
+    void testcase140();
+    void testcase141();
+    void testcase142();
+    void testcase143();
+    void testcase144();
+    void testcase145();
+    void testcase146();
+    void testcase147();
+    void testcase148();
+    void testcase149();
+    void testcase150();
+    void testcase151();
+    void testcase152();
+    void testcase153();
+    void testcase154();
+    void testcase155();
+    void testcase156();
+    void testcase157();
+    void testcase158();
+    void testcase159();
 
     void core(const std::string& code, bool expectError = false)
     {
@@ -1048,5 +1129,275 @@ void PyParser::PyParserTest::testCase118()
 
 void PyParser::PyParserTest::testCase119()
 {
+    core(R"raw(
+class A:
+    i = 1
+)raw");
+}
 
+void PyParser::PyParserTest::testCase120()
+{
+    core(R"raw(
+class A(B, C):
+    i = 1
+    print 'class'
+)raw");
+}
+
+void PyParser::PyParserTest::testCase121()
+{
+    core(R"raw(
+class A(B C):
+    i = 1
+    print 'class'
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase122()
+{
+    core(R"raw(
+class :
+    i = 1
+    print 'class'
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase123()
+{
+    core("def f(): pass\n");
+}
+
+void PyParser::PyParserTest::testCase124()
+{
+    core(R"raw(
+def f():
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase125()
+{
+    core(R"raw(
+def f(a):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase126()
+{
+    core(R"raw(
+def f(a=1):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase127()
+{
+    core(R"raw(
+def f(a, b, c):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase128()
+{
+    core(R"raw(
+def f(a, *b):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase129()
+{
+    core(R"raw(
+def f(a, **b):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase130()
+{
+    core(R"raw(
+def f(a, *b, **c):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase131()
+{
+    core(R"raw(
+def f(a,):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase132()
+{
+    core(R"raw(
+def f(a, b,):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase133()
+{
+    core(R"raw(
+def f(*a):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase134()
+{
+    core(R"raw(
+def f(*a, **b):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase135()
+{
+    core(R"raw(
+def f(**a):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testCase136()
+{
+    core(R"raw(
+def f(*a, b):
+    pass
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase137()
+{
+    core(R"raw(
+def f(a b):
+    pass
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase138()
+{
+    core(R"raw(
+def f(a, *b, c):
+    pass
+)raw", true);
+}
+
+void PyParser::PyParserTest::testCase139()
+{
+    core(R"raw(
+@decor
+def f(a):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testcase140()
+{
+    core(R"raw(
+@decor
+@other
+def f(a):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testcase141()
+{
+    core(R"raw(
+@decor("p")
+def f(a):
+    pass
+)raw");
+}
+
+void PyParser::PyParserTest::testcase142()
+{
+    core(R"raw(
+@decor def f(a):
+    pass
+)raw", true);
+}
+
+void PyParser::PyParserTest::testcase143()
+{
+    core(R"raw(
+@decor x
+def f(a):
+    pass
+)raw", true);
+}
+
+void PyParser::PyParserTest::testcase144()
+{
+    core("lambda x: x**2\n");
+}
+
+void PyParser::PyParserTest::testcase145()
+{
+    core("lambda x, y: x + y\n");
+}
+
+void PyParser::PyParserTest::testcase146()
+{
+    core("lambda: self.doit()\n");
+}
+
+void PyParser::PyParserTest::testcase147()
+{
+    core("lambda a\n", true);
+}
+
+void PyParser::PyParserTest::testcase148()
+{
+    core("lambda: a b\n", true);
+}
+
+void PyParser::PyParserTest::testcase149()
+{
+    core("lamb x: x\n", true);
+}
+
+void PyParser::PyParserTest::testcase150()
+{
+}
+
+void PyParser::PyParserTest::testcase151()
+{
+}
+
+void PyParser::PyParserTest::testcase152()
+{
+}
+
+void PyParser::PyParserTest::testcase153()
+{
+}
+
+void PyParser::PyParserTest::testcase154()
+{
+}
+
+void PyParser::PyParserTest::testcase155()
+{
+}
+
+void PyParser::PyParserTest::testcase156()
+{
+}
+
+void PyParser::PyParserTest::testcase157()
+{
+}
+
+void PyParser::PyParserTest::testcase158()
+{
+}
+
+void PyParser::PyParserTest::testcase159()
+{
 }

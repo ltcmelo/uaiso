@@ -134,6 +134,7 @@ public:
     NAMED_AST_LIST_PARAM(Base, bases, DeclAst)
     NAMED_LOC_PARAM(LDelim, lDelim)
     NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
     NAMED_LOC_PARAM(RDelim, rDelim)
 
     /*!
@@ -158,6 +159,7 @@ public:
     std::unique_ptr<DeclAst> templ_;
     SourceLoc lDelimLoc_;
     std::unique_ptr<DeclAstList> decls_;
+    std::unique_ptr<StmtAst> stmt_;
     SourceLoc rDelimLoc_;
 };
 
@@ -235,7 +237,7 @@ struct FuncTemplateParam__Empty__
 /*!
  * A parameterized subclass of FuncSpecAst that avoids bloating the AST
  * memory size with members that are commonly absent. It works in combination
- *  with the "member" injection helpers.
+ * with the "member" injection helpers.
  */
 template <class TemplateParamT = FuncTemplateParam__Empty__>
 class FuncSpecAst__

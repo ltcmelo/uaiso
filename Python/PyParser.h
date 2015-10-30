@@ -80,6 +80,7 @@ private:
     using ExprList = std::unique_ptr<ExprAstList>;
 
     using ListCompre = std::unique_ptr<ListCompreExprAst>;
+    using ParamGroup = std::unique_ptr<ParamGroupDeclAst>;
 
     bool isTestAhead() const;
     bool isNonLambdaTestAhead() const;
@@ -97,6 +98,7 @@ private:
 
     //--- Declarations ---//
 
+    Decl parseVarArgsList(bool wantParen);
     DeclList parseSubImports(bool selective);
 
     //--- Statements ---//
@@ -135,8 +137,6 @@ private:
     ExprList parseTestList();
     ExprList parseTestList1();
     ExprList parseTestListSafe();
-    Expr parseLambdaDef();
-    Expr parseOldLambdaDef();
     Expr parseOrTest();
     Expr parseAndTest();
     Expr parseNotTest();
@@ -156,6 +156,9 @@ private:
     Expr parseWrappedOrTuple();
     ExprList parseExprList();
     Expr parseWithItem();
+    Expr parseLambdaDef();
+    Expr parseOldLambdaDef();
+    Expr parseLambdaCore(Expr (PyParser::*parseFunc) ());
     ListCompre parseCompFor(ListCompre);
     ListCompre parseCompIf(ListCompre);
     ListCompre parseListFor(ListCompre);
@@ -175,11 +178,11 @@ private:
     Expr completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ());
     Expr completeSubrangeExpr(Expr expr);
     Stmt completeIfStmt();
-    Name completeName();
     ListCompre completeListCompre(ListCompre listCompre,
                                   ListCompre (PyParser::*genFunc) (ListCompre),
                                   ListCompre (PyParser::*filterFunc) (ListCompre));
     Expr completeWrapped(const std::function<Expr ()> exprFunc);
+    Decl completeParam(ParamGroup group);
 
     template <class AstListT>
     std::pair<std::unique_ptr<AstListT>, bool>
