@@ -67,6 +67,10 @@ public:
              , &PyLexerTest::testCase32
              , &PyLexerTest::testCase33
              , &PyLexerTest::testCase34
+             , &PyLexerTest::testCase35
+             , &PyLexerTest::testCase36
+             , &PyLexerTest::testCase37
+             , &PyLexerTest::testCase38
              )
 
     // Tests cases (with few exceptions) were taken from CPython.
@@ -105,6 +109,10 @@ public:
     void testCase32();
     void testCase33();
     void testCase34();
+    void testCase35();
+    void testCase36();
+    void testCase37();
+    void testCase38();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -570,5 +578,56 @@ else:
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }
 
+void PyLexer::PyLexerTest::testCase35()
+{
+    auto tks = core(R"raw(
+""" triple-quoted string """
+)raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase36()
+{
+    auto tks = core(R"raw(
+""" triple-quoted "a" string """
+)raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase37()
+{
+    auto tks = core(R"raw(
+" regular \"a\" string "
+)raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase38()
+{
+    auto tks = core(R"raw(
+" regular string "
+)raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
 
 MAKE_CLASS_TEST(PyLexer)

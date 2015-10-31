@@ -27,6 +27,7 @@
 #include "Common/Assert.h"
 #include "Common/Trace__.h"
 #include <cctype>
+#include <iostream>
 
 #define TRACE_NAME "PyLexer"
 
@@ -40,6 +41,9 @@ PyLexer::PyLexer()
 {
     indentStack_.push(0);
 }
+
+PyLexer::~PyLexer()
+{}
 
 namespace {
 
@@ -342,29 +346,26 @@ Token PyLexer::lexStrLit(char& ch)
     if (ch == quote) {
         char next = peekChar(1);
         if (next == quote) {
-            consumeChar(2);
+            ch = consumeCharPeekNext(2);
             triple = true;
         }
     }
 
-    Base::lexStrLit(ch, quote, triple, syntax_.get());
-
-    if (ch) {
+    do {
+        Base::lexStrLit(ch, quote, triple, syntax_.get());
+        if (!ch)
+            break;
         ch = consumeCharPeekNext();
-        if (triple) {
-            if (ch == quote) {
-                ch = consumeCharPeekNext();
-                if (ch == quote) {
-                    ch = consumeCharPeekNext();
-                } else {
-                    // TODO: Error, unterminated string.
-                }
-            } else {
-                // TODO: Error, unterminated string.
-            }
+        if (triple
+                && quote == peekChar()
+                && quote == peekChar(1)) {
+            ch = consumeCharPeekNext(1);
+            triple = false;
         }
-    } else {
-        // TODO: Error, unterminated string.
+    } while (triple && ch);
+
+    if (!ch) {
+        // TODO: Error, unterminated string
     }
 
     return TK_STRING_LITERAL;

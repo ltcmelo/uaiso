@@ -42,6 +42,7 @@ class UAISO_API PyLexer final : public Lexer
 {
 public:
     PyLexer();
+    ~PyLexer();
 
     Token lex() override;
 
