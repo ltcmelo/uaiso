@@ -1364,6 +1364,11 @@ void PyParser::PyParserTest::testcase149()
 
 void PyParser::PyParserTest::testcase150()
 {
+    core(R"raw(
+a = ("abc"
+     "def"
+     "ghi")
+)raw");
 }
 
 void PyParser::PyParserTest::testcase151()

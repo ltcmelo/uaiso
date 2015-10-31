@@ -156,6 +156,7 @@ private:
     Expr parseWrappedOrTuple();
     ExprList parseExprList();
     Expr parseWithItem();
+    Expr parseStrLit();
     Expr parseLambdaDef();
     Expr parseOldLambdaDef();
     Expr parseLambdaCore(Expr (PyParser::*parseFunc) ());
@@ -169,8 +170,6 @@ private:
 
     // Helpers
 
-    template <class LitAstT>
-    Expr completeLitExpr();
     template <class UnaryAstT>
     Expr completeUnaryExpr(Expr (PyParser::*parseFunc) ());
     template <class BinaryAstT>

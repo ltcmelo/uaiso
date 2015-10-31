@@ -1677,13 +1677,15 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
     }
 
     case TK_INTEGER_LITERAL:
-    case TK_FLOAT_LITERAL:
+    case TK_FLOAT_LITERAL: {
         consumeToken();
-        return completeLitExpr<NumLitExprAst>();
+        auto num = makeAst<NumLitExprAst>();
+        num->setLitLoc(lastLoc_);
+        return Expr(num.release());
+    }
 
     case TK_STRING_LITERAL:
-        consumeToken();
-        return completeLitExpr<StrLitExprAst>();
+        return parseStrLit();
 
     default:
         failMatch(true);
@@ -1995,6 +1997,23 @@ std::unique_ptr<NameAst> PyParser::parseName()
     return Name(name.release());
 }
 
+std::unique_ptr<ExprAst> PyParser::parseStrLit()
+{
+    UAISO_ASSERT(ahead_ == TK_STRING_LITERAL, return Expr());
+
+    match(TK_STRING_LITERAL);
+    auto str = makeAst<StrLitExprAst>();
+    str->setLitLoc(lastLoc_);
+    if (ahead_ == TK_STRING_LITERAL) {
+        auto concat = makeAst<ConcatExprAst>();
+        concat->setExpr1(str.release());
+        concat->setExpr2(parseStrLit().release());
+        return Expr(concat.release());
+    }
+
+    return Expr(str.release());
+}
+
 std::unique_ptr<ExprAst> PyParser::completeSubrangeExpr(Expr expr)
 {
     auto range = makeAst<SubrangeExprAst>();
@@ -2021,14 +2040,6 @@ PyParser::completeWrapped(const std::function<Expr ()> exprFunc)
     }
     wrap->setRDelimLoc(lastLoc_);
     return Expr(wrap.release());
-}
-
-template <class LitAstT>
-std::unique_ptr<ExprAst> PyParser::completeLitExpr()
-{
-    auto lit = makeAst<LitAstT>();
-    lit->setLitLoc(lastLoc_);
-    return Expr(lit.release());
 }
 
 template <class UnaryAstT> std::unique_ptr<ExprAst>
