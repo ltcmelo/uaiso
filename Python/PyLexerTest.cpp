@@ -71,6 +71,14 @@ public:
              , &PyLexerTest::testCase36
              , &PyLexerTest::testCase37
              , &PyLexerTest::testCase38
+             , &PyLexerTest::testCase39
+             , &PyLexerTest::testCase40
+             , &PyLexerTest::testCase41
+             , &PyLexerTest::testCase42
+             , &PyLexerTest::testCase43
+             , &PyLexerTest::testCase44
+             , &PyLexerTest::testCase45
+             , &PyLexerTest::testCase46
              )
 
     // Tests cases (with few exceptions) were taken from CPython.
@@ -113,6 +121,14 @@ public:
     void testCase36();
     void testCase37();
     void testCase38();
+    void testCase39();
+    void testCase40();
+    void testCase41();
+    void testCase42();
+    void testCase43();
+    void testCase44();
+    void testCase45();
+    void testCase46();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -124,19 +140,29 @@ public:
             if (tks.back() == TK_EOP)
                 break;
         }
+
+        if (dumpTokens_) {
+            std::copy(tks.begin(), tks.end(),
+                      std::ostream_iterator<Token>(std::cout, " "));
+        }
+
         return tks;
     }
 
+    void reset() override
+    {
+        dumpTokens_ = false;
+    }
+
+    bool dumpTokens_ { false };
 };
 
 void PyLexer::PyLexerTest::testCase1()
 {
     auto tks = core(R"raw(
-
 the_world_is_flat = 1
 if the_world_is_flat:
     print "Be careful not to fall off!"
-
 )raw");
 
     std::vector<Token> expected {
@@ -151,11 +177,9 @@ if the_world_is_flat:
 void PyLexer::PyLexerTest::testCase2()
 {
     auto tks = core(R"raw(
-
 def check():
     if let_it:
         pass
-
 )raw");
 
     std::vector<Token> expected {
@@ -171,6 +195,7 @@ def check():
 void PyLexer::PyLexerTest::testCase3()
 {
     auto tks = core("0xff <= 255");
+
     std::vector<Token> expected {
         TK_INTEGER_LITERAL, TK_LESS_EQUAL, TK_INTEGER_LITERAL, TK_EOP
     };
@@ -201,6 +226,7 @@ void PyLexer::PyLexerTest::testCase5()
 void PyLexer::PyLexerTest::testCase6()
 {
     auto tks = core("2134568 != 1231515");
+
     std::vector<Token> expected {
         TK_INTEGER_LITERAL, TK_EXCLAM_EQUAL, TK_INTEGER_LITERAL, TK_EOP
     };
@@ -211,6 +237,7 @@ void PyLexer::PyLexerTest::testCase6()
 void PyLexer::PyLexerTest::testCase7()
 {
     auto tks = core("(-124561-1) & 200000000");
+
     std::vector<Token> expected {
         TK_LPAREN, TK_MINUS, TK_INTEGER_LITERAL, TK_MINUS, TK_INTEGER_LITERAL,
         TK_RPAREN, TK_AMPER, TK_INTEGER_LITERAL, TK_EOP
@@ -222,6 +249,7 @@ void PyLexer::PyLexerTest::testCase7()
 void PyLexer::PyLexerTest::testCase8()
 {
     auto tks = core("0xdeadbeef != -1");
+
     std::vector<Token> expected {
         TK_INTEGER_LITERAL, TK_EXCLAM_EQUAL, TK_MINUS, TK_INTEGER_LITERAL, TK_EOP
     };
@@ -232,6 +260,7 @@ void PyLexer::PyLexerTest::testCase8()
 void PyLexer::PyLexerTest::testCase9()
 {
     auto tks = core("0xdeadc0de & 12345");
+
     std::vector<Token> expected {
         TK_INTEGER_LITERAL, TK_AMPER, TK_INTEGER_LITERAL, TK_EOP
     };
@@ -242,6 +271,7 @@ void PyLexer::PyLexerTest::testCase9()
 void PyLexer::PyLexerTest::testCase10()
 {
     auto tks = core("0xFF & 0x15 | 1234");
+
     std::vector<Token> expected {
         TK_INTEGER_LITERAL, TK_AMPER, TK_INTEGER_LITERAL, TK_PIPE,
         TK_INTEGER_LITERAL, TK_EOP
@@ -253,6 +283,7 @@ void PyLexer::PyLexerTest::testCase10()
 void PyLexer::PyLexerTest::testCase11()
 {
     auto tks = core("x = 0");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
     };
@@ -263,6 +294,7 @@ void PyLexer::PyLexerTest::testCase11()
 void PyLexer::PyLexerTest::testCase12()
 {
     auto tks = core("x = 0xfffffffffff");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
     };
@@ -273,6 +305,7 @@ void PyLexer::PyLexerTest::testCase12()
 void PyLexer::PyLexerTest::testCase13()
 {
     auto tks = core("x = 3.14159");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
     };
@@ -283,6 +316,7 @@ void PyLexer::PyLexerTest::testCase13()
 void PyLexer::PyLexerTest::testCase14()
 {
     auto tks = core("x = 314159.");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
     };
@@ -293,6 +327,7 @@ void PyLexer::PyLexerTest::testCase14()
 void PyLexer::PyLexerTest::testCase15()
 {
     auto tks = core("x = .314159");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
     };
@@ -303,6 +338,7 @@ void PyLexer::PyLexerTest::testCase15()
 void PyLexer::PyLexerTest::testCase16()
 {
     auto tks = core("x = 3e14159");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
     };
@@ -313,6 +349,7 @@ void PyLexer::PyLexerTest::testCase16()
 void PyLexer::PyLexerTest::testCase17()
 {
     auto tks = core("x+y = 3e-1230");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_PLUS, TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
     };
@@ -323,6 +360,7 @@ void PyLexer::PyLexerTest::testCase17()
 void PyLexer::PyLexerTest::testCase18()
 {
     auto tks = core("x = r'abc' + r'ABC' + R'ABC' + R'ABC'");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_EQUAL, TK_STRING_LITERAL, TK_PLUS,
         TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_PLUS,
@@ -335,6 +373,7 @@ void PyLexer::PyLexerTest::testCase18()
 void PyLexer::PyLexerTest::testCase19()
 {
     auto tks = core(R"raw(y = r"abc" + r"ABC" + R"ABC" + R"ABC")raw");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_EQUAL, TK_STRING_LITERAL, TK_PLUS,
         TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_PLUS,
@@ -347,6 +386,7 @@ void PyLexer::PyLexerTest::testCase19()
 void PyLexer::PyLexerTest::testCase20()
 {
     auto tks = core("u'abc' + U'abc'");
+
     std::vector<Token> expected {
         TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_EOP
     };
@@ -357,6 +397,7 @@ void PyLexer::PyLexerTest::testCase20()
 void PyLexer::PyLexerTest::testCase21()
 {
     auto tks = core(R"raw(u"abc" + U"abc")raw");
+
     std::vector<Token> expected {
         TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_EOP
     };
@@ -367,6 +408,7 @@ void PyLexer::PyLexerTest::testCase21()
 void PyLexer::PyLexerTest::testCase22()
 {
     auto tks = core("br'abc' + bR'abc' + Br'abc' + BR'abc'");
+
     std::vector<Token> expected {
         TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_PLUS,
         TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_EOP
@@ -378,6 +420,7 @@ void PyLexer::PyLexerTest::testCase22()
 void PyLexer::PyLexerTest::testCase23()
 {
     auto tks = core("def d22(a, b, c=2, d=2, *k): pass");
+
     std::vector<Token> expected {
         TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_IDENTIFIER, TK_COMMA,
         TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL,
@@ -391,6 +434,7 @@ void PyLexer::PyLexerTest::testCase23()
 void PyLexer::PyLexerTest::testCase24()
 {
     auto tks = core("def d01v_(a=1, *k, **w): pass");
+
     std::vector<Token> expected {
         TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL,
         TK_COMMA, TK_STAR, TK_IDENTIFIER, TK_COMMA, TK_STAR_STAR, TK_IDENTIFIER,
@@ -403,6 +447,7 @@ void PyLexer::PyLexerTest::testCase24()
 void PyLexer::PyLexerTest::testCase25()
 {
     auto tks = core("x = 1 - y + 15 - 1 + 0x124 + z + a[5]");
+
     std::vector<Token> expected {
         TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_MINUS, TK_IDENTIFIER,
         TK_PLUS, TK_INTEGER_LITERAL, TK_MINUS, TK_INTEGER_LITERAL, TK_PLUS,
@@ -416,6 +461,7 @@ void PyLexer::PyLexerTest::testCase25()
 void PyLexer::PyLexerTest::testCase26()
 {
     auto tks = core("~1 ^ 1 & 1 |1 ^ -1");
+
     std::vector<Token> expected {
         TK_TILDE, TK_INTEGER_LITERAL, TK_CIRCUMFLEX, TK_INTEGER_LITERAL,
         TK_AMPER, TK_INTEGER_LITERAL, TK_PIPE, TK_INTEGER_LITERAL, TK_CIRCUMFLEX,
@@ -428,10 +474,8 @@ void PyLexer::PyLexerTest::testCase26()
 void PyLexer::PyLexerTest::testCase27()
 {
     auto tks = core(R"raw(
-
 import sys, time
 x = sys.modules['time'].time()
-
 )raw");
 
     std::vector<Token> expected {
@@ -447,10 +491,8 @@ x = sys.modules['time'].time()
 void PyLexer::PyLexerTest::testCase28()
 {
     auto tks = core(R"raw(
-
 @staticmethod
 def foo(x,y): pass
-
 )raw");
 
     std::vector<Token> expected {
@@ -476,14 +518,12 @@ void PyLexer::PyLexerTest::testCase29()
 void PyLexer::PyLexerTest::testCase30()
 {
     auto tks = core(R"raw(
-
 async def foo():
     def foo(await):
         await = 1
     if 1:
         await
     async += 1
-
 )raw");
 
     std::vector<Token> expected {
@@ -502,10 +542,8 @@ async def foo():
 void PyLexer::PyLexerTest::testCase31()
 {
     auto tks = core(R"raw(
-
 a = [1, 2,
      3, 4]
-
 )raw");
 
     std::vector<Token> expected {
@@ -520,11 +558,9 @@ a = [1, 2,
 void PyLexer::PyLexerTest::testCase32()
 {
     auto tks = core(R"raw(
-
 if a:
     print [1, 2,
 3, 4]
-
 )raw");
 
     std::vector<Token> expected {
@@ -540,11 +576,9 @@ if a:
 void PyLexer::PyLexerTest::testCase33()
 {
     auto tks = core(R"raw(
-
 if a:
     print [1, 2,
            3, 4]
-
 )raw");
 
     std::vector<Token> expected {
@@ -560,12 +594,10 @@ if a:
 void PyLexer::PyLexerTest::testCase34()
 {
     auto tks = core(R"raw(
-
 if a:
     print 1
 else:
     print 2
-
 )raw");
 
     std::vector<Token> expected {
@@ -625,6 +657,192 @@ void PyLexer::PyLexerTest::testCase38()
 
     std::vector<Token> expected {
         TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase39()
+{
+    auto tks = core(R"raw(
+if a:
+    # Comment
+    print a
+)raw");
+
+    std::vector<Token> expected {
+        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_INDENT,
+        TK_PRINT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase40()
+{
+    auto tks = core(R"raw(
+def f():
+    a = b
+
+def g():
+    a = b
+)raw");
+
+    std::vector<Token> expected {
+        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENTIFIER, TK_EQUAL, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT,
+        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENTIFIER, TK_EQUAL, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT,
+        TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase41()
+{
+    auto tks = core(R"raw(
+try:
+    print 1
+except A, a:
+    print 2
+except B, b:
+    print 3
+    print 4
+    if (c):
+         print 5
+finally:
+    print 6
+)raw");
+
+    std::vector<Token> expected {
+        TK_TRY, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INTEGER_LITERAL,
+        TK_NEWLINE, TK_DEDENT, TK_CATCH, TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER,
+        TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INTEGER_LITERAL,
+        TK_NEWLINE, TK_DEDENT, TK_CATCH, TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER,
+        TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INTEGER_LITERAL, TK_NEWLINE,
+        TK_PRINT, TK_INTEGER_LITERAL, TK_NEWLINE, TK_IF, TK_LPAREN,
+        TK_IDENTIFIER, TK_RPAREN, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
+        TK_INTEGER_LITERAL, TK_NEWLINE, TK_DEDENT, TK_DEDENT, TK_FINALLY, TK_COLON,
+        TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INTEGER_LITERAL, TK_NEWLINE, TK_DEDENT,
+        TK_EOP
+    };
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+}
+
+void PyLexer::PyLexerTest::testCase42()
+{
+    auto tks = core(R"raw(
+def f():
+    if a:
+        if b:
+            x
+    if a:
+        x
+)raw");
+
+    std::vector<Token> expected {
+        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
+        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
+        TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase43()
+{
+    auto tks = core(R"raw(
+def f():
+    if a:
+        if b:
+            x
+
+
+    if a:
+        x
+)raw");
+
+    std::vector<Token> expected {
+        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
+        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
+        TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase44()
+{
+    auto tks = core(R"raw(
+def f():
+    if a:
+        if b:
+            x
+def g():
+    pass
+)raw");
+
+    std::vector<Token> expected {
+        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT, TK_DEDENT,
+        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_PASS, TK_NEWLINE, TK_DEDENT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase45()
+{
+    auto tks = core(R"raw(
+def f():
+    if a:
+        if b:
+            x
+
+
+def g():
+    pass
+)raw");
+
+    std::vector<Token> expected {
+        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT, TK_DEDENT,
+        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_PASS, TK_NEWLINE, TK_DEDENT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase46()
+{
+    auto tks = core(R"raw(
+def f():
+    a = 1
+
+    b = 1
+)raw");
+
+    std::vector<Token> expected {
+        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_NEWLINE,
+        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_NEWLINE,
+        TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);

@@ -34,11 +34,10 @@
 using namespace uaiso;
 
 PyLexer::PyLexer()
-    : atLineStart_(true)
-    , indent_(0)
-    , brackets_(0)
+    : bits_(0)
     , syntax_(new PySyntax)
 {
+    bit_.atLineStart_ = true;
     indentStack_.push(0);
 }
 
@@ -92,72 +91,71 @@ Token PyLexer::lex()
     Token tk = TK_INVALID;
     updatePos();
 
-    UAISO_ASSERT(!indentStack_.empty(), return tk);
-
-    // Handle dedents for completely unindented lines.
-    if (atLineStart_ && indentStack_.top() > 0) {
-        char ch = peekChar();
-        if (ch && !std::isspace(ch) && ch != '#') {
-            indentStack_.pop();
-            return TK_DEDENT;
-        }
-    }
-
 LexNextToken:
     UAISO_ASSERT(!indentStack_.empty(), return tk);
 
     char ch = peekChar();
+    if (bit_.atLineStart_) {
+        // Look at indentation.
+        size_t count = 0;
+        if (ch == '\t' || ch == ' ') {
+            do {
+                ++count;
+                ch = consumeCharPeekNext();
+            } while (ch == '\t' || ch == ' ');
+        }
+
+        // Blank or comment lines have no effect.
+        if (ch && ch != '#' && ch != '\n') {
+            bit_.indent_ += count;
+            size_t largest = indentStack_.top();
+            if (bit_.indent_ > largest) {
+                // Indents happen one at a time.
+                indentStack_.push(bit_.indent_);
+                return TK_INDENT;
+            }
+            while (bit_.indent_ < largest) {
+                // Dedents may "accumulate".
+                indentStack_.pop();
+                ++bit_.pendingDedent_;
+                UAISO_ASSERT(!indentStack_.empty(), return tk);
+                largest = indentStack_.top();
+            }
+        }
+    }
+
+    // Take care of pending dedents.
+    if (bit_.pendingDedent_) {
+        --bit_.pendingDedent_;
+        return TK_DEDENT;
+    }
+
     switch (ch) {
     case 0:
         if (indentStack_.top() > 0) {
             indentStack_.pop();
             return TK_DEDENT;
         }
-        tk = TK_EOP;
-        return tk;
+        return TK_EOP;
 
     case '\n':
-        indent_ = 0;
+        bit_.indent_ = 0;
         handleNewLine();
-        consumeChar();
-        if (!atLineStart_ && !brackets_) {
-            atLineStart_ = true;
-            tk = TK_NEWLINE;
-            return tk;
+        ch = consumeCharPeekNext();
+        if (bit_.brackets_)
+            goto LexNextToken;
+        if (!bit_.atLineStart_) {
+            bit_.atLineStart_ = true;
+            return TK_NEWLINE;
         }
         goto LexNextToken;
 
     case '\t':
-    case ' ':
-        // Calculate indent level.
-        ch = consumeCharPeekNext();
-        while (ch == '\t' || ch == ' ') {
-            if (atLineStart_)
-                ++indent_;
-            ch = consumeCharPeekNext();
-        }
-        // Maybe generate INDENT/DEDENT.
-        if (atLineStart_) {
-            const size_t largest = indentStack_.top();
-            if (indent_ > largest) {
-                indentStack_.push(indent_);
-                tk = TK_INDENT;
-                break;
-            }
-            if (indent_ < largest) {
-                indentStack_.pop();
-                tk = TK_DEDENT;
-                break;
-            }
-        }
-        goto LexNextToken;
-
     case '\f':
-        ch = consumeCharPeekNext();
-        if (atLineStart_) {
-            while (ch == '\f')
-                ch = consumeCharPeekNext();
-        }
+    case ' ':
+        do {
+            ch = consumeCharPeekNext();
+        } while (ch == '\t' || ch == '\f' || ch == ' ');
         goto LexNextToken;
 
     case '\\':
@@ -257,37 +255,37 @@ LexNextToken:
         break;
 
     case '(':
-        ++brackets_;
+        ++bit_.brackets_;
         consumeChar();
         tk = TK_LPAREN;
         break;
 
     case ')':
-        --brackets_;
+        --bit_.brackets_;
         consumeChar();
         tk = TK_RPAREN;
         break;
 
     case '[':
-        ++brackets_;
+        ++bit_.brackets_;
         consumeChar();
         tk = TK_LBRACKET;
         break;
 
     case ']':
-        --brackets_;
+        --bit_.brackets_;
         consumeChar();
         tk = TK_RBRACKET;
         break;
 
     case '{':
-        ++brackets_;
+        ++bit_.brackets_;
         consumeChar();
         tk = TK_LBRACE;
         break;
 
     case '}':
-        --brackets_;
+        --bit_.brackets_;
         consumeChar();
         tk = TK_RBRACE;
         break;
@@ -304,14 +302,8 @@ LexNextToken:
 
     case '#':
         ch = consumeCharPeekNext();
-        while (ch && ch != '\n') {
-            char prev = ch;
+        while (ch && ch != '\n')
             ch = consumeCharPeekNext();
-            if (prev == '\\' && ch == '\n') {
-                handleNewLine();
-                ch = consumeCharPeekNext();
-            }
-        }
         goto LexNextToken;
 
     default:
@@ -329,7 +321,7 @@ LexNextToken:
         break;
     }
 
-    atLineStart_ = false;
+    bit_.atLineStart_ = false;
 
     return tk;
 }

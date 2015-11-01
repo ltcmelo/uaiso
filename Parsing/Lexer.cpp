@@ -50,9 +50,9 @@ SourceLoc Lexer::tokenLoc() const
 
 void Lexer::updatePos()
 {
-    line_ = line_ + breaks_;
+    line_ += breaks_;
     breaks_ = 0;
-    col_ = col_ + leng_;
+    col_ += leng_;
     leng_ = 0;
 }
 
@@ -94,8 +94,9 @@ Token Lexer::lexStrLit(char& ch, const char quote, const bool mayBreak,
             if (!std::iscntrl(ch) && !std::isprint(ch)) {
                 // TODO: Error, unknown escape sequence.
             }
-        } else if (ch == '\n' && !mayBreak) {
+        } else if (ch == '\n') {
             handleNewLine();
+            //if (!mayBreak)
             // TODO: Error, unterminated string.
         }
         ch = consumeCharPeekNext();

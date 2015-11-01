@@ -116,6 +116,7 @@ private:
     Stmt parseExecStmt();
     Stmt parseAssertStmt();
     Stmt parseIfStmt();
+    Stmt parseIfElseIfStmt();
     Stmt parseWhileStmt();
     Stmt parseForStmt();
     Stmt parseTryStmt();
@@ -176,7 +177,6 @@ private:
     Expr completeBinaryExpr(Expr expr, Expr (PyParser::*parseFunc) ());
     Expr completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ());
     Expr completeSubrangeExpr(Expr expr);
-    Stmt completeIfStmt();
     ListCompre completeListCompre(ListCompre listCompre,
                                   ListCompre (PyParser::*genFunc) (ListCompre),
                                   ListCompre (PyParser::*filterFunc) (ListCompre));

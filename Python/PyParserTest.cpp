@@ -1373,18 +1373,40 @@ a = ("abc"
 
 void PyParser::PyParserTest::testcase151()
 {
+    core(R"raw(
+if __name__ == "__main__":
+     run()
+)raw");
 }
 
 void PyParser::PyParserTest::testcase152()
 {
+    core(R"raw(
+def f():
+    a = b
+def g():
+    a = "b"
+)raw");
 }
 
 void PyParser::PyParserTest::testcase153()
 {
+    core(R"raw(
+def f():
+    a = b
+
+def g():
+    a = b
+)raw");
 }
 
 void PyParser::PyParserTest::testcase154()
 {
+    core(R"raw(
+a = None
+b = True
+c = False
+)raw");
 }
 
 void PyParser::PyParserTest::testcase155()
