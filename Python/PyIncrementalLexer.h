@@ -21,21 +21,20 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#ifndef UAISO_PYINCREMENTALLEXER_H__
+#define UAISO_PYINCREMENTALLEXER_H__
+
+#include "Parsing/IncrementalLexer.h"
 
 namespace uaiso {
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+class UAISO_API PyIncrementalLexer final : public IncrementalLexer
 {
-    D,
-    Go,
-    Py
+public:
+    PyIncrementalLexer();
+    virtual ~PyIncrementalLexer();
+
+    void lex(const std::string& source) override;
 };
 
 } // namespace uaiso

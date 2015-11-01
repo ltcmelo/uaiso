@@ -21,21 +21,24 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#ifndef UAISO_PYSANITIZER_H__
+#define UAISO_PYSANITIZER_H__
+
+#include "Semantic/Sanitizer.h"
 
 namespace uaiso {
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+class UAISO_API PySanitizer final : public Sanitizer
 {
-    D,
-    Go,
-    Py
+public:
+    bool packageMatchesDir(const std::string& fullFileName,
+                           const std::string& packageName) const override;
+
+    bool hasModuleImport() const override;
+
+    bool hasPackageImport() const override;
+
+    bool mergeImportEnv(const Ident* name) const override;
 };
 
 } // namespace uaiso

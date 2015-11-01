@@ -25,6 +25,7 @@
 #include "Common/Assert.h"
 #include "D/DFactory.h"
 #include "Go/GoFactory.h"
+#include "Python/PyFactory.h"
 
 using namespace uaiso;
 
@@ -38,6 +39,8 @@ std::unique_ptr<Factory> FactoryCreator::create(LangName langName)
         return std::unique_ptr<Factory>(new DFactory);
     case LangName::Go:
         return std::unique_ptr<Factory>(new GoFactory);
+    case LangName::Py:
+        return std::unique_ptr<Factory>(new PyFactory);
     default:
         UAISO_ASSERT(false, {});
     }

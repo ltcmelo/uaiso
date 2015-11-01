@@ -130,6 +130,8 @@ public:
             factory = std::move(FactoryCreator::create(LangName::D));
         } else if (str::ends_with(fileName_, ".go")) {
             factory = std::move(FactoryCreator::create(LangName::Go));
+        } else if (str::ends_with(fileName_, ".py")) {
+            factory = std::move(FactoryCreator::create(LangName::Py));
         } else {
             UAISO_FAIL_TEST("unrecognized file suffix");
             return;
@@ -139,11 +141,16 @@ public:
         unit->setFileName(fileName_);
         unit->assignInput(file_);
         unit->parse(&tokens_, &lexemes_);
+        fclose(file_);
+
+        // Temporary, while working on integration.
+        if (str::ends_with(fileName_, ".py"))
+            return;
+
         std::unique_ptr<DiagnosticReports> reports(unit->releaseReports());
         UAISO_EXPECT_INT_EQ(0, reports->size());
         UAISO_EXPECT_TRUE(unit->ast());
         ProgramAst* progAst = Program_Cast(unit->ast());
-        fclose(file_);
 
         Binder binder(factory.get());
         binder.setLexemes(&lexemes_);
@@ -337,7 +344,15 @@ public:
         "TestData/D/testTDPL_9.d",
         "TestData/D/testTDPL_10.d",
         "TestData/D/testTDPL_11.d",
-        "TestData/D/testTDPL_12.d"
+        "TestData/D/testTDPL_12.d",
+
+        //--- Python files ---//
+
+        "Scripts/GenAstCast.py",
+        "Scripts/GenAstVisitor.py",
+        "Scripts/GenFlexBison.py",
+        "Scripts/GenTokens.py",
+        "TestData/Python/os.py"
     };
 };
 

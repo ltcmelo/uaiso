@@ -21,23 +21,7 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#include "Python/PyTypeSystem.h"
 
-namespace uaiso {
+using namespace uaiso;
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
-{
-    D,
-    Go,
-    Py
-};
-
-} // namespace uaiso
-
-#endif

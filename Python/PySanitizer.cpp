@@ -21,23 +21,29 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#include "Python/PySanitizer.h"
+#include "Common/FileInfo.h"
+#include "Parsing/Lexeme.h"
 
-namespace uaiso {
+using namespace uaiso;
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+bool PySanitizer::packageMatchesDir(const std::string& fullFileName,
+                                    const std::string& packageName) const
 {
-    D,
-    Go,
-    Py
-};
+    return true;
+}
 
-} // namespace uaiso
+bool PySanitizer::hasModuleImport() const
+{
+    return false;
+}
 
-#endif
+bool PySanitizer::hasPackageImport() const
+{
+    return true;
+}
+
+bool PySanitizer::mergeImportEnv(const Ident* name) const
+{
+    return true;
+}

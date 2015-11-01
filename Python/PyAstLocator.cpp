@@ -21,23 +21,21 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#include "Python/PyAstLocator.h"
+#include "Ast/Ast.h"
 
-namespace uaiso {
+using namespace uaiso;
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+const SourceLoc& PyAstLocator::loc(ParamDeclAst* ast) const
 {
-    D,
-    Go,
-    Py
-};
+    if (ast->isVariadic())
+        return ast->variadicLoc();
+    return loc(ast->name_.get());
+}
 
-} // namespace uaiso
-
-#endif
+const SourceLoc& PyAstLocator::lastLoc(ParamDeclAst* ast) const
+{
+    if (ast->hasDefaultArg())
+        return lastLoc(ast->defaultArg());
+    return lastLoc(ast->name_.get());
+}

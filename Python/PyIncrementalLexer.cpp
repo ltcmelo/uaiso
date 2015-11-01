@@ -21,23 +21,15 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#include "Python/PyIncrementalLexer.h"
 
-namespace uaiso {
+using namespace uaiso;
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
-{
-    D,
-    Go,
-    Py
-};
+PyIncrementalLexer::PyIncrementalLexer()
+{}
 
-} // namespace uaiso
+PyIncrementalLexer::~PyIncrementalLexer()
+{}
 
-#endif
+void PyIncrementalLexer::lex(const std::string& source)
+{}

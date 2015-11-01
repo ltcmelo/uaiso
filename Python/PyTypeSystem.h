@@ -21,21 +21,17 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#ifndef UAISO_PYTYPESYSTEM_H__
+#define UAISO_PYTYPESYSTEM_H__
+
+#include "Semantic/TypeSystem.h"
 
 namespace uaiso {
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+class UAISO_API PyTypeSystem final : public TypeSystem
 {
-    D,
-    Go,
-    Py
+public:
+
 };
 
 } // namespace uaiso

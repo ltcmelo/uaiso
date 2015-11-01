@@ -43,4 +43,4 @@ public:
 
 } // namespace uaiso
 
-#endif // UAISO_GOSANITIZER_H__
+#endif

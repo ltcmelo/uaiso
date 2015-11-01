@@ -21,21 +21,21 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#ifndef UAISO_PYASTLOCATOR_H__
+#define UAISO_PYASTLOCATOR_H__
+
+#include "Ast/AstLocator.h"
 
 namespace uaiso {
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+class UAISO_API PyAstLocator final : public AstLocator
 {
-    D,
-    Go,
-    Py
+public:
+    using AstLocator::loc;
+    using AstLocator::lastLoc;
+
+    const SourceLoc& loc(ParamDeclAst* ast) const override;
+    const SourceLoc& lastLoc(ParamDeclAst* ast) const override;
 };
 
 } // namespace uaiso

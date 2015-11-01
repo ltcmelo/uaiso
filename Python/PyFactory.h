@@ -21,21 +21,22 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#ifndef UAISO_PYFACTORY_H__
+#define UAISO_PYFACTORY_H__
+
+#include "Parsing/Factory.h"
 
 namespace uaiso {
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+class UAISO_API PyFactory final : public Factory
 {
-    D,
-    Go,
-    Py
+public:
+    std::unique_ptr<Unit> makeUnit() override;
+    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
+    std::unique_ptr<AstLocator> makeAstLocator() override;
+    std::unique_ptr<Sanitizer> makeSanitizer() override;
+    std::unique_ptr<TypeSystem> makeTypeSystem() override;
+    std::unique_ptr<Syntax> makeSyntax() override;
 };
 
 } // namespace uaiso

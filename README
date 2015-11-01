@@ -63,10 +63,11 @@ $./UaiSoEngineTest
 Note 1: The reason for using `recursive` in git clone is due to an string utils
 library I'm using as a submodule. It's also written by me and it's pure C++.
 
-Note 2: The current D and Go parsers are Bison-based. It's typically harder to
-get LR parsers working on an interactive environment. However, this decision was
-convenient to me in order to "quickly" sketch a prototype. I plan to replace
-those for LL parsers eventually - in particular for D, due to its grammar
+Note 2: While the Python parser is being hand-writen (a recursive descent one),
+the D and Go parsers are Bison-based. It's typically harder to get LR parsers
+working on an interactive environment. However, this decision was convenient to
+me in order to "quickly" sketch a prototype back then. I plan to replace those
+for LL parsers eventually - in particular for D, due to its grammar
 characteristics. Nevertheless, as you can see in the videos below, it's still
 possible to do error recovery at the right places so completion works decently.
 

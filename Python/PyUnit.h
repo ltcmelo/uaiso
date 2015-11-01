@@ -21,21 +21,27 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#ifndef UAISO_PYUNIT_H__
+#define UAISO_PYUNIT_H__
+
+#include "Parsing/Unit.h"
+#include "Common/Test.h"
 
 namespace uaiso {
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+class UAISO_API PyUnit final : public Unit
 {
-    D,
-    Go,
-    Py
+public:
+    void parse(TokenMap* tokens, LexemeMap* lexemes) override;
+
+    void parse(TokenMap* tokens,
+               LexemeMap* lexemes,
+               const LineCol& lineCol) override;
+
+private:
+    DECL_CLASS_TEST(PyUnit)
+
+    void parseCore(TokenMap* tokens, LexemeMap* lexemes, ParsingContext*);
 };
 
 } // namespace uaiso

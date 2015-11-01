@@ -21,23 +21,42 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#include "Python/PyFactory.h"
+#include "Python/PyAstLocator.h"
+#include "Python/PyIncrementalLexer.h"
+#include "Python/PySanitizer.h"
+#include "Python/PySyntax.h"
+#include "Python/PyTypeSystem.h"
+#include "Python/PyUnit.h"
 
-namespace uaiso {
+using namespace uaiso;
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+std::unique_ptr<Unit> PyFactory::makeUnit()
 {
-    D,
-    Go,
-    Py
-};
+    return std::unique_ptr<Unit>(new PyUnit);
+}
 
-} // namespace uaiso
+std::unique_ptr<AstLocator> PyFactory::makeAstLocator()
+{
+    return std::unique_ptr<AstLocator>(new PyAstLocator);
+}
 
-#endif
+std::unique_ptr<IncrementalLexer> PyFactory::makeIncrementalLexer()
+{
+    return std::unique_ptr<IncrementalLexer>(new PyIncrementalLexer);
+}
+
+std::unique_ptr<Sanitizer> PyFactory::makeSanitizer()
+{
+    return std::unique_ptr<Sanitizer>(new PySanitizer);
+}
+
+std::unique_ptr<TypeSystem> PyFactory::makeTypeSystem()
+{
+    return std::unique_ptr<TypeSystem>(new PyTypeSystem);
+}
+
+std::unique_ptr<Syntax> PyFactory::makeSyntax()
+{
+    return std::unique_ptr<Syntax>(new PySyntax);
+}
