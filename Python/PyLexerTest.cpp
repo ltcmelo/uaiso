@@ -79,6 +79,9 @@ public:
              , &PyLexerTest::testCase44
              , &PyLexerTest::testCase45
              , &PyLexerTest::testCase46
+             , &PyLexerTest::testCase47
+             , &PyLexerTest::testCase48
+             , &PyLexerTest::testCase49
              )
 
     // Tests cases (with few exceptions) were taken from CPython.
@@ -129,6 +132,9 @@ public:
     void testCase44();
     void testCase45();
     void testCase46();
+    void testCase47();
+    void testCase48();
+    void testCase49();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -843,6 +849,46 @@ def f():
         TK_INDENT, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_NEWLINE,
         TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_NEWLINE,
         TK_DEDENT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase47()
+{
+    auto tks = core("x = 0xffffffffL");
+
+    std::vector<Token> expected {
+        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase48()
+{
+    auto tks = core("x = 1L");
+
+    std::vector<Token> expected {
+        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase49()
+{
+    dumpTokens_ = true;
+    auto tks = core(R"raw(
+from a import \
+     b, \
+     c, \
+     d
+)raw");
+
+    std::vector<Token> expected {
+        TK_FROM, TK_IDENTIFIER, TK_IMPORT, TK_IDENTIFIER, TK_COMMA,
+        TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);

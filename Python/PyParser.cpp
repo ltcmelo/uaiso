@@ -1889,7 +1889,8 @@ std::unique_ptr<ExprAst> PyParser::parseListMaker()
         if (list->inits())
             list->inits()->delim_ = lastLoc_;
         list->addInit(test.release());
-        list->mergeInits(parseTestList().release());
+        if (isTestAhead())
+            list->mergeInits(parseTestList().release());
         // Fallthrough
 
     default:

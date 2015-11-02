@@ -132,7 +132,6 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
             }
             while (ch && ch >= '0' && ch < '8')
                 ch = consumeCharPeekNext();
-            return TK_INTEGER_LITERAL;
         }
         // Hex
         if (syntax->isHexPrefix(ch)) {
@@ -143,7 +142,6 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
             }
             while (ch && std::isxdigit(ch))
                 ch = consumeCharPeekNext();
-            return TK_INTEGER_LITERAL;
         }
         // Bin
         if (syntax->isBinPrefix(ch)) {
@@ -154,11 +152,11 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
             }
             while (ch && (ch == '0' || ch == '1'))
                 ch = consumeCharPeekNext();
-            return TK_INTEGER_LITERAL;
         }
     }
 
     Token tk = TK_INTEGER_LITERAL;
+
     while (ch && (std::isdigit(ch)
                   || ch == '.'
                   || syntax->isExponent(ch))) {
@@ -168,6 +166,12 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
         ch = consumeCharPeekNext();
         if (syntax->isExponent(prev) && (ch == '+' || ch == '-'))
             ch = consumeCharPeekNext();
+    }
+
+    if (ch && (ch == 'L' || ch == 'l')) {
+        ch = consumeCharPeekNext();
+        //if (tk == TK_FLOAT_LITERAL)
+        // TODO: Error, invalid suffix.
     }
 
     return tk;

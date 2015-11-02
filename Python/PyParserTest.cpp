@@ -1411,6 +1411,7 @@ c = False
 
 void PyParser::PyParserTest::testcase155()
 {
+    core("[1,]\n");
 }
 
 void PyParser::PyParserTest::testcase156()

@@ -142,13 +142,13 @@ public:
         unit->assignInput(file_);
         unit->parse(&tokens_, &lexemes_);
         fclose(file_);
+        std::unique_ptr<DiagnosticReports> reports(unit->releaseReports());
+        UAISO_EXPECT_INT_EQ(0, reports->size());
 
         // Temporary, while working on integration.
         if (str::ends_with(fileName_, ".py"))
             return;
 
-        std::unique_ptr<DiagnosticReports> reports(unit->releaseReports());
-        UAISO_EXPECT_INT_EQ(0, reports->size());
         UAISO_EXPECT_TRUE(unit->ast());
         ProgramAst* progAst = Program_Cast(unit->ast());
 
@@ -352,7 +352,26 @@ public:
         "Scripts/GenAstVisitor.py",
         "Scripts/GenFlexBison.py",
         "Scripts/GenTokens.py",
-        "TestData/Python/os.py"
+        "TestData/Python/Cookie.py",
+        "TestData/Python/copy.py",
+        "TestData/Python/fileinput.py",
+        "TestData/Python/getopt.py",
+        "TestData/Python/glob.py",
+        "TestData/Python/gzip.py",
+        "TestData/Python/HTMLParser.py",
+        "TestData/Python/hashlib.py",
+        "TestData/Python/io.py",
+        "TestData/Python/os.py",
+        "TestData/Python/popen2.py",
+        "TestData/Python/random.py",
+        "TestData/Python/re.py",
+        "TestData/Python/StringIO.py",
+        "TestData/Python/sets.py",
+        "TestData/Python/ssl.py",
+        "TestData/Python/string.py",
+        "TestData/Python/urllib.py",
+        "TestData/Python/xmllib.py",
+        "TestData/Python/zipfile.py"
     };
 };
 

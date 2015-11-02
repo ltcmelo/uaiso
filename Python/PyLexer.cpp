@@ -160,12 +160,10 @@ LexNextToken:
 
     case '\\':
         ch = consumeCharPeekNext();
-        if (ch == '\n') {
-            handleNewLine();
-            consumeChar();
+        if (ch != '\n')
             break;
-        }
-        // TODO: Error
+        handleNewLine();
+        consumeChar();
         goto LexNextToken;
 
     case '"':
