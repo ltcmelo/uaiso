@@ -39,27 +39,35 @@ Lexer::~Lexer()
 void Lexer::setBuffer(const char* buff, size_t length)
 {
     buff_ = buff;
+    mark_ = buff;
     curr_ = buff;
     eof_ = buff + length;
 }
 
 SourceLoc Lexer::tokenLoc() const
 {
-    return SourceLoc(line_, col_, line_ + breaks_, col_ + leng_, "");
+    SourceLoc loc(line_, col_, line_ + breaks_, col_ + (curr_ - mark_), "");
+    if (breaks_)
+        loc.lastCol_ = rearLeng_ - 1; // Not a past-the-end value.
+    return loc;
 }
 
 void Lexer::updatePos()
 {
-    line_ += breaks_;
-    breaks_ = 0;
-    col_ += leng_;
-    leng_ = 0;
+    if (breaks_) {
+        line_ += breaks_;
+        breaks_ = 0;
+        col_ += rearLeng_;
+    } else {
+        col_ += curr_ - mark_;
+    }
 }
 
 void Lexer::handleNewLine()
 {
     ++breaks_;
     col_ = 0;
+    rearLeng_ = 0;
 }
 
 char Lexer::peekChar(size_t dist) const
@@ -73,10 +81,8 @@ void Lexer::consumeChar(size_t dist)
 {
     UAISO_ASSERT(peekChar(dist), return);
 
-    ++curr_;
-    ++leng_;
-    curr_ += dist;
-    leng_ += dist;
+    curr_ += dist + 1;
+    rearLeng_ += dist + 1;
 }
 
 char Lexer::consumeCharPeekNext(size_t dist)
@@ -109,12 +115,11 @@ Token Lexer::lexIdentOrKeyword(char& ch, const Syntax* syntax)
 {
     UAISO_ASSERT(syntax->isIdentFirstChar(ch), return TK_INVALID);
 
-    const char* ident = curr_;
     ch = consumeCharPeekNext();
     while (syntax->isIdentChar(ch))
         ch = consumeCharPeekNext();
 
-    return syntax->classifyIdent(ident, curr_ - ident);
+    return syntax->classifyIdent(mark_, curr_ - mark_);
 }
 
 Token Lexer::lexNumLit(char& ch, const Syntax* syntax)

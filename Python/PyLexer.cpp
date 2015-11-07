@@ -23,6 +23,7 @@
 
 #include "Python/PyLexer.h"
 #include "Python/PySyntax.h"
+#include "Parsing/Lexeme.h"
 #include "Parsing/ParsingContext.h"
 #include "Common/Assert.h"
 #include "Common/Trace__.h"
@@ -94,16 +95,20 @@ Token PyLexer::lex()
 LexNextToken:
     UAISO_ASSERT(!indentStack_.empty(), return tk);
 
+    mark_ = curr_; // Mark the start of the upcoming token.
+
     char ch = peekChar();
     if (bit_.atLineStart_) {
         // Look at indentation.
         size_t count = 0;
         if (ch == '\t' || ch == ' ') {
             do {
-                ++count;
                 ch = consumeCharPeekNext();
+                ++count;
             } while (ch == '\t' || ch == ' ');
         }
+        col_ += count;
+        mark_ += count;
 
         // Blank or comment lines have no effect.
         if (ch && ch != '#' && ch != '\n') {
@@ -140,14 +145,13 @@ LexNextToken:
 
     case '\n':
         bit_.indent_ = 0;
+        consumeChar();
         handleNewLine();
-        ch = consumeCharPeekNext();
-        if (bit_.brackets_)
-            goto LexNextToken;
-        if (!bit_.atLineStart_) {
+        if (!bit_.atLineStart_ && !bit_.brackets_) {
             bit_.atLineStart_ = true;
             return TK_NEWLINE;
         }
+        updatePos();
         goto LexNextToken;
 
     case '\t':
@@ -155,6 +159,8 @@ LexNextToken:
     case ' ':
         do {
             ch = consumeCharPeekNext();
+            ++col_;
+            ++mark_;
         } while (ch == '\t' || ch == '\f' || ch == ' ');
         goto LexNextToken;
 
@@ -162,8 +168,9 @@ LexNextToken:
         ch = consumeCharPeekNext();
         if (ch != '\n')
             break;
-        handleNewLine();
         consumeChar();
+        handleNewLine();
+        updatePos();
         goto LexNextToken;
 
     case '"':

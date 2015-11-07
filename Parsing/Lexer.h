@@ -81,9 +81,15 @@ protected:
     Token lexIdentOrKeyword(char& ch, const Syntax* syntax);
     Token lexNumLit(char& ch, const Syntax* syntax);
 
-    const char* buff_ { nullptr };
-    const char* curr_ { nullptr };
-    const char* eof_ { nullptr };
+    const char* buff_ { nullptr };     //!< The buffer.
+    const char* mark_ { nullptr };     //!< Start of a token in buffer.
+    const char* curr_ { nullptr };     //!< Current buffer position.
+    const char* eof_ { nullptr };      //!< End of the buffer.
+
+    int line_ { 0 };        //!< First line of a token.
+    int col_ { 0 };         //!< First column of a token.
+    int breaks_ { 0 };      //!< Number of line breaks within a token.
+    int rearLeng_ { 0 };    //!< Length of a token's last line.
 
     // Position control
     int line_ { 0 };

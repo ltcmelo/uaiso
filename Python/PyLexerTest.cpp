@@ -82,6 +82,10 @@ public:
              , &PyLexerTest::testCase47
              , &PyLexerTest::testCase48
              , &PyLexerTest::testCase49
+             , &PyLexerTest::testCase50
+             , &PyLexerTest::testCase51
+             , &PyLexerTest::testCase52
+             , &PyLexerTest::testCase53
              )
 
     // Tests cases (with few exceptions) were taken from CPython.
@@ -135,6 +139,10 @@ public:
     void testCase47();
     void testCase48();
     void testCase49();
+    void testCase50();
+    void testCase51();
+    void testCase52();
+    void testCase53();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -145,11 +153,22 @@ public:
             tks.push_back(lexer.lex());
             if (tks.back() == TK_EOP)
                 break;
+            if (tks.back() != TK_NEWLINE
+                    && tks.back() != TK_INDENT
+                    && tks.back() != TK_DEDENT) {
+                // Do I care for location of these tokens?
+                locs_.push_back(lexer.tokenLoc());
+            }
         }
 
         if (dumpTokens_) {
             std::copy(tks.begin(), tks.end(),
                       std::ostream_iterator<Token>(std::cout, " "));
+        }
+
+        if (dumpLocs_) {
+            std::copy(locs_.begin(), locs_.end(),
+                      std::ostream_iterator<SourceLoc>(std::cout, " "));
         }
 
         return tks;
@@ -158,9 +177,13 @@ public:
     void reset() override
     {
         dumpTokens_ = false;
+        dumpLocs_ = false;
+        locs_.clear();
     }
 
     bool dumpTokens_ { false };
+    bool dumpLocs_ { false };
+    std::vector<SourceLoc> locs_;
 };
 
 void PyLexer::PyLexerTest::testCase1()
@@ -878,7 +901,6 @@ void PyLexer::PyLexerTest::testCase48()
 
 void PyLexer::PyLexerTest::testCase49()
 {
-    dumpTokens_ = true;
     auto tks = core(R"raw(
 from a import \
      b, \
@@ -892,6 +914,160 @@ from a import \
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase50()
+{
+    core(R"raw(
+import abc
+import xyz.mnop
+
+
+import fancy   .     stuff
+
+def foobar( ):
+    cool_name = "foo bar"
+    id        = 1
+    if alright:
+        print 1234
+
+if __name__ == '__main__'
+    run(  arg1   ,arg2   )
+)raw");
+
+    std::vector<SourceLoc> expected {
+        SourceLoc(1, 0, 1, 6, ""),                    // import
+        SourceLoc(1, 7, 1, 10, ""),                   // abc
+        SourceLoc(2, 0, 2, 6, ""),
+        SourceLoc(2, 7, 2, 10, ""),
+        SourceLoc(2, 10, 2, 11, ""),
+        SourceLoc(2, 11, 2, 15, ""),
+        SourceLoc(5, 0, 5, 6, ""),
+        SourceLoc(5, 7, 5, 12, ""),
+        SourceLoc(5, 15, 5, 16, ""),
+        SourceLoc(5, 21, 5, 26, ""),                  // stuff
+        SourceLoc(7, 0, 7, 3, ""),                    // def
+        SourceLoc(7, 4, 7, 10, ""),
+        SourceLoc(7, 10, 7, 11, ""),
+        SourceLoc(7, 12, 7, 13, ""),
+        SourceLoc(7, 13, 7, 14, ""),
+        SourceLoc(8, 4, 8, 13, ""),                   // cool_name
+        SourceLoc(8, 14, 8, 15, ""),
+        SourceLoc(8, 16, 8, 25, ""),
+        SourceLoc(9, 4, 9, 6, ""),
+        SourceLoc(9, 14, 9, 15, ""),
+        SourceLoc(9, 16, 9, 17, ""),
+        SourceLoc(10, 4, 10, 6, ""),
+        SourceLoc(10, 7, 10, 14, ""),
+        SourceLoc(10, 14, 10, 15, ""),
+        SourceLoc(11, 8, 11, 13, ""),                 // print
+        SourceLoc(11, 14, 11, 18, ""),
+        SourceLoc(13, 0, 13, 2, ""),                  // if
+        SourceLoc(13, 3, 13, 11, ""),
+        SourceLoc(13, 12, 13, 14, ""),
+        SourceLoc(13, 15, 13, 25, ""),
+        SourceLoc(14, 4, 14, 7, ""),
+        SourceLoc(14, 7, 14, 8, ""),
+        SourceLoc(14, 10, 14, 14, ""),
+        SourceLoc(14, 17, 14, 18, ""),
+        SourceLoc(14, 18, 14, 22, ""),
+        SourceLoc(14, 25, 14, 26, "")
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), locs_.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, locs_);
+}
+
+void PyLexer::PyLexerTest::testCase51()
+{
+    core(R"raw(
+import abc
+
+# a comment
+# and another
+
+
+def foobar( ):
+    if alright:
+        print 1234
+    print 1234
+)raw");
+
+    std::vector<SourceLoc> expected {
+        SourceLoc(1, 0, 1, 6, ""),                    // import
+        SourceLoc(1, 7, 1, 10, ""),                   // abc
+        SourceLoc(7, 0, 7, 3, ""),                    // def
+        SourceLoc(7, 4, 7, 10, ""),
+        SourceLoc(7, 10, 7, 11, ""),
+        SourceLoc(7, 12, 7, 13, ""),
+        SourceLoc(7, 13, 7, 14, ""),
+        SourceLoc(8, 4, 8, 6, ""),
+        SourceLoc(8, 7, 8, 14, ""),
+        SourceLoc(8, 14, 8, 15, ""),
+        SourceLoc(9, 8, 9, 13, ""),                   // print
+        SourceLoc(9, 14, 9, 18, ""),
+        SourceLoc(10, 4, 10, 9, ""),
+        SourceLoc(10, 10, 10, 14, ""),
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), locs_.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, locs_);
+}
+
+void PyLexer::PyLexerTest::testCase52()
+{
+    core(R"raw(
+""" a string that goes accross
+a few
+lines and eventually ends """
+
+if abc:
+    if xyz:
+        print 1234
+)raw");
+
+    std::vector<SourceLoc> expected {
+        SourceLoc(1, 0, 3, 29, ""),                   // string literal
+        SourceLoc(5, 0, 5, 2, ""),                    // if
+        SourceLoc(5, 3, 5, 6, ""),
+        SourceLoc(5, 6, 5, 7, ""),
+        SourceLoc(6, 4, 6, 6, ""),                    // if
+        SourceLoc(6, 7, 6, 10, ""),
+        SourceLoc(6, 10, 6, 11, ""),
+        SourceLoc(7, 8, 7, 13, ""),
+        SourceLoc(7, 14, 7, 18, "")
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), locs_.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, locs_);
+}
+
+void PyLexer::PyLexerTest::testCase53()
+{
+    core(R"raw(
+print 1
+
+from a import \
+     b, \
+     c, \
+     d
+
+print 2
+)raw");
+
+    std::vector<SourceLoc> expected {
+        SourceLoc(1, 0, 1, 5, ""),                    // print
+        SourceLoc(1, 6, 1, 7, ""),
+        SourceLoc(3, 0, 3, 4, ""),                    // from
+        SourceLoc(3, 5, 3, 6, ""),
+        SourceLoc(3, 7, 3, 13, ""),
+        SourceLoc(4, 5, 4, 6, ""),
+        SourceLoc(4, 6, 4, 7, ""),
+        SourceLoc(5, 5, 5, 6, ""),
+        SourceLoc(5, 6, 5, 7, ""),
+        SourceLoc(6, 5, 6, 6, ""),
+        SourceLoc(8, 0, 8, 5, ""),                    // print
+        SourceLoc(8, 6, 8, 7, "")
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), locs_.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, locs_);
 }
 
 MAKE_CLASS_TEST(PyLexer)
