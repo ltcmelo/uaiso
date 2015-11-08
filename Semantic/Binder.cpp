@@ -286,6 +286,13 @@ std::unique_ptr<Program> Binder::bind(ProgramAst* ast,
                 if (result != Continue)
                     break;
             }
+            if (result != Abort) {
+                for (auto stmt : *ast->stmts_.get()) {
+                    result = traverseStmt(stmt);
+                    if (result != Continue)
+                        break;
+                }
+            }
             // If everything finishes alright, stacks must be empty.
             UAISO_ASSERT(P->declTy_.empty(), {});
             UAISO_ASSERT(P->sym_.empty(), {});
@@ -518,10 +525,6 @@ Binder::VisitResult Binder::traverseRecordSpec(RecordSpecAst* ast)
 
 Binder::VisitResult Binder::traverseFuncSpec(FuncSpecAst* ast)
 {
-    UAISO_ASSERT(ast->param_.get(), return Continue);
-    UAISO_ASSERT(ast->result_.get(), return Continue,
-                 "result spec required, make it `VoidSpecAst` if empty");
-
     P->declTy_.emplace(new FuncType);
 
     // TODO: Assign function's signature as ty.

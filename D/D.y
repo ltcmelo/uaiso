@@ -952,7 +952,7 @@ PrimaryExpr:
 |   '.' IdentOrTemplateInst
     {
         DECL_1_LOC(@1);
-        context->trackLexeme<Ident>(".", locA.fileName_.c_str(), locA.lineCol());
+        context->trackLexeme<Ident>(".", locA.lineCol());
         auto dot = makeAstRaw<GenNameAst>()->setGenLoc(locA);
         auto name = makeAstRaw<NestedNameAst>()->setNamesSR(NameAstList::createSR(dot)->handleSR($2));
         $$ = makeAstRaw<IdentExprAst>()->setName(name);

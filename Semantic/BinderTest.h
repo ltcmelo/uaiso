@@ -24,18 +24,15 @@
 #ifndef UAISO_BINDERTEST_H__
 #define UAISO_BINDERTEST_H__
 
-#include "Parsing/Factory.h"
+#include "Semantic/Binder.h"
 #include "Parsing/Lexeme.h"
 #include "Parsing/LexemeMap.h"
-#include "Parsing/TokenMap.h"
-#include "Parsing/Unit.h"
-#include "Semantic/Binder.h"
-#include "Semantic/Program.h"
-#include "Semantic/Symbol.h"
-#include "Semantic/Type.h"
-#include <iterator>
+#include <string>
 
-using namespace uaiso;
+namespace uaiso {
+
+class Factory;
+class Program;
 
 class Binder::BinderTest final : public Test
 {
@@ -43,13 +40,32 @@ public:
     TEST_RUN(BinderTest
              // Go
              , &BinderTest::GoTestCase1
+             // Python
+             , &BinderTest::PyTestCase1
              )
 
     //--- Go ---//
 
     void GoTestCase1();
+
+    //--- Python ---//
+
+    void PyTestCase1();
+
+
+    std::unique_ptr<Program> core(std::unique_ptr<Factory> factory,
+                                  const std::string& code,
+                                  const std::string& fullFileName);
+
+    void reset() override
+    {
+        lexemes_.clear();
+    }
+
+    LexemeMap lexemes_;
 };
+
+} // namespace uaiso
 
 #endif
 
-MAKE_CLASS_TEST(Binder)

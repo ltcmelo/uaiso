@@ -21,28 +21,31 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Python/PyAstLocator.h"
-#include "Ast/Ast.h"
+#include "Semantic/BinderTest.h"
+#include "Semantic/Program.h"
+#include "Parsing/TokenMap.h"
+#include "Parsing/Factory.h"
+#include "Parsing/Unit.h"
 
 using namespace uaiso;
 
-const SourceLoc& PyAstLocator::loc(ParamDeclAst* ast) const
+std::unique_ptr<Program> Binder::BinderTest::core(std::unique_ptr<Factory> factory,
+                                                  const std::string& code,
+                                                  const std::string& fullFileName)
 {
-    if (ast->isVariadic())
-        return ast->variadicLoc();
-    return loc(ast->name_.get());
+    TokenMap tokens;
+    std::unique_ptr<Unit> unit(factory->makeUnit());
+    unit->assignInput(code);
+    unit->setFileName(fullFileName);
+    unit->parse(&tokens, &lexemes_);
+    ProgramAst* ast = Program_Cast(unit->ast());
+    UAISO_EXPECT_TRUE(ast);
+
+    Binder binder(factory.get());
+    binder.setLexemes(&lexemes_);
+    binder.setTokens(&tokens);
+    return binder.bind(ast, unit->fileName());
 }
 
-const SourceLoc& PyAstLocator::lastLoc(ParamDeclAst* ast) const
-{
-    if (ast->hasDefaultArg())
-        return lastLoc(ast->defaultArg());
-    return lastLoc(ast->name_.get());
-}
 
-const SourceLoc& PyAstLocator::lastLoc(FuncSpecAst *ast) const
-{
-    if (ast->param_)
-        return lastLoc(ast->param_.get());
-    return ast->keyLoc_;
-}
+MAKE_CLASS_TEST(Binder)

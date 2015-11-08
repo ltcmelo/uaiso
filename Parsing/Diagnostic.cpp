@@ -86,6 +86,12 @@ const Diagnostic::Code Diagnostic::ValueMayLoosePrecision = 41;
 const Diagnostic::Code Diagnostic::NameRequired = 42;
 const Diagnostic::Code Diagnostic::UnexpectedToken = 43;
 const Diagnostic::Code Diagnostic::SubrangeValueExpected = 44;
+const Diagnostic::Code Diagnostic::UnknownEscapeSequence = 45;
+const Diagnostic::Code Diagnostic::UnterminatedString = 46;
+const Diagnostic::Code Diagnostic::InvalidBinaryDigit = 47;
+const Diagnostic::Code Diagnostic::InvalidOctalDigit = 48;
+const Diagnostic::Code Diagnostic::InvalidHexDigit = 49;
+const Diagnostic::Code Diagnostic::InvalidFloatSuffix = 50;
 
 namespace uaiso {
 
@@ -189,6 +195,18 @@ public:
                     "syntax error, unexpected token", Severity::Error },
         { Diagnostic::SubrangeValueExpected,
                     "subrange value expected", Severity::Error },
+        { Diagnostic::UnknownEscapeSequence,
+                    "unknown escape sequence", Severity::Error },
+        { Diagnostic::UnterminatedString,
+                    "unterminated string", Severity::Error },
+        { Diagnostic::InvalidBinaryDigit,
+                    "invalid binary digit", Severity::Error },
+        { Diagnostic::InvalidOctalDigit,
+                    "invalid octal digit", Severity::Error },
+        { Diagnostic::InvalidHexDigit,
+                    "invalid hex digit", Severity::Error },
+        { Diagnostic::InvalidFloatSuffix,
+                    "invalid float suffix", Severity::Error },
     };
 };
 

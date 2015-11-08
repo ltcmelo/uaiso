@@ -32,6 +32,7 @@
 
 namespace uaiso {
 
+class ParsingContext;
 class Syntax;
 
 /*!
@@ -47,7 +48,13 @@ public:
      * \param buff
      * \param length
      */
-    void setBuffer(const char* buff, size_t length);
+    void setBuffer(const char* buff, size_t leng);
+
+    /*!
+     * \brief setContext
+     * \param context
+     */
+    void setContext(ParsingContext* context);
 
     /*!
      * \brief lex
@@ -91,11 +98,7 @@ protected:
     int breaks_ { 0 };      //!< Number of line breaks within a token.
     int rearLeng_ { 0 };    //!< Length of a token's last line.
 
-    // Position control
-    int line_ { 0 };
-    int col_ { 0 };
-    int leng_ { 0 };
-    int breaks_ { 0 };
+    ParsingContext* context_ { nullptr };
 };
 
 } // namespace uaiso

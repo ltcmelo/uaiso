@@ -32,6 +32,7 @@
 #include <iostream>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace uaiso {
 
@@ -115,17 +116,34 @@ inline void swap(SourceLoc& a, SourceLoc& b)
     swap(a.fileName_, b.fileName_);
 }
 
-UAISO_API inline std::ostream& operator<<(std::ostream& os, const SourceLoc& loc)
-{
-    os << loc.fileName_ << ":" << loc.line_ << ":" << loc.col_;
-    return os;
-}
-
 inline SourceLoc joinedLoc(const SourceLoc& a, const SourceLoc& b)
 {
     //UAISO_ASSERT(a.fileName_ == b.fileName_, return kEmptyLoc);
 
     return SourceLoc(a.line_, a.col_, b.lastLine_, b.lastCol_, b.fileName_);
+}
+
+UAISO_API inline bool operator==(const SourceLoc& a, const SourceLoc& b)
+{
+    return a.fileName_ == b.fileName_
+            && a.line_ == b.line_
+            && a.col_ == b.col_
+            && a.lastLine_ == b.lastLine_
+            && a.lastCol_ == b.lastCol_;
+}
+
+UAISO_API inline std::ostream& operator<<(std::ostream& os, const SourceLoc& loc)
+{
+    os << loc.fileName_ << ":" << loc.line_ << ":" << loc.col_
+       << "[" << loc.lastLine_ << ":" << loc.lastCol_ << "]";
+    return os;
+}
+
+UAISO_API inline std::ostream& operator<<(std::ostream& os,
+                                          const std::vector<SourceLoc>& locs)
+{
+    std::copy(locs.begin(), locs.end(), std::ostream_iterator<SourceLoc>(os));
+    return os;
 }
 
 } // namespace uaiso

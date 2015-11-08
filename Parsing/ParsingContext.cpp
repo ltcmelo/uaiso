@@ -107,12 +107,9 @@ int ParsingContext::interceptRawToken(int token)
 }
 
 void ParsingContext::trackPhrase(Token tk,
-                                 const char* fullFileName,
                                  const LineCol& lineCol,
-                                 int length, bool unterminated)
+                                 int leng, bool unterminated)
 {
-    UAISO_UNUSED(fullFileName);
-
     if (phrasing_) {
         Phrasing::TokenFlags flags = Phrasing::TokenFlag::None;
         if (!bit_.prevTkTerminated_) {
@@ -123,40 +120,47 @@ void ParsingContext::trackPhrase(Token tk,
             flags |= Phrasing::TokenFlag::Unterminated;
             bit_.prevTkTerminated_ = false;
         }
-        phrasing_->append(tk, lineCol, length, flags);
+        phrasing_->append(tk, lineCol, leng, flags);
     }
 }
 
-void ParsingContext::trackToken(Token tk,
-                                const char* fullFileName,
-                                const LineCol& lineCol)
+void ParsingContext::trackToken(Token tk, const LineCol& lineCol)
 {
     if (tokens_)
-        tokens_->insertOrFind(tk, fullFileName, lineCol);
+        tokens_->insertOrFind(tk, fileName_, lineCol);
+}
+
+template <class LexemeT>
+void ParsingContext::trackLexeme(const char* lexeme, const LineCol& lineCol)
+{
+    if (lexemes_)
+        lexemes_->insertOrFind<LexemeT>(lexeme, fileName_, lineCol);
 }
 
 template <class LexemeT>
 void ParsingContext::trackLexeme(const char* lexeme,
-                                 const char* fullFileName,
+                                 int count,
                                  const LineCol& lineCol)
 {
     if (lexemes_)
-        lexemes_->insertOrFind<LexemeT>(lexeme, fullFileName, lineCol);
+        lexemes_->insertOrFind<LexemeT>(std::string(lexeme, count),
+                                        fileName_,
+                                        lineCol);
 }
 
 // Explicit instantiations for the known lexemes.
 template void
-ParsingContext::trackLexeme<Ident>(const char* lexeme,
-                                        const char* fullFileName,
-                                        const LineCol& lineCol);
+ParsingContext::trackLexeme<Ident>(const char* lexeme, const LineCol& lineCol);
 template void
-ParsingContext::trackLexeme<StrLit>(const char* lexeme,
-                                    const char* fullFileName,
-                                    const LineCol& lineCol);
+ParsingContext::trackLexeme<Ident>(const char* lexeme, int count, const LineCol& lineCol);
 template void
-ParsingContext::trackLexeme<NumLit>(const char* lexeme,
-                                    const char* fullFileName,
-                                    const LineCol& lineCol);
+ParsingContext::trackLexeme<StrLit>(const char* lexeme, const LineCol& lineCol);
+template void
+ParsingContext::trackLexeme<StrLit>(const char* lexeme, int count, const LineCol& lineCol);
+template void
+ParsingContext::trackLexeme<NumLit>(const char* lexeme, const LineCol& lineCol);
+template void
+ParsingContext::trackLexeme<NumLit>(const char* lexeme, int count, const LineCol& lineCol);
 
 void ParsingContext::takeAst(std::unique_ptr<Ast> ast)
 {

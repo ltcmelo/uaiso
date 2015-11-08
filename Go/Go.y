@@ -1493,7 +1493,7 @@ ImportModuleDecl:
     {
         DECL_1_LOC(@1);
         auto dot = makeAstRaw<GenNameAst>()->setGenLoc(locA);
-        context->trackLexeme<Ident>(".", locA.fileName_.c_str(), locA.lineCol());
+        context->trackLexeme<Ident>(".", locA.lineCol());
         $$ = makeAstRaw<ImportModuleDeclAst>()->setLocalName(dot)->setExpr($2);
     }
 ;

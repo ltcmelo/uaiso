@@ -234,10 +234,14 @@ bool PyParser::parse(Lexer* lexer, ParsingContext* context)
         addToList(stmts, parseStmt().release());
     }
 
-    if (!stmts)
-        return false;
+    if (stmts) {
+        auto prog = makeAst<ProgramAst>();
+        prog->setStmts(stmts.release());
+        context->takeAst(std::unique_ptr<Ast>(prog.release()));
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 /*

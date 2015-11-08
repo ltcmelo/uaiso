@@ -144,11 +144,6 @@ public:
         fclose(file_);
         std::unique_ptr<DiagnosticReports> reports(unit->releaseReports());
         UAISO_EXPECT_INT_EQ(0, reports->size());
-
-        // Temporary, while working on integration.
-        if (str::ends_with(fileName_, ".py"))
-            return;
-
         UAISO_EXPECT_TRUE(unit->ast());
         ProgramAst* progAst = Program_Cast(unit->ast());
 
@@ -160,6 +155,10 @@ public:
         std::unique_ptr<Program> prog(binder.bind(progAst, fileName_));
         UAISO_EXPECT_TRUE(prog);
         UAISO_EXPECT_FALSE(prog->env().isEmpty());
+
+        // Temporary, while working on integration.
+        if (str::ends_with(fileName_, ".py"))
+            return;
 
         TypeChecker typeChecker(factory.get());
         typeChecker.setLexemes(&lexemes_);

@@ -48,10 +48,12 @@ public:
     NAMED_AST_PARAM(Module, module, DeclAst)
     NAMED_AST_PARAM(Package, package, DeclAst)
     NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_AST_LIST_PARAM(Stmt, stmts, StmtAst)
 
     std::unique_ptr<DeclAst> module_;
     std::unique_ptr<DeclAst> package_;
     std::unique_ptr<DeclAstList> decls_;
+    std::unique_ptr<StmtAstList> stmts_;
 
     Program* program_;
 };

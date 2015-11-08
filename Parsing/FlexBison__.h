@@ -86,7 +86,7 @@ struct PartialParse {};
 #define CHECK_STOP_REQUEST \
     if (shouldStopNow(yylloc->last_line, yylloc->last_column, yyextra)) { \
         yyextra->clearStopMark(); \
-        yyextra->trackPhrase(Token(COMPLETION), yylloc->filename, \
+        yyextra->trackPhrase(Token(COMPLETION), \
                              LineCol(yylloc->first_line, yylloc->first_column), \
                              yyleng); \
         return yyextra->interceptRawToken(COMPLETION); \
@@ -94,14 +94,14 @@ struct PartialParse {};
 
 #define PROCESS_CORE(TOKEN) \
     do { \
-        yyextra->trackToken(Token(TOKEN), yylloc->filename, \
+        yyextra->trackToken(Token(TOKEN), \
                             LineCol(yylloc->first_line, yylloc->first_column)); \
         return yyextra->interceptRawToken(TOKEN); \
     } while (0)
 
 #define PROCESS_TOKEN(TOKEN) \
     do { \
-        yyextra->trackPhrase(Token(TOKEN), yylloc->filename, \
+        yyextra->trackPhrase(Token(TOKEN), \
                              LineCol(yylloc->first_line, yylloc->first_column), \
                              yyleng); \
         PROCESS_CORE(TOKEN); \
@@ -109,7 +109,7 @@ struct PartialParse {};
 
 #define PROCESS_LEXEME(LEXEME, TOKEN) \
     do { \
-        yyextra->trackLexeme<LEXEME>(yytext, yylloc->filename, \
+        yyextra->trackLexeme<LEXEME>(yytext, \
                                      LineCol(yylloc->first_line, yylloc->first_column)); \
         PROCESS_TOKEN(TOKEN); \
     } while (0)
@@ -124,7 +124,7 @@ struct PartialParse {};
 #define PROCESS_UNTERMINATED_COMMENT(TOKEN) \
     do { \
         if (yyextra->allowComments()) { \
-            yyextra->trackPhrase(Token(TOKEN), yylloc->filename, \
+            yyextra->trackPhrase(Token(TOKEN), \
                                  LineCol(yylloc->first_line, yylloc->first_column), \
                                  yyleng, true); \
             PROCESS_CORE(TOKEN); \

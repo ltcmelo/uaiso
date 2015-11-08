@@ -36,6 +36,8 @@ public:
 
     const SourceLoc& loc(ParamDeclAst* ast) const override;
     const SourceLoc& lastLoc(ParamDeclAst* ast) const override;
+
+    const SourceLoc& lastLoc(FuncSpecAst* ast) const override;
 };
 
 } // namespace uaiso

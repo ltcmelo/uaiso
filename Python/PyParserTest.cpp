@@ -364,7 +364,9 @@ public:
         ParsingContext context;
         context.setFileName("/test.py");
         context.collectReports(&reports);
+
         PyLexer lexer;
+        lexer.setContext(&context);
         lexer.setBuffer(code.c_str(), code.length());
         PyParser parser;
         bool ok = parser.parse(&lexer, &context);

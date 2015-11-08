@@ -40,7 +40,13 @@ void PyUnit::parseCore(TokenMap* tokens,
 {
     P->ast_.reset(nullptr);
 
+    context->collectLexemes(lexemes);
+    context->collectTokens(tokens);
+    context->collectReports(P->reports_.get());
+    context->setFileName(P->fullFileName_.c_str());
+
     PyLexer lexer;
+    lexer.setContext(context);
     std::unique_ptr<std::string> buff;
     if (P->bit_.readFromFile_) {
         fseek(P->file_, 0, SEEK_END);
@@ -53,10 +59,6 @@ void PyUnit::parseCore(TokenMap* tokens,
         lexer.setBuffer(P->source_->c_str(), P->source_->size());
     }
 
-    context->collectLexemes(lexemes);
-    context->collectTokens(tokens);
-    context->collectReports(P->reports_.get());
-    context->setFileName(P->fullFileName_.c_str());
 
     PyParser parser;
     bool success = parser.parse(&lexer, context);

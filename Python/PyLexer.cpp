@@ -176,6 +176,7 @@ LexNextToken:
     case '"':
     case '\'':
         tk = lexStrLit(ch);
+        context_->trackLexeme<StrLit>(mark_, curr_ - mark_, LineCol(line_, col_));
         break;
 
     case 'r':
@@ -188,6 +189,7 @@ LexNextToken:
         if (next == '"' || next == '\'') {
             consumeChar();
             tk = lexStrLit(next);
+            context_->trackLexeme<StrLit>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
         // Either a string literal or an identifier.
@@ -196,19 +198,25 @@ LexNextToken:
             if (next2 == '"' || next2 == '\'') {
                 consumeChar(1);
                 tk = lexStrLit(next2);
+                context_->trackLexeme<StrLit>(mark_, curr_ - mark_, LineCol(line_, col_));
                 break;
             }
             tk = lexIdentOrKeyword(ch, syntax_.get());
+            if (tk == TK_IDENTIFIER)
+                context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
         // Certainly an identifier.
         tk = lexIdentOrKeyword(ch, syntax_.get());
+        if (tk == TK_IDENTIFIER)
+            context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
         break;
     }
 
     case '.':
         if (std::isdigit(peekChar(1))) {
             tk = lexNumLit(ch, syntax_.get());
+            context_->trackLexeme<NumLit>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
         ch = consumeCharPeekNext();
@@ -314,12 +322,16 @@ LexNextToken:
     default:
         if (syntax_->isIdentFirstChar(ch)) {
             tk = lexIdentOrKeyword(ch, syntax_.get());
+            if (tk == TK_IDENTIFIER)
+                context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
         if (std::isdigit(ch)) {
             tk = lexNumLit(ch, syntax_.get());
+            context_->trackLexeme<NumLit>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
+
         // Don't know what this is.
         consumeChar();
         PRINT_TRACE("Unknown char %c at %d,%d\n", ch, 0, 0);
@@ -327,6 +339,10 @@ LexNextToken:
     }
 
     bit_.atLineStart_ = false;
+
+    LineCol lineCol(line_, col_);
+    context_->trackToken(tk, lineCol);
+    context_->trackPhrase(tk, lineCol, curr_ - mark_);
 
     return tk;
 }
@@ -361,9 +377,8 @@ Token PyLexer::lexStrLit(char& ch)
         }
     } while (triple && ch);
 
-    if (!ch) {
-        // TODO: Error, unterminated string
-    }
+    if (!ch)
+        context_->trackReport(Diagnostic::UnterminatedString, tokenLoc());
 
     return TK_STRING_LITERAL;
 }

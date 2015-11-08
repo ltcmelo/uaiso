@@ -116,16 +116,41 @@ public:
      */
     void collectReports(DiagnosticReports* reports) { reports_ = reports; }
 
+    /*!
+     * \brief trackLexeme
+     * \param lexeme     - must be null terminated
+     * \param lineCol    - line and column
+     */
     template <class LexemeT>
-    void trackLexeme(const char* lexeme, const char* fileName,
-                     const LineCol& lineCol);
+    void trackLexeme(const char* lexeme, const LineCol& lineCol);
 
-    void trackToken(Token tk, const char* fileName,
-                    const LineCol& lineCol);
+    /*!
+     * \brief trackLexeme
+     * \param lexeme     - doesn't need to be null terminated
+     * \param count      - number of lexeme characters
+     * \param lineCol    - line and column
+     */
+    template <class LexemeT>
+    void trackLexeme(const char* lexeme, int count, const LineCol& lineCol);
 
-    void trackPhrase(Token tk, const char* fileName,
+    /*!
+     * \brief trackToken
+     * \param tk
+     * \param lineCol
+     */
+    void trackToken(Token tk, const LineCol& lineCol);
+
+    /*!
+     * \brief trackPhrase
+     * \param tk
+     * \param lineCol
+     * \param leng
+     * \param unterminated
+     */
+    void trackPhrase(Token tk,
                      const LineCol& lineCol,
-                     int length, bool unterminated = false);
+                     int leng,
+                     bool unterminated = false);
 
     template <class... Args>
     void trackReport(Args&&... args);

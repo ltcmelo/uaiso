@@ -23,6 +23,7 @@
 
 #include "Python/PyLexer.h"
 #include "Parsing/Syntax.h"
+#include "Parsing/ParsingContext.h"
 #include "Parsing/Phrasing.h"
 #include <iterator>
 #include <vector>
@@ -146,7 +147,11 @@ public:
 
     std::vector<Token> core(const std::string& code)
     {
+        ParsingContext context;
+        context.setFileName("/test.py");
+
         PyLexer lexer;
+        lexer.setContext(&context);
         lexer.setBuffer(code.c_str(), code.length());
         std::vector<Token> tks;
         while (true) {

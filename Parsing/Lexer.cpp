@@ -36,12 +36,17 @@ Lexer::Lexer()
 Lexer::~Lexer()
 {}
 
-void Lexer::setBuffer(const char* buff, size_t length)
+void Lexer::setBuffer(const char* buff, size_t leng)
 {
     buff_ = buff;
     mark_ = buff;
     curr_ = buff;
-    eof_ = buff + length;
+    eof_ = buff + leng;
+}
+
+void Lexer::setContext(ParsingContext *context)
+{
+    context_ = context;
 }
 
 SourceLoc Lexer::tokenLoc() const
@@ -97,13 +102,12 @@ Token Lexer::lexStrLit(char& ch, const char quote, const bool mayBreak,
     while (ch && ch != quote) {
         if (ch == '\\') {
             ch = consumeCharPeekNext();
-            if (!std::iscntrl(ch) && !std::isprint(ch)) {
-                // TODO: Error, unknown escape sequence.
-            }
+            if (!std::iscntrl(ch) && !std::isprint(ch))
+                context_->trackReport(Diagnostic::UnknownEscapeSequence, tokenLoc());
         } else if (ch == '\n') {
             handleNewLine();
-            //if (!mayBreak)
-            // TODO: Error, unterminated string.
+            if (!mayBreak)
+                context_->trackReport(Diagnostic::UnterminatedString, tokenLoc());
         }
         ch = consumeCharPeekNext();
     }
@@ -131,30 +135,24 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
         // Octal
         if (syntax->isOctalPrefix(ch)) {
             ch = consumeCharPeekNext();
-            if (!(ch >= '0' && ch < '8')) {
-                // TODO: Error
-                return TK_INVALID;
-            }
+            if (!(ch >= '0' && ch < '8'))
+                context_->trackReport(Diagnostic::InvalidOctalDigit, tokenLoc());
             while (ch && ch >= '0' && ch < '8')
                 ch = consumeCharPeekNext();
         }
         // Hex
         if (syntax->isHexPrefix(ch)) {
             ch = consumeCharPeekNext();
-            if (!std::isxdigit(ch)) {
-                // TODO: Error
-                return TK_INVALID;
-            }
+            if (!std::isxdigit(ch))
+                context_->trackReport(Diagnostic::InvalidHexDigit, tokenLoc());
             while (ch && std::isxdigit(ch))
                 ch = consumeCharPeekNext();
         }
         // Bin
         if (syntax->isBinPrefix(ch)) {
             ch = consumeCharPeekNext();
-            if (!(ch == '0' || ch == '1')) {
-                // TODO: Error
-                return TK_INVALID;
-            }
+            if (!(ch == '0' || ch == '1'))
+                context_->trackReport(Diagnostic::InvalidBinaryDigit, tokenLoc());
             while (ch && (ch == '0' || ch == '1'))
                 ch = consumeCharPeekNext();
         }
@@ -175,8 +173,8 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
 
     if (ch && (ch == 'L' || ch == 'l')) {
         ch = consumeCharPeekNext();
-        //if (tk == TK_FLOAT_LITERAL)
-        // TODO: Error, invalid suffix.
+        if (tk == TK_FLOAT_LITERAL)
+            context_->trackReport(Diagnostic::InvalidFloatSuffix, tokenLoc());
     }
 
     return tk;

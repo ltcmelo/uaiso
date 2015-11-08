@@ -29,14 +29,14 @@ using namespace uaiso;
 
 #define ENSURE_CONSISTENCY \
     UAISO_ASSERT(P->tokens_.size() == P->lineCol_.size(), return 0); \
-    UAISO_ASSERT(P->tokens_.size() == P->length_.size(), return 0); \
+    UAISO_ASSERT(P->tokens_.size() == P->lengs_.size(), return 0); \
     UAISO_ASSERT(P->tokens_.size() == P->flags_.size(), return 0);
 
 struct uaiso::Phrasing::PhrasingImpl
 {
     std::vector<Token> tokens_;
     std::vector<LineCol> lineCol_;
-    std::vector<int> length_;
+    std::vector<int> lengs_;
     std::vector<Phrasing::TokenFlags> flags_;
 };
 
@@ -47,16 +47,16 @@ Phrasing::Phrasing()
 Phrasing::~Phrasing()
 {}
 
-void Phrasing::append(Token tk, const LineCol& lineCol, int length)
+void Phrasing::append(Token tk, const LineCol& lineCol, int leng)
 {
-    append(tk, lineCol, length, TokenFlag::None);
+    append(tk, lineCol, leng, TokenFlag::None);
 }
 
-void Phrasing::append(Token tk, const LineCol& lineCol, int length, TokenFlags flags)
+void Phrasing::append(Token tk, const LineCol& lineCol, int leng, TokenFlags flags)
 {
     P->tokens_.push_back(tk);
     P->lineCol_.push_back(lineCol);
-    P->length_.push_back(length);
+    P->lengs_.push_back(leng);
     P->flags_.push_back(flags);
 }
 
@@ -83,9 +83,9 @@ LineCol Phrasing::lineCol(size_t index) const
 
 int Phrasing::length(size_t index) const
 {
-    UAISO_ASSERT(P->length_.size() > index, return 0);
+    UAISO_ASSERT(P->lengs_.size() > index, return 0);
 
-    return P->length_[index];
+    return P->lengs_[index];
 }
 
 Phrasing::TokenFlags Phrasing::flags(size_t index) const
@@ -106,7 +106,7 @@ void Phrasing::clear()
 {
     P->tokens_.clear();
     P->lineCol_.clear();
-    P->length_.clear();
+    P->lengs_.clear();
     P->flags_.clear();
 }
 

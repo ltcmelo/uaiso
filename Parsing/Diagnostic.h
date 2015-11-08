@@ -95,6 +95,12 @@ public:
     static const Code NameRequired;
     static const Code UnexpectedToken;
     static const Code SubrangeValueExpected;
+    static const Code UnknownEscapeSequence;
+    static const Code UnterminatedString;
+    static const Code InvalidBinaryDigit;
+    static const Code InvalidOctalDigit;
+    static const Code InvalidHexDigit;
+    static const Code InvalidFloatSuffix;
 
 private:
     friend class DiagnosticTable;

@@ -22,6 +22,11 @@
 /*--------------------------*/
 
 #include "Semantic/BinderTest.h"
+#include "Semantic/Program.h"
+#include "Semantic/Symbol.h"
+#include "Semantic/Type.h"
+#include "Parsing/Factory.h"
+#include "Parsing/Unit.h"
 
 using namespace uaiso;
 
@@ -105,29 +110,12 @@ void Binder::BinderTest::GoTestCase1()
         }
     )raw";
 
-    std::unique_ptr<Factory> factory(FactoryCreator::create(LangName::Go));
-
-    LexemeMap lexemes;
-    TokenMap tokens;
-    std::unique_ptr<Unit> unit(factory->makeUnit());
-    unit->assignInput(code);
-    unit->setFileName("/from/go/source/runtime/code.go");
-    unit->parse(&tokens, &lexemes);
-    ProgramAst* ast = Program_Cast(unit->ast());
-    UAISO_EXPECT_TRUE(ast);
-
-    Binder binder(factory.get());
-    binder.setLexemes(&lexemes);
-    binder.setTokens(&tokens);
-    std::unique_ptr<Program> program(binder.bind(ast, unit->fileName()));
-
+    std::unique_ptr<Program> program(core(FactoryCreator::create(LangName::Go),
+                                          code,
+                                          "/from/go/source/runtime/code.go"));
     UAISO_EXPECT_TRUE(program);
     UAISO_EXPECT_STR_EQ(program->moduleName(), "code");
     UAISO_EXPECT_STR_EQ(program->packageName(), "runtime");
-
-    // Not really an efficient way to test... We need the same
-    // identifier's pointers to lookup in the environment.
-    auto tuples = lexemes.list<Ident>(unit->fileName());
 
     const Ident* runtime = nullptr;
     const Ident* ticks = nullptr;
@@ -155,58 +143,59 @@ void Binder::BinderTest::GoTestCase1()
     const Ident* main = nullptr;
     const Ident* v = nullptr;
 
+    auto tuples = lexemes_.list<Ident>("/from/go/source/runtime/code.go");
     for (auto tuple : tuples) {
-        const Ident* id = std::get<0>(tuple);
-        if (id->str() == "runtime")
-            runtime = id;
-        else if (id->str() == "ticks")
-            ticks = id;
-        else if (id->str() == "lock")
-            lock = id;
-        else if (id->str() == "val")
-            val = id;
-        else if (id->str() == "tls0")
-            tls0 = id;
-        else if (id->str() == "tickspersecond")
-            tickspersecond = id;
-        else if (id->str() == "r")
-            r = id;
-        else if (id->str() == "t0")
-            t0 = id;
-        else if (id->str() == "c0")
-            c0 = id;
-        else if (id->str() == "t1")
-            t1 = id;
-        else if (id->str() == "c1")
-            c1 = id;
-        else if (id->str() == "makeStringSlice")
-            makeStringSlice = id;
-        else if (id->str() == "parforalloc")
-            parforalloc = id;
-        else if (id->str() == "parfor")
-            parfor = id;
-        else if (id->str() == "thr")
-            thr = id;
-        else if (id->str() == "nthrmax")
-            nthrmax = id;
-        else if (id->str() == "envs")
-            envs = id;
-        else if (id->str() == "argslice")
-            argslice = id;
-        else if (id->str() == "runtime_envs")
-            runtime_envs = id;
-        else if (id->str() == "runtime_args")
-            runtime_args = id;
-        else if (id->str() == "vertex") {
-            vertex = id;
-        } else if (id->str() == "x")
-            x = id;
-        else if (id->str() == "y")
-            y = id;
-        else if (id->str() == "main")
-            main = id;
-        else if (id->str() == "v")
-            v = id;
+        const Ident* ident = std::get<0>(tuple);
+        if (ident->str() == "runtime")
+            runtime = ident;
+        else if (ident->str() == "ticks")
+            ticks = ident;
+        else if (ident->str() == "lock")
+            lock = ident;
+        else if (ident->str() == "val")
+            val = ident;
+        else if (ident->str() == "tls0")
+            tls0 = ident;
+        else if (ident->str() == "tickspersecond")
+            tickspersecond = ident;
+        else if (ident->str() == "r")
+            r = ident;
+        else if (ident->str() == "t0")
+            t0 = ident;
+        else if (ident->str() == "c0")
+            c0 = ident;
+        else if (ident->str() == "t1")
+            t1 = ident;
+        else if (ident->str() == "c1")
+            c1 = ident;
+        else if (ident->str() == "makeStringSlice")
+            makeStringSlice = ident;
+        else if (ident->str() == "parforalloc")
+            parforalloc = ident;
+        else if (ident->str() == "parfor")
+            parfor = ident;
+        else if (ident->str() == "thr")
+            thr = ident;
+        else if (ident->str() == "nthrmax")
+            nthrmax = ident;
+        else if (ident->str() == "envs")
+            envs = ident;
+        else if (ident->str() == "argslice")
+            argslice = ident;
+        else if (ident->str() == "runtime_envs")
+            runtime_envs = ident;
+        else if (ident->str() == "runtime_args")
+            runtime_args = ident;
+        else if (ident->str() == "vertex") {
+            vertex = ident;
+        } else if (ident->str() == "x")
+            x = ident;
+        else if (ident->str() == "y")
+            y = ident;
+        else if (ident->str() == "main")
+            main = ident;
+        else if (ident->str() == "v")
+            v = ident;
     }
 
     Environment moduleEnv = program->env();
