@@ -47,7 +47,7 @@ public:
 
     virtual bool isIdentChar(char ch) const;
 
-    virtual Token classifyIdent(const char* spell, size_t length) const;
+    virtual Token classifyIdent(const char* spell, size_t leng) const;
 
     virtual bool isStrLitQuote(char ch) const;
 
@@ -58,6 +58,14 @@ public:
     virtual bool isBinPrefix(char ch) const;
 
     virtual bool isExponent(char ch) const;
+
+    /*!
+     * \brief hasRunnableRecord
+     * \return
+     *
+     * Return whether a record is a runnable statement, like in Python.
+     */
+    virtual bool hasRunnableRecord() const;
 };
 
 } // namespace uaiso

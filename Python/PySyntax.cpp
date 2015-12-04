@@ -40,3 +40,8 @@ bool PySyntax::isStrLitQuote(char ch) const
 {
     return ch == '"' || ch == '\'';
 }
+
+bool PySyntax::hasRunnableRecord() const
+{
+    return true;
+}

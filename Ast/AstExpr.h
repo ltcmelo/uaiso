@@ -27,7 +27,9 @@
 #include "Ast/AstFwd.h"
 #include "Ast/AstList.h"
 #include "Ast/AstBase.h"
+#include "Semantic/SymbolFwd.h"
 #include "Semantic/TypeFwd.h"
+#include <vector>
 
 namespace uaiso {
 
@@ -613,6 +615,10 @@ public:
     std::unique_ptr<ExprAstList> exprs1_;
     SourceLoc oprLoc_;
     std::unique_ptr<ExprAstList> exprs2_;
+
+    // An assignment may also bind names. For instance in dynamic languages
+    // such as Python.
+    std::vector<Var*> syms_;
 };
 
 class UAISO_API MemberAccessExprAst final : public ExprAst

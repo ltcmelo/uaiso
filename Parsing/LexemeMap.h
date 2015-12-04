@@ -39,35 +39,66 @@ class Lexeme;
 class NumLit;
 class StrLit;
 
+/*!
+ * \brief The LexemeMap class
+ */
 class UAISO_API LexemeMap final
 {
 public:
+    /*!
+     * \brief LexemeMap
+     */
     LexemeMap();
+
     LexemeMap(const LexemeMap&) = delete;
     LexemeMap& operator=(const LexemeMap&) = delete;
     ~LexemeMap();
 
+    /*!
+     * \brief insertOrFind
+     */
     template <class ValueT>
     const ValueT* insertOrFind(const std::string& s,
                                const std::string& fullFileName,
                                const LineCol& lineCol);
 
+    /*!
+     * \brief find
+     */
     template <class ValueT>
     const ValueT* find(const std::string& fullFileName,
                        const LineCol& lineCol) const;
 
     /*!
+     * \brief list
      * \warning This method creates copies of the map's underlying storage.
      */
     template <class ValueT>
-    std::vector<std::tuple<const ValueT*, LineCol>>
-    list(const std::string& fullFileName) const;
+    std::vector<std::tuple<const ValueT*, LineCol>> list(const std::string& fullFileName) const;
 
+    /*!
+     * \brief clear
+     */
     void clear();
+
+    /*!
+     * \brief clear
+     * \param fullFileName
+     */
     void clear(const std::string& fullFileName);
+
+    /*!
+     * \brief selfIdent
+     * \return
+     *
+     * Return special ientifier `self`.
+     */
+    const Ident* self() const;
 
 private:
     DECL_PIMPL(LexemeMap)
+
+    void insertPredefined();
 };
 
 } // namespace uaiso

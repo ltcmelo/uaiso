@@ -77,14 +77,28 @@ template <> struct equal_to<std::unique_ptr<Lexeme>>
 
 struct uaiso::LexemeMap::LexemeMapImpl
         : public DataIndex<std::unique_ptr<Lexeme>>
-{};
+{
+    const Ident* self_ { nullptr };
+};
 
 LexemeMap::LexemeMap()
     : impl_(new LexemeMapImpl)
-{}
+{
+    insertPredefined();
+}
 
 LexemeMap::~LexemeMap()
 {}
+
+const Ident* LexemeMap::self() const
+{
+    return P->self_;
+}
+
+void LexemeMap::insertPredefined()
+{
+    P->self_ = insertOrFind<Ident>("self", "<predefined>", LineCol(-1, -1));
+}
 
 template <class ValueT>
 const ValueT* LexemeMap::insertOrFind(const std::string& s,
@@ -159,6 +173,7 @@ void LexemeMap::clear()
 {
     P->data_.clear();
     P->fileIndex_.clear();
+    insertPredefined();
 }
 
 void LexemeMap::clear(const std::string& fullFileName)

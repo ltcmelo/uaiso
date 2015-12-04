@@ -36,6 +36,8 @@ public:
     Token classifyIdent(const char* spell, size_t length) const override;
 
     bool isStrLitQuote(char ch) const override;
+
+    bool hasRunnableRecord() const override;
 };
 
 } // namespace uaiso

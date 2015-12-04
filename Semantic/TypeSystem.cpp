@@ -31,6 +31,8 @@ TypeSystem::~TypeSystem()
 
 bool TypeSystem::isStructural() const { return false; }
 
+bool TypeSystem::isDynamic() const { return false; }
+
 bool TypeSystem::isArrayFirstClass() const { return false; }
 
 bool TypeSystem::isStringFirstClass() const { return false; }

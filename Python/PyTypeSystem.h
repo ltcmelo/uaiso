@@ -31,7 +31,7 @@ namespace uaiso {
 class UAISO_API PyTypeSystem final : public TypeSystem
 {
 public:
-
+    bool isDynamic() const override;
 };
 
 } // namespace uaiso

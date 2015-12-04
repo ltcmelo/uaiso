@@ -290,8 +290,7 @@ std::vector<const DeclSymbol*> Environment::list() const
     return syms;
 }
 
-void Environment::attachNamespace(std::unique_ptr<Namespace> sym,
-                                  bool mergeEnv)
+void Environment::injectNamespace(std::unique_ptr<Namespace> sym, bool mergeEnv)
 {
     if (mergeEnv)
         P->mergedEnvs_.push_back(sym->env());

@@ -42,6 +42,8 @@ public:
              , &BinderTest::GoTestCase1
              // Python
              , &BinderTest::PyTestCase1
+             , &BinderTest::PyTestCase2
+             , &BinderTest::PyTestCase3
              )
 
     //--- Go ---//
@@ -51,6 +53,8 @@ public:
     //--- Python ---//
 
     void PyTestCase1();
+    void PyTestCase2();
+    void PyTestCase3();
 
 
     std::unique_ptr<Program> core(std::unique_ptr<Factory> factory,

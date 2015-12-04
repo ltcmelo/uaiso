@@ -198,7 +198,7 @@ void Manager::processDeps(const std::string& fullFileName) const
                 // The namespace is the last symbol to be created.
                 std::unique_ptr<Namespace> space(new Namespace(import->localName()));
                 space->setEnv(otherProg->env());
-                curProg->env().attachNamespace(std::move(space), import->mergeEnv());
+                curProg->env().injectNamespace(std::move(space), import->mergeEnv());
                 progs.push(otherProg);
             }
         }

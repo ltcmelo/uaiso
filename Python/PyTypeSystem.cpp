@@ -25,3 +25,7 @@
 
 using namespace uaiso;
 
+bool PyTypeSystem::isDynamic() const
+{
+    return true;
+}

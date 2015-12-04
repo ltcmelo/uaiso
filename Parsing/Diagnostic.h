@@ -101,6 +101,7 @@ public:
     static const Code InvalidOctalDigit;
     static const Code InvalidHexDigit;
     static const Code InvalidFloatSuffix;
+    static const Code InvalidReferenceToSelf;
 
 private:
     friend class DiagnosticTable;

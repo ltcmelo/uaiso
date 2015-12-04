@@ -112,15 +112,14 @@ public:
     const std::vector<Environment>& nestedEnvs() const;
 
     /*!
-     * \brief attachNamespace
+     * \brief injectNamespace
      * \param sym
      * \param mergeEnv
      *
-     * Attach namespace \a sym to this environment. If \a mergeEnv is true,
+     * Inject namespace \a sym to this environment. If \a mergeEnv is true,
      * symbols from \a sym will be available in this environment.
      */
-    void attachNamespace(std::unique_ptr<Namespace> sym,
-                         bool mergeEnv);
+    void injectNamespace(std::unique_ptr<Namespace> sym, bool mergeEnv);
 
     /*!
      * \brief fetchNamespace

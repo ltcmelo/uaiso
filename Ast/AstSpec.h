@@ -131,11 +131,11 @@ public:
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_LOC_PARAM(Delim, delim)
-    NAMED_AST_LIST_PARAM(Base, bases, DeclAst)
     NAMED_LOC_PARAM(LDelim, lDelim)
-    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
-    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
     NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_LIST_PARAM(Base, bases, DeclAst)
+    NAMED_AST_LIST_PARAM(Decl, decls, DeclAst)
+    NAMED_AST_PARAM(Proto, proto, StmtAst)
 
     /*!
      * \brief isTemplate
@@ -155,12 +155,12 @@ public:
 
     SourceLoc keyLoc_;
     SourceLoc delimLoc_;
+    SourceLoc lDelimLoc_;
+    SourceLoc rDelimLoc_;
     std::unique_ptr<DeclAstList> bases_;
     std::unique_ptr<DeclAst> templ_;
-    SourceLoc lDelimLoc_;
     std::unique_ptr<DeclAstList> decls_;
-    std::unique_ptr<StmtAst> stmt_;
-    SourceLoc rDelimLoc_;
+    std::unique_ptr<StmtAst> proto_;
 };
 
 /*!

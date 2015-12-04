@@ -54,7 +54,7 @@ bool Syntax::isIdentChar(char ch) const
     return std::isalnum(ch) || ch == '_';
 }
 
-Token Syntax::classifyIdent(const char* spell, size_t length) const
+Token Syntax::classifyIdent(const char* spell, size_t leng) const
 {
     return TK_IDENTIFIER;
 }
@@ -82,4 +82,9 @@ bool Syntax::isBinPrefix(char ch) const
 bool Syntax::isExponent(char ch) const
 {
     return ch == 'e' || ch == 'E';
+}
+
+bool Syntax::hasRunnableRecord() const
+{
+    return false;
 }

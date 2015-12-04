@@ -135,7 +135,7 @@ private:
     VisitResult visitMemberAccessExpr(MemberAccessExprAst* ast);
     VisitResult visitRecordInitExpr(RecordInitExprAst* ast);
 
-    // Annotate type of type-specifying exprs.
+    // Type-specifying exprs
     VisitResult traverseMakeExpr(MakeExprAst* ast);
     VisitResult traverseNewExpr(NewExprAst* ast);
     VisitResult traverseNestedNewExpr(NestedNewExprAst* ast);
@@ -143,6 +143,9 @@ private:
     VisitResult traverseTypeQueryExpr(TypeQueryExprAst* ast);
     VisitResult traverseTypeAssertExpr(TypeAssertExprAst* ast);
     VisitResult traverseTypeidExpr(TypeidExprAst* ast);
+
+    // Name-binding exprs
+    VisitResult traverseAssignExpr(AssignExprAst* ast);
 
     //--- Statements ---//
 

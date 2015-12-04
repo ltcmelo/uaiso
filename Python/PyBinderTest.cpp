@@ -30,6 +30,7 @@
 #include "Parsing/LexemeMap.h"
 #include "Parsing/TokenMap.h"
 #include "Parsing/Unit.h"
+#include <iostream>
 
 using namespace uaiso;
 
@@ -43,22 +44,13 @@ e = call()
 f = w
 print nothing
 
-def g():
-    i = 10
+def foo():
+    foo_local = 10
 
-def h():
-    pass
-
-for x in range(10):
-    y = x * 2
-    print y
-
-class foo:
-    k = 1
-    def bar():
-        self.m = 10
-        self.n
-
+class bar:
+    bar_static = 1
+    def bar_method():
+        print 1
 )raw";
 
     std::unique_ptr<Program> program(core(FactoryCreator::create(LangName::Py),
@@ -72,19 +64,15 @@ class foo:
     const Ident* d = nullptr;
     const Ident* e = nullptr;
     const Ident* f = nullptr;
-    const Ident* g = nullptr;
-    const Ident* h = nullptr;
-    const Ident* i = nullptr;
     const Ident* k = nullptr;
-    const Ident* m = nullptr;
-    const Ident* n = nullptr;
-    const Ident* x = nullptr;
-    const Ident* y = nullptr;
     const Ident* w = nullptr;
     const Ident* foo = nullptr;
+    const Ident* foo_local = nullptr;
     const Ident* bar = nullptr;
+    const Ident* bar_static = nullptr;
+    const Ident* bar_method = nullptr;
     const Ident* call = nullptr;
-    const Ident* self = nullptr;
+    const Ident* nothing = nullptr;
 
     auto tuples = lexemes_.list<Ident>("/test.py");
     for (auto tuple : tuples) {
@@ -101,44 +89,144 @@ class foo:
             e = ident;
         else if (ident->str() == "f")
             f = ident;
-        else if (ident->str() == "g")
-            g = ident;
-        else if (ident->str() == "h")
-            h = ident;
-        else if (ident->str() == "i")
-            i = ident;
         else if (ident->str() == "k")
             k = ident;
-        else if (ident->str() == "m")
-            m = ident;
-        else if (ident->str() == "n")
-            n = ident;
-        else if (ident->str() == "x")
-            x = ident;
-        else if (ident->str() == "y")
-            y = ident;
         else if (ident->str() == "w")
             w = ident;
         else if (ident->str() == "foo")
             foo = ident;
+        else if (ident->str() == "foo_local")
+            foo_local = ident;
         else if (ident->str() == "bar")
             bar = ident;
+        else if (ident->str() == "bar_static")
+            bar_static = ident;
+        else if (ident->str() == "bar_method")
+            bar_method = ident;
         else if (ident->str() == "call")
             call = ident;
-        else if (ident->str() == "self")
-            self = ident;
+        else if (ident->str() == "nothing")
+            nothing = ident;
     }
 
     Environment env = program->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
 
-#if 0
-    // Vars
+    // Global
     UAISO_EXPECT_TRUE(env.lookUpValue(a));
-    UAISO_EXPECT_FALSE(env.lookUpType(a));
+    UAISO_EXPECT_TRUE(env.lookUpValue(b));
+    UAISO_EXPECT_TRUE(env.lookUpValue(c));
+    UAISO_EXPECT_TRUE(env.lookUpValue(d));
+    UAISO_EXPECT_TRUE(env.lookUpValue(e));
+    UAISO_EXPECT_TRUE(env.lookUpValue(f));
+    UAISO_EXPECT_TRUE(env.lookUpType(foo));
+    UAISO_EXPECT_TRUE(env.lookUpType(bar));
 
-    // Functions
-    UAISO_EXPECT_TRUE(env.lookUpType(g));
-    UAISO_EXPECT_FALSE(env.lookUpValue(g));
-#endif
+    const Func* funcFoo = ConstFunc_Cast(env.lookUpType(foo));
+    Environment fooEnv = funcFoo->env();
+    UAISO_EXPECT_TRUE(fooEnv.lookUpValue(foo_local));
+    UAISO_EXPECT_FALSE(env.lookUpValue(foo_local));
+    UAISO_EXPECT_FALSE(env.lookUpType(foo_local));
+    UAISO_EXPECT_TRUE(fooEnv.lookUpValue(a));
+
+    const Record* classBar = ConstRecord_Cast(env.lookUpType(bar));
+    Environment barEnv = classBar->type()->env();
+    UAISO_EXPECT_TRUE(barEnv.lookUpValue(bar_static));
+    UAISO_EXPECT_FALSE(env.lookUpValue(bar_static));
+    UAISO_EXPECT_TRUE(barEnv.lookUpType(bar_method));
+    UAISO_EXPECT_FALSE(env.lookUpType(bar_method));
+    UAISO_EXPECT_TRUE(barEnv.lookUpValue(a));
+}
+
+void Binder::BinderTest::PyTestCase2()
+{
+    std::string code = R"raw(
+for g in range(10):
+    h = g * 2
+    print h
+)raw";
+
+    std::unique_ptr<Program> program(core(FactoryCreator::create(LangName::Py),
+                                          code,
+                                          "/test.py"));
+    UAISO_EXPECT_TRUE(program);
+
+    const Ident* g = nullptr;
+    const Ident* h = nullptr;
+
+    auto tuples = lexemes_.list<Ident>("/test.py");
+    for (auto tuple : tuples) {
+        const Ident* ident = std::get<0>(tuple);
+        if (ident->str() == "g")
+            g = ident;
+        else if (ident->str() == "h")
+            h = ident;
+    }
+
+    UAISO_SKIP_TEST;
+
+    Environment env = program->env();
+    UAISO_EXPECT_FALSE(env.isEmpty());
+
+    // Global
+    UAISO_EXPECT_TRUE(env.lookUpValue(g));
+    UAISO_EXPECT_TRUE(env.lookUpValue(h));
+}
+
+void Binder::BinderTest::PyTestCase3()
+{
+    std::string code = R"raw(
+class bar:
+    bar_static = 1
+    def bar_method():
+        self.bar_inst1 = 10
+        self.bar_inst2 = "bar"
+)raw";
+
+    std::unique_ptr<Program> program(core(FactoryCreator::create(LangName::Py),
+                                          code,
+                                          "/test.py"));
+    UAISO_EXPECT_TRUE(program);
+
+    const Ident* bar = nullptr;
+    const Ident* bar_static = nullptr;
+    const Ident* bar_method = nullptr;
+    const Ident* bar_inst1 = nullptr;
+    const Ident* bar_inst2 = nullptr;
+    const Ident* self = nullptr;
+
+    auto tuples = lexemes_.list<Ident>("/test.py");
+    for (auto tuple : tuples) {
+        const Ident* ident = std::get<0>(tuple);
+        if (ident->str() == "bar")
+            bar = ident;
+        else if (ident->str() == "bar_static")
+            bar_static = ident;
+        else if (ident->str() == "bar_method")
+            bar_method = ident;
+        else if (ident->str() == "bar_inst1")
+            bar_inst1 = ident;
+        else if (ident->str() == "bar_inst2")
+            bar_inst2 = ident;
+        else if (ident->str() == "self")
+            self = ident;
+    }
+
+
+    Environment env = program->env();
+    UAISO_EXPECT_FALSE(env.isEmpty());
+
+    // Global
+    UAISO_EXPECT_TRUE(env.lookUpType(bar));
+
+    const Record* classBar = ConstRecord_Cast(env.lookUpType(bar));
+    Environment barEnv = classBar->type()->env();
+    UAISO_EXPECT_TRUE(barEnv.lookUpValue(bar_static));
+    UAISO_EXPECT_FALSE(env.lookUpValue(bar_static));
+    UAISO_EXPECT_TRUE(barEnv.lookUpType(bar_method));
+    UAISO_EXPECT_FALSE(env.lookUpType(bar_method));
+    UAISO_EXPECT_TRUE(barEnv.lookUpValue(bar_inst1));
+    UAISO_EXPECT_FALSE(env.lookUpValue(bar_inst1));
+    UAISO_EXPECT_TRUE(barEnv.lookUpValue(bar_inst2));
+    UAISO_EXPECT_FALSE(env.lookUpValue(bar_inst2));
 }

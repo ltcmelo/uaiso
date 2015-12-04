@@ -262,6 +262,7 @@ AstVisitor<DerivedT>::traverseRecordSpec(RecordSpecAst *ast)
     EVAL_RESULT_N(traverseDecl(ast->templ_.get()));
     EVAL_RESULT_LIST_N(traverseList<DeclAst>(ast->bases_.get(), &DerivedT::traverseDecl));
     EVAL_RESULT_LIST_N(traverseList<DeclAst>(ast->decls_.get(), &DerivedT::traverseDecl));
+    EVAL_RESULT_N(traverseStmt(ast->proto_.get()));
     return Continue;
 }
 

@@ -29,6 +29,7 @@
 #include "Semantic/Type.h"
 #include "Semantic/TypeCast.h"
 #include "Semantic/TypeQuals.h"
+#include "Semantic/TypeSystem.h"
 #include "Ast/Ast.h"
 #include "Ast/AstLocator.h"
 #include "Ast/AstVariety.h"
@@ -79,20 +80,22 @@
     ENSURE_NONEMPTY_SYMBOL_STACK; \
     UAISO_ASSERT(P->sym_.top()->kind() == Symbol::Kind::SYMBOL, return Abort);
 
+#define ENSURE_NONEMPTY_ENV_STACK \
+    UAISO_ASSERT(!P->tyEnv_.empty(), return Abort)
+
 using namespace uaiso;
 
 namespace {
 
 /*!
- * \brief The CollectName class
+ * \brief The AstToLexeme class
  *
- * Collect names in the form of string literals or simple names (which
- * might be from an identifier expr).
+ * Collect names in the form of string literals, simple names, identifiers.
  */
-class PickupName final : public AstVisitor<PickupName>
+class AstToLexeme final : public AstVisitor<AstToLexeme>
 {
 public:
-    PickupName(const LexemeMap* lexemes)
+    AstToLexeme(const LexemeMap* lexemes)
         : lexemes_(lexemes)
     {}
 
@@ -111,7 +114,7 @@ public:
     }
 
 private:
-    friend class AstVisitor<PickupName>;
+    friend class AstVisitor<AstToLexeme>;
 
     const LexemeMap* lexemes_;
     std::vector<const Lexeme*> ids_;
@@ -134,14 +137,14 @@ private:
     VisitResult visitSimpleName(SimpleNameAst* ast)
     {
         auto name = lexemes_->find<Ident>(ast->nameLoc_.fileName_,
-                                               ast->nameLoc_.lineCol());
+                                          ast->nameLoc_.lineCol());
         return pushName(name);
     }
 
     VisitResult visitGenName(GenNameAst* ast)
     {
         auto name = lexemes_->find<Ident>(ast->genLoc_.fileName_,
-                                               ast->genLoc_.lineCol());
+                                          ast->genLoc_.lineCol());
         return pushName(name);
     }
 
@@ -169,19 +172,21 @@ struct uaiso::Binder::BinderImpl
         , sanitizer_(factory->makeSanitizer())
         , locator_(factory->makeAstLocator())
         , syntax_(factory->makeSyntax())
+        , typeSystem_(factory->makeTypeSystem())
         , reports_(nullptr)
     {}
 
-    void enterSubEnv()
+    Environment enterSubEnv()
     {
         env_ = env_.createSubEnv();
+        return env_; // Return the new env as a convenience.
     }
 
     Environment leaveEnv()
     {
-        Environment previousEnv = env_;
+        Environment prevEnv = env_;
         env_ = env_.outerEnv();
-        return previousEnv;
+        return prevEnv;
     }
 
     template <class TypeT = Type>
@@ -216,6 +221,9 @@ struct uaiso::Binder::BinderImpl
     //! Environment we're currently in.
     Environment env_;
 
+    //! Environment of current type (when there's one).
+    std::stack<Environment> tyEnv_;
+
     //! Owned blocks counter (see block stmt travesal).
     size_t ownedBlocks_;
 
@@ -236,6 +244,9 @@ struct uaiso::Binder::BinderImpl
 
     //! Language-specific syntax.
     std::unique_ptr<const Syntax> syntax_;
+
+    //! Language-specific type system.
+    std::unique_ptr<const TypeSystem> typeSystem_;
 
     //! Diagnostic reports collected.
     DiagnosticReports* reports_;
@@ -512,8 +523,24 @@ Binder::VisitResult Binder::visitTypeofSpec(TypeofSpecAst* ast)
 Binder::VisitResult Binder::traverseRecordSpec(RecordSpecAst* ast)
 {
     P->declTy_.emplace(new RecordType);
-    P->enterSubEnv();
+
+    // If the lang's record is a statement such as in Python, block stmt
+    // traversal should not enter a new env.
+    if (P->syntax_->hasRunnableRecord()
+            && ast->proto_
+            && ast->proto_->kind() == Ast::Kind::BlockStmt) {
+        ++P->ownedBlocks_;
+    }
+    P->tyEnv_.push(P->enterSubEnv());
+
     VIS_CALL(Base::traverseRecordSpec(ast));
+
+    if (P->syntax_->hasRunnableRecord()
+            && ast->proto_
+            && ast->proto_->kind() == Ast::Kind::BlockStmt) {
+        ENSURE_NONEMPTY_ENV_STACK;
+        BlockStmt_Cast(ast->proto_.get())->env_ = P->tyEnv_.top();
+    }
 
     ENSURE_TOP_TYPE_IS(Record);
     RecordType* ty = RecordType_Cast(P->declTy_.top().get());
@@ -934,7 +961,7 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
     // it's still evaluated so the module and given namespace are collected.
 
     UAISO_ASSERT(ast->expr_.get(), return Abort);
-    PickupName pickupName(P->lexemes_);
+    AstToLexeme pickupName(P->lexemes_);
     const auto& lexemes = pickupName.process(ast->expr_.get());
 
     if (lexemes.empty()) {
@@ -1191,9 +1218,7 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
     ENSURE_NONEMPTY_TYPE_STACK;
     func->setType(P->popDeclType<FuncType>());
 
-    Environment signatureEnv = P->leaveEnv();
-
-    // Body environment is taken from block (if any).
+    // Prevent block stmt (if any) from entering a new env.
     if (ast->stmt_
             && ast->stmt_->kind() == Ast::Kind::BlockStmt) {
         ++P->ownedBlocks_;
@@ -1201,12 +1226,10 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
     VIS_CALL(traverseStmt(ast->stmt_.get()));
     if (ast->stmt_
             && ast->stmt_->kind() == Ast::Kind::BlockStmt) {
-        Environment blockEnv = BlockStmt_Cast(ast->stmt_.get())->env_;
-        blockEnv.takeOver(signatureEnv);
-        func->setEnv(blockEnv);
-    } else {
-        func->setEnv(signatureEnv);
+        BlockStmt_Cast(ast->stmt_.get())->env_ = P->env_;
     }
+
+    func->setEnv(P->leaveEnv());
 
     P->env_.insertType(std::move(func));
 
@@ -1329,24 +1352,82 @@ Binder::VisitResult Binder::traverseTypeidExpr(TypeidExprAst* ast)
     return Continue;
 }
 
+namespace {
+
+} // namespace anonymous
+
+Binder::VisitResult Binder::traverseAssignExpr(AssignExprAst* ast)
+{
+    if (!P->typeSystem_->isDynamic())
+        return Continue;
+
+    for (auto expr : *ast->exprs1()) {
+        Environment env = P->env_;
+        NameAst* name = nullptr;
+        if (expr->kind() == Ast::Kind::IdentExpr) {
+            name = IdentExpr_Cast(expr)->name();
+        } else if (expr->kind() == Ast::Kind::MemberAccessExpr) {
+            auto member = MemberAccessExpr_Cast(expr);
+            if (!member->exprOrSpec_
+                    || member->exprOrSpec_->kind() != Ast::Kind::IdentExpr) {
+                continue;
+            }
+            auto baseName = IdentExpr_Cast(member->exprOrSpec_.get())->name();
+
+            // Retrieve the lexeme of the base name and check whether
+            // it's a "self". If so, bind the corresponding name.
+            AstToLexeme pickupName(P->lexemes_);
+            const auto& baseLexemes = pickupName.process(baseName);
+            if (baseLexemes.empty() ||
+                    baseLexemes[0] != P->lexemes_->self()) {
+                continue;
+            }
+
+            name = member->name();
+            if (P->tyEnv_.empty()) {
+                P->report(Diagnostic::InvalidReferenceToSelf,
+                          fullLoc(name, P->locator_.get()));
+            } else {
+                env = P->tyEnv_.top();
+            }
+        } else {
+            continue;
+        }
+
+        VIS_CALL(traverseName(name));
+        ENSURE_NAME_AVAILABLE;
+        std::unique_ptr<Var> var(new Var(P->declId_.back()));
+        var->setSourceLoc(fullLoc(name, P->locator_.get()));
+        var->setValueType(std::unique_ptr<Type>(new InferredType));
+
+        ast->syms_.push_back(var.get()); // Annotate AST with symbol
+
+        env.insertValue(std::unique_ptr<ValueSymbol>(var.release()));
+    }
+
+    return Continue;
+}
+
     //------------------//
     //--- Statements ---//
     //------------------//
 
 Binder::VisitResult Binder::traverseBlockStmt(BlockStmtAst* ast)
 {
-    bool nestBlockEnv = true;
+    bool selfEnv = true;
     if (P->ownedBlocks_ > 0) {
         --P->ownedBlocks_;
-        nestBlockEnv = false;
+        selfEnv = false;
+    } else {
+        P->enterSubEnv();
     }
 
-    P->enterSubEnv();
     VIS_CALL(Base::traverseBlockStmt(ast));
-    ast->env_ = P->leaveEnv(); // Annotate AST with the environment
 
-    if (nestBlockEnv)
+    if (selfEnv) {
+        ast->env_ = P->leaveEnv(); // Annotate AST with the environment
         ast->env_.nestIntoOuterEnv();
+    }
 
     return Continue;
 }

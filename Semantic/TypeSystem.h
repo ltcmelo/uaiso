@@ -43,6 +43,14 @@ public:
     virtual bool isStructural() const;
 
     /*!
+     * \brief isDynamic
+     * \return
+     *
+     * Return whether this is a dynamic type system.
+     */
+    virtual bool isDynamic() const;
+
+    /*!
      * \brief isArrayFirstClass
      * \return
      *

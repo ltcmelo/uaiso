@@ -423,9 +423,9 @@ TypeChecker::VisitResult TypeChecker::traverseVarGroupDecl(VarGroupDeclAst* grou
             UAISO_ASSERT(decls->head()->kind() == Ast::Kind::VarDecl, return Skip);
             VarDeclAst* varDecl = VarDecl_Cast(decls->head());
             UAISO_ASSERT(varDecl->sym_, return Skip);
-            const Type* declType = varDecl->sym_->valueType();
+            const Type* declTy = varDecl->sym_->valueType();
 
-            analyseInit(declType, ty.get(), fullLoc(varDecl, P->locator_.get()));
+            analyseInit(declTy, ty.get(), fullLoc(varDecl, P->locator_.get()));
             if (varDecl->sym_->valueType()->kind() == Type::Kind::Inferred)
                 varDecl->sym_->setValueType(std::unique_ptr<Type>(ty->clone()));
 

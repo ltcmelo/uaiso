@@ -1074,7 +1074,7 @@ std::unique_ptr<StmtAst> PyParser::parseClassDef()
 
     match(TK_COLON);
     spec->setLDelimLoc(lastLoc_);
-    spec->setStmt(parseSuite().release());
+    spec->setProto(parseSuite().release());
     decl->setSpec(spec.release());
 
     return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(decl.release()));

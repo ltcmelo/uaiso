@@ -92,6 +92,7 @@ const Diagnostic::Code Diagnostic::InvalidBinaryDigit = 47;
 const Diagnostic::Code Diagnostic::InvalidOctalDigit = 48;
 const Diagnostic::Code Diagnostic::InvalidHexDigit = 49;
 const Diagnostic::Code Diagnostic::InvalidFloatSuffix = 50;
+const Diagnostic::Code Diagnostic::InvalidReferenceToSelf = 51;
 
 namespace uaiso {
 
@@ -207,6 +208,8 @@ public:
                     "invalid hex digit", Severity::Error },
         { Diagnostic::InvalidFloatSuffix,
                     "invalid float suffix", Severity::Error },
+        { Diagnostic::InvalidReferenceToSelf,
+                    "invalid reference to self", Severity::Error },
     };
 };
 
