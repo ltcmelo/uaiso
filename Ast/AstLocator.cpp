@@ -452,7 +452,9 @@ const SourceLoc& AstLocator::lastLoc(ErrorDeclAst* ast) const
 
 const SourceLoc& AstLocator::loc(FuncDeclAst* ast) const
 {
-    return loc(ast->name_.get());
+    if (ast->name())
+        return loc(ast->name_.get());
+    return loc(ast->spec());
 }
 
 const SourceLoc& AstLocator::lastLoc(FuncDeclAst* ast) const

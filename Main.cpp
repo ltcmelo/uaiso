@@ -82,15 +82,15 @@ std::vector<std::string> readSearchPaths()
 
 CALL_CLASS_TEST(Binder)
 CALL_CLASS_TEST(CompletionProposer)
-CALL_CLASS_TEST(DIncrementalLexer)
-CALL_CLASS_TEST(DUnit)
 CALL_CLASS_TEST(Environment)
 CALL_CLASS_TEST(FileInfo)
+CALL_CLASS_TEST(DIncrementalLexer)
+CALL_CLASS_TEST(TypeChecker)
+CALL_CLASS_TEST(DUnit)
 CALL_CLASS_TEST(GoIncrementalLexer)
 CALL_CLASS_TEST(GoUnit)
 CALL_CLASS_TEST(PyLexer)
 CALL_CLASS_TEST(PyParser)
-CALL_CLASS_TEST(TypeChecker)
 
 class WorkflowTest : public Test
 {
@@ -155,10 +155,6 @@ public:
         std::unique_ptr<Program> prog(binder.bind(progAst, fileName_));
         UAISO_EXPECT_TRUE(prog);
         UAISO_EXPECT_FALSE(prog->env().isEmpty());
-
-        // Temporary, while working on integration.
-        if (str::ends_with(fileName_, ".py"))
-            return;
 
         TypeChecker typeChecker(factory.get());
         typeChecker.setLexemes(&lexemes_);
@@ -390,17 +386,17 @@ int main(int argc, char* argv[])
     workflowTest.run();
 
     if (!workflowTest.singlePass_) {
-        test_FileInfo();
-        test_Environment();
+//        test_FileInfo();
+//        test_Environment();
         test_Binder();
-        test_TypeChecker();
-        test_DIncrementalLexer();
-        test_DUnit();
-        test_GoIncrementalLexer();
-        test_GoUnit();
+//        test_TypeChecker();
         test_CompletionProposer();
-        test_PyLexer();
-        test_PyParser();
+//        test_DIncrementalLexer();
+//        test_DUnit();
+//        test_GoIncrementalLexer();
+//        test_GoUnit();
+//        test_PyLexer();
+//        test_PyParser();
     }
 
     Test::printStats();

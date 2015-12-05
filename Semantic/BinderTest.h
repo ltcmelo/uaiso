@@ -44,6 +44,15 @@ public:
              , &BinderTest::PyTestCase1
              , &BinderTest::PyTestCase2
              , &BinderTest::PyTestCase3
+             , &BinderTest::PyTestCase4
+             , &BinderTest::PyTestCase5
+             , &BinderTest::PyTestCase6
+             , &BinderTest::PyTestCase7
+             , &BinderTest::PyTestCase8
+             , &BinderTest::PyTestCase9
+             , &BinderTest::PyTestCase10
+             , &BinderTest::PyTestCase11
+             , &BinderTest::PyTestCase12
              )
 
     //--- Go ---//
@@ -52,9 +61,20 @@ public:
 
     //--- Python ---//
 
+    void PyVerifyBasicCode(const Program* prog,
+                           const std::vector<LexemeMap::LexemeInfo<Ident>>& lexemesInfo);
     void PyTestCase1();
     void PyTestCase2();
     void PyTestCase3();
+    void PyTestCase4();
+    void PyTestCase5();
+    void PyTestCase6();
+    void PyTestCase7();
+    void PyTestCase8();
+    void PyTestCase9();
+    void PyTestCase10();
+    void PyTestCase11();
+    void PyTestCase12();
 
 
     std::unique_ptr<Program> core(std::unique_ptr<Factory> factory,

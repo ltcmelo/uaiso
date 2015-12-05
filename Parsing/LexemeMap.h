@@ -62,6 +62,9 @@ public:
                                const std::string& fullFileName,
                                const LineCol& lineCol);
 
+    template <class ValueT>
+    using LexemeInfo = std::tuple<const ValueT*, LineCol>;
+
     /*!
      * \brief find
      */
@@ -74,7 +77,7 @@ public:
      * \warning This method creates copies of the map's underlying storage.
      */
     template <class ValueT>
-    std::vector<std::tuple<const ValueT*, LineCol>> list(const std::string& fullFileName) const;
+    std::vector<LexemeInfo<ValueT>> list(const std::string& fullFileName) const;
 
     /*!
      * \brief clear

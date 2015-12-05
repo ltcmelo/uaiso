@@ -77,6 +77,6 @@ void PyUnit::parse(TokenMap* tokens,
                    const LineCol& lineCol)
 {
     ParsingContext context;
-    context.setStopMark(lineCol);
+//    context.setStopMark(lineCol);
     parseCore(tokens, lexemes, &context);
 }

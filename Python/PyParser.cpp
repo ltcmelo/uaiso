@@ -2027,10 +2027,14 @@ std::unique_ptr<NameAst> PyParser::parseDottedName()
 
 std::unique_ptr<NameAst> PyParser::parseName()
 {
-    match(TK_IDENTIFIER);
-    auto name = makeAst<SimpleNameAst>();
-    name->setNameLoc(lastLoc_);
-    return Name(name.release());
+    // A name AST may only be created if the match succeeds. Otherwise,
+    // it will have no corresponding identifier in the lexeme map.
+    if (match(TK_IDENTIFIER)) {
+        auto name = makeAst<SimpleNameAst>();
+        name->setNameLoc(lastLoc_);
+        return Name(name.release());
+    }
+    return Name();
 }
 
 std::unique_ptr<ExprAst> PyParser::parseStrLit()

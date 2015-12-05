@@ -42,16 +42,15 @@ class Unit::UnitTest : public Test
 {
 protected:
     std::unique_ptr<Unit> runCore(std::unique_ptr<Factory> factory,
-                                  const std::string& code)
+                                  const std::string& code,
+                                  const std::string& fullFileName = "")
     {
         LexemeMap lexemes;
         TokenMap tokens;
         std::unique_ptr<Unit> unit(factory->makeUnit());
         unit->assignInput(code);
-        if (lineCol_.line_ != -1 && lineCol_.col_ != -1)
-            unit->parse(&tokens, &lexemes, lineCol_);
-        else
-            unit->parse(&tokens, &lexemes);
+        unit->setFileName(fullFileName);
+        unit->parse(&tokens, &lexemes);
         ProgramAst* ast = Program_Cast(unit->ast());
         UAISO_EXPECT_TRUE(ast);
 
@@ -73,18 +72,16 @@ protected:
             UAISO_EXPECT_STR_EQ(expectedAst_, serialOut.str());
         }
 
-        return std::move(unit);
+        return unit;
     }
 
     void reset() override
     {
-        lineCol_ = { -1, -1 };
         expectedAst_.clear();
         dumpSerialAst_ = false;
         dumpAst_ = false;
     }
 
-    LineCol lineCol_;
     std::string expectedAst_;
     bool dumpSerialAst_ { false } ;
     bool dumpAst_ { false };

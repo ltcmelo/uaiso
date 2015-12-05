@@ -34,6 +34,60 @@
 
 using namespace uaiso;
 
+namespace {
+
+const std::string basicCode = R"raw(
+i = 1
+s = "string"
+
+def f():
+    pass
+
+class c:
+    def __init__(self, m):
+        self.m = m
+
+o = c()
+
+)raw";
+
+} // namespace anonymous
+
+void Binder::BinderTest::
+PyVerifyBasicCode(const Program* prog,
+                  const std::vector<LexemeMap::LexemeInfo<Ident>>& lexemesInfo)
+{
+    UAISO_EXPECT_TRUE(prog);
+
+    const Ident* i = nullptr;
+    const Ident* s = nullptr;
+    const Ident* f = nullptr;
+    const Ident* c = nullptr;
+    const Ident* o = nullptr;
+
+    for (const auto& tuple : lexemesInfo) {
+        const Ident* ident = std::get<0>(tuple);
+        if (ident->str() == "i")
+            i = ident;
+        else if (ident->str() == "s")
+            s = ident;
+        else if (ident->str() == "f")
+            f = ident;
+        else if (ident->str() == "c")
+            c = ident;
+        else if (ident->str() == "o")
+            o = ident;
+    }
+
+    Environment env = prog->env();
+    UAISO_EXPECT_FALSE(env.isEmpty());
+    UAISO_EXPECT_TRUE(env.lookUpValue(i));
+    UAISO_EXPECT_TRUE(env.lookUpValue(s));
+    UAISO_EXPECT_TRUE(env.lookUpType(f));
+    UAISO_EXPECT_TRUE(env.lookUpType(c));
+    UAISO_EXPECT_TRUE(env.lookUpValue(o));
+}
+
 void Binder::BinderTest::PyTestCase1()
 {
     std::string code = R"raw(
@@ -53,10 +107,9 @@ class bar:
         print 1
 )raw";
 
-    std::unique_ptr<Program> program(core(FactoryCreator::create(LangName::Py),
-                                          code,
-                                          "/test.py"));
-    UAISO_EXPECT_TRUE(program);
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+    UAISO_EXPECT_TRUE(prog);
 
     const Ident* a = nullptr;
     const Ident* b = nullptr;
@@ -109,7 +162,7 @@ class bar:
             nothing = ident;
     }
 
-    Environment env = program->env();
+    Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
 
     // Global
@@ -146,10 +199,9 @@ for g in range(10):
     print h
 )raw";
 
-    std::unique_ptr<Program> program(core(FactoryCreator::create(LangName::Py),
-                                          code,
-                                          "/test.py"));
-    UAISO_EXPECT_TRUE(program);
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+    UAISO_EXPECT_TRUE(prog);
 
     const Ident* g = nullptr;
     const Ident* h = nullptr;
@@ -165,7 +217,7 @@ for g in range(10):
 
     UAISO_SKIP_TEST;
 
-    Environment env = program->env();
+    Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
 
     // Global
@@ -183,10 +235,9 @@ class bar:
         self.bar_inst2 = "bar"
 )raw";
 
-    std::unique_ptr<Program> program(core(FactoryCreator::create(LangName::Py),
-                                          code,
-                                          "/test.py"));
-    UAISO_EXPECT_TRUE(program);
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+    UAISO_EXPECT_TRUE(prog);
 
     const Ident* bar = nullptr;
     const Ident* bar_static = nullptr;
@@ -213,7 +264,7 @@ class bar:
     }
 
 
-    Environment env = program->env();
+    Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
 
     // Global
@@ -229,4 +280,197 @@ class bar:
     UAISO_EXPECT_FALSE(env.lookUpValue(bar_inst1));
     UAISO_EXPECT_TRUE(barEnv.lookUpValue(bar_inst2));
     UAISO_EXPECT_FALSE(env.lookUpValue(bar_inst2));
+}
+
+void Binder::BinderTest::PyTestCase4()
+{
+    std::string code = basicCode + R"raw(
+def g():
+
+)raw";
+
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+}
+
+void Binder::BinderTest::PyTestCase5()
+{
+    std::string code = basicCode + R"raw(
+def g()
+
+)raw";
+
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+}
+
+void Binder::BinderTest::PyTestCase6()
+{
+    std::string code = basicCode + R"raw(
+def g(
+
+)raw";
+
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+}
+
+void Binder::BinderTest::PyTestCase7()
+{
+    std::string code = basicCode + R"raw(
+def g
+
+)raw";
+
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+}
+
+void Binder::BinderTest::PyTestCase8()
+{
+    std::string code = basicCode + R"raw(
+def
+
+)raw";
+
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+}
+
+void Binder::BinderTest::PyTestCase9()
+{
+    std::string code = basicCode + R"raw(
+def g():
+    l = 1
+    l2
+
+)raw";
+
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+
+    const auto& lexemesInfo = lexemes_.list<Ident>("/test.py");
+    PyVerifyBasicCode(prog.get(), lexemesInfo);
+
+    const Ident* g = nullptr;
+    const Ident* l = nullptr;
+    for (const auto& tuple : lexemes_.list<Ident>("/test.py")) {
+        const Ident* ident = std::get<0>(tuple);
+        if (ident->str() == "g")
+            g = ident;
+        else if (ident->str() == "l")
+            l = ident;
+    }
+
+    Environment env = prog->env();
+    UAISO_EXPECT_TRUE(env.lookUpType(g));
+    const Func* func = ConstFunc_Cast(env.lookUpType(g));
+    Environment funcEnv = func->env();
+    UAISO_EXPECT_TRUE(funcEnv.lookUpValue(l));
+}
+
+void Binder::BinderTest::PyTestCase10()
+{
+    std::string code = basicCode + R"raw(
+def g():
+    l = 1
+    l2.
+
+)raw";
+
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+
+    const auto& lexemesInfo = lexemes_.list<Ident>("/test.py");
+    PyVerifyBasicCode(prog.get(), lexemesInfo);
+
+    const Ident* g = nullptr;
+    const Ident* l = nullptr;
+    for (const auto& tuple : lexemes_.list<Ident>("/test.py")) {
+        const Ident* ident = std::get<0>(tuple);
+        if (ident->str() == "g")
+            g = ident;
+        else if (ident->str() == "l")
+            l = ident;
+    }
+
+    Environment env = prog->env();
+    UAISO_EXPECT_TRUE(env.lookUpType(g));
+    const Func* func = ConstFunc_Cast(env.lookUpType(g));
+    Environment funcEnv = func->env();
+    UAISO_EXPECT_TRUE(funcEnv.lookUpValue(l));
+}
+
+void Binder::BinderTest::PyTestCase11()
+{
+    std::string code = basicCode + R"raw(
+def g():
+    l = 1
+    h(
+
+)raw";
+
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+
+    const auto& lexemesInfo = lexemes_.list<Ident>("/test.py");
+    PyVerifyBasicCode(prog.get(), lexemesInfo);
+
+    const Ident* g = nullptr;
+    const Ident* l = nullptr;
+    for (const auto& tuple : lexemes_.list<Ident>("/test.py")) {
+        const Ident* ident = std::get<0>(tuple);
+        if (ident->str() == "g")
+            g = ident;
+        else if (ident->str() == "l")
+            l = ident;
+    }
+
+    Environment env = prog->env();
+    UAISO_EXPECT_TRUE(env.lookUpType(g));
+    const Func* func = ConstFunc_Cast(env.lookUpType(g));
+    Environment funcEnv = func->env();
+    UAISO_EXPECT_TRUE(funcEnv.lookUpValue(l));
+}
+
+void Binder::BinderTest::PyTestCase12()
+{
+    std::string code = basicCode + R"raw(
+class c2:
+    sm = "static"
+    def __init__(self, m):
+        self.m = m
+    foo foo foo
+)raw";
+
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+                                       code, "/test.py"));
+
+    const auto& lexemesInfo = lexemes_.list<Ident>("/test.py");
+    PyVerifyBasicCode(prog.get(), lexemesInfo);
+
+    const Ident* c2 = nullptr;
+    const Ident* m = nullptr;
+    const Ident* sm = nullptr;
+    for (const auto& tuple : lexemes_.list<Ident>("/test.py")) {
+        const Ident* ident = std::get<0>(tuple);
+        if (ident->str() == "c2")
+            c2 = ident;
+        else if (ident->str() == "m")
+            m = ident;
+        else if (ident->str() == "sm")
+            sm = ident;
+    }
+
+    Environment env = prog->env();
+    UAISO_EXPECT_TRUE(env.lookUpType(c2));
+    const Record* clazz = ConstRecord_Cast(env.lookUpType(c2));
+    Environment clazzEnv = clazz->type()->env();
+    UAISO_EXPECT_TRUE(clazzEnv.lookUpValue(sm));
+    UAISO_EXPECT_TRUE(clazzEnv.lookUpValue(m));
 }
