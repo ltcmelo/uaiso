@@ -31,13 +31,13 @@ namespace uaiso {
 class UAISO_API PySyntax final : public Syntax
 {
 public:
+    bool isStmtBased() const override;
+
     std::string sourceFileSuffix() const override;
 
     Token classifyIdent(const char* spell, size_t length) const override;
 
     bool isStrLitQuote(char ch) const override;
-
-    bool hasRunnableRecord() const override;
 };
 
 } // namespace uaiso

@@ -133,6 +133,7 @@ bool PyParser::isAtomAhead() const
     case TK_LBRACE:
     case TK_BACKTICK:
     case TK_IDENTIFIER:
+    case TK_COMPLETION:
     case TK_INTEGER_LITERAL:
     case TK_FLOAT_LITERAL:
     case TK_STRING_LITERAL:
@@ -172,7 +173,7 @@ bool PyParser::isSubscriptAhead() const
 
 bool PyParser::isNameAhead() const
 {
-    return ahead_ == TK_IDENTIFIER;
+    return ahead_ == TK_IDENTIFIER || ahead_ == TK_COMPLETION;
 }
 
 std::pair<PyParser::Precedence, std::unique_ptr<BinaryExprAst>>
@@ -975,6 +976,7 @@ std::unique_ptr<DeclAst> PyParser::parseVarArgsList(bool wantParen)
         auto group = makeAst<ParamGroupDeclAst>();
         group->setSpec(makeAstRaw<InferredSpecAst>());
         switch (ahead_) {
+        case TK_COMPLETION:
         case TK_IDENTIFIER: {
             if (seenStar)
                 break;
@@ -1699,6 +1701,7 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
         return Expr(str.release());
     }
 
+    case TK_COMPLETION:
     case TK_IDENTIFIER: {
         auto ident = makeAst<IdentExprAst>();
         ident->setName(parseName().release());
@@ -2027,13 +2030,21 @@ std::unique_ptr<NameAst> PyParser::parseDottedName()
 
 std::unique_ptr<NameAst> PyParser::parseName()
 {
-    // A name AST may only be created if the match succeeds. Otherwise,
-    // it will have no corresponding identifier in the lexeme map.
+    if (maybeConsume(TK_COMPLETION)) {
+        auto name = makeAst<CompletionNameAst>();
+        name->setNameLoc(lastLoc_);
+        return Name(name.release());
+    }
+
+    // If not a completion, we must match an identifier. But a name AST
+    // may only be created if this succeeds. Otherwise, we end up with
+    // name without a corresponding identifier in the lexeme map.
     if (match(TK_IDENTIFIER)) {
         auto name = makeAst<SimpleNameAst>();
         name->setNameLoc(lastLoc_);
         return Name(name.release());
     }
+
     return Name();
 }
 

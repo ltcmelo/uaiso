@@ -262,7 +262,12 @@ public:
 private:
     DECL_CLASS_TEST(Environment)
     DECL_SHARED_DATA(Environment)
+
+    friend bool operator==(const Environment& env1, const Environment& env2);
 };
+
+bool operator==(const Environment& env1, const Environment& env2);
+bool operator!=(const Environment& env1, const Environment& env2);
 
 const ValueSymbol* lookUpValue(const NameAst* name,
                                Environment env,

@@ -54,6 +54,7 @@ public:
     using Base = AstVisitor<CompletionContext>;
 
     bool analyse(DeclAstList* decls,
+                 StmtAstList* stmts,
                  const LexemeMap* lexemes,
                  Environment env)
     {
@@ -63,6 +64,10 @@ public:
         env_ = env;
         for (auto decl : *decls) {
             if (traverseDecl(decl) == Abort)
+                return true;
+        }
+        for (auto stmt: *stmts) {
+            if (traverseStmt(stmt) == Abort)
                 return true;
         }
 
@@ -165,9 +170,15 @@ public:
 
     VisitResult traverseBlockStmt(BlockStmtAst* ast)
     {
-        env_ = ast->env_;
-        VIS_CALL(Base::traverseBlockStmt(ast));
-        env_ = env_.outerEnv();
+        // The environment of a block stmt might be the shared with its
+        // parent. If that's the case, it's been entered already.
+        if (env_ == ast->env_) {
+            VIS_CALL(Base::traverseBlockStmt(ast));
+        } else {
+            env_ = ast->env_;
+            VIS_CALL(Base::traverseBlockStmt(ast));
+            env_ = env_.outerEnv();
+        }
         return Continue;
     }
 };
@@ -188,16 +199,17 @@ CompletionProposer::~CompletionProposer()
 {}
 
 std::pair<std::vector<const DeclSymbol*>, CompletionProposer::ResultCode>
-CompletionProposer::propose(ProgramAst* moduleAst, const LexemeMap* lexemes)
+CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
 {
     using Symbols = std::vector<const DeclSymbol*>;
 
-    UAISO_ASSERT(moduleAst->program_,
+    UAISO_ASSERT(progAst->program_,
                  return std::make_pair(Symbols(), CompletionAstNotFound));
 
     CompletionContext context;
-    auto ok = context.analyse(moduleAst->decls_.get(),
-                              lexemes, moduleAst->program_->env());
+    auto ok = context.analyse(progAst->decls_.get(),
+                              progAst->stmts_.get(),
+                              lexemes, progAst->program_->env());
 
     if (!ok) {
         DEBUG_TRACE("CompletionAstNotFound\n");

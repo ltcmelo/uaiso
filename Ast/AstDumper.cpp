@@ -92,6 +92,8 @@ void AstDumper::dumpProgram(ProgramAst* ast, std::ostream& os)
     traverse(&Base::traverseDecl, ast->package_.get());
     std::for_each(ast->decls_->begin(), ast->decls_->end(),
                   [this] (DeclAst* decl) { traverse(&Base::traverseDecl, decl); });
+    std::for_each(ast->stmts_->begin(), ast->stmts_->end(),
+                  [this] (StmtAst* stmt) { traverse(&Base::traverseStmt, stmt); });
 
     *output__ << std::endl;
 }

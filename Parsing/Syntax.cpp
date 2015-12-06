@@ -29,6 +29,11 @@ using namespace uaiso;
 Syntax::~Syntax()
 {}
 
+bool Syntax::isStmtBased() const
+{
+    return false;
+}
+
 std::string Syntax::packageSeparator() const
 {
     return ".";
@@ -82,9 +87,4 @@ bool Syntax::isBinPrefix(char ch) const
 bool Syntax::isExponent(char ch) const
 {
     return ch == 'e' || ch == 'E';
-}
-
-bool Syntax::hasRunnableRecord() const
-{
-    return false;
 }

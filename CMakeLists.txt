@@ -54,6 +54,7 @@ set(UAISO_TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/UnitTest.h
     # Python
     ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyBinderTest.cpp
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyCompletionTest.cpp
     ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyLexerTest.cpp
     ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyParserTest.cpp
     # Semantic

@@ -69,6 +69,11 @@ const LineCol& ParsingContext::stopMark() const
     return stopMark_;
 }
 
+bool ParsingContext::hasStopMark() const
+{
+    return !stopMark_.isEmpty();
+}
+
 void ParsingContext::clearStopMark()
 {
     stopMark_ = { -1, -1 };

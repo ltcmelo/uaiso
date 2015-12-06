@@ -168,6 +168,12 @@ public:
     const LineCol& stopMark() const;
 
     /*!
+     * \brief hasStopMark
+     * \return
+     */
+    bool hasStopMark() const;
+
+    /*!
      * \brief clearStopMark
      */
     void clearStopMark();

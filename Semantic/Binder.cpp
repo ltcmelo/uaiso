@@ -524,22 +524,19 @@ Binder::VisitResult Binder::traverseRecordSpec(RecordSpecAst* ast)
 {
     P->declTy_.emplace(new RecordType);
 
+    P->tyEnv_.push(P->enterSubEnv());
+
     // If the lang's record is a statement such as in Python, block stmt
     // traversal should not enter a new env.
-    if (P->syntax_->hasRunnableRecord()
+    if (P->syntax_->isStmtBased()
             && ast->proto_
             && ast->proto_->kind() == Ast::Kind::BlockStmt) {
         ++P->ownedBlocks_;
-    }
-    P->tyEnv_.push(P->enterSubEnv());
-
-    VIS_CALL(Base::traverseRecordSpec(ast));
-
-    if (P->syntax_->hasRunnableRecord()
-            && ast->proto_
-            && ast->proto_->kind() == Ast::Kind::BlockStmt) {
+        VIS_CALL(Base::traverseRecordSpec(ast));
         ENSURE_NONEMPTY_ENV_STACK;
         BlockStmt_Cast(ast->proto_.get())->env_ = P->tyEnv_.top();
+    } else {
+        VIS_CALL(Base::traverseRecordSpec(ast));
     }
 
     ENSURE_TOP_TYPE_IS(Record);
@@ -1219,14 +1216,12 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
     func->setType(P->popDeclType<FuncType>());
 
     // Prevent block stmt (if any) from entering a new env.
-    if (ast->stmt_
-            && ast->stmt_->kind() == Ast::Kind::BlockStmt) {
+    if (ast->stmt_ && ast->stmt_->kind() == Ast::Kind::BlockStmt) {
         ++P->ownedBlocks_;
-    }
-    VIS_CALL(traverseStmt(ast->stmt_.get()));
-    if (ast->stmt_
-            && ast->stmt_->kind() == Ast::Kind::BlockStmt) {
+        VIS_CALL(traverseStmt(ast->stmt_.get()));
         BlockStmt_Cast(ast->stmt_.get())->env_ = P->env_;
+    } else {
+        VIS_CALL(traverseStmt(ast->stmt_.get()));
     }
 
     func->setEnv(P->leaveEnv());

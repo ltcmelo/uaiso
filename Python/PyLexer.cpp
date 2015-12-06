@@ -95,6 +95,15 @@ Token PyLexer::lex()
 LexNextToken:
     UAISO_ASSERT(!indentStack_.empty(), return tk);
 
+    // If there's a stop mark, check if we are a completion point.
+    if (context_->hasStopMark()) {
+        const auto& lineCol = context_->stopMark();
+        if (lineCol.line_ == line_ && lineCol.col_ == col_) {
+            context_->clearStopMark();
+            return TK_COMPLETION;
+        }
+    }
+
     mark_ = curr_; // Mark the start of the upcoming token.
 
     char ch = peekChar();

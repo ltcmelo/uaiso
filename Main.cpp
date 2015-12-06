@@ -386,17 +386,17 @@ int main(int argc, char* argv[])
     workflowTest.run();
 
     if (!workflowTest.singlePass_) {
-//        test_FileInfo();
-//        test_Environment();
+        test_FileInfo();
+        test_Environment();
         test_Binder();
-//        test_TypeChecker();
+        test_TypeChecker();
         test_CompletionProposer();
-//        test_DIncrementalLexer();
-//        test_DUnit();
-//        test_GoIncrementalLexer();
-//        test_GoUnit();
-//        test_PyLexer();
-//        test_PyParser();
+        test_DIncrementalLexer();
+        test_DUnit();
+        test_GoIncrementalLexer();
+        test_GoUnit();
+        test_PyLexer();
+        test_PyParser();
     }
 
     Test::printStats();

@@ -21,27 +21,55 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Python/PySyntax.h"
-#include "Python/PyKeywords.h"
+#include "Semantic/CompletionTest.h"
+#include "Parsing/Factory.h"
+#include "Parsing/Unit.h"
 
 using namespace uaiso;
 
-bool PySyntax::isStmtBased() const
+void CompletionProposer::CompletionProposerTest::PyTestCase1()
 {
-    return true;
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    def show(self):
+        print 'x' % x
+        print 'y' % y
+                                                 # line 8
+p =
+#  ^
+#  |
+#  complete at up-arrow
+)raw";
+
+    lineCol_ = { 9, 3 };
+    auto expected = { "p", "Point" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
-std::string PySyntax::sourceFileSuffix() const
+void CompletionProposer::CompletionProposerTest::PyTestCase2()
 {
-    return ".py";
-}
+    UAISO_SKIP_TEST;
 
-Token PySyntax::classifyIdent(const char* spell, size_t length) const
-{
-    return PyKeywords::classify(spell, length);
-}
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    def show(self):
+        print 'x' % x
+        print 'y' % y
+                                                 # line 8
+p = Point()
+p.
+# ^
+# |
+# complete at up-arrow
+)raw";
 
-bool PySyntax::isStrLitQuote(char ch) const
-{
-    return ch == '"' || ch == '\'';
+    lineCol_ = { 10, 2 };
+    auto expected = { "x", "y" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }

@@ -342,11 +342,13 @@ TypeChecker::VisitResult TypeChecker::traverseFuncDecl(FuncDeclAst* ast)
 
     // An environment is always entered upon a `BlockStmt`, so we only need
     // to take care in the case the function doesn't have one.
-    if (!ast->stmt_ || ast->stmt_->kind() != Ast::Kind::BlockStmt)
+    if (!ast->stmt_ || ast->stmt_->kind() != Ast::Kind::BlockStmt) {
         P->env_ = ast->sym_->env();
-    VIS_CALL(Base::traverseFuncDecl(ast));
-    if (!ast->stmt_ || ast->stmt_->kind() != Ast::Kind::BlockStmt)
+        VIS_CALL(Base::traverseFuncDecl(ast));
         P->env_ = P->env_.outerEnv();
+    } else {
+        VIS_CALL(Base::traverseFuncDecl(ast));
+    }
 
     return Continue;
 }
@@ -1221,9 +1223,15 @@ TypeChecker::VisitResult TypeChecker::visitIdentExpr(IdentExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::traverseBlockStmt(BlockStmtAst* ast)
 {
-    P->env_ = ast->env_;
-    VIS_CALL(Base::traverseBlockStmt(ast));
-    P->env_ = P->env_.outerEnv();
+    // The environment of a block stmt might be the shared with its
+    // parent. If that's the case, it's been entered already.
+    if (P->env_ == ast->env_) {
+        VIS_CALL(Base::traverseBlockStmt(ast));
+    } else {
+        P->env_ = ast->env_;
+        VIS_CALL(Base::traverseBlockStmt(ast));
+        P->env_ = P->env_.outerEnv();
+    }
 
     return Continue;
 }

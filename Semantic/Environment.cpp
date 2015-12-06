@@ -306,6 +306,16 @@ const Namespace* Environment::fetchNamespace(const Ident* name) const
 
 namespace uaiso {
 
+bool operator==(const Environment& env1, const Environment& env2)
+{
+    return env1.P == env2.P;
+}
+
+bool operator!=(const Environment& env1, const Environment& env2)
+{
+    return !(env1 == env2);
+}
+
 const Ident* nameToIdent(const SimpleNameAst* name, const LexemeMap* lexemes)
 {
     return lexemes->find<Ident>(name->nameLoc_.fileName_, name->nameLoc_.lineCol());

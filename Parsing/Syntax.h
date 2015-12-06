@@ -30,10 +30,24 @@
 
 namespace uaiso {
 
+/*!
+ * \brief The Syntax class
+ *
+ * General characteristics of a language and of its syntax.
+ */
 class UAISO_API Syntax
 {
 public:
     virtual ~Syntax();
+
+    /*!
+     * \brief isStmtBased
+     * \return false
+     *
+     * Return whether the language is statement-based, such as Python. If not,
+     * it's considered to be declaration-based, such as C-style languages.
+     */
+    virtual bool isStmtBased() const;
 
     virtual std::string sourceFileSuffix() const = 0;
 
@@ -58,14 +72,6 @@ public:
     virtual bool isBinPrefix(char ch) const;
 
     virtual bool isExponent(char ch) const;
-
-    /*!
-     * \brief hasRunnableRecord
-     * \return
-     *
-     * Return whether a record is a runnable statement, like in Python.
-     */
-    virtual bool hasRunnableRecord() const;
 };
 
 } // namespace uaiso

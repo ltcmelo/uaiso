@@ -73,6 +73,9 @@ public:
              , &CompletionProposerTest::GoTestCase14
              , &CompletionProposerTest::GoTestCase15
              , &CompletionProposerTest::GoTestCase16
+             // Python
+             , &CompletionProposerTest::PyTestCase1
+             , &CompletionProposerTest::PyTestCase2
              )
 
     //--- D ---//
@@ -116,6 +119,10 @@ public:
     void GoTestCase15();
     void GoTestCase16();
 
+    //--- Python ---//
+
+    void PyTestCase1();
+    void PyTestCase2();
 
     std::unique_ptr<Unit> runCore(std::unique_ptr<Factory> factory,
                                   const std::string& code,
