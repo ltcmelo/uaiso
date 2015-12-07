@@ -22,14 +22,33 @@
 /*--------------------------*/
 
 #include "Python/PyIncrementalLexer.h"
+#include "Python/PyLexer.h"
+#include "Parsing/ParsingContext.h"
+#include "Parsing/IncrementalLexer__.h"
 
 using namespace uaiso;
 
 PyIncrementalLexer::PyIncrementalLexer()
-{}
+{
+    P->context_.reset(new ParsingContext);
+    P->context_->setAllowComments(true);
+}
 
 PyIncrementalLexer::~PyIncrementalLexer()
 {}
 
 void PyIncrementalLexer::lex(const std::string& source)
-{}
+{
+    P->phrasing_.reset(new Phrasing);
+    P->context_->collectPhrasing(P->phrasing_.get());
+
+    PyLexer lexer;
+    lexer.setContext(P->context_.get());
+    lexer.setBuffer(source.c_str(), source.size());
+
+    Token tk;
+    do {
+        tk = lexer.lex();
+    } while (tk != TK_EOP);
+    std::cout << std::endl;
+}
