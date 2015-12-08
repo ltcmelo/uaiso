@@ -201,9 +201,10 @@ DEFINE_KIND_TRAVERSAL(Stmt, STMT_AST_MIXIN(MAKE_STMT_CASE))
 
     /*--- Names traversal ---*/
 
-TRIVIAL_VISIT(SimpleName)
 TRIVIAL_VISIT(CompletionName)
 TRIVIAL_VISIT(GenName)
+TRIVIAL_VISIT(ErrorName)
+TRIVIAL_VISIT(SimpleName)
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseNestedName(NestedNameAst *ast)

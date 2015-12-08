@@ -37,6 +37,20 @@ public:
     using Ast::Ast;
 };
 
+class UAISO_API ErrorNameAst final : public NameAst
+{
+public:
+    using Self = ErrorNameAst;
+
+    ErrorNameAst()
+        : NameAst(Kind::ErrorName)
+    {}
+
+    NAMED_LOC_PARAM(Error, error)
+
+    SourceLoc errorLoc_;
+};
+
 class UAISO_API SimpleNameAst final : public NameAst
 {
 public:

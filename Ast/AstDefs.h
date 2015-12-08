@@ -33,11 +33,12 @@
     STMT_AST_MIXIN(GEN_CODE_FOR)
 
 #define NAME_AST_MIXIN(GEN_CODE_FOR) \
-    GEN_CODE_FOR(Simple, Name) \
-    GEN_CODE_FOR(TemplateInst, Name) \
+    GEN_CODE_FOR(Completion, Name) \
+    GEN_CODE_FOR(Error, Name) \
     GEN_CODE_FOR(Gen, Name) \
     GEN_CODE_FOR(Nested, Name) \
-    GEN_CODE_FOR(Completion, Name)
+    GEN_CODE_FOR(Simple, Name) \
+    GEN_CODE_FOR(TemplateInst, Name)
 
 #define SPEC_AST_MIXIN(GEN_CODE_FOR) \
     GEN_CODE_FOR(Array, OpaqueSpec) \

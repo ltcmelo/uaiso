@@ -331,6 +331,13 @@ Binder::VisitResult Binder::visitSimpleName(SimpleNameAst* ast)
     return Continue;
 }
 
+Binder::VisitResult Binder::visitErrorName(ErrorNameAst*)
+{
+    P->declId_.push_back(&kErrorIdent);
+
+    return Continue;
+}
+
 Binder::VisitResult Binder::visitTemplateInstName(TemplateInstNameAst* ast)
 {
     // TODO: Gather template args.
@@ -350,6 +357,8 @@ Binder::VisitResult Binder::visitNestedName(NestedNameAst* ast)
 
 Binder::VisitResult Binder::visitCompletionName(CompletionNameAst* ast)
 {
+    P->declId_.push_back(&kCompletionIdent);
+
     return Continue;
 }
 

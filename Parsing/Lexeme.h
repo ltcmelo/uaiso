@@ -85,6 +85,8 @@ public:
 };
 
 const Ident kNullIdent("<null>");
+const Ident kErrorIdent("<error>");
+const Ident kCompletionIdent("<completion>");
 
 /*!
  * \brief The StrLit class

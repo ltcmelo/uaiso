@@ -34,6 +34,9 @@ AstLocator::~AstLocator()
 
 const SourceLoc& AstLocator::loc(Ast* ast) const \
 {
+    if (!ast)
+        return kEmptyLoc;
+
 #define MAKE_CASE(AST_NODE, AST_KIND) \
     case Ast::Kind::AST_NODE##AST_KIND: \
         return loc(static_cast<AST_NODE##AST_KIND##Ast*>(ast));
@@ -55,6 +58,9 @@ const SourceLoc& AstLocator::loc(Ast* ast) const \
 
 const SourceLoc& AstLocator::lastLoc(Ast* ast) const \
 {
+    if (!ast)
+        return kEmptyLoc;
+
 #define MAKE_CASE(AST_NODE, AST_KIND) \
     case Ast::Kind::AST_NODE##AST_KIND: \
         return lastLoc(static_cast<AST_NODE##AST_KIND##Ast*>(ast));
@@ -82,6 +88,16 @@ const SourceLoc& AstLocator::loc(SimpleNameAst* ast) const
 const SourceLoc& AstLocator::lastLoc(SimpleNameAst* ast) const
 {
     return ast->nameLoc_;
+}
+
+const SourceLoc& AstLocator::loc(ErrorNameAst* ast) const
+{
+    return ast->errorLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(ErrorNameAst* ast) const
+{
+    return ast->errorLoc_;
 }
 
 const SourceLoc& AstLocator::loc(CompletionNameAst* ast) const

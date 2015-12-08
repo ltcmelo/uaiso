@@ -2036,16 +2036,18 @@ std::unique_ptr<NameAst> PyParser::parseName()
         return Name(name.release());
     }
 
-    // If not a completion, we must match an identifier. But a name AST
-    // may only be created if this succeeds. Otherwise, we end up with
-    // name without a corresponding identifier in the lexeme map.
+    // If not a completion, we must match an identifier. However, if the
+    // match doesn't succeed in this case we can't ignore and create a
+    // simple name AST. Otherwise we end up with name without a
+    // corresponding identifier in the lexeme map. An error name is then
+    // create for consistency throughout the pipeline.
     if (match(TK_IDENTIFIER)) {
         auto name = makeAst<SimpleNameAst>();
         name->setNameLoc(lastLoc_);
         return Name(name.release());
     }
 
-    return Name();
+    return Name(makeAstRaw<ErrorNameAst>()->setErrorLoc(lastLoc_));
 }
 
 std::unique_ptr<ExprAst> PyParser::parseStrLit()

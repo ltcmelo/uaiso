@@ -69,6 +69,7 @@ private:
     //--- Names ---//
 
     VisitResult visitSimpleName(SimpleNameAst* ast);
+    VisitResult visitErrorName(ErrorNameAst* ast);
     VisitResult visitCompletionName(CompletionNameAst* ast);
     VisitResult visitTemplateInstName(TemplateInstNameAst* ast);
     VisitResult visitGenName(GenNameAst* ast);
