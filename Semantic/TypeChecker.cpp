@@ -30,6 +30,7 @@
 #include "Parsing/Lexeme.h"
 #include "Parsing/Token.h"
 #include "Parsing/TokenMap.h"
+#include "Parsing/Syntax.h"
 #include <iostream>
 #include <stack>
 
@@ -59,6 +60,7 @@ struct uaiso::TypeChecker::TypeCheckerImpl
         , tokens_(nullptr)
         , locator_(factory->makeAstLocator())
         , typeSystem_(factory->makeTypeSystem())
+        , syntax_(factory->makeSyntax())
         , reports_(nullptr)
     {}
 
@@ -99,6 +101,9 @@ struct uaiso::TypeChecker::TypeCheckerImpl
 
     //! Language-specific type system.
     std::unique_ptr<const TypeSystem> typeSystem_;
+
+    //! Language-specific syntax.
+    std::unique_ptr<const Syntax> syntax_;
 
     //! Diagnostic reports collected.
     DiagnosticReports* reports_;
@@ -340,9 +345,7 @@ TypeChecker::VisitResult TypeChecker::traverseFuncDecl(FuncDeclAst* ast)
 {
     ENSURE_VALID_TYPE_SYMBOL;
 
-    // An environment is always entered upon a `BlockStmt`, so we only need
-    // to take care in the case the function doesn't have one.
-    if (!ast->stmt_ || ast->stmt_->kind() != Ast::Kind::BlockStmt) {
+    if (P->syntax_->hasFuncLevelScope()) {
         P->env_ = ast->sym_->env();
         VIS_CALL(Base::traverseFuncDecl(ast));
         P->env_ = P->env_.outerEnv();
@@ -1225,7 +1228,8 @@ TypeChecker::VisitResult TypeChecker::traverseBlockStmt(BlockStmtAst* ast)
 {
     // The environment of a block stmt might be the shared with its
     // parent. If that's the case, it's been entered already.
-    if (P->env_ == ast->env_) {
+    if (P->env_ == ast->env_
+            || !P->syntax_->hasBlockLevelScope()) {
         VIS_CALL(Base::traverseBlockStmt(ast));
     } else {
         P->env_ = ast->env_;

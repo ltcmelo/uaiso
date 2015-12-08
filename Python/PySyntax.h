@@ -31,7 +31,9 @@ namespace uaiso {
 class UAISO_API PySyntax final : public Syntax
 {
 public:
-    bool isStmtBased() const override;
+    bool hasBlockLevelScope() const override;
+
+    bool hasExecutableRecord() const override;
 
     std::string sourceFileSuffix() const override;
 

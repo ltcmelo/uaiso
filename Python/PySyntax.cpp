@@ -26,10 +26,9 @@
 
 using namespace uaiso;
 
-bool PySyntax::isStmtBased() const
-{
-    return true;
-}
+bool PySyntax::hasBlockLevelScope() const { return false; }
+
+bool PySyntax::hasExecutableRecord() const { return true; }
 
 std::string PySyntax::sourceFileSuffix() const
 {

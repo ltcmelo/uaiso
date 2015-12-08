@@ -534,20 +534,7 @@ Binder::VisitResult Binder::traverseRecordSpec(RecordSpecAst* ast)
     P->declTy_.emplace(new RecordType);
 
     P->tyEnv_.push(P->enterSubEnv());
-
-    // If the lang's record is a statement such as in Python, block stmt
-    // traversal should not enter a new env.
-    if (P->syntax_->isStmtBased()
-            && ast->proto_
-            && ast->proto_->kind() == Ast::Kind::BlockStmt) {
-        ++P->ownedBlocks_;
-        VIS_CALL(Base::traverseRecordSpec(ast));
-        ENSURE_NONEMPTY_ENV_STACK;
-        BlockStmt_Cast(ast->proto_.get())->env_ = P->tyEnv_.top();
-    } else {
-        VIS_CALL(Base::traverseRecordSpec(ast));
-    }
-
+    VIS_CALL(Base::traverseRecordSpec(ast));
     ENSURE_TOP_TYPE_IS(Record);
     RecordType* ty = RecordType_Cast(P->declTy_.top().get());
     ty->setVariety(ast->variety());
@@ -1214,7 +1201,9 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
     ast->sym_ = func.get(); // Annotate AST with the symbol
 
     P->sym_.push(std::move(func));
-    P->enterSubEnv();
+
+    if (P->syntax_->hasFuncLevelScope())
+        P->enterSubEnv();
 
     VIS_CALL(traverseSpec(ast->spec_.get()));
 
@@ -1224,8 +1213,9 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
     ENSURE_NONEMPTY_TYPE_STACK;
     func->setType(P->popDeclType<FuncType>());
 
-    // Prevent block stmt (if any) from entering a new env.
     if (ast->stmt_ && ast->stmt_->kind() == Ast::Kind::BlockStmt) {
+        // A block stmt of a function must have the same environment of
+        // its parent function, and not create its own.
         ++P->ownedBlocks_;
         VIS_CALL(traverseStmt(ast->stmt_.get()));
         BlockStmt_Cast(ast->stmt_.get())->env_ = P->env_;
@@ -1233,7 +1223,10 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
         VIS_CALL(traverseStmt(ast->stmt_.get()));
     }
 
-    func->setEnv(P->leaveEnv());
+    if (P->syntax_->hasFuncLevelScope())
+        func->setEnv(P->leaveEnv());
+    else
+        func->setEnv(P->env_);
 
     P->env_.insertType(std::move(func));
 
@@ -1418,12 +1411,12 @@ Binder::VisitResult Binder::traverseAssignExpr(AssignExprAst* ast)
 
 Binder::VisitResult Binder::traverseBlockStmt(BlockStmtAst* ast)
 {
-    bool selfEnv = true;
+    bool selfEnv = false;
     if (P->ownedBlocks_ > 0) {
         --P->ownedBlocks_;
-        selfEnv = false;
-    } else {
+    } else if (P->syntax_->hasBlockLevelScope()) {
         P->enterSubEnv();
+        selfEnv = true;
     }
 
     VIS_CALL(Base::traverseBlockStmt(ast));

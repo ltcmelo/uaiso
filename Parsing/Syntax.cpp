@@ -29,10 +29,11 @@ using namespace uaiso;
 Syntax::~Syntax()
 {}
 
-bool Syntax::isStmtBased() const
-{
-    return false;
-}
+bool Syntax::hasBlockLevelScope() const { return true; }
+
+bool Syntax::hasFuncLevelScope() const { return true; }
+
+bool Syntax::hasExecutableRecord() const { return false; }
 
 std::string Syntax::packageSeparator() const
 {

@@ -41,13 +41,32 @@ public:
     virtual ~Syntax();
 
     /*!
-     * \brief isStmtBased
+     * \brief hasBlockLevelScope
+     * \return
+     *
+     * Return whether a block defines a scope, typical in the C-family
+     * languages.
+     */
+    virtual bool hasBlockLevelScope() const;
+
+    /*!
+     * \brief hasFuncLevelScope
+     * \return
+     *
+     * Return whether a function defines a scope, most languages do.
+     */
+    virtual bool hasFuncLevelScope() const;
+
+    /*!
+     * \brief hasExecutableRecord
      * \return false
      *
-     * Return whether the language is statement-based, such as Python. If not,
-     * it's considered to be declaration-based, such as C-style languages.
+     * Return whether the class-specifying syntax is formed by statement(s)
+     * that must be executed at runtime in order to bind names. Python and
+     * Ruby are example of such languages, as opposed to C-family languages
+     * in which a class is a declaration.
      */
-    virtual bool isStmtBased() const;
+    virtual bool hasExecutableRecord() const;
 
     virtual std::string sourceFileSuffix() const = 0;
 
