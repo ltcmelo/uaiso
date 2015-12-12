@@ -70,6 +70,153 @@ p.
 )raw";
 
     lineCol_ = { 10, 2 };
-    auto expected = { "x", "y" };
+    auto expected = { "x", "y", "show", "__init__" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase3()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+if a:
+    p = Point()
+
+p.
+# ^
+# |
+# complete at up-arrow
+)raw";
+
+    lineCol_ = { 10, 2 };
+    auto expected = { "x", "y", "__init__" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase4()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+def foo():
+    p = Point()
+    p.
+#     ^
+#     |
+#     complete at up-arrow
+)raw";
+
+    lineCol_ = { 9, 6 };
+    auto expected = { "x", "y", "__init__" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase5()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+p = Point()
+
+def foo():
+    p.
+#     ^
+#     |
+#     complete at up-arrow
+)raw";
+
+    lineCol_ = { 10, 6 };
+    auto expected = { "x", "y", "__init__" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase6()
+{
+    std::string code = R"raw(
+class A:
+    a = 1
+
+class B:
+    b = "b"
+                                                 # line 6
+p = A()
+
+def foo():
+    p = B()
+    p.
+#     ^
+#     |
+#     complete at up-arrow
+)raw";
+
+    lineCol_ = { 11, 6 };
+    auto expected = { "b" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase7()
+{
+    std::string code = R"raw(
+class A:
+    a = 1
+
+class B:
+    b = "b"
+                                                 # line 6
+
+if x:
+    p = A()
+else:
+    p = A()
+
+p.
+# ^
+# |
+# complete at up-arrow
+)raw";
+
+    lineCol_ = { 13, 2 };
+    auto expected = { "a" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase8()
+{
+    UAISO_SKIP_TEST;
+
+    std::string code = R"raw(
+class A:
+    a = 1
+
+class B:
+    b = "b"
+                                                 # line 6
+
+if x:
+    p = A()
+else:
+    p = B()
+
+p.
+# ^
+# |
+# complete at up-arrow
+)raw";
+
+    lineCol_ = { 13, 2 };
+    // Be conservative and show completion for both types.
+    auto expected = { "a", "b" };
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }

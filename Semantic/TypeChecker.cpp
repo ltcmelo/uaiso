@@ -58,11 +58,19 @@ struct uaiso::TypeChecker::TypeCheckerImpl
     TypeCheckerImpl(Factory* factory)
         : lexemes_(nullptr)
         , tokens_(nullptr)
+        , prevSym_(nullptr)
+        , keepSym_(false)
         , locator_(factory->makeAstLocator())
         , typeSystem_(factory->makeTypeSystem())
         , syntax_(factory->makeSyntax())
         , reports_(nullptr)
     {}
+
+    void keepNextSymbol()
+    {
+        keepSym_ = true;
+        prevSym_ = nullptr;
+    }
 
     std::unique_ptr<Type> popExprType()
     {
@@ -106,6 +114,13 @@ struct uaiso::TypeChecker::TypeCheckerImpl
     //! separator. As opposed to the main "type of expr" stack, this one is
     //! unmanaged: types pushed but not popped will simply die in the end.
     std::stack<std::unique_ptr<Type>> exprMultiTy_;
+
+    //!@{
+    //! A rudimentary mechanism to allow "passing" a symbol represented
+    //! by an identifier expr to the enclosing traversing function.
+    bool keepSym_;
+    const ValueSymbol* prevSym_;
+    //!@}
 
     //! Language-specific AST locator.
     std::unique_ptr<const AstLocator> locator_;
@@ -820,17 +835,26 @@ TypeChecker::VisitResult TypeChecker::traverseAssignExpr(AssignExprAst* ast)
 
     // Proceed as long as there are types to be checked against. More work
     // is required to properly diagnose issues of multivalue mismatch.
-    size_t exprTyIdx = 0;
+    size_t idx = 0;
     for (auto expr1 : *ast->exprs1_.get()) {
+        P->keepNextSymbol();
         traverseExpr(expr1);
         ENSURE_NONEMPTY_STACK;
-        std::unique_ptr<Type> ty1 = P->popExprType();
+        std::unique_ptr<Type> ty = P->popExprType();
 
-        if (exprTy.size() >= exprTyIdx++)
+        if (exprTy.size() <= idx)
             break;
 
-        analyseAssign(ty1.get(), exprTy[exprTyIdx].get(),
-                      fullLoc(ast, P->locator_.get()));
+        // In dynamic type systems, a new type is deliberately set to the
+        // symbol. In static type systems, there's an assignment check.
+        if (P->typeSystem_->isDynamic()) {
+            if (P->prevSym_)
+                ValueSymbol_ConstCast(P->prevSym_)->setValueType(std::move(exprTy[idx]));
+        } else {
+            analyseAssign(ty.get(), exprTy[idx].get(),
+                          fullLoc(ast, P->locator_.get()));
+        }
+        ++idx;
     }
 
     P->exprTy_.emplace(new VoidType);
@@ -1135,9 +1159,10 @@ TypeChecker::VisitResult TypeChecker::traverseTypeQueryExpr(TypeQueryExprAst* as
 
 TypeChecker::VisitResult TypeChecker::traverseCallExpr(CallExprAst* ast)
 {
-    // TODO
-
-    P->exprTy_.emplace(new FuncType);
+    // FIXME: Hack that will only work for "constructors" calls (where the
+    // name of the function is the same as of the type) because the type
+    // of the expr is left on the stack.
+    VIS_CALL(traverseExpr(ast->base()));
 
     return Continue;
 }
@@ -1257,6 +1282,12 @@ TypeChecker::VisitResult TypeChecker::visitIdentExpr(IdentExprAst* ast)
         P->exprTy_.emplace(new InferredType);
     } else {
         P->exprTy_.emplace(valSym->valueType()->clone());
+    }
+
+    // Keep the symbol around when there's a request.
+    if (P->keepSym_ && valSym) {
+        P->keepSym_ = false;
+        P->prevSym_ = valSym;
     }
 
     return Continue;

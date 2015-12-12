@@ -76,6 +76,12 @@ public:
              // Python
              , &CompletionProposerTest::PyTestCase1
              , &CompletionProposerTest::PyTestCase2
+             , &CompletionProposerTest::PyTestCase3
+             , &CompletionProposerTest::PyTestCase4
+             , &CompletionProposerTest::PyTestCase5
+             , &CompletionProposerTest::PyTestCase6
+             , &CompletionProposerTest::PyTestCase7
+             , &CompletionProposerTest::PyTestCase8
              )
 
     //--- D ---//
@@ -123,6 +129,12 @@ public:
 
     void PyTestCase1();
     void PyTestCase2();
+    void PyTestCase3();
+    void PyTestCase4();
+    void PyTestCase5();
+    void PyTestCase6();
+    void PyTestCase7();
+    void PyTestCase8();
 
     std::unique_ptr<Unit> runCore(std::unique_ptr<Factory> factory,
                                   const std::string& code,
