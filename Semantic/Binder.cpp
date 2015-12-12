@@ -1059,10 +1059,10 @@ Binder::VisitResult Binder::traverseParamDecl(ParamDeclAst* ast)
 
 Binder::VisitResult Binder::traverseVarGroupDecl(VarGroupDeclAst* group)
 {
-    if (!group->decls_ || !group->spec_)
+    if (!group->decls() || !group->spec())
         return Continue;
 
-    for (auto decl : *(group->decls_.get())) {
+    for (auto decl : *group->decls()) {
         UAISO_ASSERT(decl->kind() == Ast::Kind::VarDecl, return Abort);
         VarDeclAst* varDecl = VarDecl_Cast(decl);
 
@@ -1070,26 +1070,28 @@ Binder::VisitResult Binder::traverseVarGroupDecl(VarGroupDeclAst* group)
         ENSURE_TOP_SYMBOL_IS(Var);
         Var* var = Var_Cast(P->sym_.top().get());
 
-        VIS_CALL(traverseSpec(group->spec_.get()));
+        VIS_CALL(traverseSpec(group->spec()));
         ENSURE_NONEMPTY_TYPE_STACK;
         var->setValueType(P->popDeclType<>());
 
-        // Let type-specifying exprs annotate the AST with the type.
+        // Let type-specifying exprs annotate the AST.
         VIS_CALL(traverseExpr(varDecl->init()));
 
         P->env_.insertValue(P->popSymbol<Var>());
     }
 
-    // Let type-specifying exprs annotate the AST with the type.
-    for (auto expr : *group->inits())
-        VIS_CALL(traverseExpr(expr));
+    if (group->hasInits()) {
+        // Let type-specifying exprs annotate the AST.
+        for (auto expr : *group->inits())
+            VIS_CALL(traverseExpr(expr));
+    }
 
     return Continue;
 }
 
 Binder::VisitResult Binder::traverseVarDecl(VarDeclAst* ast)
 {
-    VIS_CALL(traverseName(ast->name_.get()));
+    VIS_CALL(traverseName(ast->name()));
     ENSURE_NAME_AVAILABLE;
     std::unique_ptr<Var> var(new Var(P->declId_.back()));
     var->setSourceLoc(fullLoc(ast, P->locator_.get()));
@@ -1349,12 +1351,10 @@ Binder::VisitResult Binder::traverseTypeidExpr(TypeidExprAst* ast)
     return Continue;
 }
 
-namespace {
-
-} // namespace anonymous
-
 Binder::VisitResult Binder::traverseAssignExpr(AssignExprAst* ast)
 {
+    VIS_CALL(Base::traverseAssignExpr(ast));
+
     if (!P->typeSystem_->isDynamic())
         return Continue;
 
@@ -1431,6 +1431,9 @@ Binder::VisitResult Binder::traverseBlockStmt(BlockStmtAst* ast)
 
 Binder::VisitResult Binder::traverseTypeSwitchStmt(TypeSwitchStmtAst* ast)
 {
+    // TODO: Don't traverse spec yet (type of decl won't be popped).
+
     VIS_CALL(traverseStmt(ast->stmt_.get()));
-    return Skip;
+
+    return Continue;
 }

@@ -87,14 +87,25 @@ struct uaiso::TypeChecker::TypeCheckerImpl
             reports_->add(std::forward<Args>(args)...);
     }
 
-    const LexemeMap* lexemes_; //!< Lexeme map of all AST locations.
-    const TokenMap* tokens_;   //!< Token map of all AST locations.
+     //!< Lexeme map of all AST locations.
+    const LexemeMap* lexemes_;
+
+    //!< Token map of all AST locations.
+    const TokenMap* tokens_;
 
     //! Environment we're currently in.
     Environment env_;
 
-    //! Type of the expr under process.
+    //! Type of the expr under process. If more than one value results out
+    //! of evaluating an expr, only one type is to be pushed onto here. The
+    //! others, if desired, may be pushed onto the alternative stack.
     std::stack<std::unique_ptr<Type>> exprTy_;
+
+    //! If evaluation of an expr results in more than one value, this stack
+    //! may be used for the "extra" types. An empty type must be used as a
+    //! separator. As opposed to the main "type of expr" stack, this one is
+    //! unmanaged: types pushed but not popped will simply die in the end.
+    std::stack<std::unique_ptr<Type>> exprMultiTy_;
 
     //! Language-specific AST locator.
     std::unique_ptr<const AstLocator> locator_;
@@ -140,6 +151,10 @@ void TypeChecker::check(ProgramAst *ast)
 
     for (auto decl : *ast->decls_.get()) {
         if (traverseDecl(decl) != Continue)
+            break;
+    }
+    for (auto stmt : *ast->stmts_.get()) {
+        if (traverseStmt(stmt) != Continue)
             break;
     }
 }
@@ -525,7 +540,7 @@ TypeChecker::VisitResult TypeChecker::visitStrLitExpr(StrLitExprAst* ast)
         P->exprTy_.emplace(new StrType);
         break;
     default:
-        UAISO_ASSERT(false, {});
+        UAISO_ASSERT(false, return Abort, "SourceLoc:", ast->litLoc());
         break;
     }
     return Continue;
@@ -778,34 +793,44 @@ TypeChecker::VisitResult TypeChecker::visitDelExpr(DelExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::traverseAssignExpr(AssignExprAst* ast)
 {
-    ExprAst* prevExpr2 = nullptr;
+    if (!ast->exprs1() || !ast->exprs2()) {
+        // TODO: Either void or the assigned type.
+        P->exprTy_.emplace(new VoidType);
+        return Continue;
+    }
+
+    // A single expr of the RHS may evaluate to more than one value. We
+    // traverse all exprs and keep every type in a sequence. For each expr
+    // one type is retrieved from the main expr type stack and the other(s),
+    // if any, from the multivaled stack.
+    std::vector<std::unique_ptr<Type>> exprTy;
+    for (auto expr2 : *ast->exprs2()) {
+        VIS_CALL(traverseExpr(expr2));
+        ENSURE_NONEMPTY_STACK;
+        exprTy.push_back(P->popExprType());
+
+        while (!P->exprMultiTy_.empty()) {
+            auto extraTy = std::move(P->exprMultiTy_.top());
+            P->exprMultiTy_.pop();
+            if (!extraTy)
+                break; // Reached separator.
+            exprTy.push_back(std::move(extraTy));
+        }
+    }
+
+    // Proceed as long as there are types to be checked against. More work
+    // is required to properly diagnose issues of multivalue mismatch.
+    size_t exprTyIdx = 0;
     for (auto expr1 : *ast->exprs1_.get()) {
         traverseExpr(expr1);
         ENSURE_NONEMPTY_STACK;
         std::unique_ptr<Type> ty1 = P->popExprType();
 
-        std::unique_ptr<Type> ty2;
-        auto expr2 = ast->exprs2_->head();
-        if (!expr2) {
-            // It's not necessary to have an exact pairing of expressions,
-            // a function might return multiple values.
-            expr2 = prevExpr2;
-            if (!expr2) {
-                // TODO: Report error.
-                return Continue;
-            }
+        if (exprTy.size() >= exprTyIdx++)
+            break;
 
-            traverseExpr(expr2);
-            ENSURE_NONEMPTY_STACK;
-            ty2 = P->popExprType();
-        }
-
-        if (!ty2)
-            return Continue;
-
-        analyseAssign(ty1.get(), ty2.get(), fullLoc(ast, P->locator_.get()));
-
-        prevExpr2 = expr2;
+        analyseAssign(ty1.get(), exprTy[exprTyIdx].get(),
+                      fullLoc(ast, P->locator_.get()));
     }
 
     P->exprTy_.emplace(new VoidType);
@@ -1085,6 +1110,16 @@ TypeChecker::VisitResult TypeChecker::traverseCastExpr(CastExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::traverseTypeAssertExpr(TypeAssertExprAst* ast)
 {
+    // A type assert expr evalutes to two values: the first one comes from
+    // the base expr, and the second one is a bool that indicates success
+    // of the assertion. Only a single type is allowed to be pushed onto
+    // the main expr type stack, the other(s) must to the multivalued stack.
+
+    VIS_CALL(traverseExpr(ast->base()));
+    ENSURE_NONEMPTY_STACK;
+    P->exprMultiTy_.push(std::unique_ptr<Type>());
+    P->exprMultiTy_.push(P->popExprType());
+
     ENSURE_ANNOTATED_TYPE;
 
     return takeAnnotatedType(ast);
@@ -1209,9 +1244,16 @@ TypeChecker::VisitResult TypeChecker::visitThisExpr(ThisExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::visitIdentExpr(IdentExprAst* ast)
 {
-    auto valSym = lookUpValue(ast->name_.get(), P->env_, P->lexemes_);
-    if (!valSym || !valSym->valueType()) {
-        P->report(Diagnostic::UndeclaredIdentifier, ast->name_.get(), P->locator_.get());
+    auto valSym = lookUpValue(ast->name(), P->env_, P->lexemes_);
+    if (!valSym) {
+        auto tySym = lookUpType(ast->name(), P->env_, P->lexemes_);
+        if (!tySym) {
+            P->report(Diagnostic::UndeclaredIdentifier, ast->name_.get(), P->locator_.get());
+            P->exprTy_.emplace(new InferredType);
+        } else {
+            P->exprTy_.emplace(tySym->type()->clone());
+        }
+    } else if (!valSym->valueType()) {
         P->exprTy_.emplace(new InferredType);
     } else {
         P->exprTy_.emplace(valSym->valueType()->clone());

@@ -34,6 +34,9 @@ class Factory;
 class LexemeMap;
 class TokenMap;
 
+/*!
+ * \brief The TypeChecker class
+ */
 class UAISO_API TypeChecker final : public AstVisitor<TypeChecker>
 {
 public:

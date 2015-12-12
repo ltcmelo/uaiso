@@ -674,6 +674,7 @@ std::unique_ptr<StmtAst> PyParser::parseGlobalStmt()
 
     match(TK_GLOBAL);
     auto group = makeAst<VarGroupDeclAst>();
+    group->setSpec(makeAstRaw<InferredSpecAst>());
     group->setKeyLoc(lastLoc_);
     do {
         if (group->decls_)
@@ -798,6 +799,7 @@ std::unique_ptr<StmtAst> PyParser::parseForStmt()
     // Convert the exprs (when plain identifiers) into var decls.
     auto exprs = parseExprList();
     auto group = makeAst<VarGroupDeclAst>();
+    group->setSpec(makeAstRaw<InferredSpecAst>());
     for (auto expr : *exprs) {
         if (expr->kind() != Ast::Kind::IdentExpr)
             continue;
@@ -1690,14 +1692,14 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
 
     case TK_BACKTICK: {
         consumeToken();
-        auto str = makeAst<StrLitExprAst>();
-        auto loc = lastLoc_;
+        auto str = makeAst<TypeidExprAst>();
+        str->setLDelimLoc(lastLoc_);
         parseTestList1(); // Let it die.
         if (!match(TK_BACKTICK)) {
             DEBUG_TRACE("parseAtom, skip to TK_BACKTICK\n");
             skipTo(TK_BACKTICK);
         }
-        str->setLitLoc(joinedLoc(loc, lastLoc_));
+        str->setRDelimLoc(lastLoc_);
         return Expr(str.release());
     }
 
