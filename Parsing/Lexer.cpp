@@ -70,8 +70,13 @@ void Lexer::updatePos()
 
 void Lexer::handleNewLine()
 {
-    ++breaks_;
+    handleNewLineNoColReset();
     col_ = 0;
+}
+
+void Lexer::handleNewLineNoColReset()
+{
+    ++breaks_;
     rearLeng_ = 0;
 }
 
@@ -105,7 +110,7 @@ Token Lexer::lexStrLit(char& ch, const char quote, const bool mayBreak,
             if (!std::iscntrl(ch) && !std::isprint(ch))
                 context_->trackReport(Diagnostic::UnknownEscapeSequence, tokenLoc());
         } else if (ch == '\n') {
-            handleNewLine();
+            handleNewLineNoColReset();
             if (!mayBreak)
                 context_->trackReport(Diagnostic::UnterminatedString, tokenLoc());
         }

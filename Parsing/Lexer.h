@@ -79,6 +79,7 @@ protected:
 
     virtual void updatePos();
     virtual void handleNewLine();
+    virtual void handleNewLineNoColReset();
 
     char peekChar(size_t dist = 0) const;
     void consumeChar(size_t dist = 0);

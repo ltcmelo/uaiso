@@ -87,6 +87,8 @@ public:
              , &PyLexerTest::testCase51
              , &PyLexerTest::testCase52
              , &PyLexerTest::testCase53
+             , &PyLexerTest::testCase54
+             , &PyLexerTest::testCase55
              )
 
     // Tests cases (with few exceptions) were taken from CPython.
@@ -144,6 +146,8 @@ public:
     void testCase51();
     void testCase52();
     void testCase53();
+    void testCase54();
+    void testCase55();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -1070,6 +1074,40 @@ print 2
         SourceLoc(6, 5, 6, 6, ""),
         SourceLoc(8, 0, 8, 5, ""),                    // print
         SourceLoc(8, 6, 8, 7, "")
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), locs_.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, locs_);
+}
+
+void PyLexer::PyLexerTest::testCase54()
+{
+    auto tks = core(R"raw(
+__abc__ = """ triple-quoted "a" string """
+)raw");
+
+    std::vector<SourceLoc> expected {
+        SourceLoc(1, 0, 1, 7, ""),
+        SourceLoc(1, 8, 1, 9, ""),
+        SourceLoc(1, 10, 1, 42, "")
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), locs_.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, locs_);
+}
+
+void PyLexer::PyLexerTest::testCase55()
+{
+    auto tks = core(R"raw(
+__abc__ = """ triple-quoted "a" string
+
+bla bla bla
+bla bla bla
+"""
+)raw");
+
+    std::vector<SourceLoc> expected {
+        SourceLoc(1, 0, 1, 7, ""),
+        SourceLoc(1, 8, 1, 9, ""),
+        SourceLoc(1, 10, 5, 3, "")
     };
     UAISO_EXPECT_INT_EQ(expected.size(), locs_.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, locs_);
