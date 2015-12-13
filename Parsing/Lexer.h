@@ -89,6 +89,8 @@ protected:
     Token lexIdentOrKeyword(char& ch, const Syntax* syntax);
     Token lexNumLit(char& ch, const Syntax* syntax);
 
+    bool atCompletion() const;
+
     const char* buff_ { nullptr };     //!< The buffer.
     const char* mark_ { nullptr };     //!< Start of a token in buffer.
     const char* curr_ { nullptr };     //!< Current buffer position.

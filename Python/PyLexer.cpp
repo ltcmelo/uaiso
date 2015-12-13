@@ -95,15 +95,6 @@ Token PyLexer::lex()
 LexNextToken:
     UAISO_ASSERT(!indentStack_.empty(), return tk);
 
-    // If there's a stop mark, check if we are a completion point.
-    if (context_->hasStopMark()) {
-        const auto& lineCol = context_->stopMark();
-        if (lineCol.line_ == line_ && lineCol.col_ == col_) {
-            context_->clearStopMark();
-            return TK_COMPLETION;
-        }
-    }
-
     mark_ = curr_; // Mark the start of the upcoming token.
 
     char ch = peekChar();
@@ -118,9 +109,17 @@ LexNextToken:
         }
         col_ += count;
         mark_ += count;
+        
+        bool comp = false;
+        if (context_->hasStopMark()) {
+            const auto& lineCol = context_->stopMark();
+            if (lineCol.line_ == line_ && lineCol.col_ == col_) {
+                comp = true;
+            }
+        }
 
         // Blank or comment lines have no effect.
-        if (ch && ch != '#' && ch != '\n') {
+        if (ch && ((ch != '#' && ch != '\n') || atCompletion())) {
             bit_.indent_ += count;
             size_t largest = indentStack_.top();
             if (bit_.indent_ > largest) {
@@ -142,6 +141,13 @@ LexNextToken:
     if (bit_.pendingDedent_) {
         --bit_.pendingDedent_;
         return TK_DEDENT;
+    }
+
+    // The check whether we are at a completion point must be done after
+    // spaces/indents/dedents are processed.
+    if (atCompletion()) {
+        context_->clearStopMark();
+        return TK_COMPLETION;
     }
 
     switch (ch) {

@@ -43,6 +43,8 @@ class UAISO_API Factory
 public:
     virtual ~Factory();
 
+//    virtual LangName lang() = 0;
+
     virtual std::unique_ptr<AstLocator> makeAstLocator() = 0;
 
     virtual std::unique_ptr<IncrementalLexer> makeIncrementalLexer() = 0;

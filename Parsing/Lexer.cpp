@@ -184,3 +184,15 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
 
     return tk;
 }
+
+bool Lexer::atCompletion() const
+{
+    if (!context_->hasStopMark())
+        return false;
+
+    const auto& lineCol = context_->stopMark();
+    if (lineCol.line_ == line_ && lineCol.col_ == col_)
+            return true;
+
+    return false;
+}

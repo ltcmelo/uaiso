@@ -237,3 +237,162 @@ def doit():
     auto expected = { "fib", "fib2" };
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
+
+void CompletionProposer::CompletionProposerTest::PyTestCase10()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+name = "foo"
+
+# complete above at line start
+)raw";
+
+    lineCol_ = { 8, 0 };
+    auto expected = { "Point", "name" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase11()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+name = "foo"
+
+def f():
+#       ^
+#       |
+#       complete at up-arrow
+)raw";
+
+    lineCol_ = { 9, 8 };
+    auto expected = { "Point", "name", "f" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase12()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+name = "foo"
+
+if __name__ == "__main__":
+#                         ^
+#                         |
+#                         complete at up-arrow
+)raw";
+
+    lineCol_ = { 9, 26 };
+    auto expected = { "Point", "name" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase13()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+name = "foo"
+
+if __name__ == "__main__":
+    p = point(1, 2)
+    
+#   ^
+#   |
+#   complete at up-arrow (notice the identation spaces above)
+)raw";
+
+    lineCol_ = { 11, 4 };
+    auto expected = { "Point", "name", "p" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase14()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+name = "foo"
+
+def f():
+    local = 10
+    
+#   ^
+#   |
+#   complete at up-arrow (notice the identation spaces above)
+)raw";
+
+    lineCol_ = { 11, 4 };
+    auto expected = { "Point", "name", "f", "local" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase15()
+{
+    UAISO_SKIP_TEST;
+    
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+name = "foo"
+
+def f():
+    local = 10
+      
+#     ^
+#     |
+#     complete at up-arrow (notice the identation spaces above)
+)raw";
+
+    lineCol_ = { 11, 6 };
+    auto expected = { "Point", "name", "f", "local" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase16()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+name = "foo"
+
+def f():
+    local = 10
+
+# complete above at line start
+)raw";
+
+    lineCol_ = { 11, 0 };
+    auto expected = { "Point", "name", "f" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
