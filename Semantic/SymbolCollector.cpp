@@ -186,36 +186,35 @@ public:
 
 } // anonymous
 
-template <class VisitorT> std::vector<SymbolCollector::MentionInfo>
-SymbolCollector::collectCore(ProgramAst* ast, VisitorT& vis)
+template <class VisitorT>
+std::vector<SymbolCollector::MentionInfo>
+SymbolCollector::collectCore(ProgramAst* progAst, VisitorT& vis)
 {
     using Refs = std::vector<MentionInfo>;
 
-    UAISO_ASSERT(ast, return Refs());
-    UAISO_ASSERT(ast->program_, return Refs());
+    UAISO_ASSERT(progAst, return Refs());
+    UAISO_ASSERT(progAst->program_, return Refs());
 
-    for (auto decl : *ast->decls_.get()) {
-        if (vis.traverseDecl(decl) != VisitorT::Continue)
-            break;
-    }
+    traverseProgram(progAst, &vis, P->syntax_.get());
 
     return std::move(vis.refs_);
 }
 
-std::vector<SymbolCollector::MentionInfo> SymbolCollector::collectDefs(ProgramAst* ast)
+std::vector<SymbolCollector::MentionInfo>
+SymbolCollector::collectDefs(ProgramAst* progAst)
 {
     SymbolDefVisitor vis(P->locator_.get());
-    return collectCore(ast, vis);
+    return collectCore(progAst, vis);
 }
 
 std::vector<SymbolCollector::MentionInfo>
-SymbolCollector::collect(ProgramAst* ast, const LexemeMap* lexemes)
+SymbolCollector::collect(ProgramAst* progAst, const LexemeMap* lexemes)
 {
-    auto refs = collectDefs(ast);
+    auto refs = collectDefs(progAst);
 
-    SymbolUseVisitor vis(ast->program_->env(), P->locator_.get(),
+    SymbolUseVisitor vis(progAst->program_->env(), P->locator_.get(),
                          P->syntax_.get(), lexemes, refs);
-    auto uses = collectCore(ast, vis);
+    auto uses = collectCore(progAst, vis);
 
     refs.reserve(refs.size() + uses.size());
     std::copy(std::make_move_iterator(uses.begin()),

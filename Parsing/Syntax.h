@@ -68,6 +68,19 @@ public:
      */
     virtual bool hasExecutableRecord() const;
 
+    enum Structure
+    {
+        ExprBased,
+        DeclBased,
+        StmtBased,
+    };
+
+    /*!
+     * \brief structure
+     * \return
+     */
+    virtual Structure structure() const = 0;
+
     virtual std::string sourceFileSuffix() const = 0;
 
     virtual std::string packageSeparator() const;

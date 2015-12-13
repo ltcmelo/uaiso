@@ -35,6 +35,8 @@ public:
 
     bool hasExecutableRecord() const override;
 
+    Structure structure() const override;
+
     std::string sourceFileSuffix() const override;
 
     Token classifyIdent(const char* spell, size_t length) const override;

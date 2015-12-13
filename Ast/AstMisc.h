@@ -27,6 +27,8 @@
 #include "Ast/AstFwd.h"
 #include "Ast/AstList.h"
 #include "Ast/AstBase.h"
+#include "Common/Assert.h"
+#include "Parsing/Syntax.h"
 
 namespace uaiso {
 
@@ -124,6 +126,36 @@ public:
 
     std::unique_ptr<Ast> arg_;
 };
+
+    //--- Utility ---//
+
+template <class AstVisitorT>
+typename AstVisitorT::VisitResult traverseProgram(const ProgramAst* progAst,
+                                                  AstVisitorT* visitor,
+                                                  const Syntax* syntax)
+{
+    typename AstVisitorT::VisitResult result = AstVisitorT::Continue;
+    switch (syntax->structure()) {
+    case Syntax::DeclBased:
+        for (auto decl : *progAst->decls()) {
+            result = visitor->traverseDecl(decl);
+            if (result != AstVisitorT::Continue)
+                return result;
+        }
+        break;
+    case Syntax::StmtBased:
+        for (auto stmt : *progAst->stmts()) {
+            result = visitor->traverseStmt(stmt);
+            if (result != AstVisitorT::Continue)
+                return result;
+        }
+        break;
+    case Syntax::ExprBased:
+        break;
+    }
+    return result;
+}
+
 
 } // namespace uaiso
 

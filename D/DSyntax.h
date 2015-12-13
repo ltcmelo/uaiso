@@ -32,6 +32,8 @@ class UAISO_API DSyntax final : public Syntax
 {
 public:
     std::string sourceFileSuffix() const override;
+
+    Structure structure() const override;
 };
 
 } // namespace uaiso

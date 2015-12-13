@@ -29,3 +29,8 @@ std::string DSyntax::sourceFileSuffix() const
 {
     return ".d";
 }
+
+DSyntax::Structure DSyntax::structure() const
+{
+    return DeclBased;
+}

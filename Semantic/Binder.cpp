@@ -277,10 +277,10 @@ void Binder::collectDiagnostics(DiagnosticReports* reports)
     P->reports_ = reports;
 }
 
-std::unique_ptr<Program> Binder::bind(ProgramAst* ast,
+std::unique_ptr<Program> Binder::bind(ProgramAst* progAst,
                                       const std::string& fullFileName)
 {
-    UAISO_ASSERT(ast, return std::unique_ptr<Program>());
+    UAISO_ASSERT(progAst, return std::unique_ptr<Program>());
     UAISO_ASSERT(!fullFileName.empty(), return std::unique_ptr<Program>());
 
     P->fileName_.assign(fullFileName);
@@ -288,22 +288,12 @@ std::unique_ptr<Program> Binder::bind(ProgramAst* ast,
 
     P->enterSubEnv();
 
-    VisitResult result = traverseDecl(ast->module_.get());
+    VisitResult result = traverseDecl(progAst->module_.get());
     if (result == Continue) {
-        result = traverseDecl(ast->package_.get());
+        result = traverseDecl(progAst->package_.get());
         if (result == Continue) {
-            for (auto decl : *ast->decls_.get()) {
-                result = traverseDecl(decl);
-                if (result != Continue)
-                    break;
-            }
-            if (result != Abort) {
-                for (auto stmt : *ast->stmts_.get()) {
-                    result = traverseStmt(stmt);
-                    if (result != Continue)
-                        break;
-                }
-            }
+            result = traverseProgram(progAst, this, P->syntax_.get());
+
             // If everything finishes alright, stacks must be empty.
             UAISO_ASSERT(P->declTy_.empty(), {});
             UAISO_ASSERT(P->sym_.empty(), {});
@@ -312,7 +302,7 @@ std::unique_ptr<Program> Binder::bind(ProgramAst* ast,
 
     P->module_->setEnv(P->leaveEnv());
 
-    ast->program_ = P->module_.get();
+    progAst->program_ = P->module_.get();
 
     return std::move(P->module_);
 }

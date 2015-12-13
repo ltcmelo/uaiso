@@ -29,3 +29,8 @@ std::string GoSyntax::sourceFileSuffix() const
 {
     return ".go";
 }
+
+GoSyntax::Structure GoSyntax::structure() const
+{
+    return DeclBased;
+}

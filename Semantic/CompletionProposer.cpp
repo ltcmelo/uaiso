@@ -58,8 +58,7 @@ public:
         : syntax_(syntax)
     {}
 
-    bool analyse(DeclAstList* decls,
-                 StmtAstList* stmts,
+    bool analyse(const ProgramAst* progAst,
                  const LexemeMap* lexemes,
                  Environment env)
     {
@@ -67,16 +66,10 @@ public:
 
         lexemes_ = lexemes;
         env_ = env;
-        for (auto decl : *decls) {
-            if (traverseDecl(decl) == Abort)
-                return true;
-        }
-        for (auto stmt: *stmts) {
-            if (traverseStmt(stmt) == Abort)
-                return true;
-        }
 
-        return false;
+        auto result = traverseProgram(progAst, this, syntax_);
+
+        return result == Abort;
     }
 
     Environment env_;
@@ -222,9 +215,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                  return std::make_pair(Symbols(), CompletionAstNotFound));
 
     CompletionContext context(P->syntax_.get());
-    auto ok = context.analyse(progAst->decls_.get(),
-                              progAst->stmts_.get(),
-                              lexemes, progAst->program_->env());
+    auto ok = context.analyse(progAst, lexemes, progAst->program_->env());
 
     if (!ok) {
         DEBUG_TRACE("CompletionAstNotFound\n");

@@ -30,6 +30,11 @@ bool PySyntax::hasBlockLevelScope() const { return false; }
 
 bool PySyntax::hasExecutableRecord() const { return true; }
 
+PySyntax::Structure PySyntax::structure() const
+{
+    return StmtBased;
+}
+
 std::string PySyntax::sourceFileSuffix() const
 {
     return ".py";

@@ -157,21 +157,14 @@ void TypeChecker::collectDiagnostics(DiagnosticReports* reports)
     P->reports_ = reports;
 }
 
-void TypeChecker::check(ProgramAst *ast)
+void TypeChecker::check(ProgramAst *progAst)
 {
-    UAISO_ASSERT(ast, return);
-    UAISO_ASSERT(ast->program_, return);
+    UAISO_ASSERT(progAst, return);
+    UAISO_ASSERT(progAst->program_, return);
 
-    P->env_ = ast->program_->env();
+    P->env_ = progAst->program_->env();
 
-    for (auto decl : *ast->decls_.get()) {
-        if (traverseDecl(decl) != Continue)
-            break;
-    }
-    for (auto stmt : *ast->stmts_.get()) {
-        if (traverseStmt(stmt) != Continue)
-            break;
-    }
+    traverseProgram(progAst, this, P->syntax_.get());
 }
 
 void TypeChecker::check(FuncDeclAst* ast)
