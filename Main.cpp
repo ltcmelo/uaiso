@@ -76,6 +76,7 @@ std::vector<std::string> readSearchPaths()
 
     Paths paths;
     paths.push_back(path + "/Go/");
+    paths.push_back(path + "/Python/");
 
     return paths;
 }

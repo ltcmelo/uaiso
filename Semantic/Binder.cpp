@@ -35,6 +35,7 @@
 #include "Ast/AstVariety.h"
 #include "Common/Assert.h"
 #include "Common/FileInfo.h"
+#include "Common/Trace__.h"
 #include "Parsing/Factory.h"
 #include "Parsing/Language.h"
 #include "Parsing/Diagnostic.h"
@@ -50,6 +51,8 @@
 #include <iostream>
 #include <stack>
 #include <utility>
+
+#define TRACE_NAME "Binder"
 
 #define ENSURE_NAME_AVAILABLE \
     UAISO_ASSERT(!P->declId_.empty(), return Abort)
@@ -945,34 +948,35 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
 
     UAISO_ASSERT(ast->expr_.get(), return Abort);
     AstToLexeme pickupName(P->lexemes_);
-    const auto& lexemes = pickupName.process(ast->expr_.get());
+    const auto& baseLexemes = pickupName.process(ast->expr_.get());
 
-    if (lexemes.empty()) {
+    if (baseLexemes.empty()) {
         P->report(Diagnostic::UnresolvedModule, ast->expr_.get(), P->locator_.get());
         return Continue;
     }
 
     const std::string& moduleName =
-            joinLexemes(lexemes, P->syntax_->packageSeparator());
+            joinLexemes(baseLexemes, P->syntax_->packageSeparator());
+    DEBUG_TRACE("import module %s\n", moduleName.c_str());
 
     const Ident* localName = nullptr;
     if (ast->localName_) {
-        const auto& local = pickupName.process(ast->localName_.get());
-        if (local.empty() || local.size() > 1) {
+        const auto& localLexemes = pickupName.process(ast->localName_.get());
+        if (localLexemes.empty() || localLexemes.size() > 1) {
             P->report(Diagnostic::UnresolvedModule, ast->localName_.get(),
                       P->locator_.get());
         } else {
-            localName = ConstIdent_Cast(local.back());
+            localName = ConstIdent_Cast(localLexemes.back());
         }
     }
 
     // By default, if local name is empty, assign the module name to it.
     if (!localName) {
         auto pos = moduleName.find_last_of(P->syntax_->packageSeparator());
-        auto ident = moduleName.substr(pos == std::string::npos ? 0 : pos);
-        localName =
-                const_cast<LexemeMap*>(P->lexemes_)->insertOrFind<Ident>(
-                        ident, P->fileName_, ast->asLoc_.lineCol());
+        auto moduleLocalName = moduleName.substr(pos == std::string::npos ? 0 : pos);
+        localName = const_cast<LexemeMap*>(P->lexemes_)
+                ->insertOrFind<Ident>(moduleLocalName, P->fileName_, ast->asLoc_.lineCol());
+        DEBUG_TRACE("no explicit local name, assign %s\n", moduleLocalName.c_str());
     }
 
     std::unique_ptr<Import> import(

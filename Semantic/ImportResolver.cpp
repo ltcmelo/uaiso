@@ -26,12 +26,15 @@
 #include "Semantic/Symbol.h"
 #include "Common/FileInfo.h"
 #include "Common/Util__.h"
+#include "Common/Trace__.h"
 #include "Tinydir/Tinydir.h"
 #include "Parsing/Factory.h"
 #include "Parsing/Syntax.h"
 #include "StringUtils/predicate.hpp"
 #include <fstream>
 #include <iostream>
+
+#define TRACE_NAME "ImportResolver"
 
 using namespace uaiso;
 using namespace str;
@@ -56,15 +59,18 @@ struct ImportResolver::ImportResolverImpl
 
         if (sanitizer_->hasModuleImport()) {
             auto moduleFile = basePath + relPath + syntax_->sourceFileSuffix();
+            DEBUG_TRACE("search module import %s\n", moduleFile.c_str());
             std::ifstream ifs(moduleFile);
             if (ifs.is_open()) {
                 ifs.close();
                 result.emplace_back(moduleFile);
+                DEBUG_TRACE("module file %s found\n", moduleFile.c_str());
             }
             return result;
         }
 
         auto dirPath = basePath + relPath;
+        DEBUG_TRACE("search package import %s\n", dirPath.c_str());
         tinydir_dir dir;
         tinydir_open(&dir, dirPath.c_str());
         while (dir.has_next) {
@@ -75,6 +81,8 @@ struct ImportResolver::ImportResolverImpl
             if (!fileInDir.is_dir
                     && iends_with(fileInDirName, syntax_->sourceFileSuffix())) {
                 result.emplace_back(dirPath + "/" + fileInDirName);
+                DEBUG_TRACE("package file %s found\n",
+                            (dirPath + "/" + fileInDirName).c_str());
             }
             tinydir_next(&dir);
         }
@@ -101,7 +109,7 @@ resolve(const Import* import) const
 }
 
 std::vector<std::string> ImportResolver::
-resolve(const Import *import,
+resolve(const Import* import,
         const std::vector<std::string>& searchPaths) const
 {
     auto filesData = resolve(import);

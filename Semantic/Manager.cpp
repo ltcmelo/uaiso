@@ -30,6 +30,7 @@
 #include "Semantic/Symbol.h"
 #include "Common/Assert.h"
 #include "Common/FileInfo.h"
+#include "Common/Trace__.h"
 #include "Parsing/Factory.h"
 #include "Parsing/Lexeme.h"
 #include "Parsing/LexemeMap.h"
@@ -37,6 +38,8 @@
 #include "Parsing/Unit.h"
 #include <iostream>
 #include <stack>
+
+#define TRACE_NAME "Manager"
 
 using namespace uaiso;
 

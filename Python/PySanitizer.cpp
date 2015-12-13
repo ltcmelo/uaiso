@@ -33,17 +33,7 @@ bool PySanitizer::packageMatchesDir(const std::string& fullFileName,
     return true;
 }
 
-bool PySanitizer::hasModuleImport() const
-{
-    return false;
-}
-
-bool PySanitizer::hasPackageImport() const
-{
-    return true;
-}
-
 bool PySanitizer::mergeImportEnv(const Ident* name) const
 {
-    return true;
+    return false;
 }
