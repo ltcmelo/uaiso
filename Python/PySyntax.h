@@ -35,6 +35,8 @@ public:
 
     bool hasExecutableRecord() const override;
 
+    bool hasNewlineAsTerminator() const override;
+
     Structure structure() const override;
 
     std::string sourceFileSuffix() const override;

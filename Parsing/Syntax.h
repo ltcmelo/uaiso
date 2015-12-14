@@ -81,6 +81,15 @@ public:
      */
     virtual Structure structure() const = 0;
 
+    /*!
+     * \brief hasNewlineAsTerminator
+     * \return
+     *
+     * Return whether a newline character act as a statement terminator,
+     * such as in Python.
+     */
+    virtual bool hasNewlineAsTerminator() const;
+
     virtual std::string sourceFileSuffix() const = 0;
 
     virtual std::string packageSeparator() const;

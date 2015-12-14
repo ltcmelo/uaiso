@@ -35,6 +35,8 @@ bool Syntax::hasFuncLevelScope() const { return true; }
 
 bool Syntax::hasExecutableRecord() const { return false; }
 
+bool Syntax::hasNewlineAsTerminator() const { return false; }
+
 std::string Syntax::packageSeparator() const
 {
     return ".";
