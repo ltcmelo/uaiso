@@ -51,8 +51,6 @@ p =
 
 void CompletionProposer::CompletionProposerTest::PyTestCase2()
 {
-    UAISO_SKIP_TEST;
-
     std::string code = R"raw(
 class Point:
     def __init__(self, x, y):
@@ -351,8 +349,6 @@ def f():
 
 void CompletionProposer::CompletionProposerTest::PyTestCase15()
 {
-    UAISO_SKIP_TEST;
-    
     std::string code = R"raw(
 class Point:
     def __init__(self, x, y):
@@ -367,7 +363,7 @@ def f():
       
 #     ^
 #     |
-#     complete at up-arrow (notice the identation spaces above)
+#     complete at up-arrow (notice indentation slightly misaligned ahead)
 )raw";
 
     lineCol_ = { 11, 6 };
@@ -376,6 +372,30 @@ def f():
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase16()
+{
+    std::string code = R"raw(
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+                                                 # line 5
+
+name = "foo"
+
+def f():
+    local = 10
+  
+# ^
+# |
+# complete at up-arrow (notice indentation slightly misaligned behind)
+)raw";
+
+    lineCol_ = { 11, 2 };
+    auto expected = { "Point", "name", "f" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase17()
 {
     std::string code = R"raw(
 class Point:

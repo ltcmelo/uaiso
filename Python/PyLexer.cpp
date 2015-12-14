@@ -109,20 +109,17 @@ LexNextToken:
         }
         col_ += count;
         mark_ += count;
-        
-        bool comp = false;
-        if (context_->hasStopMark()) {
-            const auto& lineCol = context_->stopMark();
-            if (lineCol.line_ == line_ && lineCol.col_ == col_) {
-                comp = true;
-            }
-        }
 
         // Blank or comment lines have no effect.
-        if (ch && ((ch != '#' && ch != '\n') || atCompletion())) {
+        if (ch && ((ch != '#' && ch != '\n') || inCompletionArea())) {
             bit_.indent_ += count;
             size_t largest = indentStack_.top();
             if (bit_.indent_ > largest) {
+                // Relax completion triggering location. Otherwise,
+                // and indent would be sent causing a parse error.
+                if (maybeRealizeCompletion())
+                    return TK_COMPLETION;
+
                 // Indents happen one at a time.
                 indentStack_.push(bit_.indent_);
                 return TK_INDENT;
@@ -145,10 +142,8 @@ LexNextToken:
 
     // The check whether we are at a completion point must be done after
     // spaces/indents/dedents are processed.
-    if (atCompletion()) {
-        context_->clearStopMark();
+    if (maybeRealizeCompletion())
         return TK_COMPLETION;
-    }
 
     switch (ch) {
     case 0:

@@ -185,14 +185,24 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
     return tk;
 }
 
-bool Lexer::atCompletion() const
+bool Lexer::inCompletionArea() const
 {
     if (!context_->hasStopMark())
         return false;
 
     const auto& lineCol = context_->stopMark();
-    if (lineCol.line_ == line_ && lineCol.col_ == col_)
-            return true;
+    if (lineCol.line_ <= line_ && lineCol.col_ <= col_)
+        return true;
+
+    return false;
+}
+
+bool Lexer::maybeRealizeCompletion()
+{
+    if (inCompletionArea()) {
+        context_->clearStopMark();
+        return true;
+    }
 
     return false;
 }
