@@ -416,3 +416,55 @@ def f():
     auto expected = { "Point", "name", "f" };
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
+
+void CompletionProposer::CompletionProposerTest::PyTestCase18()
+{
+    std::string code = R"raw(
+from fibo import *
+
+def f():
+    local = 10
+    
+#   ^
+#   |
+#   complete at up-arrow
+)raw";
+
+    lineCol_ = { 5, 4 };
+    auto expected = { "f", "local", "fib", "fib2" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase19()
+{
+    std::string code = R"raw(
+from fibo import *
+
+def f():
+    
+#   ^
+#   |
+#   complete at up-arrow (notice indentation spaces above)
+)raw";
+
+    lineCol_ = { 4, 4 };
+    auto expected = { "f", "fib", "fib2" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase20()
+{
+    std::string code = R"raw(
+from fibo import *
+
+def f():
+  
+# ^
+# |
+# complete at up-arrow (notice indentation spaces above)
+)raw";
+
+    lineCol_ = { 4, 2 };
+    auto expected = { "f", "fib", "fib2" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}

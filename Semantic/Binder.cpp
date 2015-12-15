@@ -967,6 +967,7 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
                       P->locator_.get());
         } else {
             localName = ConstIdent_Cast(localLexemes.back());
+            DEBUG_TRACE("local module name %s\n", localName->str().c_str());
         }
     }
 

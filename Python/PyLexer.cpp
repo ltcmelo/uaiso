@@ -110,17 +110,23 @@ LexNextToken:
         col_ += count;
         mark_ += count;
 
+        // Store whether we're in completion area, to avoid calling
+        // the function and re-calculating line and columns again.
+        bool completionArea = inCompletionArea();
+
         // Blank or comment lines have no effect.
-        if (ch && ((ch != '#' && ch != '\n') || inCompletionArea())) {
+        if (ch && ((ch != '#' && ch != '\n') || completionArea)) {
             bit_.indent_ += count;
             size_t largest = indentStack_.top();
             if (bit_.indent_ > largest) {
                 // Relax completion triggering location. Otherwise,
                 // and indent would be sent causing a parse error.
-                if (maybeRealizeCompletion())
+                if (completionArea) {
+                    context_->clearStopMark();
                     return TK_COMPLETION;
+                }
 
-                // Indents happen one at a time.
+                // Indents happen one at a time, always.
                 indentStack_.push(bit_.indent_);
                 return TK_INDENT;
             }
@@ -238,6 +244,11 @@ LexNextToken:
         tk = TK_DOT;
         break;
 
+    case '*':
+        tk = lexOprtrOrDelim(ch);
+        context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+        break;
+
     case '+':
     case '-':
     case '%':
@@ -245,7 +256,6 @@ LexNextToken:
     case '|':
     case '^':
     case '=':
-    case '*':
     case '/':
     case '<':
     case '>':

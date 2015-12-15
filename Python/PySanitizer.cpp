@@ -35,5 +35,5 @@ bool PySanitizer::packageMatchesDir(const std::string& fullFileName,
 
 bool PySanitizer::mergeImportEnv(const Ident* name) const
 {
-    return false;
+    return name && name->str() == "*";
 }

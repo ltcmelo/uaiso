@@ -91,6 +91,9 @@ public:
              , &CompletionProposerTest::PyTestCase15
              , &CompletionProposerTest::PyTestCase16
              , &CompletionProposerTest::PyTestCase17
+             , &CompletionProposerTest::PyTestCase18
+             , &CompletionProposerTest::PyTestCase19
+             , &CompletionProposerTest::PyTestCase20
              )
 
     //--- D ---//
@@ -153,6 +156,9 @@ public:
     void PyTestCase15();
     void PyTestCase16();
     void PyTestCase17();
+    void PyTestCase18();
+    void PyTestCase19();
+    void PyTestCase20();
 
     std::unique_ptr<Unit> runCore(std::unique_ptr<Factory> factory,
                                   const std::string& code,

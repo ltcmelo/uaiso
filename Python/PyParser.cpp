@@ -575,6 +575,7 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
         // from ..moduleA import foo
         // from ...package import bar
         // from ...sys import path
+        // from .. import moduleY
 
         if (wantName || isNameAhead()) {
             // A selective import, members specified after 'import'.
@@ -582,7 +583,15 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
             module->setExpr(makeAstRaw<IdentExprAst>()->setName(parseDottedName().release()));
             match(TK_IMPORT);
             module->setSelectLoc(lastLoc_);
-            module->setMembers(parseSubImports(true).release());
+            // Look for a select-all import without going further. If it's
+            // the case, set the asterisk as a local name "marker".
+            if (maybeConsume(TK_STAR)) {
+                auto star = makeAst<SimpleNameAst>();
+                star->setNameLoc(lastLoc_);
+                module->setLocalName(star.release());
+            } else {
+                module->setMembers(parseSubImports(true).release());
+            }
             import->addModule(module.release());
         } else {
             // An "ordinary" (non-selective) import, 'from' is just to indicate
@@ -610,18 +619,6 @@ std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
 {
     bool wantParen = false;
     switch (ahead_) {
-    case TK_STAR:
-        consumeToken();
-        if (selective) {
-            auto star = makeAst<GenNameAst>();
-            star->setGenLoc(lastLoc_);
-            auto member = makeAst<ImportMemberDeclAst>();
-            member->setActualName(star.release());
-            return DeclList(DeclAstList::create(member.release()));
-        }
-        failMatch(false);
-        return DeclList();
-
     case TK_LPAREN:
         consumeToken();
         wantParen = true;
@@ -1201,6 +1198,14 @@ std::unique_ptr<StmtAst> PyParser::parseSuite()
 {
     if (!maybeConsume(TK_NEWLINE))
         return parseSimpleStmt();
+
+    // Special handling that allows triggering of completion with a more
+    // relaxed location requirement, where an indent would be expected.
+    if (ahead_ == TK_COMPLETION) {
+        auto ident = makeAst<IdentExprAst>();
+        ident->setName(parseName().release());
+        return Stmt(makeAstRaw<ExprStmtAst>()->addExpr(ident.release()));
+    }
 
     match(TK_INDENT);
     auto block = makeAst<BlockStmtAst>();
