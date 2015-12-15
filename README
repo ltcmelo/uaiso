@@ -1,4 +1,7 @@
-The Uaiso project: A language-unifying source code modelling engine
+The Uaiso project:
+
+            A language-unifying source code modelling engine
+
 
 You can think of a source code modelling engine as a tool that understands
 your software's source code. It implements the infra-structure necessary for
@@ -6,14 +9,31 @@ IDEs or text editors to provide you with features such as syntax highlighting,
 semantic information, code completion, and others. Essentially, it performs a
 task similar to what a compiler front-end would do.
 
+In action:
+
+- https://youtu.be/4f-jHriOR_Y (Python)
+- https://youtu.be/nUpcVBAw0DM (Go lang)
+- https://youtu.be/ZwMQ_GB-Zv0 (D lang)
+
+The videos above show a prototype running as a plugin in Qt Creator. Notice
+the Uaiso doesn't depend on any specific IDE or code editor, it can be plugged
+anywhere. I picked Qt Creator as a "validation platform" essentialy because I
+find it beautiful (OK... I was one of the developers).
+
+
+                                --------
+                                  Goal
+                                --------
+
 What problem does Uaiso wanna solve?
 
   - Reimplementation of code modelling engines for different languages when, in
     fact, many languages share a lot of features. Uaiso offers a pragmatic
     approach based on common language principles, but still allows for any
-    language to define specific behavior. Uaiso is also a self-standing library,
-    agnostic of a particular IDE or text editor, with its own pipeline of
-    parsing, binding, type checking, and so on.
+    language to define specific behavior.
+
+  - Uaiso is a self-standing library, independent of an IDE or text editor.
+
 
 What benefits does Uaiso bring?
 
@@ -23,17 +43,18 @@ What benefits does Uaiso bring?
   - Consistent development experience for end-users throughout IDEs and code
     editors, and even accross different programming languages.
 
+
 The Uaiso project is in conception phase, but you can already try it out. The
-programming languages being initially integrated are D, Go, and Python (Rust is
+programming languages being initially integrated are Python, Go, and D (Rust is
 on the line). Expect to find bugs and missing functionality, but I hope you
 enjoy what's already there. Contributions are welcome.
 
 Design overview: https://goo.gl/VBQzJW
 
 
------------
-Quick Start
------------
+                              -------------
+                               Quick Start
+                              -------------
 
 The Uaiso project is written in Standard C++. Although you should be able to
 build it cross-platform, I'm developing on OS X and I have not tested it
@@ -70,23 +91,6 @@ me in order to "quickly" sketch a prototype back then. I plan to replace those
 for LL parsers eventually - in particular for D, due to its grammar
 characteristics. Nevertheless, as you can see in the videos below, it's still
 possible to do error recovery at the right places so completion works decently.
-
-
------------------------
-Prototype in Qt Creator
------------------------
-
-I opted for Qt Creator as a "validation" platform for the Uaiso project. I find
-it a beautiful IDE and I already know the code - I was one of the Qt Creator
-developers.
-
-A few videos that demonstrate Uaiso's implementation on Qt Creator.
-
-Go language: https://youtu.be/nUpcVBAw0DM
-
-D language: https://youtu.be/ZwMQ_GB-Zv0
-
-Fork at: git@github.com:ltcmelo/qt-creator.git
 
 
 Leandro T. C. Melo
