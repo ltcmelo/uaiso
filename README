@@ -93,5 +93,12 @@ characteristics. Nevertheless, as you can see in the videos below, it's still
 possible to do error recovery at the right places so completion works decently.
 
 
+                        -------------------------
+                         Prototype in Qt Creator
+                        -------------------------
+
+The Qt Creator fork used for the videos: git@github.com:ltcmelo/qt-creator.git
+
+
 Leandro T. C. Melo
 http://ltcmelo.com
