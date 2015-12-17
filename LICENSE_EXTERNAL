@@ -12,7 +12,7 @@ External source files used in the Uaiso project.
       Test files for the parser (copied from Go Tour and Go's standard lib).
       Copyright: Go authors
 
-    - $UAISO_PATH/TestData/Go/
+    - $UAISO_PATH/TestData/Python/
       Test files for the parser (copied from Python's lib).
       Copyright: Python Software Foundation
 
