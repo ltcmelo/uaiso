@@ -113,7 +113,7 @@ int ParsingContext::interceptRawToken(int token)
 
 void ParsingContext::trackPhrase(Token tk,
                                  const LineCol& lineCol,
-                                 int leng, bool unterminated)
+                                 int len, bool unterminated)
 {
     if (phrasing_) {
         Phrasing::TokenFlags flags = Phrasing::TokenFlag::None;
@@ -125,7 +125,7 @@ void ParsingContext::trackPhrase(Token tk,
             flags |= Phrasing::TokenFlag::Unterminated;
             bit_.prevTkTerminated_ = false;
         }
-        phrasing_->append(tk, lineCol, leng, flags);
+        phrasing_->append(tk, lineCol, len, flags);
     }
 }
 

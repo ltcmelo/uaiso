@@ -34,3 +34,8 @@ GoSyntax::Structure GoSyntax::structure() const
 {
     return DeclBased;
 }
+
+GoSyntax::ImportMechanism GoSyntax::importMechanism() const
+{
+    return PerPackage;
+}

@@ -39,7 +39,7 @@ UAISO_API inline bool isKeyword(Token tk)
     return tk > BEGIN_KEYWORD && tk < END_KEYWORD;
 }
 
-UAISO_API inline bool isOperator(Token tk)
+UAISO_API inline bool isOprtr(Token tk)
 {
     return (tk > BEGIN_ASCII && tk < END_ASCII)
             || (tk > BEGIN_MULTICHAR_OPERATOR && tk < END_MULTICHAR_OPERATOR);

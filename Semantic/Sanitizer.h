@@ -41,13 +41,9 @@ public:
     virtual bool packageMatchesDir(const std::string& fullFileName,
                                    const std::string& packageName) const;
 
-    virtual bool hasModuleImport() const;
+    virtual bool mayMergeImportEnv(const Ident* name) const;
 
-    virtual bool hasPackageImport() const;
-
-    virtual bool mergeImportEnv(const Ident* name) const;
-
-    virtual bool acceptsAnonymous(Symbol::Kind symKind) const;
+    virtual bool allowAnonymous(Symbol::Kind symKind) const;
 
     virtual bool validateVisibility(Symbol::Kind symKind, Token tk) const;
 

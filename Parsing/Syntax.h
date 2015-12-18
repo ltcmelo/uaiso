@@ -68,6 +68,9 @@ public:
      */
     virtual bool hasExecutableRecord() const;
 
+    /*!
+     * \brief The Structure enum
+     */
     enum Structure
     {
         ExprBased,
@@ -78,6 +81,8 @@ public:
     /*!
      * \brief structure
      * \return
+     *
+     * Return whether a language is primarily based on exprs, decls, or stmts.
      */
     virtual Structure structure() const = 0;
 
@@ -89,6 +94,24 @@ public:
      * such as in Python.
      */
     virtual bool hasNewlineAsTerminator() const;
+
+    /*!
+     * \brief The ImportMechanism enum
+     */
+    enum ImportMechanism
+    {
+        PerModule,
+        PerPackage
+    };
+
+    /*!
+     * \brief importMechanism
+     * \return
+     *
+     * Return whether the import mechanism is per module (typically a file)
+     * or per package (typically a directory).
+     */
+    virtual ImportMechanism importMechanism() const = 0;
 
     virtual std::string sourceFileSuffix() const = 0;
 
@@ -102,7 +125,7 @@ public:
 
     virtual bool isIdentChar(char ch) const;
 
-    virtual Token classifyIdent(const char* spell, size_t leng) const;
+    virtual Token classifyIdent(const char* spell, size_t len) const;
 
     virtual bool isStrLitQuote(char ch) const;
 

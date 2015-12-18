@@ -144,12 +144,12 @@ public:
      * \brief trackPhrase
      * \param tk
      * \param lineCol
-     * \param leng
+     * \param len
      * \param unterminated
      */
     void trackPhrase(Token tk,
                      const LineCol& lineCol,
-                     int leng,
+                     int len,
                      bool unterminated = false);
 
     template <class... Args>

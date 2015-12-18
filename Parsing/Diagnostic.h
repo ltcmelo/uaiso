@@ -92,7 +92,7 @@ public:
     static const Code UndeclaredIdentifier;
     static const Code ValueWillBeTruncated;
     static const Code ValueMayLoosePrecision;
-    static const Code NameRequired;
+    static const Code IdentifierExpected;
     static const Code UnexpectedToken;
     static const Code SubrangeValueExpected;
     static const Code UnknownEscapeSequence;

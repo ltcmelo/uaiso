@@ -25,21 +25,21 @@
 
 using namespace uaiso;
 
-Token PyKeywords::classify(const char* s, size_t length)
+Token PyKeywords::classify(const char* s, size_t len)
 {
-    if (length == 2)
+    if (len == 2)
         return classify2(s);
-    if (length == 3)
+    if (len == 3)
         return classify3(s);
-    if (length == 4)
+    if (len == 4)
         return classify4(s);
-    if (length == 5)
+    if (len == 5)
         return classify5(s);
-    if (length == 6)
+    if (len == 6)
         return classify6(s);
-    if (length == 7)
+    if (len == 7)
         return classify7(s);
-    if (length == 8)
+    if (len == 8)
         return classify8(s);
 
     return TK_IDENTIFIER;

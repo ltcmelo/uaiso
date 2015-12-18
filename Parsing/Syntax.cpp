@@ -62,7 +62,7 @@ bool Syntax::isIdentChar(char ch) const
     return std::isalnum(ch) || ch == '_';
 }
 
-Token Syntax::classifyIdent(const char* spell, size_t leng) const
+Token Syntax::classifyIdent(const char* spell, size_t len) const
 {
     return TK_IDENTIFIER;
 }

@@ -47,16 +47,16 @@ Phrasing::Phrasing()
 Phrasing::~Phrasing()
 {}
 
-void Phrasing::append(Token tk, const LineCol& lineCol, int leng)
+void Phrasing::append(Token tk, const LineCol& lineCol, int len)
 {
-    append(tk, lineCol, leng, TokenFlag::None);
+    append(tk, lineCol, len, TokenFlag::None);
 }
 
-void Phrasing::append(Token tk, const LineCol& lineCol, int leng, TokenFlags flags)
+void Phrasing::append(Token tk, const LineCol& lineCol, int len, TokenFlags flags)
 {
     P->tokens_.push_back(tk);
     P->lineCol_.push_back(lineCol);
-    P->lengs_.push_back(leng);
+    P->lengs_.push_back(len);
     P->flags_.push_back(flags);
 }
 

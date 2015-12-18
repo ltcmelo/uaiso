@@ -984,7 +984,7 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
                 new Import(FileInfo(P->fileName_).fullDir(),
                            moduleName,
                            localName,
-                           P->sanitizer_->mergeImportEnv(localName)));
+                           P->sanitizer_->mayMergeImportEnv(localName)));
     import->setSourceLoc(fullLoc(ast, P->locator_.get()));
 
     P->env_.includeImport(std::move(import));
@@ -1038,8 +1038,8 @@ Binder::VisitResult Binder::traverseParamDecl(ParamDeclAst* ast)
     VIS_CALL(traverseName(ast->name_.get()));
 
     if (P->declId_.empty()) {
-        if (!P->sanitizer_->acceptsAnonymous(Symbol::Kind::Param))
-            P->report(Diagnostic::NameRequired, ast, P->locator_.get());
+        if (!P->sanitizer_->allowAnonymous(Symbol::Kind::Param))
+            P->report(Diagnostic::IdentifierExpected, ast, P->locator_.get());
         return Continue;
     }
 

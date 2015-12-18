@@ -83,7 +83,7 @@ const Diagnostic::Code Diagnostic::IncompatibleCondition = 38;
 const Diagnostic::Code Diagnostic::UndeclaredIdentifier = 39;
 const Diagnostic::Code Diagnostic::ValueWillBeTruncated = 40;
 const Diagnostic::Code Diagnostic::ValueMayLoosePrecision = 41;
-const Diagnostic::Code Diagnostic::NameRequired = 42;
+const Diagnostic::Code Diagnostic::IdentifierExpected = 42;
 const Diagnostic::Code Diagnostic::UnexpectedToken = 43;
 const Diagnostic::Code Diagnostic::SubrangeValueExpected = 44;
 const Diagnostic::Code Diagnostic::UnknownEscapeSequence = 45;
@@ -190,8 +190,8 @@ public:
                     "value will be truncated", Severity::Warning },
         { Diagnostic::ValueMayLoosePrecision,
                     "value may loose precision", Severity::Warning },
-        { Diagnostic::NameRequired,
-                    "name required", Severity::Error },
+        { Diagnostic::IdentifierExpected,
+                    "identifier expected", Severity::Error },
         { Diagnostic::UnexpectedToken,
                     "syntax error, unexpected token", Severity::Error },
         { Diagnostic::SubrangeValueExpected,

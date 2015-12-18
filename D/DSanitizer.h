@@ -34,7 +34,7 @@ public:
     bool moduleMatchesFile(const std::string& fullFileName,
                            const std::string& moduleName) const override;
 
-    bool mergeImportEnv(const Ident* name) const override;
+    bool mayMergeImportEnv(const Ident* name) const override;
 };
 
 } // namespace uaiso

@@ -34,6 +34,8 @@ public:
     std::string sourceFileSuffix() const override;
 
     Structure structure() const override;
+
+    ImportMechanism importMechanism() const override;
 };
 
 } // namespace uaiso

@@ -34,3 +34,8 @@ DSyntax::Structure DSyntax::structure() const
 {
     return DeclBased;
 }
+
+DSyntax::ImportMechanism DSyntax::importMechanism() const
+{
+    return PerModule;
+}

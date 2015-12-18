@@ -51,17 +51,7 @@ bool uaiso::Sanitizer::packageMatchesDir(const std::string& fullFileName,
     return true;
 }
 
-bool Sanitizer::hasModuleImport() const
-{
-    return true;
-}
-
-bool Sanitizer::hasPackageImport() const
-{
-    return false;
-}
-
-bool Sanitizer::mergeImportEnv(const Ident* name) const
+bool Sanitizer::mayMergeImportEnv(const Ident* name) const
 {
     return !name;
 }
@@ -111,7 +101,7 @@ bool Sanitizer::checkTypeQualCoherence(const Type*, Token) const
     return true;
 }
 
-bool Sanitizer::acceptsAnonymous(Symbol::Kind symKind) const
+bool Sanitizer::allowAnonymous(Symbol::Kind symKind) const
 {
     return symKind == Symbol::Kind::Param;
 }

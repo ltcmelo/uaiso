@@ -35,7 +35,7 @@ class UAISO_API PyKeywords final
 public:
     PyKeywords() = delete;
 
-    static Token classify(const char* spell, size_t length);
+    static Token classify(const char* spell, size_t len);
 
 private:
     static Token classify2(const char* spell);

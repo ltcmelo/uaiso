@@ -46,9 +46,9 @@ public:
     /*!
      * \brief setBuffer
      * \param buff
-     * \param length
+     * \param len
      */
-    void setBuffer(const char* buff, size_t leng);
+    void setBuffer(const char* buff, size_t len);
 
     /*!
      * \brief setContext

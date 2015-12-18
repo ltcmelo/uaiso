@@ -36,12 +36,12 @@ Lexer::Lexer()
 Lexer::~Lexer()
 {}
 
-void Lexer::setBuffer(const char* buff, size_t leng)
+void Lexer::setBuffer(const char* buff, size_t len)
 {
     buff_ = buff;
     mark_ = buff;
     curr_ = buff;
-    eof_ = buff + leng;
+    eof_ = buff + len;
 }
 
 void Lexer::setContext(ParsingContext *context)

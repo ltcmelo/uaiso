@@ -861,7 +861,7 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
                         auto ident = parseTest();
                         if (ident) {
                             if (ident->kind() != Ast::Kind::IdentExpr) {
-                                context_->trackReport(Diagnostic::NameRequired,
+                                context_->trackReport(Diagnostic::IdentifierExpected,
                                                       lastLoc_);
                             } else {
                                 group->addDecl(makeAstRaw<ParamDeclAst>()

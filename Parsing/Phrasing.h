@@ -52,9 +52,9 @@ public:
     };
     UAISO_FLAGGED_ENUM(TokenFlag)
 
-    void append(Token tk, const LineCol& lineCol, int length);
+    void append(Token tk, const LineCol& lineCol, int len);
 
-    void append(Token tk, const LineCol& lineCol, int length, TokenFlags flags);
+    void append(Token tk, const LineCol& lineCol, int len, TokenFlags flags);
 
     size_t size() const;
 

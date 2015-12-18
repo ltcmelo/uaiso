@@ -37,6 +37,11 @@ PySyntax::Structure PySyntax::structure() const
     return StmtBased;
 }
 
+PySyntax::ImportMechanism PySyntax::importMechanism() const
+{
+    return PerModule;
+}
+
 std::string PySyntax::sourceFileSuffix() const
 {
     return ".py";

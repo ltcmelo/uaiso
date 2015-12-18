@@ -22,7 +22,6 @@
 /*--------------------------*/
 
 #include "Semantic/ImportResolver.h"
-#include "Semantic/Sanitizer.h"
 #include "Semantic/Symbol.h"
 #include "Common/FileInfo.h"
 #include "Common/Util__.h"
@@ -43,7 +42,6 @@ struct ImportResolver::ImportResolverImpl
 {
     ImportResolverImpl(Factory* factory)
         : syntax_(factory->makeSyntax())
-        , sanitizer_(factory->makeSanitizer())
     {}
 
     std::vector<std::string> searchFile(std::string relPath,
@@ -57,7 +55,7 @@ struct ImportResolver::ImportResolverImpl
 
         std::vector<std::string> result;
 
-        if (sanitizer_->hasModuleImport()) {
+        if (syntax_->importMechanism() == Syntax::PerModule) {
             auto moduleFile = basePath + relPath + syntax_->sourceFileSuffix();
             DEBUG_TRACE("search module import %s\n", moduleFile.c_str());
             std::ifstream ifs(moduleFile);
@@ -92,7 +90,6 @@ struct ImportResolver::ImportResolverImpl
     }
 
     std::unique_ptr<Syntax> syntax_;
-    std::unique_ptr<Sanitizer> sanitizer_;
 };
 
 ImportResolver::ImportResolver(Factory *factory)

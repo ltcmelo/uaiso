@@ -34,11 +34,7 @@ public:
     bool packageMatchesDir(const std::string& fullFileName,
                            const std::string& packageName) const override;
 
-    bool hasModuleImport() const override;
-
-    bool hasPackageImport() const override;
-
-    bool mergeImportEnv(const Ident* name) const override;
+    bool mayMergeImportEnv(const Ident* name) const override;
 };
 
 } // namespace uaiso
