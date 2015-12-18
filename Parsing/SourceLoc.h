@@ -49,10 +49,10 @@ public:
         , fileName_("<unspecified file>")
     {}
 
-    SourceLoc(size_t line,
-              size_t col,
-              size_t lastLine,
-              size_t lastCol,
+    SourceLoc(int line,
+              int col,
+              int lastLine,
+              int lastCol,
               const std::string& fileName)
         : line_(line)
         , col_(col)
@@ -97,10 +97,10 @@ public:
                 && lastCol_ == 0;
     }
 
-    size_t line_;
-    size_t col_;
-    size_t lastLine_;
-    size_t lastCol_;
+    int line_;
+    int col_;
+    int lastLine_;
+    int lastCol_;
     std::string fileName_;
 };
 
