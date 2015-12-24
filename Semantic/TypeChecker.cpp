@@ -1152,10 +1152,20 @@ TypeChecker::VisitResult TypeChecker::traverseTypeQueryExpr(TypeQueryExprAst* as
 
 TypeChecker::VisitResult TypeChecker::traverseCallExpr(CallExprAst* ast)
 {
-    // FIXME: Hack that will only work for "constructors" calls (where the
-    // name of the function is the same as of the type) because the type
-    // of the expr is left on the stack.
     VIS_CALL(traverseExpr(ast->base()));
+    ENSURE_NONEMPTY_STACK;
+    std::unique_ptr<Type> ty = P->popExprType();
+    if (ty->kind() == Type::Kind::Func) {
+        FuncType* funcTy = FuncType_Cast(ty.get());
+        if (funcTy->returnType()) {
+            P->exprTy_.emplace(ty.release());
+            return Continue;
+        }
+    }
+
+    // Perhaps we're "lucky" if this is a constructor call. The name of the
+    // function will be the name of the type, push original expr back.
+    P->exprTy_.push(std::move(ty));
 
     return Continue;
 }

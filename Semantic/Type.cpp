@@ -458,16 +458,20 @@ struct uaiso::FuncType::FuncTypeImpl : Type::TypeImpl
 {
     using TypeImpl::TypeImpl;
 
-    Environment paramEnv_;
-    Environment resultEnv_;
-    std::vector<std::unique_ptr<Type>> unnamedResults_;
+    std::unique_ptr<Type> returnType_;
+    std::unique_ptr<Type> paramType_;
 };
 
 DEF_PIMPL_CAST(FuncType)
 
 FuncType* FuncType::clone() const
 {
-    return trivialClone<FuncType>();
+    auto ty = trivialClone<FuncType>();
+    if (P_CAST->returnType_)
+        ty->P_CAST->returnType_.reset(P_CAST->returnType_->clone());
+    if (P_CAST->paramType_)
+        ty->P_CAST->paramType_.reset(P_CAST->paramType_->clone());
+    return ty;
 }
 
 FuncType::FuncType()
@@ -476,6 +480,16 @@ FuncType::FuncType()
 
 FuncType::~FuncType()
 {}
+
+void FuncType::setReturnType(std::unique_ptr<Type> type)
+{
+    P_CAST->returnType_ = std::move(type);
+}
+
+const Type* FuncType::returnType() const
+{
+    return P_CAST->returnType_.get();
+}
 
 namespace uaiso {
 

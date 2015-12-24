@@ -319,6 +319,9 @@ public:
     FuncType();
     ~FuncType();
 
+    void setReturnType(std::unique_ptr<Type> type);
+    const Type* returnType() const;
+
     FuncType* clone() const override;
 
 private:
