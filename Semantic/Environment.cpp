@@ -198,11 +198,15 @@ const ValueSymbol* Environment::lookUpValue(const Ident* name) const
 
 void Environment::insertType(std::unique_ptr<const TypeSymbol> symbol)
 {
+    UAISO_ASSERT(symbol, return);
+
     P->types_.insert(std::move(symbol));
 }
 
 void Environment::insertValue(std::unique_ptr<const ValueSymbol> symbol)
 {
+    UAISO_ASSERT(symbol, return);
+
     P->values_.insert(std::move(symbol));
 }
 
