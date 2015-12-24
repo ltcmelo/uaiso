@@ -468,3 +468,84 @@ def f():
     auto expected = { "f", "fib", "fib2" };
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
+
+void CompletionProposer::CompletionProposerTest::PyTestCase21()
+{
+    std::string code = R"raw(
+class A:
+    a = 1
+
+class B(A):
+    b = 2
+
+b = B()
+b.
+# ^
+# |
+# complete at up-arrow
+)raw";
+
+    lineCol_ = { 8, 2 };
+    auto expected = { "a", "b" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase22()
+{
+    std::string code = R"raw(
+class A:
+    a = 1
+
+class B(A):
+    b = 2
+
+class C(B):
+    c = 3
+
+                                                 # line 10
+
+c = C()
+c.
+# ^
+# |
+# complete at up-arrow
+)raw";
+
+    lineCol_ = { 13, 2 };
+    auto expected = { "a", "b", "c" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase23()
+{
+    std::string code = R"raw(
+class X:
+    x = 1
+
+class Y:
+    y = 2
+
+class Z(X,Y):
+    z = 3
+
+                                                 # line 10
+
+z = Z()
+z.
+# ^
+# |
+# complete at up-arrow
+)raw";
+
+    lineCol_ = { 13, 2 };
+    auto expected = { "x", "y", "z" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase24()
+{
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase25()
+{
+}

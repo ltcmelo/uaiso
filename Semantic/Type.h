@@ -29,6 +29,7 @@
 #include "Ast/AstVariety.h"
 #include "Semantic/TypeCast.h"
 #include "Semantic/TypeQuals.h"
+#include <vector>
 
 namespace uaiso {
 
@@ -306,6 +307,8 @@ public:
     Environment env() const;
 
     void addBase(std::unique_ptr<BaseRecord> base);
+
+    std::vector<const BaseRecord*> bases() const;
 
     RecordType* clone() const override;
 

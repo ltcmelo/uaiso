@@ -316,6 +316,16 @@ void RecordType::addBase(std::unique_ptr<BaseRecord> base)
     P_CAST->bases_.push_back(std::move(base));
 }
 
+std::vector<const BaseRecord*> RecordType::bases() const
+{
+    std::vector<const BaseRecord*> v;
+    std::for_each(P_CAST->bases_.begin(), P_CAST->bases_.end(),
+                  [&v](const std::unique_ptr<BaseRecord>& base) {
+        v.push_back(base.get());
+    });
+    return v;
+}
+
 void RecordType::setVariety(RecordVariety variety)
 {
     impl_->bit_.variety_ = static_cast<char>(variety);

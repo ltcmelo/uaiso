@@ -235,8 +235,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
         Symbols syms;
         while (true) {
             auto curSyms = env.list();
-            std::for_each(curSyms.begin(), curSyms.end(),
-                          [&syms] (const DeclSymbol* s) { syms.push_back(s); });
+            std::copy(curSyms.begin(), curSyms.end(), std::back_inserter(syms));
             if (env.isRootEnv())
                 break;
             env = env.outerEnv();
@@ -247,8 +246,8 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
     // Completing on a member access requires identifying the type or namespace.
     if (topAst->kind() == Ast::Kind::MemberAccessExpr
             || topAst->kind() == Ast::Kind::NamedSpec) {
+        const Type* ty = nullptr;
         for (auto ident : context.name_) {
-            const Type* ty = nullptr;
             auto tySym = env.lookUpType(ident);
             if (tySym) {
                 ty = tySym->type();
@@ -272,6 +271,9 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
             if (!ty)
                 return std::make_pair(Symbols(), UndefinedType);
 
+            // TODO: Extract a type resolver out of code below.
+
+            // If this is an elaborate type, try resolving to the actual type.
             if (ty->kind() == Type::Kind::Elaborate) {
                 auto elabTy = ElaborateType_ConstCast(ty);
                 if (!elabTy->isResolved()) {
@@ -303,7 +305,39 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
             }
         }
 
-        return std::make_pair(env.list(), ResultOK);
+        if (!ty)
+            return std::make_pair(env.list(), ResultOK);
+
+        // Look into base classes.
+        Symbols syms = env.list();
+        std::stack<const Type*> baseTys;
+        baseTys.push(ty);
+        while (!baseTys.empty()) {
+            const Type* curTy = baseTys.top();
+            baseTys.pop();
+            UAISO_ASSERT(curTy, return std::make_pair(Symbols(), InternalError));
+            if (curTy->kind() != Type::Kind::Record)
+                continue;
+
+            const RecordType* recTy = ConstRecordType_Cast(curTy);
+            auto bases = recTy->bases();
+            for (auto base : bases) {
+                auto baseSym = env.lookUpType(base->name());
+                if (!baseSym)
+                    continue;
+
+                bool baseHasEnv;
+                Environment baseEnv;
+                std::tie(baseHasEnv, baseEnv) = isEnvType(baseSym->type());
+                if (baseHasEnv) {
+                    baseTys.push(baseSym->type());
+                    auto extraSyms = baseEnv.list();
+                    std::copy(extraSyms.begin(), extraSyms.end(), std::back_inserter(syms));
+                }
+            }
+        }
+
+        return std::make_pair(syms, ResultOK);
     }
 
     DEBUG_TRACE("CaseNotImplemented\n");

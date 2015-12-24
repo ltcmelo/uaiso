@@ -51,6 +51,7 @@ public:
      */
     enum ResultCode : char
     {
+        InternalError,               //!< Internal logic error
         CompletionAstNotFound,       //!< CompletionNameAst not found in ProgramAst
         UnboundCompletionAstContext, //!< Context of CompletionNameAst is not useful
         UnknownSymbol,               //!< Symbol is unknown
@@ -59,12 +60,11 @@ public:
         InvalidType,                 //!< Type of symbol has no environment
         UnresolvedElaborateType,     //!< Type of symbol is elaborate and not resolved
         CaseNotImplemented,          //!< Completion case not implemented yet.
-        ResultOK                     //!< No errors detected
+        ResultOK                     //!< Result generated
     };
 
-    std::pair<
-        std::vector<const DeclSymbol*>,
-        ResultCode>
+    std::pair<std::vector<const DeclSymbol*>,
+              ResultCode>
     propose(ProgramAst* ast, const LexemeMap* lexemes);
 
 private:
