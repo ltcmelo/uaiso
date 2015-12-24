@@ -28,12 +28,18 @@
 #include "D/DSyntax.h"
 #include "D/DTypeSystem.h"
 #include "D/DUnit.h"
+#include "Semantic/Builtins.h"
 
 using namespace uaiso;
 
 std::unique_ptr<Unit> DFactory::makeUnit()
 {
     return std::unique_ptr<Unit>(new DUnit);
+}
+
+std::unique_ptr<Builtins> DFactory::makeBuiltins()
+{
+    return std::unique_ptr<Builtins>(new Builtins);
 }
 
 std::unique_ptr<AstLocator> DFactory::makeAstLocator()

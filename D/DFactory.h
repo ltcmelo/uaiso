@@ -31,12 +31,13 @@ namespace uaiso {
 class UAISO_API DFactory final : public Factory
 {
 public:
-    std::unique_ptr<Unit> makeUnit() override;
-    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
     std::unique_ptr<AstLocator> makeAstLocator() override;
+    std::unique_ptr<Builtins> makeBuiltins() override;
+    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
     std::unique_ptr<Sanitizer> makeSanitizer() override;
-    std::unique_ptr<TypeSystem> makeTypeSystem() override;
     std::unique_ptr<Syntax> makeSyntax() override;
+    std::unique_ptr<TypeSystem> makeTypeSystem() override;
+    std::unique_ptr<Unit> makeUnit() override;
 };
 
 } // namespace uaiso

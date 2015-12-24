@@ -32,6 +32,7 @@
 namespace uaiso {
 
 class AstLocator;
+class Builtins;
 class IncrementalLexer;
 class Sanitizer;
 class Syntax;
@@ -43,17 +44,17 @@ class UAISO_API Factory
 public:
     virtual ~Factory();
 
-//    virtual LangName lang() = 0;
-
     virtual std::unique_ptr<AstLocator> makeAstLocator() = 0;
+
+    virtual std::unique_ptr<Builtins> makeBuiltins() = 0;
 
     virtual std::unique_ptr<IncrementalLexer> makeIncrementalLexer() = 0;
 
     virtual std::unique_ptr<Sanitizer> makeSanitizer() = 0;
 
-    virtual std::unique_ptr<TypeSystem> makeTypeSystem() = 0;
-
     virtual std::unique_ptr<Syntax> makeSyntax() = 0;
+
+    virtual std::unique_ptr<TypeSystem> makeTypeSystem() = 0;
 
     virtual std::unique_ptr<Unit> makeUnit() = 0;
 };

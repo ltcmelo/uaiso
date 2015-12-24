@@ -28,12 +28,18 @@
 #include "Go/GoSyntax.h"
 #include "Go/GoTypeSystem.h"
 #include "Go/GoUnit.h"
+#include "Semantic/Builtins.h"
 
 using namespace uaiso;
 
 std::unique_ptr<Unit> GoFactory::makeUnit()
 {
     return std::unique_ptr<Unit>(new GoUnit);
+}
+
+std::unique_ptr<Builtins> GoFactory::makeBuiltins()
+{
+    return std::unique_ptr<Builtins>(new Builtins);
 }
 
 std::unique_ptr<AstLocator> GoFactory::makeAstLocator()

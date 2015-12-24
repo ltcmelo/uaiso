@@ -21,25 +21,36 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_PYFACTORY_H__
-#define UAISO_PYFACTORY_H__
+#include "Semantic/Builtins.h"
+#include "Semantic/Symbol.h"
+#include "Semantic/Type.h"
+#include "Common/Util__.h"
+#include "Parsing/Lexeme.h"
+#include "Parsing/LexemeMap.h"
+#include <unordered_map>
 
-#include "Parsing/Factory.h"
+using namespace uaiso;
 
 namespace uaiso {
 
-class UAISO_API PyFactory final : public Factory
-{
-public:
-    std::unique_ptr<AstLocator> makeAstLocator() override;
-    std::unique_ptr<Builtins> makeBuiltins() override;
-    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
-    std::unique_ptr<Sanitizer> makeSanitizer() override;
-    std::unique_ptr<Syntax> makeSyntax() override;
-    std::unique_ptr<TypeSystem> makeTypeSystem() override;
-    std::unique_ptr<Unit> makeUnit() override;
-};
+extern std::unordered_map<std::uint16_t, const char*> tokenName; // Generated.
 
 } // namespace uaiso
 
-#endif
+Builtins::~Builtins()
+{}
+
+const char *Builtins::tokenSpell(Token tk) const
+{
+    return tokenName[tk];
+}
+
+std::vector<Builtins::FuncPtr> Builtins::valueConstructors(LexemeMap*) const
+{
+    return std::vector<FuncPtr>();
+}
+
+std::vector<std::string> Builtins::moduleNames() const
+{
+    return std::vector<std::string>();
+}

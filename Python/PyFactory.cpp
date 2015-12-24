@@ -28,6 +28,7 @@
 #include "Python/PySyntax.h"
 #include "Python/PyTypeSystem.h"
 #include "Python/PyUnit.h"
+#include "Python/PyBuiltins.h"
 
 using namespace uaiso;
 
@@ -39,6 +40,11 @@ std::unique_ptr<Unit> PyFactory::makeUnit()
 std::unique_ptr<AstLocator> PyFactory::makeAstLocator()
 {
     return std::unique_ptr<AstLocator>(new PyAstLocator);
+}
+
+std::unique_ptr<Builtins> PyFactory::makeBuiltins()
+{
+    return std::unique_ptr<Builtins>(new PyBuiltins);
 }
 
 std::unique_ptr<IncrementalLexer> PyFactory::makeIncrementalLexer()

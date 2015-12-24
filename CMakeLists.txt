@@ -180,6 +180,8 @@ set(UAISO_SOURCES
     # Python
     ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyAstLocator.cpp
     ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyAstLocator.h
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyBuiltins.cpp
+    ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/Pybuiltins.h
     ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyFactory.cpp
     ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyFactory.h
     ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyIncrementalLexer.cpp
@@ -201,6 +203,8 @@ set(UAISO_SOURCES
     # Semantic
     ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/Binder.cpp
     ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/Binder.h
+    ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/Builtins.cpp
+    ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/Builtins.h
     ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/CompletionProposer.cpp
     ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/CompletionProposer.h
     ${PROJECT_SOURCE_DIR}/${SEMANTIC_PATH}/DeclAttrs.h

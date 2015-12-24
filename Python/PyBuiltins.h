@@ -21,23 +21,21 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_PYFACTORY_H__
-#define UAISO_PYFACTORY_H__
+#ifndef UAISO_PYBUILTINS_H__
+#define UAISO_PYBUILTINS_H__
 
-#include "Parsing/Factory.h"
+#include "Semantic/Builtins.h"
 
 namespace uaiso {
 
-class UAISO_API PyFactory final : public Factory
+class UAISO_API PyBuiltins final : public Builtins
 {
 public:
-    std::unique_ptr<AstLocator> makeAstLocator() override;
-    std::unique_ptr<Builtins> makeBuiltins() override;
-    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
-    std::unique_ptr<Sanitizer> makeSanitizer() override;
-    std::unique_ptr<Syntax> makeSyntax() override;
-    std::unique_ptr<TypeSystem> makeTypeSystem() override;
-    std::unique_ptr<Unit> makeUnit() override;
+    const char* tokenSpell(Token tk) const override;
+
+    std::vector<Builtins::FuncPtr> valueConstructors(LexemeMap* lexemes) const override;
+
+    std::vector<std::string> moduleNames() const override;
 };
 
 } // namespace uaiso

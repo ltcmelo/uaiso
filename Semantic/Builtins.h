@@ -21,23 +21,56 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_PYFACTORY_H__
-#define UAISO_PYFACTORY_H__
+#ifndef UAISO_BUILTINS_H__
+#define UAISO_BUILTINS_H__
 
-#include "Parsing/Factory.h"
+#include "Common/Config.h"
+#include "Parsing/Token.h"
+#include <memory>
+#include <vector>
 
 namespace uaiso {
 
-class UAISO_API PyFactory final : public Factory
+class Func;
+class LexemeMap;
+
+/*!
+ * \brief The Builtins class
+ */
+class UAISO_API Builtins
 {
 public:
-    std::unique_ptr<AstLocator> makeAstLocator() override;
-    std::unique_ptr<Builtins> makeBuiltins() override;
-    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
-    std::unique_ptr<Sanitizer> makeSanitizer() override;
-    std::unique_ptr<Syntax> makeSyntax() override;
-    std::unique_ptr<TypeSystem> makeTypeSystem() override;
-    std::unique_ptr<Unit> makeUnit() override;
+    virtual ~Builtins();
+
+    /*!
+     * \brief tokenSpell
+     * \param tk
+     * \return
+     *
+     * Return the actual spelling of a token in a given language.
+     *
+     * \remarks Tokens are unified, based on their typical meaning (see
+     * Tokens.def). This is a hook to circumvent this issue.
+     */
+    virtual const char* tokenSpell(Token tk) const;
+
+    using FuncPtr = std::unique_ptr<Func>;
+
+    /*!
+     * \brief valueConstructors
+     * \return
+     *
+     * Return a list of all builtin value constructors.
+     */
+    virtual std::vector<FuncPtr> valueConstructors(LexemeMap* lexemes) const;
+
+    /*!
+     * \brief moduleNames
+     * \return
+     *
+     * Return a list of all builtin module names.
+     */
+    virtual std::vector<std::string> moduleNames() const;
 };
 
 } // namespace uaiso
