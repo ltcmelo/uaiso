@@ -37,7 +37,7 @@ enum class TypeQualFlag : char
     Volatile    = 0x1 << 4
 };
 
-UAISO_FLAGGED_ENUM(TypeQualFlag)
+UAISO_FLAGGED_ENUM(TypeQualFlag);
 
 } // namespace uaiso
 

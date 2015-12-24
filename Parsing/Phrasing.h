@@ -50,7 +50,7 @@ public:
         Unterminated      = 0x1,
         Joined            = 0x1 << 1
     };
-    UAISO_FLAGGED_ENUM(TokenFlag)
+    UAISO_FLAGGED_ENUM(TokenFlag);
 
     void append(Token tk, const LineCol& lineCol, int len);
 

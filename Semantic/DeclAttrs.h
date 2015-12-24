@@ -38,7 +38,7 @@ enum class DeclAttrFlag : uint16_t
     Pure        = 0x1 << 4
 };
 
-UAISO_FLAGGED_ENUM(DeclAttrFlag)
+UAISO_FLAGGED_ENUM(DeclAttrFlag);
 
 } // namespace uaiso
 

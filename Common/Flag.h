@@ -45,7 +45,7 @@ public:
         : flags_(underlyingType)
     {}
 
-    operator bool() { return static_cast<UnderType>(flags_) != 0; }
+    operator UnderType() { return flags_; }
 
     Flags operator|(EnumT e) const
     {
@@ -72,7 +72,6 @@ public:
 
 } // namespace uaiso
 
-#define UAISO_FLAGGED_ENUM(NAME) \
-    using NAME##s = Flags<NAME>;
+#define UAISO_FLAGGED_ENUM(NAME) using NAME##s = Flags<NAME>
 
 #endif
