@@ -24,6 +24,7 @@
 #include "Python/PySanitizer.h"
 #include "Common/FileInfo.h"
 #include "Parsing/Lexeme.h"
+#include "Parsing/LexemeMap.h"
 
 using namespace uaiso;
 

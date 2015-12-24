@@ -24,6 +24,7 @@
 #ifndef UAISO_MANAGER_H__
 #define UAISO_MANAGER_H__
 
+#include "Common/Flag.h"
 #include "Common/LineCol.h"
 #include "Common/Pimpl.h"
 #include <cstdio>
@@ -53,6 +54,29 @@ public:
                 Snapshot snapshot);
 
     void addSearchPath(const std::string& searchPath);
+
+    /*!
+     * \brief The BehaviourFlag enum
+     */
+    enum class BehaviourFlag : uint8_t
+    {
+        None                = 0,
+        IgnoreBuiltinFuncs  = 0x1,
+        IgnoreSystemModules = 0x1 << 1,
+    };
+    UAISO_FLAGGED_ENUM(BehaviourFlag);
+
+    /*!
+     * \brief setBehavior
+     * \param flags
+     */
+    void setBehaviour(BehaviourFlags flags);
+
+    /*!
+     * \brief behavior
+     * \return
+     */
+    BehaviourFlags behaviour() const;
 
     /*!
      * \brief process

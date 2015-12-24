@@ -46,14 +46,15 @@ struct uaiso::Symbol::SymbolImpl
 
     struct BitFields
     {
-        uint64_t direction_ : 4;
-        uint64_t evaluation_ : 4;
-        uint64_t kind_ : 5;
-        uint64_t linkage_ : 4;
-        uint64_t storage_ : 4;
-        uint64_t visibility_ : 4;
-        uint64_t auto_ : 1;
-        uint64_t declAttrs_ : 10;
+        uint64_t direction_     : 4;
+        uint64_t evaluation_    : 4;
+        uint64_t kind_          : 5;
+        uint64_t linkage_       : 4;
+        uint64_t storage_       : 4;
+        uint64_t visibility_    : 4;
+        uint64_t auto_          : 1;
+        uint64_t declAttrs_     : 10;
+        uint64_t builtin_       : 1;
     };
     union
     {
@@ -87,6 +88,16 @@ void Symbol::setSourceLoc(const SourceLoc& loc)
 const SourceLoc& Symbol::sourceLoc() const
 {
     return impl_->sourceLoc_;
+}
+
+void Symbol::setIsBuiltin(bool isBuiltin)
+{
+    impl_->bit_.builtin_ = isBuiltin;
+}
+
+bool Symbol::isBuiltin() const
+{
+    return impl_->bit_.builtin_;
 }
 
     //--- DeclSymbol ---//

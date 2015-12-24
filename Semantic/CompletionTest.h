@@ -178,11 +178,15 @@ public:
     void reset() override
     {
         lineCol_ = { -1, -1 };
+        disableBuiltins_ = true;
+        disableSystemModules_ = true;
         dumpAst_ = false;
         dumpCompletions_ = false;
     }
 
     LineCol lineCol_;
+    bool disableBuiltins_ { true };
+    bool disableSystemModules_ { true };
     bool dumpAst_ { false };
     bool dumpCompletions_ { false };
 };

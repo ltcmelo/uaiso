@@ -97,7 +97,7 @@ const Ident* LexemeMap::self() const
 
 void LexemeMap::insertPredefined()
 {
-    P->self_ = insertOrFind<Ident>("self", "<predefined>", LineCol(-1, -1));
+    P->self_ = insertOrFind<Ident>("self", "<__predefined__>", LineCol(-1, -1));
 }
 
 template <class ValueT>

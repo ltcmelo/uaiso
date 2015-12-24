@@ -113,6 +113,12 @@ public:
      */
     virtual ImportMechanism importMechanism() const = 0;
 
+    /*!
+     * \brief sourceFileSuffix
+     * \return
+     *
+     * Return the conventional source file suffix.
+     */
     virtual std::string sourceFileSuffix() const = 0;
 
     virtual std::string packageSeparator() const;

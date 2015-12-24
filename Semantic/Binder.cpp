@@ -18,6 +18,7 @@
  *****************************************************************************/
 
 #include "Semantic/Binder.h"
+#include "Semantic/Builtins.h"
 #include "Semantic/DeclAttrs.h"
 #include "Semantic/Environment.h"
 #include "Semantic/Precision.h"
@@ -176,7 +177,9 @@ struct uaiso::Binder::BinderImpl
         , locator_(factory->makeAstLocator())
         , syntax_(factory->makeSyntax())
         , typeSystem_(factory->makeTypeSystem())
+        , builtins_(factory->makeBuiltins())
         , reports_(nullptr)
+        , bits_(0)
     {}
 
     Environment enterSubEnv()
@@ -251,11 +254,25 @@ struct uaiso::Binder::BinderImpl
     //! Language-specific type system.
     std::unique_ptr<const TypeSystem> typeSystem_;
 
+    //! Language-specific builtins.
+    std::unique_ptr<const Builtins> builtins_;
+
     //! Diagnostic reports collected.
     DiagnosticReports* reports_;
 
-    //! Module being constructed.
-    std::unique_ptr<Program> module_;
+    //! Program being constructed.
+    std::unique_ptr<Program> program_;
+
+    struct BitFields
+    {
+        uint32_t ignoreBuiltinFuncs_  : 1;
+        uint32_t ignoreSystemModules_ : 1;
+    };
+    union
+    {
+        BitFields bit_;
+        uint32_t bits_;
+    };
 };
 
 Binder::Binder(Factory* factory)
@@ -280,6 +297,16 @@ void Binder::collectDiagnostics(DiagnosticReports* reports)
     P->reports_ = reports;
 }
 
+void Binder::ignoreBuiltinFuncs()
+{
+    P->bit_.ignoreBuiltinFuncs_ = true;
+}
+
+void Binder::ignoreSystemModules()
+{
+    P->bit_.ignoreSystemModules_ = true;
+}
+
 std::unique_ptr<Program> Binder::bind(ProgramAst* progAst,
                                       const std::string& fullFileName)
 {
@@ -287,7 +314,7 @@ std::unique_ptr<Program> Binder::bind(ProgramAst* progAst,
     UAISO_ASSERT(!fullFileName.empty(), return std::unique_ptr<Program>());
 
     P->fileName_.assign(fullFileName);
-    P->module_.reset(new Program(P->fileName_));
+    P->program_.reset(new Program(P->fileName_));
 
     P->enterSubEnv();
 
@@ -303,11 +330,35 @@ std::unique_ptr<Program> Binder::bind(ProgramAst* progAst,
         }
     }
 
-    P->module_->setEnv(P->leaveEnv());
+    if (!P->bit_.ignoreBuiltinFuncs_)
+        bindBuiltinFuncs();
 
-    progAst->program_ = P->module_.get();
+    if (!P->bit_.ignoreSystemModules_)
+        importSystemModules();
 
-    return std::move(P->module_);
+    progAst->program_ = P->program_.get();
+    progAst->program_->setEnv(P->leaveEnv());
+
+    return std::move(P->program_);
+}
+
+void Binder::bindBuiltinFuncs()
+{
+    auto ctors = P->builtins_->valueConstructors(const_cast<LexemeMap*>(P->lexemes_));
+    for (auto& func : ctors) {
+        UAISO_ASSERT(func, return);
+        P->env_.insertType(std::move(func));
+    }
+}
+
+void Binder::importSystemModules()
+{
+    auto names = P->builtins_->moduleNames();
+    for (const auto& moduleName : names) {
+        std::unique_ptr<Import> import(new Import(FileInfo(P->fileName_).fullDir(),
+                                                  moduleName, nullptr, true));
+        P->env_.includeImport(std::move(import));
+    }
 }
 
     //-------------//
@@ -948,15 +999,15 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
 
     UAISO_ASSERT(ast->expr_.get(), return Abort);
     AstToLexeme pickupName(P->lexemes_);
-    const auto& baseLexemes = pickupName.process(ast->expr_.get());
+    const auto& baseLexs = pickupName.process(ast->expr_.get());
 
-    if (baseLexemes.empty()) {
+    if (baseLexs.empty()) {
         P->report(Diagnostic::UnresolvedModule, ast->expr_.get(), P->locator_.get());
         return Continue;
     }
 
     const std::string& moduleName =
-            joinLexemes(baseLexemes, P->syntax_->packageSeparator());
+            joinLexemes(baseLexs, P->syntax_->packageSeparator());
     DEBUG_TRACE("import module %s\n", moduleName.c_str());
 
     const Ident* localName = nullptr;

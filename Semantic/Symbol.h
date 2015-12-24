@@ -61,8 +61,40 @@ public:
 
     Kind kind() const;
 
+    /*!
+     * \brief setSourceLoc
+     * \param loc
+     *
+     * Set the symbol's source location.
+     */
     void setSourceLoc(const SourceLoc& loc);
+
+    /*!
+     * \brief sourceLoc
+     * \return
+     *
+     * Return the symbol's source location.
+     *
+     * \warning A builtin symbol has an empty source location.
+     */
     const SourceLoc& sourceLoc() const;
+
+    /*!
+     * \brief setIsBuiltin
+     * \param isBuiltin
+     *
+     * Set whether the symbol is a builtin. This means the symbol doesn't
+     * appear in a source file and therefore has no source location.
+     */
+    void setIsBuiltin(bool isBuiltin);
+
+    /*!
+     * \brief isBuiltin
+     * \return
+     *
+     * Return whether the symbol is a builtin.
+     */
+    bool isBuiltin() const;
 
 protected:
     Symbol(Symbol::Kind kind);

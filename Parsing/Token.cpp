@@ -29,6 +29,8 @@ namespace uaiso {
 
 extern std::unordered_map<std::uint16_t, const char*> tokenName; // Generated.
 
+// The proper token spelling for a given language may be obtained from
+// Builtins::tokenSpell.
 std::ostream& operator<<(std::ostream& os, Token tk)
 {
     os << tokenName[tk];

@@ -42,11 +42,44 @@ public:
     Binder(Factory* factory);
     ~Binder();
 
+    /*!
+     * \brief setLexemes
+     * \param lexemes
+     *
+     * Set the lexeme map.
+     */
     void setLexemes(const LexemeMap* lexemes);
 
+    /*!
+     * \brief setTokens
+     * \param tokens
+     *
+     * Set the token map.
+     */
     void setTokens(const TokenMap* tokens);
 
+    /*!
+     * \brief collectDiagnostics
+     * \param reports
+     *
+     * Set a diagnostic collector. If none is set, no diagnostics will be
+     * collected.
+     */
     void collectDiagnostics(DiagnosticReports* reports);
+
+    /*!
+     * \brief ignoreBuiltinFuncs
+     *
+     * Don't bind builtin functions.
+     */
+    void ignoreBuiltinFuncs();
+
+    /*!
+     * \brief ignoreBuiltinModules
+     *
+     * Don't import system modules.
+     */
+    void ignoreSystemModules();
 
     /*!
      * \brief bindProgram
@@ -62,6 +95,9 @@ private:
 
     friend class AstVisitor<Binder>;
     using Base = AstVisitor<Binder>;
+
+    void bindBuiltinFuncs();
+    void importSystemModules();
 
     template <class AstT>
     VisitResult keepTypeOfExprSpec(AstT* ast);

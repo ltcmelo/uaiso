@@ -56,6 +56,7 @@ struct uaiso::Manager::ManagerImpl
     Snapshot snapshot_;
     std::vector<std::string> searchPaths_;
     std::unique_ptr<Sanitizer> sanitizer_ { nullptr };
+    char behaviour_ { 0 };
 
     std::unique_ptr<Unit> parse(const std::string& code,
                                 FILE* file,
@@ -64,14 +65,17 @@ struct uaiso::Manager::ManagerImpl
     {
         std::unique_ptr<Unit> unit(factory_->makeUnit());
         unit->setFileName(fullFileName);
+
         if (file)
             unit->assignInput(file);
         else
             unit->assignInput(code);
+
         if (lineCol.isEmpty())
             unit->parse(tokens_, lexemes_);
         else
             unit->parse(tokens_, lexemes_, lineCol);
+
         if (file)
             fclose(file);
 
@@ -88,6 +92,11 @@ struct uaiso::Manager::ManagerImpl
         Binder binder(factory_);
         binder.setLexemes(lexemes_);
         binder.setTokens(tokens_);
+        Manager::BehaviourFlags flags(behaviour_);
+        if (flags & BehaviourFlag::IgnoreBuiltinFuncs)
+            binder.ignoreBuiltinFuncs();
+        if (flags & BehaviourFlag::IgnoreSystemModules)
+            binder.ignoreSystemModules();
         return binder.bind(Program_Cast(unit->ast()), unit->fileName());
     }
 };
@@ -114,6 +123,16 @@ void Manager::config(Factory *factory,
 void Manager::addSearchPath(const std::string& searchPath)
 {
     P->searchPaths_.push_back(searchPath);
+}
+
+void Manager::setBehaviour(BehaviourFlags flags)
+{
+    P->behaviour_ = flags;
+}
+
+Manager::BehaviourFlags Manager::behaviour() const
+{
+    return BehaviourFlags(P->behaviour_);
 }
 
 void Manager::processCore(Unit* unit)
