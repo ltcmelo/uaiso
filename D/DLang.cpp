@@ -21,23 +21,21 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGUAGE_H__
-#define UAISO_LANGUAGE_H__
+#include "D/DLang.h"
 
-namespace uaiso {
+using namespace uaiso;
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+std::string DLang::sourceFileSuffix() const
 {
-    D,
-    Go,
-    Py
-};
+    return ".d";
+}
 
-} // namespace uaiso
+DLang::Structure DLang::structure() const
+{
+    return DeclBased;
+}
 
-#endif
+DLang::ImportMechanism DLang::importMechanism() const
+{
+    return PerModule;
+}

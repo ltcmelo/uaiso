@@ -21,38 +21,33 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Python/PySyntax.h"
-#include "Python/PyKeywords.h"
+#ifndef UAISO_PYLANG_H__
+#define UAISO_PYLANG_H__
 
-using namespace uaiso;
+#include "Parsing/Lang.h"
 
-bool PySyntax::hasBlockLevelScope() const { return false; }
+namespace uaiso {
 
-bool PySyntax::hasExecutableRecord() const { return true; }
-
-bool PySyntax::hasNewlineAsTerminator() const { return true; }
-
-PySyntax::Structure PySyntax::structure() const
+class UAISO_API PyLang final : public Lang
 {
-    return StmtBased;
-}
+public:
+    bool hasBlockLevelScope() const override;
 
-PySyntax::ImportMechanism PySyntax::importMechanism() const
-{
-    return PerModule;
-}
+    bool hasExecutableRecord() const override;
 
-std::string PySyntax::sourceFileSuffix() const
-{
-    return ".py";
-}
+    bool hasNewlineAsTerminator() const override;
 
-Token PySyntax::classifyIdent(const char* spell, size_t length) const
-{
-    return PyKeywords::classify(spell, length);
-}
+    Structure structure() const override;
 
-bool PySyntax::isStrLitQuote(char ch) const
-{
-    return ch == '"' || ch == '\'';
-}
+    ImportMechanism importMechanism() const override;
+
+    std::string sourceFileSuffix() const override;
+
+    Token classifyIdent(const char* spell, size_t length) const override;
+
+    bool isStrLitQuote(char ch) const override;
+};
+
+} // namespace uaiso
+
+#endif

@@ -21,8 +21,8 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_SYNTAX_H__
-#define UAISO_SYNTAX_H__
+#ifndef UAISO_LANG_H__
+#define UAISO_LANG_H__
 
 #include "Common/Config.h"
 #include "Parsing/Token.h"
@@ -31,14 +31,14 @@
 namespace uaiso {
 
 /*!
- * \brief The Syntax class
+ * \brief The Lang class
  *
- * General characteristics of a language and of its syntax.
+ * Characteristics of a programming language.
  */
-class UAISO_API Syntax
+class UAISO_API Lang
 {
 public:
-    virtual ~Syntax();
+    virtual ~Lang();
 
     /*!
      * \brief hasBlockLevelScope

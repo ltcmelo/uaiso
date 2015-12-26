@@ -31,7 +31,7 @@
 
 namespace uaiso {
 
-class Syntax;
+class Lang;
 
 /*!
  * \brief The PyLexer class
@@ -68,7 +68,7 @@ private:
     };
 
     std::stack<size_t> indentStack_;
-    std::unique_ptr<Syntax> syntax_;
+    std::unique_ptr<Lang> lang_;
 };
 
 } // namespace uaiso

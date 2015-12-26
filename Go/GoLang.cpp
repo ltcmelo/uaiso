@@ -21,21 +21,21 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "D/DSyntax.h"
+#include "Go/GoLang.h"
 
 using namespace uaiso;
 
-std::string DSyntax::sourceFileSuffix() const
+std::string GoLang::sourceFileSuffix() const
 {
-    return ".d";
+    return ".go";
 }
 
-DSyntax::Structure DSyntax::structure() const
+GoLang::Structure GoLang::structure() const
 {
     return DeclBased;
 }
 
-DSyntax::ImportMechanism DSyntax::importMechanism() const
+GoLang::ImportMechanism GoLang::importMechanism() const
 {
-    return PerModule;
+    return PerPackage;
 }

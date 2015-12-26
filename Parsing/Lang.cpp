@@ -21,73 +21,73 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 #include <cctype>
 
 using namespace uaiso;
 
-Syntax::~Syntax()
+Lang::~Lang()
 {}
 
-bool Syntax::hasBlockLevelScope() const { return true; }
+bool Lang::hasBlockLevelScope() const { return true; }
 
-bool Syntax::hasFuncLevelScope() const { return true; }
+bool Lang::hasFuncLevelScope() const { return true; }
 
-bool Syntax::hasExecutableRecord() const { return false; }
+bool Lang::hasExecutableRecord() const { return false; }
 
-bool Syntax::hasNewlineAsTerminator() const { return false; }
+bool Lang::hasNewlineAsTerminator() const { return false; }
 
-std::string Syntax::packageSeparator() const
+std::string Lang::packageSeparator() const
 {
     return ".";
 }
 
-std::string Syntax::memberAccessOprtr() const
+std::string Lang::memberAccessOprtr() const
 {
     return ".";
 }
 
-std::string Syntax::funcCallDelim() const
+std::string Lang::funcCallDelim() const
 {
     return "(";
 }
 
-bool Syntax::isIdentFirstChar(char ch) const
+bool Lang::isIdentFirstChar(char ch) const
 {
     return std::isalpha(ch) || ch == '_';
 }
 
-bool Syntax::isIdentChar(char ch) const
+bool Lang::isIdentChar(char ch) const
 {
     return std::isalnum(ch) || ch == '_';
 }
 
-Token Syntax::classifyIdent(const char* spell, size_t len) const
+Token Lang::classifyIdent(const char* spell, size_t len) const
 {
     return TK_IDENTIFIER;
 }
 
-bool Syntax::isStrLitQuote(char ch) const
+bool Lang::isStrLitQuote(char ch) const
 {
     return ch == '"';
 }
 
-bool Syntax::isOctalPrefix(char ch) const
+bool Lang::isOctalPrefix(char ch) const
 {
     return ch == 'o' || ch == 'O';
 }
 
-bool Syntax::isHexPrefix(char ch) const
+bool Lang::isHexPrefix(char ch) const
 {
     return ch == 'x' || ch == 'X';
 }
 
-bool Syntax::isBinPrefix(char ch) const
+bool Lang::isBinPrefix(char ch) const
 {
     return ch == 'b' || ch == 'B';
 }
 
-bool Syntax::isExponent(char ch) const
+bool Lang::isExponent(char ch) const
 {
     return ch == 'e' || ch == 'E';
 }

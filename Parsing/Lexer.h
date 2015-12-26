@@ -33,7 +33,7 @@
 namespace uaiso {
 
 class ParsingContext;
-class Syntax;
+class Lang;
 
 /*!
  * \brief The Lexer class
@@ -85,9 +85,9 @@ protected:
     void consumeChar(size_t dist = 0);
     char consumeCharPeekNext(size_t dist = 0);
 
-    Token lexStrLit(char& ch, const char quote, const bool mayBreak, const Syntax* syntax);
-    Token lexIdentOrKeyword(char& ch, const Syntax* syntax);
-    Token lexNumLit(char& ch, const Syntax* syntax);
+    Token lexStrLit(char& ch, const char quote, const bool mayBreak, const Lang* lang);
+    Token lexIdentOrKeyword(char& ch, const Lang* lang);
+    Token lexNumLit(char& ch, const Lang* lang);
 
     bool inCompletionArea() const;
     bool maybeRealizeCompletion();

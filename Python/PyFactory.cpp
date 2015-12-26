@@ -25,7 +25,7 @@
 #include "Python/PyAstLocator.h"
 #include "Python/PyIncrementalLexer.h"
 #include "Python/PySanitizer.h"
-#include "Python/PySyntax.h"
+#include "Python/PyLang.h"
 #include "Python/PyTypeSystem.h"
 #include "Python/PyUnit.h"
 #include "Python/PyBuiltins.h"
@@ -62,7 +62,7 @@ std::unique_ptr<TypeSystem> PyFactory::makeTypeSystem()
     return std::unique_ptr<TypeSystem>(new PyTypeSystem);
 }
 
-std::unique_ptr<Syntax> PyFactory::makeSyntax()
+std::unique_ptr<Lang> PyFactory::makeLang()
 {
-    return std::unique_ptr<Syntax>(new PySyntax);
+    return std::unique_ptr<Lang>(new PyLang);
 }

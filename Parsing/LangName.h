@@ -21,21 +21,21 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_GOSYNTAX_H__
-#define UAISO_GOSYNTAX_H__
-
-#include "Parsing/Syntax.h"
+#ifndef UAISO_LANGNAME_H__
+#define UAISO_LANGNAME_H__
 
 namespace uaiso {
 
-class UAISO_API GoSyntax final : public Syntax
+/*!
+ * \brief The LangName enum
+ *
+ * An enumeration with supported language's name
+ */
+enum class LangName : char
 {
-public:
-    std::string sourceFileSuffix() const override;
-
-    Structure structure() const override;
-
-    ImportMechanism importMechanism() const override;
+    D,
+    Go,
+    Py
 };
 
 } // namespace uaiso

@@ -21,31 +21,21 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_PYSYNTAX_H__
-#define UAISO_PYSYNTAX_H__
+#ifndef UAISO_GOLANG_H__
+#define UAISO_GOLANG_H__
 
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 
 namespace uaiso {
 
-class UAISO_API PySyntax final : public Syntax
+class UAISO_API GoLang final : public Lang
 {
 public:
-    bool hasBlockLevelScope() const override;
-
-    bool hasExecutableRecord() const override;
-
-    bool hasNewlineAsTerminator() const override;
+    std::string sourceFileSuffix() const override;
 
     Structure structure() const override;
 
     ImportMechanism importMechanism() const override;
-
-    std::string sourceFileSuffix() const override;
-
-    Token classifyIdent(const char* spell, size_t length) const override;
-
-    bool isStrLitQuote(char ch) const override;
 };
 
 } // namespace uaiso

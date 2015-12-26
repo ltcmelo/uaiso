@@ -38,12 +38,12 @@
 #include "Common/FileInfo.h"
 #include "Common/Trace__.h"
 #include "Parsing/Factory.h"
-#include "Parsing/Language.h"
+#include "Parsing/LangName.h"
 #include "Parsing/Diagnostic.h"
 #include "Parsing/Lexeme.h"
 #include "Parsing/LexemeMap.h"
 #include "Parsing/SourceLoc.h"
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 #include "Parsing/Token.h"
 #include "Parsing/TokenMap.h"
 #include "Parsing/Unit.h"
@@ -175,7 +175,7 @@ struct uaiso::Binder::BinderImpl
         , ownedBlocks_(0)
         , sanitizer_(factory->makeSanitizer())
         , locator_(factory->makeAstLocator())
-        , syntax_(factory->makeSyntax())
+        , lang_(factory->makeLang())
         , typeSystem_(factory->makeTypeSystem())
         , builtins_(factory->makeBuiltins())
         , reports_(nullptr)
@@ -248,8 +248,8 @@ struct uaiso::Binder::BinderImpl
     //! Language-specific AST locator.
     std::unique_ptr<const AstLocator> locator_;
 
-    //! Language-specific syntax.
-    std::unique_ptr<const Syntax> syntax_;
+    //! Language-specific lang.
+    std::unique_ptr<const Lang> lang_;
 
     //! Language-specific type system.
     std::unique_ptr<const TypeSystem> typeSystem_;
@@ -322,7 +322,7 @@ std::unique_ptr<Program> Binder::bind(ProgramAst* progAst,
     if (result == Continue) {
         result = traverseDecl(progAst->package_.get());
         if (result == Continue) {
-            result = traverseProgram(progAst, this, P->syntax_.get());
+            result = traverseProgram(progAst, this, P->lang_.get());
 
             // If everything finishes alright, stacks must be empty.
             UAISO_ASSERT(P->declTy_.empty(), {});
@@ -1007,7 +1007,7 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
     }
 
     const std::string& moduleName =
-            joinLexemes(baseLexs, P->syntax_->packageSeparator());
+            joinLexemes(baseLexs, P->lang_->packageSeparator());
     DEBUG_TRACE("import module %s\n", moduleName.c_str());
 
     const Ident* localName = nullptr;
@@ -1024,7 +1024,7 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
 
     // By default, if local name is empty, assign the module name to it.
     if (!localName) {
-        auto pos = moduleName.find_last_of(P->syntax_->packageSeparator());
+        auto pos = moduleName.find_last_of(P->lang_->packageSeparator());
         auto moduleLocalName = moduleName.substr(pos == std::string::npos ? 0 : pos);
         localName = const_cast<LexemeMap*>(P->lexemes_)
                 ->insertOrFind<Ident>(moduleLocalName, P->fileName_, ast->asLoc_.lineCol());
@@ -1250,7 +1250,7 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
 
     P->sym_.push(std::move(func));
 
-    if (P->syntax_->hasFuncLevelScope())
+    if (P->lang_->hasFuncLevelScope())
         P->enterSubEnv();
 
     VIS_CALL(traverseSpec(ast->spec_.get()));
@@ -1271,7 +1271,7 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
         VIS_CALL(traverseStmt(ast->stmt_.get()));
     }
 
-    if (P->syntax_->hasFuncLevelScope())
+    if (P->lang_->hasFuncLevelScope())
         func->setEnv(P->leaveEnv());
     else
         func->setEnv(P->env_);
@@ -1460,7 +1460,7 @@ Binder::VisitResult Binder::traverseBlockStmt(BlockStmtAst* ast)
     bool selfEnv = false;
     if (P->ownedBlocks_ > 0) {
         --P->ownedBlocks_;
-    } else if (P->syntax_->hasBlockLevelScope()) {
+    } else if (P->lang_->hasBlockLevelScope()) {
         P->enterSubEnv();
         selfEnv = true;
     }

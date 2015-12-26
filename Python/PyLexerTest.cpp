@@ -22,7 +22,7 @@
 /*--------------------------*/
 
 #include "Python/PyLexer.h"
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 #include "Parsing/ParsingContext.h"
 #include "Parsing/Phrasing.h"
 #include <iterator>

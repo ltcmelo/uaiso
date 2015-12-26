@@ -25,7 +25,7 @@
 #include "D/DAstLocator.h"
 #include "D/DIncrementalLexer.h"
 #include "D/DSanitizer.h"
-#include "D/DSyntax.h"
+#include "D/DLang.h"
 #include "D/DTypeSystem.h"
 #include "D/DUnit.h"
 #include "Semantic/Builtins.h"
@@ -62,7 +62,7 @@ std::unique_ptr<TypeSystem> DFactory::makeTypeSystem()
     return std::unique_ptr<TypeSystem>(new DTypeSystem);
 }
 
-std::unique_ptr<Syntax> DFactory::makeSyntax()
+std::unique_ptr<Lang> DFactory::makeLang()
 {
-    return std::unique_ptr<Syntax>(new DSyntax);
+    return std::unique_ptr<Lang>(new DLang);
 }

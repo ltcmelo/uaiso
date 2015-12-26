@@ -544,8 +544,37 @@ z.
 
 void CompletionProposer::CompletionProposerTest::PyTestCase24()
 {
+    UAISO_SKIP_TEST;
+
+    std::string code = R"raw(
+i = 10
+i.
+# ^
+# |
+# complete at up-arrow (notice indentation spaces above)
+)raw";
+
+    lineCol_ = { 2, 2 };
+    disableBuiltins_ = false;
+    auto expected = { "skip" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase25()
 {
+    UAISO_SKIP_TEST;
+
+    std::string code = R"raw(
+i = int(10)
+i.
+# ^
+# |
+# complete at up-arrow (notice indentation spaces above)
+)raw";
+
+    lineCol_ = { 2, 2 };
+    disableBuiltins_ = false;
+    disableSystemModules_ = false;
+    auto expected { "skip" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }

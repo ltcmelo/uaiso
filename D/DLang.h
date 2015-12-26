@@ -21,14 +21,14 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_DSYNTAX_H__
-#define UAISO_DSYNTAX_H__
+#ifndef UAISO_DLANG_H__
+#define UAISO_DLANG_H__
 
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 
 namespace uaiso {
 
-class UAISO_API DSyntax final : public Syntax
+class UAISO_API DLang final : public Lang
 {
 public:
     std::string sourceFileSuffix() const override;

@@ -1786,7 +1786,7 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
     auto dictOrSet = makeAst<ArrayInitExprAst>();
     // DESIGN: Differentiate a set literal, '{1, 2}', from a list literal,
     // '(1, 2)'. Both are parsed as ArrayInitExprAst. Perhaps add a variety
-    // to the AST or handle through Syntax.
+    // to the AST or handle through Lang.
     dictOrSet->setLDelimLoc(lastLoc_);
     if (maybeConsume(TK_RBRACE)) {
         dictOrSet->setRDelimLoc(lastLoc_);

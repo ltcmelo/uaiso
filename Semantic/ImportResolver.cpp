@@ -28,7 +28,7 @@
 #include "Common/Trace__.h"
 #include "Tinydir/Tinydir.h"
 #include "Parsing/Factory.h"
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 #include "StringUtils/predicate.hpp"
 #include <fstream>
 #include <iostream>
@@ -41,22 +41,22 @@ using namespace str;
 struct ImportResolver::ImportResolverImpl
 {
     ImportResolverImpl(Factory* factory)
-        : syntax_(factory->makeSyntax())
+        : lang_(factory->makeLang())
     {}
 
     std::vector<std::string> searchFile(std::string relPath,
                                         const std::string& basePath)
     {
-        auto pos = relPath.find(syntax_->packageSeparator());
+        auto pos = relPath.find(lang_->packageSeparator());
         while (pos != std::string::npos) {
             relPath.replace(pos, 1, std::string(1, FileInfo::dirSeparator()));
-            pos = relPath.find(syntax_->packageSeparator(), pos + 1);
+            pos = relPath.find(lang_->packageSeparator(), pos + 1);
         }
 
         std::vector<std::string> result;
 
-        if (syntax_->importMechanism() == Syntax::PerModule) {
-            auto moduleFile = basePath + relPath + syntax_->sourceFileSuffix();
+        if (lang_->importMechanism() == Lang::PerModule) {
+            auto moduleFile = basePath + relPath + lang_->sourceFileSuffix();
             DEBUG_TRACE("search module import %s\n", moduleFile.c_str());
             std::ifstream ifs(moduleFile);
             if (ifs.is_open()) {
@@ -77,7 +77,7 @@ struct ImportResolver::ImportResolverImpl
 
             std::string fileInDirName(fileInDir.name);
             if (!fileInDir.is_dir
-                    && iends_with(fileInDirName, syntax_->sourceFileSuffix())) {
+                    && iends_with(fileInDirName, lang_->sourceFileSuffix())) {
                 result.emplace_back(dirPath + "/" + fileInDirName);
                 DEBUG_TRACE("package file %s found\n",
                             (dirPath + "/" + fileInDirName).c_str());
@@ -89,7 +89,7 @@ struct ImportResolver::ImportResolverImpl
         return result;
     }
 
-    std::unique_ptr<Syntax> syntax_;
+    std::unique_ptr<Lang> lang_;
 };
 
 ImportResolver::ImportResolver(Factory *factory)

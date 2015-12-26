@@ -33,7 +33,7 @@
 #include "Parsing/Factory.h"
 #include "Parsing/Lexeme.h"
 #include "Parsing/LexemeMap.h"
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 #include <iostream>
 #include <stack>
 #include <vector>
@@ -54,8 +54,8 @@ class CompletionContext final : public AstVisitor<CompletionContext>
 public:
     using Base = AstVisitor<CompletionContext>;
 
-    CompletionContext(const Syntax* syntax)
-        : syntax_(syntax)
+    CompletionContext(const Lang* lang)
+        : lang_(lang)
     {}
 
     bool analyse(const ProgramAst* progAst,
@@ -67,7 +67,7 @@ public:
         lexemes_ = lexemes;
         env_ = env;
 
-        auto result = traverseProgram(progAst, this, syntax_);
+        auto result = traverseProgram(progAst, this, lang_);
 
         return result == Abort;
     }
@@ -77,7 +77,7 @@ public:
     std::stack<Ast*> asts_;
     size_t collectName_ { 0 }; // Collect names only when it matters.
     std::vector<const Ident*> name_;
-    const Syntax* syntax_ { nullptr };
+    const Lang* lang_ { nullptr };
 
     VisitResult visitCompletionName(CompletionNameAst*)
     {
@@ -160,7 +160,7 @@ public:
 
     VisitResult traverseFuncDecl(FuncDeclAst* ast)
     {
-        if (syntax_->hasFuncLevelScope()) {
+        if (lang_->hasFuncLevelScope()) {
             ENSURE_ANNOTATED_SYMBOL;
             env_ = ast->sym_->env();
             VIS_CALL(Base::traverseFuncDecl(ast));
@@ -176,7 +176,7 @@ public:
         // The environment of a block stmt might be the shared with its
         // parent. If that's the case, it's been entered already.
         if (env_ == ast->env_
-                || !syntax_->hasBlockLevelScope()) {
+                || !lang_->hasBlockLevelScope()) {
             VIS_CALL(Base::traverseBlockStmt(ast));
         } else {
             env_ = ast->env_;
@@ -192,11 +192,11 @@ public:
 struct uaiso::CompletionProposer::CompletionProposerImpl
 {
     CompletionProposerImpl(Factory* factory)
-        : syntax_(factory->makeSyntax())
+        : lang_(factory->makeLang())
     {}
 
-    //! Language-specific syntax.
-    std::unique_ptr<const Syntax> syntax_;
+    //! Language-specific lang.
+    std::unique_ptr<const Lang> lang_;
 };
 
 CompletionProposer::CompletionProposer(Factory *factory)
@@ -214,7 +214,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
     UAISO_ASSERT(progAst->program_,
                  return std::make_pair(Symbols(), CompletionAstNotFound));
 
-    CompletionContext context(P->syntax_.get());
+    CompletionContext context(P->lang_.get());
     auto ok = context.analyse(progAst, lexemes, progAst->program_->env());
 
     if (!ok) {

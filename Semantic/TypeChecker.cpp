@@ -30,7 +30,7 @@
 #include "Parsing/Lexeme.h"
 #include "Parsing/Token.h"
 #include "Parsing/TokenMap.h"
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 #include <iostream>
 #include <stack>
 
@@ -62,7 +62,7 @@ struct uaiso::TypeChecker::TypeCheckerImpl
         , keepSym_(false)
         , locator_(factory->makeAstLocator())
         , typeSystem_(factory->makeTypeSystem())
-        , syntax_(factory->makeSyntax())
+        , lang_(factory->makeLang())
         , reports_(nullptr)
     {}
 
@@ -128,8 +128,8 @@ struct uaiso::TypeChecker::TypeCheckerImpl
     //! Language-specific type system.
     std::unique_ptr<const TypeSystem> typeSystem_;
 
-    //! Language-specific syntax.
-    std::unique_ptr<const Syntax> syntax_;
+    //! Language-specific lang.
+    std::unique_ptr<const Lang> lang_;
 
     //! Diagnostic reports collected.
     DiagnosticReports* reports_;
@@ -164,7 +164,7 @@ void TypeChecker::check(ProgramAst *progAst)
 
     P->env_ = progAst->program_->env();
 
-    traverseProgram(progAst, this, P->syntax_.get());
+    traverseProgram(progAst, this, P->lang_.get());
 }
 
 void TypeChecker::check(FuncDeclAst* ast)
@@ -368,7 +368,7 @@ TypeChecker::VisitResult TypeChecker::traverseFuncDecl(FuncDeclAst* ast)
 {
     ENSURE_VALID_TYPE_SYMBOL;
 
-    if (P->syntax_->hasFuncLevelScope()) {
+    if (P->lang_->hasFuncLevelScope()) {
         P->env_ = ast->sym_->env();
         VIS_CALL(Base::traverseFuncDecl(ast));
         P->env_ = P->env_.outerEnv();
@@ -1305,7 +1305,7 @@ TypeChecker::VisitResult TypeChecker::traverseBlockStmt(BlockStmtAst* ast)
     // The environment of a block stmt might be the shared with its
     // parent. If that's the case, it's been entered already.
     if (P->env_ == ast->env_
-            || !P->syntax_->hasBlockLevelScope()) {
+            || !P->lang_->hasBlockLevelScope()) {
         VIS_CALL(Base::traverseBlockStmt(ast));
     } else {
         P->env_ = ast->env_;

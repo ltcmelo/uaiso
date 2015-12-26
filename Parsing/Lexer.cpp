@@ -23,7 +23,7 @@
 
 #include "Parsing/Lexer.h"
 #include "Parsing/ParsingContext.h"
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 #include "Common/Assert.h"
 #include <cctype>
 #include <iostream>
@@ -102,7 +102,7 @@ char Lexer::consumeCharPeekNext(size_t dist)
 }
 
 Token Lexer::lexStrLit(char& ch, const char quote, const bool mayBreak,
-                       const Syntax* syntax)
+                       const Lang* lang)
 {
     while (ch && ch != quote) {
         if (ch == '\\') {
@@ -120,25 +120,25 @@ Token Lexer::lexStrLit(char& ch, const char quote, const bool mayBreak,
     return TK_STRING_LITERAL;
 }
 
-Token Lexer::lexIdentOrKeyword(char& ch, const Syntax* syntax)
+Token Lexer::lexIdentOrKeyword(char& ch, const Lang* lang)
 {
-    UAISO_ASSERT(syntax->isIdentFirstChar(ch), return TK_INVALID);
+    UAISO_ASSERT(lang->isIdentFirstChar(ch), return TK_INVALID);
 
     ch = consumeCharPeekNext();
-    while (syntax->isIdentChar(ch))
+    while (lang->isIdentChar(ch))
         ch = consumeCharPeekNext();
 
-    return syntax->classifyIdent(mark_, curr_ - mark_);
+    return lang->classifyIdent(mark_, curr_ - mark_);
 }
 
-Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
+Token Lexer::lexNumLit(char& ch, const Lang* lang)
 {
     UAISO_ASSERT(std::isdigit(ch) || ch == '.', return TK_INVALID);
 
     if (ch == '0') {
         ch = consumeCharPeekNext();
         // Octal
-        if (syntax->isOctalPrefix(ch)) {
+        if (lang->isOctalPrefix(ch)) {
             ch = consumeCharPeekNext();
             if (!(ch >= '0' && ch < '8'))
                 context_->trackReport(Diagnostic::InvalidOctalDigit, tokenLoc());
@@ -146,7 +146,7 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
                 ch = consumeCharPeekNext();
         }
         // Hex
-        if (syntax->isHexPrefix(ch)) {
+        if (lang->isHexPrefix(ch)) {
             ch = consumeCharPeekNext();
             if (!std::isxdigit(ch))
                 context_->trackReport(Diagnostic::InvalidHexDigit, tokenLoc());
@@ -154,7 +154,7 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
                 ch = consumeCharPeekNext();
         }
         // Bin
-        if (syntax->isBinPrefix(ch)) {
+        if (lang->isBinPrefix(ch)) {
             ch = consumeCharPeekNext();
             if (!(ch == '0' || ch == '1'))
                 context_->trackReport(Diagnostic::InvalidBinaryDigit, tokenLoc());
@@ -167,12 +167,12 @@ Token Lexer::lexNumLit(char& ch, const Syntax* syntax)
 
     while (ch && (std::isdigit(ch)
                   || ch == '.'
-                  || syntax->isExponent(ch))) {
+                  || lang->isExponent(ch))) {
         if (!std::isdigit(ch))
             tk = TK_FLOAT_LITERAL;
         const char prev = ch;
         ch = consumeCharPeekNext();
-        if (syntax->isExponent(prev) && (ch == '+' || ch == '-'))
+        if (lang->isExponent(prev) && (ch == '+' || ch == '-'))
             ch = consumeCharPeekNext();
     }
 

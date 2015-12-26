@@ -23,7 +23,7 @@
 
 #include "Python/PyParser.h"
 #include "Python/PyLexer.h"
-#include "Python/PySyntax.h"
+#include "Python/PyLang.h"
 #include "Ast/AstDumper.h"
 #include "Ast/AstSerializer.h"
 #include "Parsing/ParsingContext.h"

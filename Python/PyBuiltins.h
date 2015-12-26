@@ -33,7 +33,7 @@ class UAISO_API PyBuiltins final : public Builtins
 public:
     const char* tokenSpell(Token tk) const override;
 
-    std::vector<Builtins::FuncPtr> valueConstructors(LexemeMap* lexemes) const override;
+    std::vector<FuncPtr> valueConstructors(LexemeMap* lexemes) const override;
 
     std::vector<std::string> moduleNames() const override;
 };

@@ -25,7 +25,7 @@
 #define UAISO_FACTORY_H__
 
 #include "Common/Config.h"
-#include "Parsing/Language.h"
+#include "Parsing/LangName.h"
 #include <memory>
 #include <string>
 
@@ -35,7 +35,7 @@ class AstLocator;
 class Builtins;
 class IncrementalLexer;
 class Sanitizer;
-class Syntax;
+class Lang;
 class TypeSystem;
 class Unit;
 
@@ -52,7 +52,7 @@ public:
 
     virtual std::unique_ptr<Sanitizer> makeSanitizer() = 0;
 
-    virtual std::unique_ptr<Syntax> makeSyntax() = 0;
+    virtual std::unique_ptr<Lang> makeLang() = 0;
 
     virtual std::unique_ptr<TypeSystem> makeTypeSystem() = 0;
 

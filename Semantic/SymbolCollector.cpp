@@ -30,7 +30,7 @@
 #include "Parsing/Factory.h"
 #include "Parsing/Lexeme.h"
 #include "Parsing/LexemeMap.h"
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 #include <iterator>
 #include <unordered_set>
 
@@ -51,14 +51,14 @@ struct uaiso::SymbolCollector::SymbolCollectorImpl
 {
     SymbolCollectorImpl(Factory* factory)
         : locator_(factory->makeAstLocator())
-        , syntax_(factory->makeSyntax())
+        , lang_(factory->makeLang())
     {}
 
     //! Language-specific AST locator.
     std::unique_ptr<const AstLocator> locator_;
 
-    //! Language-specific syntax.
-    std::unique_ptr<const Syntax> syntax_;
+    //! Language-specific lang.
+    std::unique_ptr<const Lang> lang_;
 };
 
 SymbolCollector::SymbolCollector(Factory* factory)
@@ -104,12 +104,12 @@ class SymbolUseVisitor final : public AstVisitor<SymbolUseVisitor>
 public:
     SymbolUseVisitor(Environment env,
                      const AstLocator* locator,
-                     const Syntax* syntax,
+                     const Lang* lang,
                      const LexemeMap* lexemes,
                      const std::vector<SymbolCollector::MentionInfo>& defs)
         : env_(env)
         , locator_(locator)
-        , syntax_(syntax)
+        , lang_(lang)
         , lexemes_(lexemes)
     {
         // We want only uses that are not defs.
@@ -121,7 +121,7 @@ public:
 
     Environment env_;
     const AstLocator* locator_;
-    const Syntax* syntax_;
+    const Lang* lang_;
     const LexemeMap* lexemes_;
     std::vector<SymbolCollector::MentionInfo> refs_;
     std::unordered_set<LineCol> known_;
@@ -153,7 +153,7 @@ public:
         // The environment of a block stmt might be the shared with its
         // parent. If that's the case, it's been entered already.
         if (env_ == ast->env_
-                || !syntax_->hasBlockLevelScope()) {
+                || !lang_->hasBlockLevelScope()) {
             VIS_CALL(Base::traverseBlockStmt(ast));
         } else {
             env_ = ast->env_;
@@ -195,7 +195,7 @@ SymbolCollector::collectCore(ProgramAst* progAst, VisitorT& vis)
     UAISO_ASSERT(progAst, return Refs());
     UAISO_ASSERT(progAst->program_, return Refs());
 
-    traverseProgram(progAst, &vis, P->syntax_.get());
+    traverseProgram(progAst, &vis, P->lang_.get());
 
     return std::move(vis.refs_);
 }
@@ -213,7 +213,7 @@ SymbolCollector::collect(ProgramAst* progAst, const LexemeMap* lexemes)
     auto refs = collectDefs(progAst);
 
     SymbolUseVisitor vis(progAst->program_->env(), P->locator_.get(),
-                         P->syntax_.get(), lexemes, refs);
+                         P->lang_.get(), lexemes, refs);
     auto uses = collectCore(progAst, vis);
 
     refs.reserve(refs.size() + uses.size());

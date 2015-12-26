@@ -28,7 +28,7 @@
 #include "Ast/AstList.h"
 #include "Ast/AstBase.h"
 #include "Common/Assert.h"
-#include "Parsing/Syntax.h"
+#include "Parsing/Lang.h"
 
 namespace uaiso {
 
@@ -132,25 +132,25 @@ public:
 template <class AstVisitorT>
 typename AstVisitorT::VisitResult traverseProgram(const ProgramAst* progAst,
                                                   AstVisitorT* visitor,
-                                                  const Syntax* syntax)
+                                                  const Lang* lang)
 {
     typename AstVisitorT::VisitResult result = AstVisitorT::Continue;
-    switch (syntax->structure()) {
-    case Syntax::DeclBased:
+    switch (lang->structure()) {
+    case Lang::DeclBased:
         for (auto decl : *progAst->decls()) {
             result = visitor->traverseDecl(decl);
             if (result != AstVisitorT::Continue)
                 return result;
         }
         break;
-    case Syntax::StmtBased:
+    case Lang::StmtBased:
         for (auto stmt : *progAst->stmts()) {
             result = visitor->traverseStmt(stmt);
             if (result != AstVisitorT::Continue)
                 return result;
         }
         break;
-    case Syntax::ExprBased:
+    case Lang::ExprBased:
         break;
     }
     return result;

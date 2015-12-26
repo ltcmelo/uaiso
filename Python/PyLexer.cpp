@@ -22,7 +22,7 @@
 /*--------------------------*/
 
 #include "Python/PyLexer.h"
-#include "Python/PySyntax.h"
+#include "Python/PyLang.h"
 #include "Parsing/Lexeme.h"
 #include "Parsing/ParsingContext.h"
 #include "Common/Assert.h"
@@ -36,7 +36,7 @@ using namespace uaiso;
 
 PyLexer::PyLexer()
     : bits_(0)
-    , syntax_(new PySyntax)
+    , lang_(new PyLang)
 {
     bit_.atLineStart_ = true;
     indentStack_.push(0);
@@ -217,13 +217,13 @@ LexNextToken:
                 context_->trackLexeme<StrLit>(mark_, curr_ - mark_, LineCol(line_, col_));
                 break;
             }
-            tk = lexIdentOrKeyword(ch, syntax_.get());
+            tk = lexIdentOrKeyword(ch, lang_.get());
             if (tk == TK_IDENTIFIER)
                 context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
         // Certainly an identifier.
-        tk = lexIdentOrKeyword(ch, syntax_.get());
+        tk = lexIdentOrKeyword(ch, lang_.get());
         if (tk == TK_IDENTIFIER)
             context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
         break;
@@ -231,7 +231,7 @@ LexNextToken:
 
     case '.':
         if (std::isdigit(peekChar(1))) {
-            tk = lexNumLit(ch, syntax_.get());
+            tk = lexNumLit(ch, lang_.get());
             context_->trackLexeme<NumLit>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
@@ -340,14 +340,14 @@ LexNextToken:
         goto LexNextToken;
 
     default:
-        if (syntax_->isIdentFirstChar(ch)) {
-            tk = lexIdentOrKeyword(ch, syntax_.get());
+        if (lang_->isIdentFirstChar(ch)) {
+            tk = lexIdentOrKeyword(ch, lang_.get());
             if (tk == TK_IDENTIFIER)
                 context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
         if (std::isdigit(ch)) {
-            tk = lexNumLit(ch, syntax_.get());
+            tk = lexNumLit(ch, lang_.get());
             context_->trackLexeme<NumLit>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
@@ -385,7 +385,7 @@ Token PyLexer::lexStrLit(char& ch)
     }
 
     do {
-        Base::lexStrLit(ch, quote, triple, syntax_.get());
+        Base::lexStrLit(ch, quote, triple, lang_.get());
         if (!ch)
             break;
         ch = consumeCharPeekNext();
