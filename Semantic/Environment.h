@@ -117,7 +117,8 @@ public:
      * \param mergeEnv
      *
      * Inject namespace \a sym to this environment. If \a mergeEnv is true,
-     * symbols from \a sym will be available in this environment.
+     * symbols from \a sym will be available in this environment without
+     * the need of namespace qualification.
      */
     void injectNamespace(std::unique_ptr<Namespace> sym, bool mergeEnv);
 
