@@ -38,6 +38,7 @@
 #include "Parsing/Unit.h"
 #include <iostream>
 #include <stack>
+#include <unordered_set>
 
 #define TRACE_NAME "Manager"
 
@@ -189,6 +190,9 @@ void Manager::processDeps(const std::string& fullFileName) const
 
     std::stack<const Program*> progs;
     progs.push(P->snapshot_.find(fullFileName));
+    std::unordered_set<std::string> visited;
+    visited.insert(fullFileName);
+    DEBUG_TRACE("process dependencies of %s\n", fullFileName.c_str());
     while (!progs.empty()) {
         const Program* curProg = progs.top();
         progs.pop();
@@ -199,7 +203,11 @@ void Manager::processDeps(const std::string& fullFileName) const
         for (auto import : imports) {
             auto fileNames = resolver.resolve(import, P->searchPaths_);
             for (auto& fileName : fileNames) {
+                if (visited.count(fileName))
+                    continue;
+
                 Program* otherProg = P->snapshot_.find(fileName);
+                DEBUG_TRACE("found dependency %s\n", fileName.c_str());
                 if (!otherProg) {
                     FILE* file = fopen(fileName.c_str(), "r");
                     if (!file)
@@ -222,6 +230,7 @@ void Manager::processDeps(const std::string& fullFileName) const
                 space->setEnv(otherProg->env());
                 curProg->env().injectNamespace(std::move(space), import->mergeEnv());
                 progs.push(otherProg);
+                visited.insert(fileName);
             }
         }
     }
