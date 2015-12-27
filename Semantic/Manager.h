@@ -60,9 +60,9 @@ public:
      */
     enum class BehaviourFlag : uint8_t
     {
-        None                = 0,
-        IgnoreBuiltinFuncs  = 0x1,
-        IgnoreSystemModules = 0x1 << 1,
+        None                   = 0,
+        IgnoreBuiltins         = 0x1,
+        IgnoreAutomaticModules = 0x1 << 1,
     };
     UAISO_FLAGGED_ENUM(BehaviourFlag);
 

@@ -94,10 +94,10 @@ struct uaiso::Manager::ManagerImpl
         binder.setLexemes(lexemes_);
         binder.setTokens(tokens_);
         Manager::BehaviourFlags flags(behaviour_);
-        if (flags & BehaviourFlag::IgnoreBuiltinFuncs)
-            binder.ignoreBuiltinFuncs();
-        if (flags & BehaviourFlag::IgnoreSystemModules)
-            binder.ignoreSystemModules();
+        if (flags & BehaviourFlag::IgnoreBuiltins)
+            binder.ignoreBuiltins();
+        if (flags & BehaviourFlag::IgnoreAutomaticModules)
+            binder.ignoreAutomaticModules();
         return binder.bind(Program_Cast(unit->ast()), unit->fileName());
     }
 };

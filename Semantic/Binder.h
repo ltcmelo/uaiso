@@ -68,18 +68,18 @@ public:
     void collectDiagnostics(DiagnosticReports* reports);
 
     /*!
-     * \brief ignoreBuiltinFuncs
+     * \brief ignoreBuiltins
      *
      * Don't bind builtin functions.
      */
-    void ignoreBuiltinFuncs();
+    void ignoreBuiltins();
 
     /*!
-     * \brief ignoreBuiltinModules
+     * \brief ignoreAutomaticModules
      *
-     * Don't import system modules.
+     * Don't import automatic modules.
      */
-    void ignoreSystemModules();
+    void ignoreAutomaticModules();
 
     /*!
      * \brief bindProgram
@@ -96,8 +96,8 @@ private:
     friend class AstVisitor<Binder>;
     using Base = AstVisitor<Binder>;
 
-    void bindBuiltinFuncs();
-    void importSystemModules();
+    void insertBuiltins();
+    void importAutomaticModules();
 
     template <class AstT>
     VisitResult keepTypeOfExprSpec(AstT* ast);

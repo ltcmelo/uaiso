@@ -21,21 +21,27 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_PYBUILTINS_H__
-#define UAISO_PYBUILTINS_H__
+#ifndef UAISO_PYBUILTIN_H__
+#define UAISO_PYBUILTIN_H__
 
-#include "Semantic/Builtins.h"
+#include "Semantic/Builtin.h"
 
 namespace uaiso {
 
-class UAISO_API PyBuiltins final : public Builtins
+class UAISO_API PyBuiltin final : public Builtin
 {
 public:
     const char* tokenSpell(Token tk) const override;
 
     std::vector<FuncPtr> valueConstructors(LexemeMap* lexemes) const override;
 
-    std::vector<std::string> moduleNames() const override;
+    std::vector<FuncPtr> freeFuncs(LexemeMap* lexemes) const override;
+
+    std::vector<TypeDeclPtr> typeDecls(LexemeMap* lexemes) const override;
+
+    std::vector<BasePtr> implicitBases(LexemeMap* lexemes) const override;
+
+    std::vector<std::string> automaticModules() const override;
 };
 
 } // namespace uaiso

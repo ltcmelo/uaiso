@@ -28,7 +28,7 @@
 #include "D/DLang.h"
 #include "D/DTypeSystem.h"
 #include "D/DUnit.h"
-#include "Semantic/Builtins.h"
+#include "Semantic/Builtin.h"
 
 using namespace uaiso;
 
@@ -37,9 +37,9 @@ std::unique_ptr<Unit> DFactory::makeUnit()
     return std::unique_ptr<Unit>(new DUnit);
 }
 
-std::unique_ptr<Builtins> DFactory::makeBuiltins()
+std::unique_ptr<Builtin> DFactory::makeBuiltin()
 {
-    return std::unique_ptr<Builtins>(new Builtins);
+    return std::unique_ptr<Builtin>(new Builtin);
 }
 
 std::unique_ptr<AstLocator> DFactory::makeAstLocator()

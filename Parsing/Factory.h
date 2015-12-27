@@ -32,7 +32,7 @@
 namespace uaiso {
 
 class AstLocator;
-class Builtins;
+class Builtin;
 class IncrementalLexer;
 class Sanitizer;
 class Lang;
@@ -46,7 +46,7 @@ public:
 
     virtual std::unique_ptr<AstLocator> makeAstLocator() = 0;
 
-    virtual std::unique_ptr<Builtins> makeBuiltins() = 0;
+    virtual std::unique_ptr<Builtin> makeBuiltin() = 0;
 
     virtual std::unique_ptr<IncrementalLexer> makeIncrementalLexer() = 0;
 

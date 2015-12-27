@@ -1279,6 +1279,7 @@ TypeChecker::VisitResult TypeChecker::visitIdentExpr(IdentExprAst* ast)
             P->report(Diagnostic::UndeclaredIdentifier, ast->name_.get(), P->locator_.get());
             P->exprTy_.emplace(new InferredType);
         } else {
+            UAISO_ASSERT(tySym->type(), return Abort);
             P->exprTy_.emplace(tySym->type()->clone());
         }
     } else if (!valSym->valueType()) {

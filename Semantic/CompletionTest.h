@@ -99,6 +99,10 @@ public:
              , &CompletionProposerTest::PyTestCase23
              , &CompletionProposerTest::PyTestCase24
              , &CompletionProposerTest::PyTestCase25
+             , &CompletionProposerTest::PyTestCase26
+             , &CompletionProposerTest::PyTestCase27
+             , &CompletionProposerTest::PyTestCase28
+             , &CompletionProposerTest::PyTestCase29
              )
 
     //--- D ---//
@@ -169,6 +173,10 @@ public:
     void PyTestCase23();
     void PyTestCase24();
     void PyTestCase25();
+    void PyTestCase26();
+    void PyTestCase27();
+    void PyTestCase28();
+    void PyTestCase29();
 
     std::unique_ptr<Unit> runCore(std::unique_ptr<Factory> factory,
                                   const std::string& code,
@@ -179,14 +187,14 @@ public:
     {
         lineCol_ = { -1, -1 };
         disableBuiltins_ = true;
-        disableSystemModules_ = true;
+        disableAutoModules_ = true;
         dumpAst_ = false;
         dumpCompletions_ = false;
     }
 
     LineCol lineCol_;
     bool disableBuiltins_ { true };
-    bool disableSystemModules_ { true };
+    bool disableAutoModules_ { true };
     bool dumpAst_ { false };
     bool dumpCompletions_ { false };
 };

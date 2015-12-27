@@ -32,7 +32,7 @@ class UAISO_API GoFactory final : public Factory
 {
 public:
     std::unique_ptr<AstLocator> makeAstLocator() override;
-    std::unique_ptr<Builtins> makeBuiltins() override;
+    std::unique_ptr<Builtin> makeBuiltin() override;
     std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
     std::unique_ptr<Sanitizer> makeSanitizer() override;
     std::unique_ptr<Lang> makeLang() override;

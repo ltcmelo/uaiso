@@ -21,58 +21,51 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_BUILTINS_H__
-#define UAISO_BUILTINS_H__
+#include "Semantic/Builtin.h"
+#include "Semantic/Symbol.h"
+#include "Semantic/Type.h"
+#include "Common/Util__.h"
+#include "Parsing/Lexeme.h"
+#include "Parsing/LexemeMap.h"
+#include <unordered_map>
 
-#include "Common/Config.h"
-#include "Parsing/Token.h"
-#include <memory>
-#include <vector>
+using namespace uaiso;
 
 namespace uaiso {
 
-class Func;
-class LexemeMap;
-
-/*!
- * \brief The Builtins class
- */
-class UAISO_API Builtins
-{
-public:
-    virtual ~Builtins();
-
-    /*!
-     * \brief tokenSpell
-     * \param tk
-     * \return
-     *
-     * Return the actual spelling of a token in a given language.
-     *
-     * \remarks Tokens are unified, based on their typical meaning (see
-     * Tokens.def). This is a hook to circumvent this issue.
-     */
-    virtual const char* tokenSpell(Token tk) const;
-
-    using FuncPtr = std::unique_ptr<Func>;
-
-    /*!
-     * \brief valueConstructors
-     * \return
-     *
-     * Return a list of all builtin value constructors.
-     */
-    virtual std::vector<FuncPtr> valueConstructors(LexemeMap* lexemes) const;
-
-    /*!
-     * \brief moduleNames
-     * \return
-     *
-     * Return a list of all builtin module names.
-     */
-    virtual std::vector<std::string> moduleNames() const;
-};
+extern std::unordered_map<std::uint16_t, const char*> tokenName; // Generated.
 
 } // namespace uaiso
 
-#endif
+Builtin::~Builtin()
+{}
+
+const char* Builtin::tokenSpell(Token tk) const
+{
+    return tokenName[tk];
+}
+
+std::vector<Builtin::FuncPtr> Builtin::valueConstructors(LexemeMap*) const
+{
+    return std::vector<FuncPtr>();
+}
+
+std::vector<Builtin::FuncPtr> Builtin::freeFuncs(LexemeMap*) const
+{
+    return std::vector<FuncPtr>();
+}
+
+std::vector<Builtin::TypeDeclPtr> Builtin::typeDecls(LexemeMap*) const
+{
+    return std::vector<TypeDeclPtr>();
+}
+
+std::vector<Builtin::BasePtr> Builtin::implicitBases(LexemeMap*) const
+{
+    return std::vector<BasePtr>();
+}
+
+std::vector<std::string> Builtin::automaticModules() const
+{
+    return std::vector<std::string>();
+}

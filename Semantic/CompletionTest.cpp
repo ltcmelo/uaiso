@@ -59,9 +59,9 @@ CompletionProposer::CompletionProposerTest::runCore(
     manager.config(factory.get(), &tokens, &lexemes, snapshot);
     Manager::BehaviourFlags flags = 0;
     if (disableBuiltins_)
-        flags |= Manager::BehaviourFlag::IgnoreBuiltinFuncs;
-    if (disableSystemModules_)
-        flags |= Manager::BehaviourFlag::IgnoreSystemModules;
+        flags |= Manager::BehaviourFlag::IgnoreBuiltins;
+    if (disableAutoModules_)
+        flags |= Manager::BehaviourFlag::IgnoreAutomaticModules;
     manager.setBehaviour(flags);
     for (const auto& path : searchPaths)
         manager.addSearchPath(path);

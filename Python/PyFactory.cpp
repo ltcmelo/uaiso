@@ -28,7 +28,7 @@
 #include "Python/PyLang.h"
 #include "Python/PyTypeSystem.h"
 #include "Python/PyUnit.h"
-#include "Python/PyBuiltins.h"
+#include "Python/PyBuiltin.h"
 
 using namespace uaiso;
 
@@ -42,9 +42,9 @@ std::unique_ptr<AstLocator> PyFactory::makeAstLocator()
     return std::unique_ptr<AstLocator>(new PyAstLocator);
 }
 
-std::unique_ptr<Builtins> PyFactory::makeBuiltins()
+std::unique_ptr<Builtin> PyFactory::makeBuiltin()
 {
-    return std::unique_ptr<Builtins>(new PyBuiltins);
+    return std::unique_ptr<Builtin>(new PyBuiltin);
 }
 
 std::unique_ptr<IncrementalLexer> PyFactory::makeIncrementalLexer()

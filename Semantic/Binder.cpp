@@ -18,7 +18,7 @@
  *****************************************************************************/
 
 #include "Semantic/Binder.h"
-#include "Semantic/Builtins.h"
+#include "Semantic/Builtin.h"
 #include "Semantic/DeclAttrs.h"
 #include "Semantic/Environment.h"
 #include "Semantic/Precision.h"
@@ -177,7 +177,7 @@ struct uaiso::Binder::BinderImpl
         , locator_(factory->makeAstLocator())
         , lang_(factory->makeLang())
         , typeSystem_(factory->makeTypeSystem())
-        , builtins_(factory->makeBuiltins())
+        , builtins_(factory->makeBuiltin())
         , reports_(nullptr)
         , bits_(0)
     {}
@@ -255,7 +255,7 @@ struct uaiso::Binder::BinderImpl
     std::unique_ptr<const TypeSystem> typeSystem_;
 
     //! Language-specific builtins.
-    std::unique_ptr<const Builtins> builtins_;
+    std::unique_ptr<const Builtin> builtins_;
 
     //! Diagnostic reports collected.
     DiagnosticReports* reports_;
@@ -265,8 +265,8 @@ struct uaiso::Binder::BinderImpl
 
     struct BitFields
     {
-        uint32_t ignoreBuiltinFuncs_  : 1;
-        uint32_t ignoreSystemModules_ : 1;
+        uint32_t ignoreBuiltins_    : 1;
+        uint32_t ignoreAutoModules_ : 1;
     };
     union
     {
@@ -297,14 +297,14 @@ void Binder::collectDiagnostics(DiagnosticReports* reports)
     P->reports_ = reports;
 }
 
-void Binder::ignoreBuiltinFuncs()
+void Binder::ignoreBuiltins()
 {
-    P->bit_.ignoreBuiltinFuncs_ = true;
+    P->bit_.ignoreBuiltins_ = true;
 }
 
-void Binder::ignoreSystemModules()
+void Binder::ignoreAutomaticModules()
 {
-    P->bit_.ignoreSystemModules_ = true;
+    P->bit_.ignoreAutoModules_ = true;
 }
 
 std::unique_ptr<Program> Binder::bind(ProgramAst* progAst,
@@ -330,11 +330,11 @@ std::unique_ptr<Program> Binder::bind(ProgramAst* progAst,
         }
     }
 
-    if (!P->bit_.ignoreBuiltinFuncs_)
-        bindBuiltinFuncs();
+    if (!P->bit_.ignoreBuiltins_)
+        insertBuiltins();
 
-    if (!P->bit_.ignoreSystemModules_)
-        importSystemModules();
+    if (!P->bit_.ignoreAutoModules_)
+        importAutomaticModules();
 
     progAst->program_ = P->program_.get();
     progAst->program_->setEnv(P->leaveEnv());
@@ -342,18 +342,28 @@ std::unique_ptr<Program> Binder::bind(ProgramAst* progAst,
     return std::move(P->program_);
 }
 
-void Binder::bindBuiltinFuncs()
+void Binder::insertBuiltins()
 {
-    auto ctors = P->builtins_->valueConstructors(const_cast<LexemeMap*>(P->lexemes_));
-    for (auto& func : ctors) {
-        UAISO_ASSERT(func, return);
-        P->env_.insertType(std::move(func));
+    auto insertFunc = [this](std::vector<Builtin::FuncPtr> funcs) {
+        for (auto& func : funcs) {
+            UAISO_ASSERT(func, return);
+            P->env_.insertType(std::move(func));
+        }
+    };
+
+    LexemeMap* lexs = const_cast<LexemeMap*>(P->lexemes_);
+    insertFunc(P->builtins_->valueConstructors(lexs));
+    insertFunc(P->builtins_->freeFuncs(lexs));
+
+    for (auto& tySym : P->builtins_->typeDecls(lexs)) {
+        UAISO_ASSERT(tySym, return);
+        P->env_.insertType(std::move(tySym));
     }
 }
 
-void Binder::importSystemModules()
+void Binder::importAutomaticModules()
 {
-    auto names = P->builtins_->moduleNames();
+    auto names = P->builtins_->automaticModules();
     for (const auto& moduleName : names) {
         std::unique_ptr<Import> import(new Import(FileInfo(P->fileName_).fullDir(),
                                                   moduleName, nullptr, true));
