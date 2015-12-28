@@ -86,7 +86,7 @@ CompletionProposer::CompletionProposerTest::runCore(
     checker.check(progAst);
 
     CompletionProposer completer(factory.get());
-    auto syms = completer.propose(progAst, &lexemes).first;
+    auto syms = std::get<0>(completer.propose(progAst, &lexemes));
     if (dumpCompletions_) {
         std::ostringstream oss;
         oss << "Produced completions\n";

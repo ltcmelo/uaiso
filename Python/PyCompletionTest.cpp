@@ -542,41 +542,52 @@ z.
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
+namespace {
+
+const std::vector<const char*>& addRootObjectNames(std::vector<const char*>& v)
+{
+    auto names { "__gt__", "__new__", "__getattribute__", "__str__",
+                 "__format__", "__ge__", "__lt__", "__repr__", "__setattr__",
+                 "__delattr__", "__ne__", "__getattr__", "__init__",
+                 "__del__", "__le__", "__bool__", "__eq__", "__hash__" };
+    v.insert(v.begin(), names.begin(), names.end());
+    return v;
+}
+
+} // anonymous
+
 void CompletionProposer::CompletionProposerTest::PyTestCase24()
 {
-    UAISO_SKIP_TEST;
-
     std::string code = R"raw(
 i = 10
 i.
 # ^
 # |
-# complete at up-arrow (notice indentation spaces above)
+# complete at up-arrow
 )raw";
 
     lineCol_ = { 2, 2 };
     disableBuiltins_ = false;
-    auto expected = { "skip" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    std::vector<const char*> expected;
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+            addRootObjectNames(expected));
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase25()
 {
-    UAISO_SKIP_TEST;
-
     std::string code = R"raw(
 i = int(10)
 i.
 # ^
 # |
-# complete at up-arrow (notice indentation spaces above)
+# complete at up-arrow
 )raw";
 
     lineCol_ = { 2, 2 };
     disableBuiltins_ = false;
-    disableAutoModules_ = false;
-    auto expected { "skip" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    std::vector<const char*> expected;
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+            addRootObjectNames(expected));
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase26()
@@ -607,11 +618,9 @@ o.
 
     lineCol_ = { 2, 2 };
     disableBuiltins_ = false;
-    auto expected { "__gt__", "__new__", "__getattribute__", "__str__",
-                    "__format__", "__ge__", "__lt__", "__repr__", "__setattr__",
-                    "__delattr__", "__ne__", "__getattr__", "__init__",
-                    "__del__", "__le__", "__bool__", "__eq__", "__hash__" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    std::vector<const char*> expected;
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+            addRootObjectNames(expected));
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase28()

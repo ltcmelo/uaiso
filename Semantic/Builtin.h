@@ -46,7 +46,7 @@ public:
 
     using FuncPtr = std::unique_ptr<Func>;
     using TypeDeclPtr = std::unique_ptr<TypeSymbol>;
-    using BasePtr = std::unique_ptr<BaseRecord>;
+    using BaseRecordPtr = std::unique_ptr<BaseRecord>;
 
     /*!
      * \brief tokenSpell
@@ -95,9 +95,12 @@ public:
      * \param lexemes
      * \return
      *
-     * Return a list of all implicit base types of any type decl.
+     * Return the base record implicitly inherited from in the type hierarchy
+     * of a purely object-oriented language.
+     *
+     * \sa Lang::isPurelyOO
      */
-    virtual std::vector<BasePtr> implicitBases(LexemeMap* lexemes) const;
+    virtual BaseRecordPtr implicitBase(LexemeMap* lexemes) const;
 
     /*!
      * \brief automaticModules

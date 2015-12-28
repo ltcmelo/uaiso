@@ -218,7 +218,7 @@ const Type* TypeChecker::maybeResolve(const Type* ty, const SourceLoc& loc)
     }
 
     // Annotate the actual type for further reference.
-    prevTy->setCanonical(std::unique_ptr<Type>(ty->clone()));
+    prevTy->resolveType(std::unique_ptr<Type>(ty->clone()));
 
     return ty;
 }

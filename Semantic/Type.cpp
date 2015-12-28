@@ -243,7 +243,7 @@ bool ElaborateType::isResolved() const
     return P_CAST->canonical_.get();
 }
 
-void ElaborateType::setCanonical(std::unique_ptr<Type> ty)
+void ElaborateType::resolveType(std::unique_ptr<Type> ty)
 {
     P_CAST->canonical_ = std::move(ty);
 }
@@ -509,7 +509,7 @@ bool isNumType(Type::Kind kind)
             || kind == Type::Kind::Float;
 }
 
-std::pair<bool, Environment> isEnvType(const Type* ty)
+std::pair<bool, Environment> envForType(const Type* ty, Environment env)
 {
     switch (ty->kind()) {
     case Type::Kind::Record:
@@ -517,7 +517,7 @@ std::pair<bool, Environment> isEnvType(const Type* ty)
     case Type::Kind::Enum:
         return std::make_pair(true, ConstEnumType_Cast(ty)->env());
     default:
-        return std::make_pair(false, Environment());
+        return std::make_pair(false, env);
     }
 }
 

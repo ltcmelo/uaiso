@@ -114,6 +114,16 @@ public:
     virtual ImportMechanism importMechanism() const = 0;
 
     /*!
+     * \brief isPurelyOO
+     * \return
+     *
+     * Return whether the language is purely object-oriented. If so,
+     * everything will be considered an object (like primitives and classes
+     * themselves) and a root "object class" is assumed.
+     */
+    virtual bool isPurelyOO() const;
+
+    /*!
      * \brief sourceFileSuffix
      * \return
      *

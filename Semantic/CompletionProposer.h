@@ -30,6 +30,7 @@
 #include "Common/Test.h"
 #include "Semantic/Snapshot.h"
 #include "Semantic/SymbolFwd.h"
+#include <tuple>
 #include <vector>
 
 namespace uaiso {
@@ -60,12 +61,12 @@ public:
         InvalidType,                 //!< Type of symbol has no environment
         UnresolvedElaborateType,     //!< Type of symbol is elaborate and not resolved
         CaseNotImplemented,          //!< Completion case not implemented yet.
-        ResultOK                     //!< Result generated
+        Success                      //!< Success
     };
 
-    std::pair<std::vector<const DeclSymbol*>,
-              ResultCode>
-    propose(ProgramAst* ast, const LexemeMap* lexemes);
+    using Result = std::tuple<std::vector<const DeclSymbol*>, ResultCode>;
+
+    Result propose(ProgramAst* ast, const LexemeMap* lexemes);
 
 private:
     DECL_PIMPL(CompletionProposer)

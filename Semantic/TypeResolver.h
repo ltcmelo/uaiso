@@ -21,27 +21,38 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_PYBUILTIN_H__
-#define UAISO_PYBUILTIN_H__
+#ifndef UAISO_TYPERESOLVER_H__
+#define UAISO_TYPERESOLVER_H__
 
-#include "Semantic/Builtin.h"
+#include "Common/Config.h"
+#include "Common/Pimpl.h"
+#include "Semantic/Environment.h"
+#include "Semantic/TypeFwd.h"
+#include <tuple>
 
 namespace uaiso {
 
-class UAISO_API PyBuiltin final : public Builtin
+class Factory;
+
+class UAISO_API TypeResolver final
 {
 public:
-    const char* tokenSpell(Token tk) const override;
+    TypeResolver(Factory* factory);
+    ~TypeResolver();
 
-    std::vector<FuncPtr> valueConstructors(LexemeMap* lexemes) const override;
+    enum ResultCode : char
+    {
+        InternalError,
+        TypeSymbolLookupFailed,
+        Success
+    };
 
-    std::vector<FuncPtr> freeFuncs(LexemeMap* lexemes) const override;
+    using Result = std::tuple<const Type*, ResultCode>;
 
-    std::vector<TypeDeclPtr> typeDecls(LexemeMap* lexemes) const override;
+    Result resolve(ElaborateType* elabTy, Environment env) const;
 
-    BaseRecordPtr implicitBase(LexemeMap* lexemes) const override;
-
-    std::vector<std::string> automaticModules() const override;
+private:
+    DECL_PIMPL(TypeResolver)
 };
 
 } // namespace uaiso

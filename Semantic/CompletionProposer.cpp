@@ -22,10 +22,12 @@
 /*--------------------------*/
 
 #include "Semantic/CompletionProposer.h"
+#include "Semantic/Builtin.h"
 #include "Semantic/Environment.h"
 #include "Semantic/Program.h"
 #include "Semantic/Symbol.h"
 #include "Semantic/Type.h"
+#include "Semantic/TypeResolver.h"
 #include "Ast/Ast.h"
 #include "Ast/AstVisitor.h"
 #include "Common/Assert.h"
@@ -193,10 +195,18 @@ struct uaiso::CompletionProposer::CompletionProposerImpl
 {
     CompletionProposerImpl(Factory* factory)
         : lang_(factory->makeLang())
+        , builtin_(factory->makeBuiltin())
+        , resolver_(factory)
     {}
 
-    //! Language-specific lang.
+    //! Language-specific details.
     std::unique_ptr<const Lang> lang_;
+
+    //! Language-specific builtin.
+    std::unique_ptr<const Builtin> builtin_;
+
+    //! Type resolver.
+    TypeResolver resolver_;
 };
 
 CompletionProposer::CompletionProposer(Factory *factory)
@@ -206,25 +216,25 @@ CompletionProposer::CompletionProposer(Factory *factory)
 CompletionProposer::~CompletionProposer()
 {}
 
-std::pair<std::vector<const DeclSymbol*>, CompletionProposer::ResultCode>
+CompletionProposer::Result
 CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
 {
     using Symbols = std::vector<const DeclSymbol*>;
 
     UAISO_ASSERT(progAst->program_,
-                 return std::make_pair(Symbols(), CompletionAstNotFound));
+                 return Result(Symbols(), CompletionAstNotFound));
 
     CompletionContext context(P->lang_.get());
     auto ok = context.analyse(progAst, lexemes, progAst->program_->env());
 
     if (!ok) {
-        DEBUG_TRACE("CompletionAstNotFound\n");
-        return std::make_pair(Symbols(), CompletionAstNotFound);
+        DEBUG_TRACE("completion AST node not found\n");
+        return Result(Symbols(), CompletionAstNotFound);
     }
 
     if (context.asts_.empty()) {
-        DEBUG_TRACE("UnboundCompletionAstContext\n");
-        return std::make_pair(Symbols() , UnboundCompletionAstContext);
+        DEBUG_TRACE("completion AST node has not bound context\n");
+        return Result(Symbols() , UnboundCompletionAstContext);
     }
 
     auto topAst = context.asts_.top();
@@ -240,12 +250,14 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                 break;
             env = env.outerEnv();
         }
-        return std::make_pair(syms, ResultOK);
+        return Result(syms, Success);
     }
 
     // Completing on a member access requires identifying the type or namespace.
     if (topAst->kind() == Ast::Kind::MemberAccessExpr
             || topAst->kind() == Ast::Kind::NamedSpec) {
+        UAISO_ASSERT(!context.name_.empty(),
+                     return Result(Symbols(), InternalError));
         const Type* ty = nullptr;
         for (auto ident : context.name_) {
             auto tySym = env.lookUpType(ident);
@@ -258,8 +270,8 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                 } else {
                     auto spaceSym = env.fetchNamespace(ident);
                     if (!spaceSym) {
-                        DEBUG_TRACE("UnknownSymbol\n");
-                        return std::make_pair(Symbols(), UnknownSymbol);
+                        DEBUG_TRACE("symbol is unknown\n");
+                        return Result(Symbols(), UnknownSymbol);
                     }
 
                     // Enter the namespace and start it over.
@@ -268,78 +280,84 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                 }
             }
 
-            if (!ty)
-                return std::make_pair(Symbols(), UndefinedType);
+            if (!ty) {
+                DEBUG_TRACE("type is undefined\n");
+                return Result(Symbols(), UndefinedType);
+            }
 
-            // TODO: Extract a type resolver out of code below.
-
-            // If this is an elaborate type, try resolving to the actual type.
+            // If this is an elaborate type, try resolving it.
             if (ty->kind() == Type::Kind::Elaborate) {
-                auto elabTy = ElaborateType_ConstCast(ty);
-                if (!elabTy->isResolved()) {
-                    tySym = env.lookUpType(elabTy->name());
-                    if (!tySym) {
-                        DEBUG_TRACE("UnresolvedElaborateType\n");
-                        return std::make_pair(Symbols(), UnresolvedElaborateType);
-                    }
-
-                    ty = tySym->type();
-                    if (!ty) {
-                        DEBUG_TRACE("UndefinedType\n");
-                        return std::make_pair(Symbols(), UndefinedType);
-                    }
+                ty = std::get<0>(P->resolver_.resolve(ElaborateType_ConstCast(ty), env));
+                if (!ty) {
+                    DEBUG_TRACE("type is undefined\n");
+                    return Result(Symbols(), UndefinedType);
                 }
             }
 
-            // In this case, trying again after type-checking might work.
+            // If type is not yet inferred, type check the program first.
             if (ty->kind() == Type::Kind::Inferred) {
-                DEBUG_TRACE("TypeNotYetInferred\n");
-                return std::make_pair(Symbols(), TypeNotYetInferred);
+                DEBUG_TRACE("type has not yet been inferred\n");
+                return Result(Symbols(), TypeNotYetInferred);
             }
 
             bool hasEnv;
-            std::tie(hasEnv, env) = isEnvType(ty);
+            std::tie(hasEnv, env) = envForType(ty, env);
             if (!hasEnv) {
-                DEBUG_TRACE("InvalidType\n");
-                return std::make_pair(Symbols(), InvalidType);
+                if (!P->lang_->isPurelyOO()) {
+                    DEBUG_TRACE("type has no associated environment\n");
+                    return Result(Symbols(), InvalidType);
+                }
+
+                auto base = P->builtin_->implicitBase(const_cast<LexemeMap*>(lexemes));
+                UAISO_ASSERT(base, return Result(Symbols(), InternalError));
+                auto baseTySym = env.lookUpType(base->name());
+                if (!baseTySym) {
+                    DEBUG_TRACE("implicit base is unknown\n");
+                    return Result(Symbols(), UnknownSymbol);
+                }
+
+                bool baseHasEnv;
+                Environment baseEnv;
+                std::tie(baseHasEnv, baseEnv) = envForType(baseTySym->type(), baseEnv);
+                return Result(baseEnv.list(), Success);
             }
         }
 
+        // If completing a namespace, there will be no type.
         if (!ty)
-            return std::make_pair(env.list(), ResultOK);
+            return Result(env.list(), Success);
 
         // Look into base classes.
         Symbols syms = env.list();
-        std::stack<const Type*> baseTys;
-        baseTys.push(ty);
-        while (!baseTys.empty()) {
-            const Type* curTy = baseTys.top();
-            baseTys.pop();
-            UAISO_ASSERT(curTy, return std::make_pair(Symbols(), InternalError));
+        std::stack<const Type*> allTy;
+        allTy.push(ty);
+        while (!allTy.empty()) {
+            const Type* curTy = allTy.top();
+            allTy.pop();
+            UAISO_ASSERT(curTy, return Result(Symbols(), InternalError));
             if (curTy->kind() != Type::Kind::Record)
                 continue;
 
             const RecordType* recTy = ConstRecordType_Cast(curTy);
-            auto bases = recTy->bases();
-            for (auto base : bases) {
-                auto baseSym = env.lookUpType(base->name());
-                if (!baseSym)
+            for (auto base : recTy->bases()) {
+                auto baseTySym = env.lookUpType(base->name());
+                if (!baseTySym)
                     continue;
 
                 bool baseHasEnv;
                 Environment baseEnv;
-                std::tie(baseHasEnv, baseEnv) = isEnvType(baseSym->type());
+                std::tie(baseHasEnv, baseEnv) = envForType(baseTySym->type(), baseEnv);
                 if (baseHasEnv) {
-                    baseTys.push(baseSym->type());
+                    allTy.push(baseTySym->type());
                     auto extraSyms = baseEnv.list();
                     std::copy(extraSyms.begin(), extraSyms.end(), std::back_inserter(syms));
                 }
             }
         }
 
-        return std::make_pair(syms, ResultOK);
+        return Result(syms, Success);
     }
 
-    DEBUG_TRACE("CaseNotImplemented\n");
-    return std::make_pair(Symbols(), CaseNotImplemented);
+    DEBUG_TRACE("completion case not yet implemented\n");
+    return Result(Symbols(), CaseNotImplemented);
 }

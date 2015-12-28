@@ -190,8 +190,11 @@ public:
 
 private:
     DECL_PIMPL_CAST(ElaborateType)
+
     friend class TypeChecker;
-    void setCanonical(std::unique_ptr<Type> type);
+    friend class TypeResolver;
+
+    void resolveType(std::unique_ptr<Type> type);
 };
 
 /*!
@@ -340,12 +343,13 @@ private:
 bool isNumType(Type::Kind);
 
 /*!
- * \brief isEnvType
+ * \brief envForType
  * \return
  *
- * Return whether the type has its own environment.
+ * If the type has its own environment, return it along with a boolean
+ * indicator. Otherwise, return the originally supplied environment.
  */
-std::pair<bool, Environment> isEnvType(const Type*);
+std::pair<bool, Environment> envForType(const Type*, Environment env);
 
 } // namespace uaiso
 

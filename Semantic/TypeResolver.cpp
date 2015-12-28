@@ -21,51 +21,46 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Semantic/Builtin.h"
+#include "Semantic/TypeResolver.h"
 #include "Semantic/Symbol.h"
 #include "Semantic/Type.h"
-#include "Common/Util__.h"
-#include "Parsing/Lexeme.h"
-#include "Parsing/LexemeMap.h"
-#include <unordered_map>
+#include "Semantic/TypeCast.h"
+#include "Common/Trace__.h"
+
+#define TRACE_NAME "TypeResolver"
 
 using namespace uaiso;
 
-namespace uaiso {
+struct uaiso::TypeResolver::TypeResolverImpl
+{
+    TypeResolverImpl(Factory*)
+    {}
+};
 
-extern std::unordered_map<std::uint16_t, const char*> tokenName; // Generated.
-
-} // namespace uaiso
-
-Builtin::~Builtin()
+TypeResolver::TypeResolver(Factory* factory)
+    : P(new TypeResolverImpl(factory))
 {}
 
-const char* Builtin::tokenSpell(Token tk) const
-{
-    return tokenName[tk];
-}
+TypeResolver::~TypeResolver()
+{}
 
-std::vector<Builtin::FuncPtr> Builtin::valueConstructors(LexemeMap*) const
+TypeResolver::Result TypeResolver::resolve(ElaborateType* elabTy,
+                                           Environment env) const
 {
-    return std::vector<FuncPtr>();
-}
+    UAISO_ASSERT(elabTy, return Result(nullptr, InternalError));
 
-std::vector<Builtin::FuncPtr> Builtin::freeFuncs(LexemeMap*) const
-{
-    return std::vector<FuncPtr>();
-}
+    if (elabTy->isResolved())
+        return Result(elabTy->canonicalType(), Success);
 
-std::vector<Builtin::TypeDeclPtr> Builtin::typeDecls(LexemeMap*) const
-{
-    return std::vector<TypeDeclPtr>();
-}
+    auto tySym = env.lookUpType(elabTy->name());
+    if (!tySym) {
+        DEBUG_TRACE("type decl symbol lookup failed");
+        return Result(nullptr, TypeSymbolLookupFailed);
+    }
 
-Builtin::BaseRecordPtr Builtin::implicitBase(LexemeMap*) const
-{
-    return BaseRecordPtr();
-}
+    UAISO_ASSERT(tySym->type(), return Result(nullptr, InternalError));
+    auto ty = tySym->type();
+    elabTy->resolveType(std::unique_ptr<Type>(ty->clone()));
 
-std::vector<std::string> Builtin::automaticModules() const
-{
-    return std::vector<std::string>();
+    return Result(ty, Success);
 }

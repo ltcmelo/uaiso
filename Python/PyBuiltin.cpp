@@ -127,13 +127,10 @@ std::vector<Builtin::TypeDeclPtr> PyBuiltin::typeDecls(LexemeMap* lexemes) const
     return types;
 }
 
-std::vector<Builtin::BasePtr> PyBuiltin::implicitBases(LexemeMap* lexemes) const
+Builtin::BaseRecordPtr PyBuiltin::implicitBase(LexemeMap* lexemes) const
 {
-    std::vector<BasePtr> bases;
     auto ident = lexemes->insertOrFind<Ident>("object", kPyBuiltin, LineCol(++line, 0));
-    bases.emplace_back(new BaseRecord(ident));
-
-    return bases;
+    return BaseRecordPtr(new BaseRecord(ident));
 }
 
 std::vector<std::string> PyBuiltin::automaticModules() const

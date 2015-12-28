@@ -56,3 +56,8 @@ bool PyLang::isStrLitQuote(char ch) const
 {
     return ch == '"' || ch == '\'';
 }
+
+bool uaiso::PyLang::isPurelyOO() const
+{
+    return true;
+}
