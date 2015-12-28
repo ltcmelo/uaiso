@@ -43,7 +43,7 @@
 #define ENSURE_VALID_TYPE_SYMBOL \
     ENSURE_ANNOTATED_SYMBOL; \
     ENSURE_NAMED_SYMBOL; \
-    UAISO_ASSERT(env_.lookUpType(ast->sym_->name()), return Abort, "type not found")
+    UAISO_ASSERT(env_.searchTypeDecl(ast->sym_->name()), return Abort, "type not found")
 
 using namespace uaiso;
 
@@ -167,9 +167,9 @@ public:
 
     VisitResult visitSimpleName(SimpleNameAst* ast)
     {
-        const DeclSymbol* sym = lookUpValue(ast, env_, lexemes_);
+        const Decl* sym = searchValueDecl(ast, env_, lexemes_);
         if (!sym) {
-            sym = lookUpType(ast, env_, lexemes_);
+            sym = searchTypeDecl(ast, env_, lexemes_);
             if (!sym)
                 return Continue;
         }

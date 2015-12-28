@@ -34,7 +34,7 @@ namespace uaiso {
 class BaseRecord;
 class Func;
 class LexemeMap;
-class TypeSymbol;
+class TypeDecl;
 
 /*!
  * \brief The Builtins class
@@ -45,7 +45,7 @@ public:
     virtual ~Builtin();
 
     using FuncPtr = std::unique_ptr<Func>;
-    using TypeDeclPtr = std::unique_ptr<TypeSymbol>;
+    using TypeDeclPtr = std::unique_ptr<TypeDecl>;
     using BaseRecordPtr = std::unique_ptr<BaseRecord>;
 
     /*!
@@ -70,7 +70,7 @@ public:
     virtual std::vector<FuncPtr> valueConstructors(LexemeMap* lexemes) const;
 
     /*!
-     * \brief freeFuncs
+     * \brief globalFuncs
      * \param lexemes
      * \return
      *
@@ -79,7 +79,7 @@ public:
      *
      * \sa valueConstructors
      */
-    virtual std::vector<FuncPtr> freeFuncs(LexemeMap* lexemes) const;
+    virtual std::vector<FuncPtr> globalFuncs(LexemeMap* lexemes) const;
 
     /*!
      * \brief typeDecls

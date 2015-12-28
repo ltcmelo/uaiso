@@ -36,9 +36,10 @@
 #define Block_Cast(T) static_cast<uaiso::Block*>(T)
 #define Block_ConstCast(T) const_cast<uaiso::Block*>(ConstBlock_Cast(T))
 
-#define ConstDeclSymbol_Cast(T) static_cast<const DeclSymbol*>(T)
-#define DeclSymbol_Cast(T) static_cast<uaiso::DeclSymbol*>(T)
-#define DeclSymbol_ConstCast(T) const_cast<uaiso::DeclSymbol*>(ConstDeclSymbol_Cast(T))
+// Name would conflict with AST's decl cast.
+#define ConstDeclSymbol_Cast(T) static_cast<const Decl*>(T)
+#define DeclSymbol_Cast(T) static_cast<uaiso::Decl*>(T)
+#define DeclSymbol_ConstCast(T) const_cast<uaiso::Decl*>(ConstDeclSymbol_Cast(T))
 
 #define ConstEnum_Cast(T) static_cast<const Enum*>(T)
 #define Enum_Cast(T) static_cast<uaiso::Enum*>(T)
@@ -56,13 +57,13 @@
 #define Record_Cast(T) static_cast<uaiso::Record*>(T)
 #define Record_ConstCast(T) const_cast<uaiso::Record*>(ConstRecord_Cast(T))
 
-#define ConstTypeSymbol_Cast(T) static_cast<const TypeSymbol*>(T)
-#define TypeSymbol_Cast(T) static_cast<uaiso::TypeSymbol*>(T)
-#define TypeSymbol_ConstCast(T) const_cast<uaiso::TypeSymbol*>(ConstTypeSymbol_Cast(T))
+#define ConstTypeDecl_Cast(T) static_cast<const TypeDecl*>(T)
+#define TypeDecl_Cast(T) static_cast<uaiso::TypeDecl*>(T)
+#define TypeDecl_ConstCast(T) const_cast<uaiso::TypeDecl*>(ConstTypeDecl_Cast(T))
 
-#define ConstValueSymbol_Cast(T) static_cast<const ValueSymbol*>(T)
-#define ValueSymbol_Cast(T) static_cast<uaiso::ValueSymbol*>(T)
-#define ValueSymbol_ConstCast(T) const_cast<uaiso::ValueSymbol*>(ConstValueSymbol_Cast(T))
+#define ConstValueDecl_Cast(T) static_cast<const ValueDecl*>(T)
+#define ValueDecl_Cast(T) static_cast<uaiso::ValueDecl*>(T)
+#define ValueDecl_ConstCast(T) const_cast<uaiso::ValueDecl*>(ConstValueDecl_Cast(T))
 
 #define ConstVar_Cast(T) static_cast<const Var*>(T)
 #define Var_Cast(T) static_cast<uaiso::Var*>(T)

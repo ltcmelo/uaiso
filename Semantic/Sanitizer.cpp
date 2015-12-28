@@ -86,7 +86,7 @@ bool Sanitizer::validateDeclAttr(Symbol::Kind, Token) const
     return true;
 }
 
-bool Sanitizer::checkDeclAttrCoherence(const DeclSymbol*, Token) const
+bool Sanitizer::checkDeclAttrCoherence(const Decl*, Token) const
 {
     return true;
 }

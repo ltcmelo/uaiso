@@ -49,7 +49,7 @@
 #define ENSURE_VALID_TYPE_SYMBOL \
     ENSURE_ANNOTATED_SYMBOL; \
     ENSURE_NAMED_SYMBOL; \
-    UAISO_ASSERT(P->env_.lookUpType(ast->sym_->name()), return Abort, "type not found")
+    UAISO_ASSERT(P->env_.searchTypeDecl(ast->sym_->name()), return Abort, "type not found")
 
 using namespace uaiso;
 
@@ -119,7 +119,7 @@ struct uaiso::TypeChecker::TypeCheckerImpl
     //! A rudimentary mechanism to allow "passing" a symbol represented
     //! by an identifier expr to the enclosing traversing function.
     bool keepSym_;
-    const ValueSymbol* prevSym_;
+    const ValueDecl* prevSym_;
     //!@}
 
     //! Language-specific AST locator.
@@ -207,7 +207,7 @@ const Type* TypeChecker::maybeResolve(const Type* ty, const SourceLoc& loc)
         }
         prevName = elab->name();
 
-        auto sym = P->env_.lookUpType(elab->name());
+        auto sym = P->env_.searchTypeDecl(elab->name());
         if (!sym) {
             P->report(Diagnostic::UnknownType, loc);
             return ty;
@@ -842,7 +842,7 @@ TypeChecker::VisitResult TypeChecker::traverseAssignExpr(AssignExprAst* ast)
         // symbol. In static type systems, there's an assignment check.
         if (P->typeSystem_->isDynamic()) {
             if (P->prevSym_)
-                ValueSymbol_ConstCast(P->prevSym_)->setValueType(std::move(exprTy[idx]));
+                ValueDecl_ConstCast(P->prevSym_)->setValueType(std::move(exprTy[idx]));
         } else {
             analyseAssign(ty.get(), exprTy[idx].get(),
                           fullLoc(ast, P->locator_.get()));
@@ -1173,7 +1173,7 @@ TypeChecker::VisitResult TypeChecker::traverseCallExpr(CallExprAst* ast)
 TypeChecker::VisitResult TypeChecker::traverseRecordInitExpr(RecordInitExprAst* ast)
 {
     if (ast->spec_ && ast->spec_->kind() == Ast::Kind::NamedSpec) {
-        auto tySym = lookUpType(NamedSpec_Cast(ast->spec_.get())->name_.get(),
+        auto tySym = searchTypeDecl(NamedSpec_Cast(ast->spec_.get())->name_.get(),
                                 P->env_, P->lexemes_);
         if (tySym) {
             P->exprTy_.emplace(tySym->type()->clone());
@@ -1272,9 +1272,9 @@ TypeChecker::VisitResult TypeChecker::visitThisExpr(ThisExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::visitIdentExpr(IdentExprAst* ast)
 {
-    auto valSym = lookUpValue(ast->name(), P->env_, P->lexemes_);
+    auto valSym = searchValueDecl(ast->name(), P->env_, P->lexemes_);
     if (!valSym) {
-        auto tySym = lookUpType(ast->name(), P->env_, P->lexemes_);
+        auto tySym = searchTypeDecl(ast->name(), P->env_, P->lexemes_);
         if (!tySym) {
             P->report(Diagnostic::UndeclaredIdentifier, ast->name_.get(), P->locator_.get());
             P->exprTy_.emplace(new InferredType);

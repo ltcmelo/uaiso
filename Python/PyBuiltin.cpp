@@ -77,7 +77,7 @@ std::vector<Builtin::FuncPtr> PyBuiltin::valueConstructors(LexemeMap* lexemes) c
     return ctors;
 }
 
-std::vector<Builtin::FuncPtr> PyBuiltin::freeFuncs(LexemeMap* lexemes) const
+std::vector<Builtin::FuncPtr> PyBuiltin::globalFuncs(LexemeMap* lexemes) const
 {
     std::vector<FuncPtr> funcs;
     funcs.push_back(createFunc<IntType>(lexemes, "abs"));
@@ -97,26 +97,26 @@ std::vector<Builtin::TypeDeclPtr> PyBuiltin::typeDecls(LexemeMap* lexemes) const
     std::unique_ptr<RecordType> recTy(new RecordType);
     recTy->setVariety(RecordVariety::Class);
     Environment env;
-    env.insertType(createFunc<RecordType>(lexemes, "__new__"));
-    env.insertType(createFunc<VoidType>(lexemes, "__init__"));
-    env.insertType(createFunc<VoidType>(lexemes, "__del__"));
-    env.insertType(createFunc<StrType>(lexemes, "__repr__"));
-    env.insertType(createFunc<StrType>(lexemes, "__str__"));
-    //env.insertType(createFunc<ArrayType>(lexemes, "__bytes__"));
-    env.insertType(createFunc<StrType>(lexemes, "__format__"));
-    env.insertType(createFunc<BoolType>(lexemes, "__lt__"));
-    env.insertType(createFunc<BoolType>(lexemes, "__le__"));
-    env.insertType(createFunc<BoolType>(lexemes, "__eq__"));
-    env.insertType(createFunc<BoolType>(lexemes, "__ne__"));
-    env.insertType(createFunc<BoolType>(lexemes, "__gt__"));
-    env.insertType(createFunc<BoolType>(lexemes, "__ge__"));
-    env.insertType(createFunc<IntType>(lexemes, "__hash__"));
-    env.insertType(createFunc<BoolType>(lexemes, "__bool__"));
-    env.insertType(createFunc<InferredType>(lexemes, "__getattr__"));
-    env.insertType(createFunc<InferredType>(lexemes, "__getattribute__"));
-    env.insertType(createFunc<VoidType>(lexemes, "__setattr__"));
-    env.insertType(createFunc<VoidType>(lexemes, "__delattr__"));
-    //env.insertType(createFunc<ArrayType>(lexemes, "__dir__"));
+    env.insertTypeDecl(createFunc<RecordType>(lexemes, "__new__"));
+    env.insertTypeDecl(createFunc<VoidType>(lexemes, "__init__"));
+    env.insertTypeDecl(createFunc<VoidType>(lexemes, "__del__"));
+    env.insertTypeDecl(createFunc<StrType>(lexemes, "__repr__"));
+    env.insertTypeDecl(createFunc<StrType>(lexemes, "__str__"));
+    //env.insertTypeDecl(createFunc<ArrayType>(lexemes, "__bytes__"));
+    env.insertTypeDecl(createFunc<StrType>(lexemes, "__format__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__lt__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__le__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__eq__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__ne__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__gt__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__ge__"));
+    env.insertTypeDecl(createFunc<IntType>(lexemes, "__hash__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__bool__"));
+    env.insertTypeDecl(createFunc<InferredType>(lexemes, "__getattr__"));
+    env.insertTypeDecl(createFunc<InferredType>(lexemes, "__getattribute__"));
+    env.insertTypeDecl(createFunc<VoidType>(lexemes, "__setattr__"));
+    env.insertTypeDecl(createFunc<VoidType>(lexemes, "__delattr__"));
+    //env.insertTypeDecl(createFunc<ArrayType>(lexemes, "__dir__"));
     recTy->setEnv(env);
     auto ident = lexemes->insertOrFind<Ident>("object", kPyBuiltin, LineCol(++line, 0));
     std::unique_ptr<Record> rec(new Record(ident));

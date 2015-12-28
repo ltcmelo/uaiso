@@ -70,15 +70,15 @@
 
 #define ENSURE_TOP_SYMBOL_IS_DECL \
     ENSURE_NONEMPTY_SYMBOL_STACK; \
-    UAISO_ASSERT(isDeclSymbol(P->sym_.top().get()), return Abort)
+    UAISO_ASSERT(isDecl(P->sym_.top().get()), return Abort)
 
 #define ENSURE_TOP_SYMBOL_IS_TYPEDECL \
     ENSURE_NONEMPTY_SYMBOL_STACK; \
-    UAISO_ASSERT(isTypeSymbol(P->sym_.top().get()), return Abort)
+    UAISO_ASSERT(isTypeDecl(P->sym_.top().get()), return Abort)
 
 #define ENSURE_TOP_SYMBOL_IS_VALUEDECL \
     ENSURE_NONEMPTY_SYMBOL_STACK; \
-    UAISO_ASSERT(isValueSymbol(P->sym_.top().get()), return Abort)
+    UAISO_ASSERT(isValueDecl(P->sym_.top().get()), return Abort)
 
 #define ENSURE_TOP_SYMBOL_IS(SYMBOL) \
     ENSURE_NONEMPTY_SYMBOL_STACK; \
@@ -347,17 +347,17 @@ void Binder::insertBuiltins()
     auto insertFunc = [this](std::vector<Builtin::FuncPtr> funcs) {
         for (auto& func : funcs) {
             UAISO_ASSERT(func, return);
-            P->env_.insertType(std::move(func));
+            P->env_.insertTypeDecl(std::move(func));
         }
     };
 
     LexemeMap* lexs = const_cast<LexemeMap*>(P->lexemes_);
     insertFunc(P->builtins_->valueConstructors(lexs));
-    insertFunc(P->builtins_->freeFuncs(lexs));
+    insertFunc(P->builtins_->globalFuncs(lexs));
 
     for (auto& tySym : P->builtins_->typeDecls(lexs)) {
         UAISO_ASSERT(tySym, return);
-        P->env_.insertType(std::move(tySym));
+        P->env_.insertTypeDecl(std::move(tySym));
     }
 }
 
@@ -629,30 +629,30 @@ Binder::VisitResult Binder::visitVisibilityAttr(VisibilityAttrAst* ast)
     Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
-    DeclSymbol* sym = DeclSymbol_Cast(P->sym_.top().get());
+    Decl* sym = DeclSymbol_Cast(P->sym_.top().get());
 
     if (!P->sanitizer_->validateVisibility(sym->kind(), tk)) {
         P->report(Diagnostic::UnexpectedVisibilityAttribute, loc);
         return Continue;
     }
 
-    if (sym->visibility() != TypeSymbol::Visibility::Unknown) {
+    if (sym->visibility() != TypeDecl::Visibility::Unknown) {
         P->report(Diagnostic::MultipleVisibilityAttributes, loc);
         return Continue;
     }
 
     switch (tk) {
     case TK_PACKAGE:
-        sym->setVisibility(TypeSymbol::Visibility::Package);
+        sym->setVisibility(TypeDecl::Visibility::Package);
         break;
     case TK_PRIVATE:
-        sym->setVisibility(TypeSymbol::Visibility::Private);
+        sym->setVisibility(TypeDecl::Visibility::Private);
         break;
     case TK_PROTECTED:
-        sym->setVisibility(TypeSymbol::Visibility::Protected);
+        sym->setVisibility(TypeDecl::Visibility::Protected);
         break;
     case TK_PUBLIC:
-        sym->setVisibility(TypeSymbol::Visibility::Public);
+        sym->setVisibility(TypeDecl::Visibility::Public);
         break;
     default:
         UAISO_ASSERT(false, {});
@@ -674,7 +674,7 @@ Binder::VisitResult Binder::visitDeclAttr(DeclAttrAst* ast)
     Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
-    DeclSymbol* sym = TypeSymbol_Cast(P->sym_.top().get());
+    Decl* sym = TypeDecl_Cast(P->sym_.top().get());
 
     if (!P->sanitizer_->validateDeclAttr(sym->kind(), tk)) {
         P->report(Diagnostic::UnexpectedDeclarationAttribute, loc);
@@ -732,7 +732,7 @@ Binder::VisitResult Binder::visitAutoAttr(AutoAttrAst* ast)
     Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
-    DeclSymbol* sym = DeclSymbol_Cast(P->sym_.top().get());
+    Decl* sym = DeclSymbol_Cast(P->sym_.top().get());
 
     switch (tk) {
     case TK_AUTO:
@@ -824,27 +824,27 @@ Binder::VisitResult Binder::visitStorageClassAttr(StorageClassAttrAst* ast)
     Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
-    DeclSymbol* sym = DeclSymbol_Cast(P->sym_.top().get());
+    Decl* sym = DeclSymbol_Cast(P->sym_.top().get());
 
     if (!P->sanitizer_->validateStorageClass(sym->kind(), tk)) {
         P->report(Diagnostic::UnexpectedStorageClassAttribute, loc);
         return Continue;
     }
 
-    if (sym->storage() != ValueSymbol::Storage::Unknown) {
+    if (sym->storage() != ValueDecl::Storage::Unknown) {
         P->report(Diagnostic::MultipleStorageSpecifiers, loc);
         return Continue;
     }
 
     switch (tk) {
     case TK_SCOPE:
-        sym->setStorage(ValueSymbol::Storage::Scope);
+        sym->setStorage(ValueDecl::Storage::Scope);
         break;
     case TK_REF:
-        sym->setStorage(ValueSymbol::Storage::Ref);
+        sym->setStorage(ValueDecl::Storage::Ref);
         break;
     case TK_STATIC:
-        sym->setStorage(ValueSymbol::Storage::Static);
+        sym->setStorage(ValueDecl::Storage::Static);
         break;
     default:
         UAISO_ASSERT(false, {});
@@ -860,21 +860,21 @@ Binder::VisitResult Binder::visitLinkageAttr(LinkageAttrAst* ast)
     Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_VALUEDECL;
-    ValueSymbol* sym = ValueSymbol_Cast(P->sym_.top().get());
+    ValueDecl* sym = ValueDecl_Cast(P->sym_.top().get());
 
     if (!P->sanitizer_->validateLinkage(sym->kind(), tk)) {
         P->report(Diagnostic::UnexpectedLinkageAttribute, loc);
         return Continue;
     }
 
-    if (sym->linkage() != ValueSymbol::Linkage::Unknown) {
+    if (sym->linkage() != ValueDecl::Linkage::Unknown) {
         P->report(Diagnostic::MultipleLinkageSpecifiers, loc);
         return Continue;
     }
 
     switch (tk) {
     case TK_EXTERN:
-        sym->setLinkage(ValueSymbol::Linkage::Extern);
+        sym->setLinkage(ValueDecl::Linkage::Extern);
         break;
     default:
         UAISO_ASSERT(false, {});
@@ -953,7 +953,7 @@ Binder::VisitResult Binder::traverseAliasDecl(AliasDeclAst* ast)
     ENSURE_NONEMPTY_TYPE_STACK;
     alias->setType(P->popDeclType<>());
 
-    P->env_.insertType(std::move(alias));
+    P->env_.insertTypeDecl(std::move(alias));
 
     return Continue;
 }
@@ -997,7 +997,7 @@ Binder::VisitResult Binder::traverseForwardDecl(ForwardDeclAst* ast)
     std::unique_ptr<Placeholder> holder(new Placeholder(P->declId_.back()));
     holder->setSourceLoc(fullLoc(ast, P->locator_.get()));
 
-    P->env_.insertType(std::move(holder));
+    P->env_.insertTypeDecl(std::move(holder));
 
     return Continue;
 }
@@ -1088,7 +1088,7 @@ Binder::VisitResult Binder::traverseParamGroupDecl(ParamGroupDeclAst* ast)
         ENSURE_NONEMPTY_TYPE_STACK;
         param->setValueType(P->popDeclType<>());
 
-        P->env_.insertValue(P->popSymbol<Param>());
+        P->env_.insertValueDecl(P->popSymbol<Param>());
     }
 
     return Continue;
@@ -1133,7 +1133,7 @@ Binder::VisitResult Binder::traverseVarGroupDecl(VarGroupDeclAst* group)
         // Let type-specifying exprs annotate the AST.
         VIS_CALL(traverseExpr(varDecl->init()));
 
-        P->env_.insertValue(P->popSymbol<Var>());
+        P->env_.insertValueDecl(P->popSymbol<Var>());
     }
 
     if (group->hasInits()) {
@@ -1180,7 +1180,7 @@ Binder::VisitResult Binder::traverseRecordDecl(RecordDeclAst* ast)
     ENSURE_NONEMPTY_TYPE_STACK;
     record->setType(P->popDeclType<RecordType>());
 
-    P->env_.insertType(std::move(record));
+    P->env_.insertTypeDecl(std::move(record));
 
     return Continue;
 }
@@ -1231,7 +1231,7 @@ Binder::VisitResult Binder::traverseEnumDecl(EnumDeclAst* ast)
     enumm->setType(std::unique_ptr<EnumType>(enumType));
     enumType->setEnv(P->leaveEnv());
 
-    P->env_.insertType(std::move(enumm));
+    P->env_.insertTypeDecl(std::move(enumm));
 
     return Continue;
 }
@@ -1243,7 +1243,7 @@ Binder::VisitResult Binder::traverseEnumMemberDecl(EnumMemberDeclAst* ast)
     std::unique_ptr<EnumItem> enumItem(new EnumItem(P->declId_.back()));
     enumItem->setSourceLoc(fullLoc(ast, P->locator_.get()));
 
-    P->env_.insertValue(std::move(enumItem));
+    P->env_.insertValueDecl(std::move(enumItem));
 
     // TODO: Initializer
 
@@ -1286,7 +1286,7 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
     else
         func->setEnv(P->env_);
 
-    P->env_.insertType(std::move(func));
+    P->env_.insertTypeDecl(std::move(func));
 
     return Continue;
 }
@@ -1455,7 +1455,7 @@ Binder::VisitResult Binder::traverseAssignExpr(AssignExprAst* ast)
 
         ast->syms_.push_back(var.get()); // Annotate AST with symbol
 
-        env.insertValue(std::unique_ptr<ValueSymbol>(var.release()));
+        env.insertValueDecl(std::unique_ptr<ValueDecl>(var.release()));
     }
 
     return Continue;

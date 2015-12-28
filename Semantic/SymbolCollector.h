@@ -33,7 +33,7 @@
 
 namespace uaiso {
 
-class DeclSymbol;
+class Decl;
 class Factory;
 class LexemeMap;
 
@@ -52,7 +52,7 @@ public:
         Use  //! A use
     };
 
-    using MentionInfo = std::tuple<Mention, const DeclSymbol*, SourceLoc>;
+    using MentionInfo = std::tuple<Mention, const Decl*, SourceLoc>;
 
     /*!
      * \brief collect

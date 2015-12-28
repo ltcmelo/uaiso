@@ -90,7 +90,7 @@ CompletionProposer::CompletionProposerTest::runCore(
     if (dumpCompletions_) {
         std::ostringstream oss;
         oss << "Produced completions\n";
-        std::for_each(syms.begin(), syms.end(), [&oss] (const DeclSymbol* decl) {
+        std::for_each(syms.begin(), syms.end(), [&oss] (const Decl* decl) {
             oss << decl->name()->str() << " ";
         });
         oss << std::endl;
@@ -100,7 +100,7 @@ CompletionProposer::CompletionProposerTest::runCore(
     UAISO_EXPECT_INT_EQ(expected.size(), syms.size());
     for (const auto& s : expected) {
         UAISO_EXPECT_TRUE(std::find_if(syms.begin(), syms.end(),
-                                       [s](const DeclSymbol* decl) {
+                                       [s](const Decl* decl) {
             return decl->name()->str() == s;
         }) != syms.end());
     }

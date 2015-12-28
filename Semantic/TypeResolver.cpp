@@ -52,10 +52,10 @@ TypeResolver::Result TypeResolver::resolve(ElaborateType* elabTy,
     if (elabTy->isResolved())
         return Result(elabTy->canonicalType(), Success);
 
-    auto tySym = env.lookUpType(elabTy->name());
+    auto tySym = env.searchTypeDecl(elabTy->name());
     if (!tySym) {
         DEBUG_TRACE("type decl symbol lookup failed");
-        return Result(nullptr, TypeSymbolLookupFailed);
+        return Result(nullptr, TypeDeclLookupFailed);
     }
 
     UAISO_ASSERT(tySym->type(), return Result(nullptr, InternalError));

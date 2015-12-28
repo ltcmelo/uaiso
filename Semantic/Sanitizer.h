@@ -56,7 +56,7 @@ public:
     virtual bool validateStorageClass(Symbol::Kind symKind, Token tk) const;
 
     virtual bool validateDeclAttr(Symbol::Kind symKind, Token tk) const;
-    virtual bool checkDeclAttrCoherence(const DeclSymbol*, Token tk) const;
+    virtual bool checkDeclAttrCoherence(const Decl*, Token tk) const;
 
     virtual bool validateTypeQual(Type::Kind typeKind, Token tk) const;
     virtual bool checkTypeQualCoherence(const Type*, Token tk) const;

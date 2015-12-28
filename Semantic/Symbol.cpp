@@ -100,11 +100,11 @@ bool Symbol::isBuiltin() const
     return impl_->bit_.builtin_;
 }
 
-    //--- DeclSymbol ---//
+    //--- Decl ---//
 
-struct uaiso::DeclSymbol::DeclSymbolImpl : Symbol::SymbolImpl
+struct uaiso::Decl::DeclImpl : Symbol::SymbolImpl
 {
-    DeclSymbolImpl(const Ident* name, Symbol::Kind kind)
+    DeclImpl(const Ident* name, Symbol::Kind kind)
         : SymbolImpl(kind)
         , name_(name)
     {}
@@ -112,110 +112,110 @@ struct uaiso::DeclSymbol::DeclSymbolImpl : Symbol::SymbolImpl
     const Ident* name_;
 };
 
-DEF_PIMPL_CAST(DeclSymbol)
+DEF_PIMPL_CAST(Decl)
 
-DeclSymbol::DeclSymbol(DeclSymbol::DeclSymbolImpl* impl)
+Decl::Decl(Decl::DeclImpl* impl)
     : Symbol(impl)
 {}
 
-void DeclSymbol::setVisibility(Visibility visibility)
+void Decl::setVisibility(Visibility visibility)
 {
     impl_->bit_.visibility_ = static_cast<char>(visibility);
 }
 
-DeclSymbol::Visibility DeclSymbol::visibility() const
+Decl::Visibility Decl::visibility() const
 {
     return Visibility(impl_->bit_.visibility_);
 }
 
-void DeclSymbol::setStorage(DeclSymbol::Storage store)
+void Decl::setStorage(Decl::Storage store)
 {
     impl_->bit_.storage_ = static_cast<char>(store);
 }
 
-DeclSymbol::Storage DeclSymbol::storage() const
+Decl::Storage Decl::storage() const
 {
-    return DeclSymbol::Storage(impl_->bit_.storage_);
+    return Decl::Storage(impl_->bit_.storage_);
 }
 
-void DeclSymbol::setLinkage(DeclSymbol::Linkage link)
+void Decl::setLinkage(Decl::Linkage link)
 {
     impl_->bit_.linkage_ = static_cast<char>(link);
 }
 
-DeclSymbol::Linkage DeclSymbol::linkage() const
+Decl::Linkage Decl::linkage() const
 {
-    return DeclSymbol::Linkage(impl_->bit_.linkage_);
+    return Decl::Linkage(impl_->bit_.linkage_);
 }
 
-const Ident* DeclSymbol::name() const
+const Ident* Decl::name() const
 {
     return P_CAST->name_;
 }
 
-bool DeclSymbol::isAnonymous() const
+bool Decl::isAnonymous() const
 {
     return P_CAST->name_ == &kNullIdent;
 }
 
-void DeclSymbol::markAsAuto()
+void Decl::markAsAuto()
 {
     impl_->bit_.auto_ = true;
 }
 
-bool DeclSymbol::isMarkedAuto() const
+bool Decl::isMarkedAuto() const
 {
     return impl_->bit_.auto_;
 }
 
-void DeclSymbol::setDeclAttrs(DeclAttrFlags flags)
+void Decl::setDeclAttrs(DeclAttrFlags flags)
 {
     impl_->bit_.declAttrs_ = flags;
 }
 
-DeclAttrFlags DeclSymbol::declAttrs() const
+DeclAttrFlags Decl::declAttrs() const
 {
     return DeclAttrFlags(impl_->bit_.declAttrs_);
 }
 
-    //--- TypeSymbol ---//
+    //--- TypeDecl ---//
 
-struct uaiso::TypeSymbol::TypeSymbolImpl : DeclSymbol::DeclSymbolImpl
+struct uaiso::TypeDecl::TypeDeclImpl : Decl::DeclImpl
 {
-    using DeclSymbolImpl::DeclSymbolImpl;
+    using DeclImpl::DeclImpl;
 
     std::unique_ptr<Type> ty_;
 };
 
-DEF_PIMPL_CAST(TypeSymbol)
+DEF_PIMPL_CAST(TypeDecl)
 
-void TypeSymbol::setType(std::unique_ptr<Type> ty)
+void TypeDecl::setType(std::unique_ptr<Type> ty)
 {
     P_CAST->ty_ = std::move(ty);
 }
 
-const Type* TypeSymbol::type() const
+const Type* TypeDecl::type() const
 {
     return P_CAST->ty_.get();
 }
 
-    //--- ValueSymbol ---//
+    //--- ValueDecl ---//
 
-struct uaiso::ValueSymbol::ValueSymbolImpl : DeclSymbol::DeclSymbolImpl
+struct uaiso::ValueDecl::ValueDeclImpl : Decl::DeclImpl
 {
-    using DeclSymbolImpl::DeclSymbolImpl;
+    using DeclImpl::DeclImpl;
 
     std::shared_ptr<Type> valueType_;
 };
 
-DEF_PIMPL_CAST(ValueSymbol)
+DEF_PIMPL_CAST(ValueDecl)
 
-void ValueSymbol::setValueType(std::unique_ptr<Type> ty)
+void ValueDecl::setValueType(std::unique_ptr<Type> ty)
 {
     P_CAST->valueType_ = std::move(ty);
 }
 
-const Type* ValueSymbol::valueType() const
+const Type* ValueDecl::valueType() const
 {
     return P_CAST->valueType_.get();
 }
@@ -223,39 +223,39 @@ const Type* ValueSymbol::valueType() const
     //--- Alias ---//
 
 Alias::Alias(const Ident *name)
-    : TypeSymbol(new TypeSymbolImpl(name, Kind::Alias))
+    : TypeDecl(new TypeDeclImpl(name, Kind::Alias))
 {}
 
     //--- Placeholder ---//
 
-struct uaiso::Placeholder::PlaceholderImpl : TypeSymbol::TypeSymbolImpl
+struct uaiso::Placeholder::PlaceholderImpl : TypeDecl::TypeDeclImpl
 {
-    using TypeSymbolImpl::TypeSymbolImpl;
+    using TypeDeclImpl::TypeDeclImpl;
 
-    TypeSymbol* actual_ { nullptr };
+    TypeDecl* actual_ { nullptr };
 };
 
 DEF_PIMPL_CAST(Placeholder)
 
 Placeholder::Placeholder(const Ident *name)
-    : TypeSymbol(new TypeSymbolImpl(name, Kind::Placeholder))
+    : TypeDecl(new TypeDeclImpl(name, Kind::Placeholder))
 {}
 
-void Placeholder::setActual(TypeSymbol* sym)
+void Placeholder::setActual(TypeDecl* sym)
 {
     P_CAST->actual_ = sym;
 }
 
-const TypeSymbol* Placeholder::actual() const
+const TypeDecl* Placeholder::actual() const
 {
     return P_CAST->actual_;
 }
 
     //--- Func ---//
 
-struct uaiso::Func::FuncImpl : TypeSymbol::TypeSymbolImpl
+struct uaiso::Func::FuncImpl : TypeDecl::TypeDeclImpl
 {
-    using TypeSymbolImpl::TypeSymbolImpl;
+    using TypeDeclImpl::TypeDeclImpl;
 
     Environment env_;
 };
@@ -263,7 +263,7 @@ struct uaiso::Func::FuncImpl : TypeSymbol::TypeSymbolImpl
 DEF_PIMPL_CAST(Func)
 
 Func::Func(const Ident *name)
-    : TypeSymbol(new FuncImpl(name, Kind::Func))
+    : TypeDecl(new FuncImpl(name, Kind::Func))
 {}
 
 Func::~Func()
@@ -271,12 +271,12 @@ Func::~Func()
 
 void Func::setType(std::unique_ptr<FuncType> ty)
 {
-    TypeSymbol::setType(std::unique_ptr<Type>(ty.release()));
+    TypeDecl::setType(std::unique_ptr<Type>(ty.release()));
 }
 
 const FuncType *Func::type() const
 {
-    return ConstFuncType_Cast(TypeSymbol::type());
+    return ConstFuncType_Cast(TypeDecl::type());
 }
 
 void Func::setEnv(Environment env)
@@ -384,15 +384,15 @@ Environment Namespace::env() const
 
     //--- Record ---//
 
-struct Record::RecordImpl : TypeSymbol::TypeSymbolImpl
+struct Record::RecordImpl : TypeDecl::TypeDeclImpl
 {
-    using TypeSymbolImpl::TypeSymbolImpl;
+    using TypeDeclImpl::TypeDeclImpl;
 };
 
 DEF_PIMPL_CAST(Record)
 
 Record::Record(const Ident* name)
-    : TypeSymbol(new RecordImpl(name, Kind::Record))
+    : TypeDecl(new RecordImpl(name, Kind::Record))
 {}
 
 Record::~Record()
@@ -400,19 +400,19 @@ Record::~Record()
 
 void Record::setType(std::unique_ptr<RecordType> type)
 {
-    TypeSymbol::setType(std::unique_ptr<Type>(type.release()));
+    TypeDecl::setType(std::unique_ptr<Type>(type.release()));
 }
 
 const RecordType *Record::type() const
 {
-    return ConstRecordType_Cast(TypeSymbol::type());
+    return ConstRecordType_Cast(TypeDecl::type());
 }
 
     //--- Enum ---//
 
-struct Enum::EnumImpl : TypeSymbol::TypeSymbolImpl
+struct Enum::EnumImpl : TypeDecl::TypeDeclImpl
 {
-    using TypeSymbolImpl::TypeSymbolImpl;
+    using TypeDeclImpl::TypeDeclImpl;
 
     std::unique_ptr<Type> baseType_;
 };
@@ -420,7 +420,7 @@ struct Enum::EnumImpl : TypeSymbol::TypeSymbolImpl
 DEF_PIMPL_CAST(Enum)
 
 Enum::Enum(const Ident* name)
-    : TypeSymbol(new EnumImpl(name, Kind::Enum))
+    : TypeDecl(new EnumImpl(name, Kind::Enum))
 {}
 
 Enum::~Enum()
@@ -428,12 +428,12 @@ Enum::~Enum()
 
 void Enum::setType(std::unique_ptr<EnumType> ty)
 {
-    TypeSymbol::setType(std::unique_ptr<Type>(ty.release()));
+    TypeDecl::setType(std::unique_ptr<Type>(ty.release()));
 }
 
 const EnumType *Enum::type() const
 {
-    return ConstEnumType_Cast(TypeSymbol::type());
+    return ConstEnumType_Cast(TypeDecl::type());
 }
 
 void Enum::setUnderlyingType(std::unique_ptr<Type> ty)
@@ -449,24 +449,24 @@ const Type* Enum::underlyingType() const
     //--- BaseRecord ---//
 
 BaseRecord::BaseRecord(const Ident* name)
-    : DeclSymbol(new DeclSymbolImpl(name, Kind::BaseRecord))
+    : Decl(new DeclImpl(name, Kind::BaseRecord))
 {}
 
     //--- Param ---//
 
-struct uaiso::Param::ParamImpl : ValueSymbol::ValueSymbolImpl
+struct uaiso::Param::ParamImpl : ValueDecl::ValueDeclImpl
 {
-    using ValueSymbolImpl::ValueSymbolImpl;
+    using ValueDeclImpl::ValueDeclImpl;
 };
 
 DEF_PIMPL_CAST(Param)
 
 Param::Param()
-    : ValueSymbol(new ParamImpl(&kNullIdent, Kind::Param))
+    : ValueDecl(new ParamImpl(&kNullIdent, Kind::Param))
 {}
 
 Param::Param(const Ident* name)
-    : ValueSymbol(new ParamImpl(name, Kind::Param))
+    : ValueDecl(new ParamImpl(name, Kind::Param))
 {}
 
 Param::~Param()
@@ -494,15 +494,15 @@ Param::EvalStrategy Param::evalStrategy() const
 
     //--- Var ---//
 
-struct uaiso::Var::VarImpl : ValueSymbol::ValueSymbolImpl
+struct uaiso::Var::VarImpl : ValueDecl::ValueDeclImpl
 {
-    using ValueSymbolImpl::ValueSymbolImpl;
+    using ValueDeclImpl::ValueDeclImpl;
 };
 
 DEF_PIMPL_CAST(Var)
 
 Var::Var(const Ident* name)
-    : ValueSymbol(new ValueSymbolImpl(name, Kind::Var))
+    : ValueDecl(new ValueDeclImpl(name, Kind::Var))
 {}
 
 Var::~Var()
@@ -511,14 +511,14 @@ Var::~Var()
     //--- EnumItem ---//
 
 EnumItem::EnumItem(const Ident* name)
-    : ValueSymbol(new ValueSymbolImpl(name, Kind::EnumItem))
+    : ValueDecl(new ValueDeclImpl(name, Kind::EnumItem))
 {}
 
     //--- Utility functions ---//
 
 namespace uaiso {
 
-bool isDeclSymbol(const Symbol* symbol)
+bool isDecl(const Symbol* symbol)
 {
     switch (symbol->kind()) {
     case Symbol::Kind::Import:
@@ -528,7 +528,7 @@ bool isDeclSymbol(const Symbol* symbol)
     }
 }
 
-bool isTypeSymbol(const Symbol *symbol)
+bool isTypeDecl(const Symbol *symbol)
 {
     switch (symbol->kind()) {
     case Symbol::Kind::Alias:
@@ -540,7 +540,7 @@ bool isTypeSymbol(const Symbol *symbol)
     }
 }
 
-bool isValueSymbol(const Symbol *symbol)
+bool isValueDecl(const Symbol *symbol)
 {
     switch (symbol->kind()) {
     case Symbol::Kind::Param:

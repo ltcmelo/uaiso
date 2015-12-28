@@ -81,11 +81,11 @@ PyVerifyBasicCode(const Program* prog,
 
     Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
-    UAISO_EXPECT_TRUE(env.lookUpValue(i));
-    UAISO_EXPECT_TRUE(env.lookUpValue(s));
-    UAISO_EXPECT_TRUE(env.lookUpType(f));
-    UAISO_EXPECT_TRUE(env.lookUpType(c));
-    UAISO_EXPECT_TRUE(env.lookUpValue(o));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(i));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(s));
+    UAISO_EXPECT_TRUE(env.searchTypeDecl(f));
+    UAISO_EXPECT_TRUE(env.searchTypeDecl(c));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(o));
 }
 
 void Binder::BinderTest::PyTestCase1()
@@ -166,29 +166,29 @@ class bar:
     UAISO_EXPECT_FALSE(env.isEmpty());
 
     // Global
-    UAISO_EXPECT_TRUE(env.lookUpValue(a));
-    UAISO_EXPECT_TRUE(env.lookUpValue(b));
-    UAISO_EXPECT_TRUE(env.lookUpValue(c));
-    UAISO_EXPECT_TRUE(env.lookUpValue(d));
-    UAISO_EXPECT_TRUE(env.lookUpValue(e));
-    UAISO_EXPECT_TRUE(env.lookUpValue(f));
-    UAISO_EXPECT_TRUE(env.lookUpType(foo));
-    UAISO_EXPECT_TRUE(env.lookUpType(bar));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(a));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(b));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(c));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(d));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(e));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(f));
+    UAISO_EXPECT_TRUE(env.searchTypeDecl(foo));
+    UAISO_EXPECT_TRUE(env.searchTypeDecl(bar));
 
-    const Func* funcFoo = ConstFunc_Cast(env.lookUpType(foo));
+    const Func* funcFoo = ConstFunc_Cast(env.searchTypeDecl(foo));
     Environment fooEnv = funcFoo->env();
-    UAISO_EXPECT_TRUE(fooEnv.lookUpValue(foo_local));
-    UAISO_EXPECT_FALSE(env.lookUpValue(foo_local));
-    UAISO_EXPECT_FALSE(env.lookUpType(foo_local));
-    UAISO_EXPECT_TRUE(fooEnv.lookUpValue(a));
+    UAISO_EXPECT_TRUE(fooEnv.searchValueDecl(foo_local));
+    UAISO_EXPECT_FALSE(env.searchValueDecl(foo_local));
+    UAISO_EXPECT_FALSE(env.searchTypeDecl(foo_local));
+    UAISO_EXPECT_TRUE(fooEnv.searchValueDecl(a));
 
-    const Record* classBar = ConstRecord_Cast(env.lookUpType(bar));
+    const Record* classBar = ConstRecord_Cast(env.searchTypeDecl(bar));
     Environment barEnv = classBar->type()->env();
-    UAISO_EXPECT_TRUE(barEnv.lookUpValue(bar_static));
-    UAISO_EXPECT_FALSE(env.lookUpValue(bar_static));
-    UAISO_EXPECT_TRUE(barEnv.lookUpType(bar_method));
-    UAISO_EXPECT_FALSE(env.lookUpType(bar_method));
-    UAISO_EXPECT_TRUE(barEnv.lookUpValue(a));
+    UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_static));
+    UAISO_EXPECT_FALSE(env.searchValueDecl(bar_static));
+    UAISO_EXPECT_TRUE(barEnv.searchTypeDecl(bar_method));
+    UAISO_EXPECT_FALSE(env.searchTypeDecl(bar_method));
+    UAISO_EXPECT_TRUE(barEnv.searchValueDecl(a));
 }
 
 void Binder::BinderTest::PyTestCase2()
@@ -221,8 +221,8 @@ for g in range(10):
     UAISO_EXPECT_FALSE(env.isEmpty());
 
     // Global
-    UAISO_EXPECT_TRUE(env.lookUpValue(g));
-    UAISO_EXPECT_TRUE(env.lookUpValue(h));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(g));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(h));
 }
 
 void Binder::BinderTest::PyTestCase3()
@@ -268,18 +268,18 @@ class bar:
     UAISO_EXPECT_FALSE(env.isEmpty());
 
     // Global
-    UAISO_EXPECT_TRUE(env.lookUpType(bar));
+    UAISO_EXPECT_TRUE(env.searchTypeDecl(bar));
 
-    const Record* classBar = ConstRecord_Cast(env.lookUpType(bar));
+    const Record* classBar = ConstRecord_Cast(env.searchTypeDecl(bar));
     Environment barEnv = classBar->type()->env();
-    UAISO_EXPECT_TRUE(barEnv.lookUpValue(bar_static));
-    UAISO_EXPECT_FALSE(env.lookUpValue(bar_static));
-    UAISO_EXPECT_TRUE(barEnv.lookUpType(bar_method));
-    UAISO_EXPECT_FALSE(env.lookUpType(bar_method));
-    UAISO_EXPECT_TRUE(barEnv.lookUpValue(bar_inst1));
-    UAISO_EXPECT_FALSE(env.lookUpValue(bar_inst1));
-    UAISO_EXPECT_TRUE(barEnv.lookUpValue(bar_inst2));
-    UAISO_EXPECT_FALSE(env.lookUpValue(bar_inst2));
+    UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_static));
+    UAISO_EXPECT_FALSE(env.searchValueDecl(bar_static));
+    UAISO_EXPECT_TRUE(barEnv.searchTypeDecl(bar_method));
+    UAISO_EXPECT_FALSE(env.searchTypeDecl(bar_method));
+    UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_inst1));
+    UAISO_EXPECT_FALSE(env.searchValueDecl(bar_inst1));
+    UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_inst2));
+    UAISO_EXPECT_FALSE(env.searchValueDecl(bar_inst2));
 }
 
 void Binder::BinderTest::PyTestCase4()
@@ -368,10 +368,10 @@ def g():
     }
 
     Environment env = prog->env();
-    UAISO_EXPECT_TRUE(env.lookUpType(g));
-    const Func* func = ConstFunc_Cast(env.lookUpType(g));
+    UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
+    const Func* func = ConstFunc_Cast(env.searchTypeDecl(g));
     Environment funcEnv = func->env();
-    UAISO_EXPECT_TRUE(funcEnv.lookUpValue(l));
+    UAISO_EXPECT_TRUE(funcEnv.searchValueDecl(l));
 }
 
 void Binder::BinderTest::PyTestCase10()
@@ -400,10 +400,10 @@ def g():
     }
 
     Environment env = prog->env();
-    UAISO_EXPECT_TRUE(env.lookUpType(g));
-    const Func* func = ConstFunc_Cast(env.lookUpType(g));
+    UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
+    const Func* func = ConstFunc_Cast(env.searchTypeDecl(g));
     Environment funcEnv = func->env();
-    UAISO_EXPECT_TRUE(funcEnv.lookUpValue(l));
+    UAISO_EXPECT_TRUE(funcEnv.searchValueDecl(l));
 }
 
 void Binder::BinderTest::PyTestCase11()
@@ -432,10 +432,10 @@ def g():
     }
 
     Environment env = prog->env();
-    UAISO_EXPECT_TRUE(env.lookUpType(g));
-    const Func* func = ConstFunc_Cast(env.lookUpType(g));
+    UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
+    const Func* func = ConstFunc_Cast(env.searchTypeDecl(g));
     Environment funcEnv = func->env();
-    UAISO_EXPECT_TRUE(funcEnv.lookUpValue(l));
+    UAISO_EXPECT_TRUE(funcEnv.searchValueDecl(l));
 }
 
 void Binder::BinderTest::PyTestCase12()
@@ -468,9 +468,9 @@ class c2:
     }
 
     Environment env = prog->env();
-    UAISO_EXPECT_TRUE(env.lookUpType(c2));
-    const Record* clazz = ConstRecord_Cast(env.lookUpType(c2));
+    UAISO_EXPECT_TRUE(env.searchTypeDecl(c2));
+    const Record* clazz = ConstRecord_Cast(env.searchTypeDecl(c2));
     Environment clazzEnv = clazz->type()->env();
-    UAISO_EXPECT_TRUE(clazzEnv.lookUpValue(sm));
-    UAISO_EXPECT_TRUE(clazzEnv.lookUpValue(m));
+    UAISO_EXPECT_TRUE(clazzEnv.searchValueDecl(sm));
+    UAISO_EXPECT_TRUE(clazzEnv.searchValueDecl(m));
 }

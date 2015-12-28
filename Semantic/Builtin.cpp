@@ -50,7 +50,7 @@ std::vector<Builtin::FuncPtr> Builtin::valueConstructors(LexemeMap*) const
     return std::vector<FuncPtr>();
 }
 
-std::vector<Builtin::FuncPtr> Builtin::freeFuncs(LexemeMap*) const
+std::vector<Builtin::FuncPtr> Builtin::globalFuncs(LexemeMap*) const
 {
     return std::vector<FuncPtr>();
 }

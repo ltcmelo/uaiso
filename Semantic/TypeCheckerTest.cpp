@@ -78,7 +78,7 @@ TypeChecker::TypeCheckerTest::runCore(std::unique_ptr<Factory> factory,
 
     const std::string& symName = expectedBindings.first;
     if (!symName.empty()) {
-        for (auto valSym : prog->env().listValues()) {
+        for (auto valSym : prog->env().listValueDecls()) {
             if (valSym->name()->str() == symName) {
                 auto ty = valSym->valueType();
                 UAISO_EXPECT_INT_EQ(static_cast<int>(expectedBindings.second),

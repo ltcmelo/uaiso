@@ -130,53 +130,69 @@ public:
     const Namespace* fetchNamespace(const Ident* name) const;
 
     /*!
+     * \brief includeImport
+     * \param import
+     *
+     * Include an import dependency in the environment.
+     */
+    void includeImport(std::unique_ptr<const Import> import);
+
+    /*!
+     * \brief imports
+     * \return
+     */
+    std::vector<const Import*> imports() const;
+
+    /*!
      * \brief insertType
      * \param symbol
      *
      * Insert symbol \a sym in the type container of this environment. No
      * particular ordering is applied to symbols with duplicate name.
      */
-    void insertType(std::unique_ptr<const TypeSymbol> sym);
+    void insertTypeDecl(std::unique_ptr<const TypeDecl> sym);
 
     /*!
-     * \brief insertValue
+     * \brief insertValueDecl
      * \param symbol
      *
      * Insert symbol \a sym in the value container of this environment. No
      * particular ordering is applied to symbols with duplicate name.
      */
-    void insertValue(std::unique_ptr<const ValueSymbol> sym);
+    void insertValueDecl(std::unique_ptr<const ValueDecl> sym);
 
     /*!
-     * \brief search
+     * \brief searchDecl
      * \param name
      * \return
      *
-     * Look up symbol in the type and value environments. If the name is
+     * Search symbol in the type and value environments. If the name is
      * present in both of them, or if there are symbols with duplicate
      * names, it's unspecified which match will be returned.
      */
-    const DeclSymbol* lookUp(const Ident* name) const;
+    const Decl* searchDecl(const Ident* name) const;
 
     /*!
-     * \brief searchType
+     * \brief searchTypeDecl
      * \param name
      * \return
      *
-     * Look up symbol in the type environment only. If there are multiple
+     * Search symbol in the type environment only. If there are multiple
      * symbols with the same name, it's unspecified which match will be
      * returned.
      */
-    const TypeSymbol* lookUpType(const Ident* name) const;
+    const TypeDecl* searchTypeDecl(const Ident* name) const;
 
     /*!
-     * \brief searchValue
+     * \brief searchValueDecl
      * \param name
      * \return
      *
-     * Look up symbol in the value environment only.
+     * Search symbol in the value environment only. If there are multiple
+     * symbols with the same name, it's unspecified which match will be
+     * returned.
      */
-    const ValueSymbol* lookUpValue(const Ident* name) const;
+    const ValueDecl* searchValueDecl(const Ident* name) const;
 
 
     // DESIGN: This iterator doesn't support the implementation well enough.
@@ -203,26 +219,26 @@ public:
         std::pair<Iterator<SymbolT>, Iterator<SymbolT>>;
 
     /*!
-     * \brief searchTypes
+     * \brief searchTypeDecls
      * \param name
      * \return
      *
-     * Look up symbol in the type environment only. Lookup into outer
+     * Search symbol in the type environment only. Lookup into outer
      * environments stops once the first symbol with the given \a name
      * is found (just like C++ lookup rules).
      */
-    Range<TypeSymbol> lookUpTypes(const Ident* name) const;
+    Range<TypeDecl> searchTypeDecls(const Ident* name) const;
 
     /*!
-     * \brief searchValues
+     * \brief searchValueDecls
      * \param name
      * \return
      *
-     * Look up symbol in the value environment only. Lookup into outer
+     * Search symbol in the value environment only. Lookup into outer
      * environments stops once the first symbol with the given \a name
      * is found (just like C++ lookup rules).
      */
-    Range<ValueSymbol> lookUpValues(const Ident* name) const;
+    Range<ValueDecl> searchValueDecls(const Ident* name) const;
 
     /*!
      * \brief listValues
@@ -230,7 +246,7 @@ public:
      *
      * List symbols in the value environment.
      */
-    std::vector<const ValueSymbol*> listValues() const;
+    std::vector<const ValueDecl*> listValueDecls() const;
 
     /*!
      * \brief listTypes
@@ -238,27 +254,13 @@ public:
      *
      * List symbols in the type environment.
      */
-    std::vector<const TypeSymbol*> listTypes() const;
+    std::vector<const TypeDecl*> listTypeDecls() const;
 
     /*!
      * \brief list
      * \return
      */
-    std::vector<const DeclSymbol*> list() const;
-
-    /*!
-     * \brief includeImport
-     * \param import
-     *
-     * Include an import dependence in the environment.
-     */
-    void includeImport(std::unique_ptr<const Import> import);
-
-    /*!
-     * \brief imports
-     * \return
-     */
-    std::vector<const Import*> imports() const;
+    std::vector<const Decl*> listDecls() const;
 
 private:
     DECL_CLASS_TEST(Environment)
@@ -270,13 +272,13 @@ private:
 bool operator==(const Environment& env1, const Environment& env2);
 bool operator!=(const Environment& env1, const Environment& env2);
 
-const ValueSymbol* lookUpValue(const NameAst* name,
+const ValueDecl* searchValueDecl(const NameAst* name,
+                                 Environment env,
+                                 const LexemeMap* lexemes);
+
+const TypeDecl* searchTypeDecl(const NameAst* name,
                                Environment env,
                                const LexemeMap* lexemes);
-
-const TypeSymbol* lookUpType(const NameAst* name,
-                             Environment env,
-                             const LexemeMap* lexemes);
 
 } // namespace uaiso
 

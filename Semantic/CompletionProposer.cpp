@@ -219,7 +219,7 @@ CompletionProposer::~CompletionProposer()
 CompletionProposer::Result
 CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
 {
-    using Symbols = std::vector<const DeclSymbol*>;
+    using Symbols = std::vector<const Decl*>;
 
     UAISO_ASSERT(progAst->program_,
                  return Result(Symbols(), CompletionAstNotFound));
@@ -244,7 +244,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
     if (topAst->kind() == Ast::Kind::IdentExpr) {
         Symbols syms;
         while (true) {
-            auto curSyms = env.list();
+            auto curSyms = env.listDecls();
             std::copy(curSyms.begin(), curSyms.end(), std::back_inserter(syms));
             if (env.isRootEnv())
                 break;
@@ -260,11 +260,11 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                      return Result(Symbols(), InternalError));
         const Type* ty = nullptr;
         for (auto ident : context.name_) {
-            auto tySym = env.lookUpType(ident);
+            auto tySym = env.searchTypeDecl(ident);
             if (tySym) {
                 ty = tySym->type();
             } else {
-                auto valSym = env.lookUpValue(ident);
+                auto valSym = env.searchValueDecl(ident);
                 if (valSym) {
                     ty = valSym->valueType();
                 } else {
@@ -310,7 +310,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
 
                 auto base = P->builtin_->implicitBase(const_cast<LexemeMap*>(lexemes));
                 UAISO_ASSERT(base, return Result(Symbols(), InternalError));
-                auto baseTySym = env.lookUpType(base->name());
+                auto baseTySym = env.searchTypeDecl(base->name());
                 if (!baseTySym) {
                     DEBUG_TRACE("implicit base is unknown\n");
                     return Result(Symbols(), UnknownSymbol);
@@ -319,16 +319,16 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                 bool baseHasEnv;
                 Environment baseEnv;
                 std::tie(baseHasEnv, baseEnv) = envForType(baseTySym->type(), baseEnv);
-                return Result(baseEnv.list(), Success);
+                return Result(baseEnv.listDecls(), Success);
             }
         }
 
         // If completing a namespace, there will be no type.
         if (!ty)
-            return Result(env.list(), Success);
+            return Result(env.listDecls(), Success);
 
         // Look into base classes.
-        Symbols syms = env.list();
+        Symbols syms = env.listDecls();
         std::stack<const Type*> allTy;
         allTy.push(ty);
         while (!allTy.empty()) {
@@ -340,7 +340,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
 
             const RecordType* recTy = ConstRecordType_Cast(curTy);
             for (auto base : recTy->bases()) {
-                auto baseTySym = env.lookUpType(base->name());
+                auto baseTySym = env.searchTypeDecl(base->name());
                 if (!baseTySym)
                     continue;
 
@@ -349,7 +349,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                 std::tie(baseHasEnv, baseEnv) = envForType(baseTySym->type(), baseEnv);
                 if (baseHasEnv) {
                     allTy.push(baseTySym->type());
-                    auto extraSyms = baseEnv.list();
+                    auto extraSyms = baseEnv.listDecls();
                     std::copy(extraSyms.begin(), extraSyms.end(), std::back_inserter(syms));
                 }
             }

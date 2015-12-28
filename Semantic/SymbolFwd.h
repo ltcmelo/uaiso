@@ -28,7 +28,7 @@ namespace uaiso {
 
 class BaseRecord;
 class Block;
-class DeclSymbol;
+class Decl;
 class Enum;
 class EnumItem;
 class Func;
@@ -36,8 +36,8 @@ class Import;
 class Namespace;
 class Record;
 class Symbol;
-class TypeSymbol;
-class ValueSymbol;
+class TypeDecl;
+class ValueDecl;
 class Var;
 
 } // namespace uaiso

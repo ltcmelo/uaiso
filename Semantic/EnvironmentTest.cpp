@@ -43,25 +43,25 @@ public:
     void testCase1()
     {
         std::unique_ptr<Ident> a(new Ident("a"));
-        TypeSymbol* s = new Record(a.get());
+        TypeDecl* s = new Record(a.get());
         Environment env;
-        env.insertType(std::unique_ptr<const TypeSymbol>(s));
+        env.insertTypeDecl(std::unique_ptr<const TypeDecl>(s));
 
-        UAISO_EXPECT_TRUE(env.lookUpType(a.get()));
-        UAISO_EXPECT_FALSE(env.lookUpValue(a.get()));
-        UAISO_EXPECT_TRUE(env.lookUp(a.get()));
+        UAISO_EXPECT_TRUE(env.searchTypeDecl(a.get()));
+        UAISO_EXPECT_FALSE(env.searchValueDecl(a.get()));
+        UAISO_EXPECT_TRUE(env.searchDecl(a.get()));
     }
 
     void testCase2()
     {
         std::unique_ptr<Ident> a(new Ident("a"));
-        ValueSymbol* s = new Var(a.get());
+        ValueDecl* s = new Var(a.get());
         Environment env;
-        env.insertValue(std::unique_ptr<const ValueSymbol>(s));
+        env.insertValueDecl(std::unique_ptr<const ValueDecl>(s));
 
-        UAISO_EXPECT_FALSE(env.lookUpType(a.get()));
-        UAISO_EXPECT_TRUE(env.lookUpValue(a.get()));
-        UAISO_EXPECT_TRUE(env.lookUp(a.get()));
+        UAISO_EXPECT_FALSE(env.searchTypeDecl(a.get()));
+        UAISO_EXPECT_TRUE(env.searchValueDecl(a.get()));
+        UAISO_EXPECT_TRUE(env.searchDecl(a.get()));
     }
 
     void testCase3()
@@ -71,18 +71,18 @@ public:
         std::unique_ptr<Ident> b(new Ident("b"));
         Record* t = new Record(b.get());
         RecordType* m = new RecordType;
-        m->env().insertType(std::unique_ptr<const TypeSymbol>(t));
+        m->env().insertTypeDecl(std::unique_ptr<const TypeDecl>(t));
         s->setType(std::unique_ptr<RecordType>(m));
         Environment env;
-        env.insertType(std::unique_ptr<const TypeSymbol>(s));
+        env.insertTypeDecl(std::unique_ptr<const TypeDecl>(s));
 
-        UAISO_EXPECT_TRUE(env.lookUpType(a.get()));
-        UAISO_EXPECT_FALSE(env.lookUpValue(a.get()));
-        UAISO_EXPECT_TRUE(env.lookUp(a.get()));
-        const Record* s_env = ConstRecord_Cast(env.lookUpType(a.get()));
-        UAISO_EXPECT_TRUE(s_env->type()->env().lookUpType(b.get()));
-        UAISO_EXPECT_TRUE(s_env->type()->env().lookUp(b.get()));
-        UAISO_EXPECT_FALSE(s_env->type()->env().lookUpValue(b.get()));
+        UAISO_EXPECT_TRUE(env.searchTypeDecl(a.get()));
+        UAISO_EXPECT_FALSE(env.searchValueDecl(a.get()));
+        UAISO_EXPECT_TRUE(env.searchDecl(a.get()));
+        const Record* s_env = ConstRecord_Cast(env.searchTypeDecl(a.get()));
+        UAISO_EXPECT_TRUE(s_env->type()->env().searchTypeDecl(b.get()));
+        UAISO_EXPECT_TRUE(s_env->type()->env().searchDecl(b.get()));
+        UAISO_EXPECT_FALSE(s_env->type()->env().searchValueDecl(b.get()));
     }
 
     void testCase4()
@@ -90,36 +90,36 @@ public:
         std::unique_ptr<Ident> a(new Ident("a"));
         Var* s = new Var(a.get());
         Environment env;
-        env.insertValue(std::unique_ptr<const Var>(s));
+        env.insertValueDecl(std::unique_ptr<const Var>(s));
         std::unique_ptr<Ident> b(new Ident("b"));
         Func* t = new Func(b.get());
         t->setEnv(env.createSubEnv());
-        t->env().insertType(std::unique_ptr<const TypeSymbol>(t));
-        env.insertType(std::unique_ptr<const TypeSymbol>(t));
+        t->env().insertTypeDecl(std::unique_ptr<const TypeDecl>(t));
+        env.insertTypeDecl(std::unique_ptr<const TypeDecl>(t));
 
-        UAISO_EXPECT_TRUE(env.lookUpValue(a.get()));
-        UAISO_EXPECT_TRUE(env.lookUpType(b.get()));
-        const Func* t_env = ConstFunc_Cast(env.lookUpType(b.get()));
-        UAISO_EXPECT_TRUE(t_env->env().lookUpValue(a.get()));
+        UAISO_EXPECT_TRUE(env.searchValueDecl(a.get()));
+        UAISO_EXPECT_TRUE(env.searchTypeDecl(b.get()));
+        const Func* t_env = ConstFunc_Cast(env.searchTypeDecl(b.get()));
+        UAISO_EXPECT_TRUE(t_env->env().searchValueDecl(a.get()));
     }
 
     void testCase5()
     {
         // Duplicates
         std::unique_ptr<Ident> a(new Ident("a"));
-        TypeSymbol* s1 = new Record(a.get());
-        TypeSymbol* s2 = new Record(a.get());
-        TypeSymbol* s3 = new Record(a.get());
+        TypeDecl* s1 = new Record(a.get());
+        TypeDecl* s2 = new Record(a.get());
+        TypeDecl* s3 = new Record(a.get());
         Environment env;
-        env.insertType(std::unique_ptr<const TypeSymbol>(s1));
-        env.insertType(std::unique_ptr<const TypeSymbol>(s2));
-        env.insertType(std::unique_ptr<const TypeSymbol>(s3));
+        env.insertTypeDecl(std::unique_ptr<const TypeDecl>(s1));
+        env.insertTypeDecl(std::unique_ptr<const TypeDecl>(s2));
+        env.insertTypeDecl(std::unique_ptr<const TypeDecl>(s3));
 
-        UAISO_EXPECT_TRUE(env.lookUpType(a.get()));
-        UAISO_EXPECT_FALSE(env.lookUpValue(a.get()));
-        UAISO_EXPECT_TRUE(env.lookUp(a.get()));
+        UAISO_EXPECT_TRUE(env.searchTypeDecl(a.get()));
+        UAISO_EXPECT_FALSE(env.searchValueDecl(a.get()));
+        UAISO_EXPECT_TRUE(env.searchDecl(a.get()));
 
-        auto p = env.lookUpTypes(a.get());
+        auto p = env.searchTypeDecls(a.get());
         size_t total = std::distance(p.first, p.second);
         UAISO_EXPECT_INT_EQ(3, total);
     }

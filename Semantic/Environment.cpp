@@ -133,8 +133,8 @@ public:
 
     std::shared_ptr<EnvironmentImpl> outer_;
     std::vector<Environment> nested_;
-    SymbolTable<TypeSymbol> types_;
-    SymbolTable<ValueSymbol> values_;
+    SymbolTable<TypeDecl> types_;
+    SymbolTable<ValueDecl> values_;
     SymbolTable<Namespace> namespaces_;
     std::vector<Environment> mergedEnvs_;
     std::vector<std::unique_ptr<const Import>> imports_;
@@ -170,40 +170,38 @@ bool Environment::isEmpty() const
     return P->isEmpty();
 }
 
-const DeclSymbol* Environment::lookUp(const Ident* name) const
+const Decl* Environment::searchDecl(const Ident* name) const
 {
     UAISO_ASSERT(name, return nullptr);
 
-    const DeclSymbol* sym =
-            P->recursivelySearch<ValueSymbol>(name, &EnvironmentImpl::values_);
+    const Decl* sym = P->recursivelySearch<ValueDecl>(name, &EnvironmentImpl::values_);
     if (!sym)
-        sym = P->recursivelySearch<TypeSymbol>(name, &EnvironmentImpl::types_);
-
+        sym = P->recursivelySearch<TypeDecl>(name, &EnvironmentImpl::types_);
     return sym;
 }
 
-const TypeSymbol* Environment::lookUpType(const Ident* name) const
+const TypeDecl* Environment::searchTypeDecl(const Ident* name) const
 {
     UAISO_ASSERT(name, return nullptr);
 
-    return P->recursivelySearch<TypeSymbol>(name, &EnvironmentImpl::types_);
+    return P->recursivelySearch<TypeDecl>(name, &EnvironmentImpl::types_);
 }
 
-const ValueSymbol* Environment::lookUpValue(const Ident* name) const
+const ValueDecl* Environment::searchValueDecl(const Ident* name) const
 {
     UAISO_ASSERT(name, return nullptr);
 
-    return P->recursivelySearch<ValueSymbol>(name, &EnvironmentImpl::values_);
+    return P->recursivelySearch<ValueDecl>(name, &EnvironmentImpl::values_);
 }
 
-void Environment::insertType(std::unique_ptr<const TypeSymbol> symbol)
+void Environment::insertTypeDecl(std::unique_ptr<const TypeDecl> symbol)
 {
     UAISO_ASSERT(symbol, return);
 
     P->types_.insert(std::move(symbol));
 }
 
-void Environment::insertValue(std::unique_ptr<const ValueSymbol> symbol)
+void Environment::insertValueDecl(std::unique_ptr<const ValueDecl> symbol)
 {
     UAISO_ASSERT(symbol, return);
 
@@ -247,48 +245,48 @@ std::vector<const Import*> Environment::imports() const
     return imports; // RVO
 }
 
-Environment::Range<TypeSymbol> Environment::lookUpTypes(const Ident* name) const
+Environment::Range<TypeDecl> Environment::searchTypeDecls(const Ident* name) const
 {
     UAISO_ASSERT(name,
-                 return std::make_pair(Iterator<TypeSymbol>(P->types_.table_.end()),
-                                       Iterator<TypeSymbol>(P->types_.table_.end())));
+                 return std::make_pair(Iterator<TypeDecl>(P->types_.table_.end()),
+                                       Iterator<TypeDecl>(P->types_.table_.end())));
 
     auto mapRange =
-            P->recursivelySearchMultiple<TypeSymbol>(name, &EnvironmentImpl::types_);
+            P->recursivelySearchMultiple<TypeDecl>(name, &EnvironmentImpl::types_);
 
-    return std::make_pair(Iterator<TypeSymbol>(mapRange.first),
-                          Iterator<TypeSymbol>(mapRange.second));
+    return std::make_pair(Iterator<TypeDecl>(mapRange.first),
+                          Iterator<TypeDecl>(mapRange.second));
 }
 
-Environment::Range<ValueSymbol> Environment::lookUpValues(const Ident* name) const
+Environment::Range<ValueDecl> Environment::searchValueDecls(const Ident* name) const
 {
     UAISO_ASSERT(name,
-                 return std::make_pair(Iterator<ValueSymbol>(P->values_.table_.end()),
-                                       Iterator<ValueSymbol>(P->values_.table_.end())));
+                 return std::make_pair(Iterator<ValueDecl>(P->values_.table_.end()),
+                                       Iterator<ValueDecl>(P->values_.table_.end())));
 
     auto mapRange =
-            P->recursivelySearchMultiple<ValueSymbol>(name, &EnvironmentImpl::values_);
+            P->recursivelySearchMultiple<ValueDecl>(name, &EnvironmentImpl::values_);
 
-    return std::make_pair(Iterator<ValueSymbol>(mapRange.first),
-                          Iterator<ValueSymbol>(mapRange.second));
+    return std::make_pair(Iterator<ValueDecl>(mapRange.first),
+                          Iterator<ValueDecl>(mapRange.second));
 }
 
-std::vector<const ValueSymbol*> Environment::listValues() const
+std::vector<const ValueDecl*> Environment::listValueDecls() const
 {
-    return P->list<ValueSymbol>(&EnvironmentImpl::values_);
+    return P->list<ValueDecl>(&EnvironmentImpl::values_);
 }
 
-std::vector<const TypeSymbol*> Environment::listTypes() const
+std::vector<const TypeDecl*> Environment::listTypeDecls() const
 {
-    return P->list<TypeSymbol>(&EnvironmentImpl::types_);
+    return P->list<TypeDecl>(&EnvironmentImpl::types_);
 }
 
-std::vector<const DeclSymbol*> Environment::list() const
+std::vector<const Decl*> Environment::listDecls() const
 {
-    std::vector<const DeclSymbol*> syms;
-    auto valSyms = P->list<ValueSymbol>(&EnvironmentImpl::values_);
+    std::vector<const Decl*> syms;
+    auto valSyms = P->list<ValueDecl>(&EnvironmentImpl::values_);
     std::copy(valSyms.begin(), valSyms.end(), std::back_inserter(syms));
-    auto tySyms = P->list<TypeSymbol>(&EnvironmentImpl::types_);
+    auto tySyms = P->list<TypeDecl>(&EnvironmentImpl::types_);
     std::copy(tySyms.begin(), tySyms.end(), std::back_inserter(syms));
 
     return syms;
@@ -325,7 +323,22 @@ const Ident* nameToIdent(const SimpleNameAst* name, const LexemeMap* lexemes)
     return lexemes->find<Ident>(name->nameLoc_.fileName_, name->nameLoc_.lineCol());
 }
 
-const ValueSymbol* lookUpValue(const NameAst* name,
+const ValueDecl* searchValueDecl(const NameAst* name,
+                                 Environment env,
+                                 const LexemeMap* lexemes)
+{
+    UAISO_ASSERT(name, return nullptr);
+    UAISO_ASSERT(lexemes, return nullptr);
+
+    if (name->kind() == Ast::Kind::SimpleName)
+        return env.searchValueDecl(nameToIdent(ConstSimpleName_Cast(name), lexemes));
+
+    // TODO: Templates, namespaces...
+
+    return nullptr;
+}
+
+const TypeDecl* searchTypeDecl(const NameAst* name,
                                Environment env,
                                const LexemeMap* lexemes)
 {
@@ -333,22 +346,7 @@ const ValueSymbol* lookUpValue(const NameAst* name,
     UAISO_ASSERT(lexemes, return nullptr);
 
     if (name->kind() == Ast::Kind::SimpleName)
-        return env.lookUpValue(nameToIdent(ConstSimpleName_Cast(name), lexemes));
-
-    // TODO: Templates, namespaces...
-
-    return nullptr;
-}
-
-const TypeSymbol* lookUpType(const NameAst* name,
-                             Environment env,
-                             const LexemeMap* lexemes)
-{
-    UAISO_ASSERT(name, return nullptr);
-    UAISO_ASSERT(lexemes, return nullptr);
-
-    if (name->kind() == Ast::Kind::SimpleName)
-        return env.lookUpType(nameToIdent(ConstSimpleName_Cast(name), lexemes));
+        return env.searchTypeDecl(nameToIdent(ConstSimpleName_Cast(name), lexemes));
 
     // TODO: Namespace...
 

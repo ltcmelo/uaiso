@@ -157,9 +157,9 @@ private:
 };
 
 /*!
- * \brief The DeclSymbol class
+ * \brief The Decl class
  */
-class UAISO_API DeclSymbol : public Symbol
+class UAISO_API Decl : public Symbol
 {
 public:
     enum class Visibility : char
@@ -214,12 +214,12 @@ public:
     DeclAttrFlags declAttrs() const;
 
 protected:
-    DECL_PIMPL_CAST(DeclSymbol)
+    DECL_PIMPL_CAST(Decl)
 
-    DeclSymbol(DeclSymbolImpl* impl);
+    Decl(DeclImpl* impl);
 };
 
-class UAISO_API TypeSymbol : public DeclSymbol
+class UAISO_API TypeDecl : public Decl
 {
 public:
     /*!
@@ -235,12 +235,12 @@ public:
     const Type* type() const;
 
 protected:
-    using DeclSymbol::DeclSymbol;
+    using Decl::Decl;
 
-    DECL_PIMPL_CAST(TypeSymbol)
+    DECL_PIMPL_CAST(TypeDecl)
 };
 
-class UAISO_API ValueSymbol : public DeclSymbol
+class UAISO_API ValueDecl : public Decl
 {
 public:
     /*!
@@ -258,15 +258,15 @@ public:
     const Type* valueType() const;
 
 protected:
-    using DeclSymbol::DeclSymbol;
+    using Decl::Decl;
 
-    DECL_PIMPL_CAST(ValueSymbol)
+    DECL_PIMPL_CAST(ValueDecl)
 };
 
 /*!
  * \brief The BaseRecord class
  */
-class UAISO_API BaseRecord final : public DeclSymbol
+class UAISO_API BaseRecord final : public Decl
 {
 public:
     BaseRecord(const Ident* name);
@@ -277,14 +277,14 @@ public:
  *
  * Name declaration for an incomplete type, such as forward declaration in C++.
  */
-class UAISO_API Placeholder final : public TypeSymbol
+class UAISO_API Placeholder final : public TypeDecl
 {
 public:
     Placeholder(const Ident* name);
 
-    void setActual(TypeSymbol* sym);
+    void setActual(TypeDecl* sym);
 
-    const TypeSymbol* actual() const;
+    const TypeDecl* actual() const;
 
 private:
     DECL_PIMPL_CAST(Placeholder)
@@ -293,7 +293,7 @@ private:
 /*!
  * \brief The Func class
  */
-class UAISO_API Func final : public TypeSymbol
+class UAISO_API Func final : public TypeDecl
 {
 public:
     Func(const Ident* name);
@@ -312,7 +312,7 @@ private:
 /*!
  * \brief The Alias class
  */
-class UAISO_API Alias final : public TypeSymbol
+class UAISO_API Alias final : public TypeDecl
 {
 public:
     Alias(const Ident* name);
@@ -321,7 +321,7 @@ public:
 /*!
  * \brief The Record class
  */
-class UAISO_API Record final : public TypeSymbol
+class UAISO_API Record final : public TypeDecl
 {
 public:
     Record(const Ident* name);
@@ -337,7 +337,7 @@ private:
 /*!
  * \brief The Enum class
  */
-class UAISO_API Enum final : public TypeSymbol
+class UAISO_API Enum final : public TypeDecl
 {
 public:
     Enum(const Ident* name);
@@ -356,7 +356,7 @@ private:
 /*!
  * \brief The Param class
  */
-class UAISO_API Param final : public ValueSymbol
+class UAISO_API Param final : public ValueDecl
 {
 public:
     Param();
@@ -391,7 +391,7 @@ private:
 /*!
  * \brief The Var class
  */
-class UAISO_API Var final : public ValueSymbol
+class UAISO_API Var final : public ValueDecl
 {
 public:
     Var(const Ident* name);
@@ -404,7 +404,7 @@ private:
 /*!
  * \brief The EnumItem class
  */
-class UAISO_API EnumItem final : public ValueSymbol
+class UAISO_API EnumItem final : public ValueDecl
 {
 public:
     EnumItem(const Ident *name);
@@ -412,9 +412,9 @@ public:
 
     /*--- Utility ---*/
 
-bool isDeclSymbol(const Symbol* symbol);
-bool isTypeSymbol(const Symbol* symbol);
-bool isValueSymbol(const Symbol* symbol);
+bool isDecl(const Symbol* symbol);
+bool isTypeDecl(const Symbol* symbol);
+bool isValueDecl(const Symbol* symbol);
 
 } // namespace uaiso
 

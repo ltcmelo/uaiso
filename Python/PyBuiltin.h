@@ -35,7 +35,7 @@ public:
 
     std::vector<FuncPtr> valueConstructors(LexemeMap* lexemes) const override;
 
-    std::vector<FuncPtr> freeFuncs(LexemeMap* lexemes) const override;
+    std::vector<FuncPtr> globalFuncs(LexemeMap* lexemes) const override;
 
     std::vector<TypeDeclPtr> typeDecls(LexemeMap* lexemes) const override;
 

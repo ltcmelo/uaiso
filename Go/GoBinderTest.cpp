@@ -199,61 +199,61 @@ void Binder::BinderTest::GoTestCase1()
     }
 
     Environment moduleEnv = program->env();
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpType(vertex));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUpValue(vertex));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpValue(ticks));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUp(lock));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUp(val));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpValue(tls0));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpType(tickspersecond));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUpValue(tickspersecond));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUpValue(r));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpType(makeStringSlice));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUpValue(makeStringSlice));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpType(parforalloc));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUpValue(parforalloc));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpValue(envs));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpValue(argslice));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpType(runtime_envs));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUpValue(runtime_envs));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpType(runtime_args));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUpValue(runtime_args));
-    UAISO_EXPECT_TRUE(moduleEnv.lookUpType(main));
-    UAISO_EXPECT_FALSE(moduleEnv.lookUpValue(main));
+    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(vertex));
+    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(vertex));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(ticks));
+    UAISO_EXPECT_FALSE(moduleEnv.searchDecl(lock));
+    UAISO_EXPECT_FALSE(moduleEnv.searchDecl(val));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(tls0));
+    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(tickspersecond));
+    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(tickspersecond));
+    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(r));
+    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(makeStringSlice));
+    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(makeStringSlice));
+    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(parforalloc));
+    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(parforalloc));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(envs));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(argslice));
+    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(runtime_envs));
+    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(runtime_envs));
+    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(runtime_args));
+    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(runtime_args));
+    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(main));
+    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(main));
 
     Environment vertexEnv =
-            ConstRecordType_Cast(moduleEnv.lookUpType(vertex)->type())->env();
-    UAISO_EXPECT_TRUE(vertexEnv.lookUpValue(x));
-    UAISO_EXPECT_TRUE(vertexEnv.lookUpValue(y));
-    UAISO_EXPECT_TRUE(vertexEnv.lookUpValue(vertex));
-    UAISO_EXPECT_TRUE(vertexEnv.lookUpType(vertex));
+            ConstRecordType_Cast(moduleEnv.searchTypeDecl(vertex)->type())->env();
+    UAISO_EXPECT_TRUE(vertexEnv.searchValueDecl(x));
+    UAISO_EXPECT_TRUE(vertexEnv.searchValueDecl(y));
+    UAISO_EXPECT_TRUE(vertexEnv.searchValueDecl(vertex));
+    UAISO_EXPECT_TRUE(vertexEnv.searchTypeDecl(vertex));
 
-    const Var* varTicks = ConstVar_Cast(moduleEnv.lookUpValue(ticks));
+    const Var* varTicks = ConstVar_Cast(moduleEnv.searchValueDecl(ticks));
     Environment ticksEnv =
             ConstRecordType_Cast(varTicks->valueType())->env();
-    UAISO_EXPECT_TRUE(ticksEnv.lookUpValue(lock));
-    UAISO_EXPECT_TRUE(ticksEnv.lookUpValue(val));
+    UAISO_EXPECT_TRUE(ticksEnv.searchValueDecl(lock));
+    UAISO_EXPECT_TRUE(ticksEnv.searchValueDecl(val));
 
     const Func* funcTicksPerSec =
-            ConstFunc_Cast(moduleEnv.lookUpType(tickspersecond));
+            ConstFunc_Cast(moduleEnv.searchTypeDecl(tickspersecond));
     Environment ticksPerSecEnv = funcTicksPerSec->env();
-    UAISO_EXPECT_TRUE(ticksPerSecEnv.lookUpValue(t0));
-    UAISO_EXPECT_TRUE(ticksPerSecEnv.lookUpValue(r));
+    UAISO_EXPECT_TRUE(ticksPerSecEnv.searchValueDecl(t0));
+    UAISO_EXPECT_TRUE(ticksPerSecEnv.searchValueDecl(r));
     const std::vector<Environment>& ticksPerSecEnvNested =
             ticksPerSecEnv.nestedEnvs();
     UAISO_EXPECT_INT_EQ(2, ticksPerSecEnvNested.size());
-    UAISO_EXPECT_TRUE(ticksPerSecEnvNested[1].lookUpValue(t1));
-    UAISO_EXPECT_TRUE(ticksPerSecEnvNested[1].lookUpValue(c0));
-    UAISO_EXPECT_TRUE(ticksPerSecEnvNested[1].lookUpValue(c1));
+    UAISO_EXPECT_TRUE(ticksPerSecEnvNested[1].searchValueDecl(t1));
+    UAISO_EXPECT_TRUE(ticksPerSecEnvNested[1].searchValueDecl(c0));
+    UAISO_EXPECT_TRUE(ticksPerSecEnvNested[1].searchValueDecl(c1));
 
     const Func* funcStringSlice =
-            ConstFunc_Cast(moduleEnv.lookUpType(makeStringSlice));
+            ConstFunc_Cast(moduleEnv.searchTypeDecl(makeStringSlice));
     Environment stringSliceEnv = funcStringSlice->env();
     stringSliceEnv.detachOuterEnv();
     UAISO_EXPECT_TRUE(stringSliceEnv.isEmpty());
 
     const Func* funcParallelFor =
-            ConstFunc_Cast(moduleEnv.lookUpType(parforalloc));
+            ConstFunc_Cast(moduleEnv.searchTypeDecl(parforalloc));
     Environment parallelForEnv = funcParallelFor->env();
     parallelForEnv.detachOuterEnv();
     UAISO_EXPECT_FALSE(parallelForEnv.isEmpty()); // Param is part of env.

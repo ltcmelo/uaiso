@@ -43,7 +43,7 @@ public:
     enum ResultCode : char
     {
         InternalError,
-        TypeSymbolLookupFailed,
+        TypeDeclLookupFailed,
         Success
     };
 
