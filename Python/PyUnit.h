@@ -32,16 +32,16 @@ namespace uaiso {
 class UAISO_API PyUnit final : public Unit
 {
 public:
-    void parse(TokenMap* tokens, LexemeMap* lexemes) override;
+    void parse(TokenMap* tokens, LexemeMap* lexs) override;
 
     void parse(TokenMap* tokens,
-               LexemeMap* lexemes,
+               LexemeMap* lexs,
                const LineCol& lineCol) override;
 
 private:
     DECL_CLASS_TEST(PyUnit)
 
-    void parseCore(TokenMap* tokens, LexemeMap* lexemes, ParsingContext*);
+    void parseCore(TokenMap* tokens, LexemeMap* lexs, ParsingContext*);
 };
 
 } // namespace uaiso

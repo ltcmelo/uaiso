@@ -320,20 +320,20 @@ bool operator!=(const Environment& env1, const Environment& env2)
     return !(env1 == env2);
 }
 
-const Ident* nameToIdent(const SimpleNameAst* name, const LexemeMap* lexemes)
+const Ident* nameToIdent(const SimpleNameAst* name, const LexemeMap* lexs)
 {
-    return lexemes->findAt<Ident>(name->nameLoc_.fileName_, name->nameLoc_.lineCol());
+    return lexs->findAt<Ident>(name->nameLoc_.fileName_, name->nameLoc_.lineCol());
 }
 
 const ValueDecl* searchValueDecl(const NameAst* name,
                                  Environment env,
-                                 const LexemeMap* lexemes)
+                                 const LexemeMap* lexs)
 {
     UAISO_ASSERT(name, return nullptr);
-    UAISO_ASSERT(lexemes, return nullptr);
+    UAISO_ASSERT(lexs, return nullptr);
 
     if (name->kind() == Ast::Kind::SimpleName)
-        return env.searchValueDecl(nameToIdent(ConstSimpleName_Cast(name), lexemes));
+        return env.searchValueDecl(nameToIdent(ConstSimpleName_Cast(name), lexs));
 
     // TODO: Templates, namespaces...
 
@@ -342,13 +342,13 @@ const ValueDecl* searchValueDecl(const NameAst* name,
 
 const TypeDecl* searchTypeDecl(const NameAst* name,
                                Environment env,
-                               const LexemeMap* lexemes)
+                               const LexemeMap* lexs)
 {
     UAISO_ASSERT(name, return nullptr);
-    UAISO_ASSERT(lexemes, return nullptr);
+    UAISO_ASSERT(lexs, return nullptr);
 
     if (name->kind() == Ast::Kind::SimpleName)
-        return env.searchTypeDecl(nameToIdent(ConstSimpleName_Cast(name), lexemes));
+        return env.searchTypeDecl(nameToIdent(ConstSimpleName_Cast(name), lexs));
 
     // TODO: Namespace...
 

@@ -60,11 +60,11 @@ void GO_yyerror(const GO_YYLTYPE* yylocp,
 }
 
 void GoUnit::parseCore(TokenMap* tokens,
-                       LexemeMap* lexemes,
+                       LexemeMap* lexs,
                        GoParsingContext* context)
 {
     P->ast_.reset(nullptr);
-    context->collectLexemes(lexemes);
+    context->collectLexemes(lexs);
     context->collectTokens(tokens);
     context->collectReports(P->reports_.get());
     context->setFileName(P->fullFileName_.c_str()); // Filename for Flex actions.
@@ -93,17 +93,17 @@ void GoUnit::parseCore(TokenMap* tokens,
     GO_yylex_destroy(scanner);
 }
 
-void GoUnit::parse(TokenMap* tokens, LexemeMap* lexemes)
+void GoUnit::parse(TokenMap* tokens, LexemeMap* lexs)
 {
     GoParsingContext context;
-    parseCore(tokens, lexemes, &context);
+    parseCore(tokens, lexs, &context);
 }
 
 void GoUnit::parse(TokenMap* tokens,
-                   LexemeMap* lexemes,
+                   LexemeMap* lexs,
                    const LineCol& lineCol)
 {
     GoParsingContext context;
     context.setStopMark(lineCol);
-    parseCore(tokens, lexemes, &context);
+    parseCore(tokens, lexs, &context);
 }

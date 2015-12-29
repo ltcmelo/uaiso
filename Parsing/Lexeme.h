@@ -121,10 +121,10 @@ std::string joinLexemes(const ContainterT& container,
                         const std::string& separator)
 {
     std::string str;
-    for (auto lexeme : container) {
+    for (auto lex : container) {
         if (!str.empty())
             str += separator;
-        str += lexeme->str();
+        str += lex->str();
     }
     return str;
 }

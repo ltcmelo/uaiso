@@ -34,16 +34,16 @@ class DParsingContext;
 class UAISO_API DUnit final : public Unit
 {
 public:
-    void parse(TokenMap* tokens, LexemeMap* lexemes) override;
+    void parse(TokenMap* tokens, LexemeMap* lexs) override;
 
     void parse(TokenMap* tokens,
-               LexemeMap* lexemes,
+               LexemeMap* lexs,
                const LineCol& lineCol) override;
 
 private:
     DECL_CLASS_TEST(DUnit)
 
-    void parseCore(TokenMap* tokens, LexemeMap* lexemes, DParsingContext*);
+    void parseCore(TokenMap* tokens, LexemeMap* lexs, DParsingContext*);
 };
 
 } // namespace uaiso

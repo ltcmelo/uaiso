@@ -58,11 +58,11 @@ PyVerifyBasicCode(const Program* prog)
 {
     UAISO_EXPECT_TRUE(prog);
 
-    const Ident* i = lexemes_.findAnyOf<Ident>("i");
-    const Ident* s = lexemes_.findAnyOf<Ident>("s");
-    const Ident* f = lexemes_.findAnyOf<Ident>("f");
-    const Ident* c = lexemes_.findAnyOf<Ident>("c");
-    const Ident* o = lexemes_.findAnyOf<Ident>("o");
+    const Ident* i = lexs_.findAnyOf<Ident>("i");
+    const Ident* s = lexs_.findAnyOf<Ident>("s");
+    const Ident* f = lexs_.findAnyOf<Ident>("f");
+    const Ident* c = lexs_.findAnyOf<Ident>("c");
+    const Ident* o = lexs_.findAnyOf<Ident>("o");
 
     Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
@@ -96,21 +96,21 @@ class bar:
                                        code, "/test.py"));
     UAISO_EXPECT_TRUE(prog);
 
-    const Ident* a = lexemes_.findAnyOf<Ident>("a");
-    const Ident* b = lexemes_.findAnyOf<Ident>("b");
-    const Ident* c = lexemes_.findAnyOf<Ident>("c");
-    const Ident* d = lexemes_.findAnyOf<Ident>("d");
-    const Ident* e = lexemes_.findAnyOf<Ident>("e");
-    const Ident* f = lexemes_.findAnyOf<Ident>("f");
-    const Ident* k = lexemes_.findAnyOf<Ident>("k");
-    const Ident* w = lexemes_.findAnyOf<Ident>("w");
-    const Ident* foo = lexemes_.findAnyOf<Ident>("foo");
-    const Ident* foo_local = lexemes_.findAnyOf<Ident>("foo_local");
-    const Ident* bar = lexemes_.findAnyOf<Ident>("bar");
-    const Ident* bar_static = lexemes_.findAnyOf<Ident>("bar_static");
-    const Ident* bar_method = lexemes_.findAnyOf<Ident>("bar_method");
-    const Ident* call = lexemes_.findAnyOf<Ident>("call");
-    const Ident* nothing = lexemes_.findAnyOf<Ident>("nothing");
+    const Ident* a = lexs_.findAnyOf<Ident>("a");
+    const Ident* b = lexs_.findAnyOf<Ident>("b");
+    const Ident* c = lexs_.findAnyOf<Ident>("c");
+    const Ident* d = lexs_.findAnyOf<Ident>("d");
+    const Ident* e = lexs_.findAnyOf<Ident>("e");
+    const Ident* f = lexs_.findAnyOf<Ident>("f");
+    const Ident* k = lexs_.findAnyOf<Ident>("k");
+    const Ident* w = lexs_.findAnyOf<Ident>("w");
+    const Ident* foo = lexs_.findAnyOf<Ident>("foo");
+    const Ident* foo_local = lexs_.findAnyOf<Ident>("foo_local");
+    const Ident* bar = lexs_.findAnyOf<Ident>("bar");
+    const Ident* bar_static = lexs_.findAnyOf<Ident>("bar_static");
+    const Ident* bar_method = lexs_.findAnyOf<Ident>("bar_method");
+    const Ident* call = lexs_.findAnyOf<Ident>("call");
+    const Ident* nothing = lexs_.findAnyOf<Ident>("nothing");
 
     Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
@@ -153,8 +153,8 @@ for g in range(10):
                                        code, "/test.py"));
     UAISO_EXPECT_TRUE(prog);
 
-    const Ident* g = lexemes_.findAnyOf<Ident>("g");
-    const Ident* h = lexemes_.findAnyOf<Ident>("h");
+    const Ident* g = lexs_.findAnyOf<Ident>("g");
+    const Ident* h = lexs_.findAnyOf<Ident>("h");
 
     UAISO_SKIP_TEST;
 
@@ -180,12 +180,12 @@ class bar:
                                        code, "/test.py"));
     UAISO_EXPECT_TRUE(prog);
 
-    const Ident* bar = lexemes_.findAnyOf<Ident>("bar");
-    const Ident* bar_static = lexemes_.findAnyOf<Ident>("bar_static");
-    const Ident* bar_method = lexemes_.findAnyOf<Ident>("bar_method");
-    const Ident* bar_inst1 = lexemes_.findAnyOf<Ident>("bar_inst1");
-    const Ident* bar_inst2 = lexemes_.findAnyOf<Ident>("bar_inst2");
-    const Ident* self = lexemes_.findAnyOf<Ident>("self");
+    const Ident* bar = lexs_.findAnyOf<Ident>("bar");
+    const Ident* bar_static = lexs_.findAnyOf<Ident>("bar_static");
+    const Ident* bar_method = lexs_.findAnyOf<Ident>("bar_method");
+    const Ident* bar_inst1 = lexs_.findAnyOf<Ident>("bar_inst1");
+    const Ident* bar_inst2 = lexs_.findAnyOf<Ident>("bar_inst2");
+    const Ident* self = lexs_.findAnyOf<Ident>("self");
 
     Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
@@ -279,8 +279,8 @@ def g():
 
     PyVerifyBasicCode(prog.get());
 
-    const Ident* g = lexemes_.findAnyOf<Ident>("g");
-    const Ident* l = lexemes_.findAnyOf<Ident>("l");
+    const Ident* g = lexs_.findAnyOf<Ident>("g");
+    const Ident* l = lexs_.findAnyOf<Ident>("l");
 
     Environment env = prog->env();
     UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
@@ -303,8 +303,8 @@ def g():
 
     PyVerifyBasicCode(prog.get());
 
-    const Ident* g = lexemes_.findAnyOf<Ident>("g");
-    const Ident* l = lexemes_.findAnyOf<Ident>("l");
+    const Ident* g = lexs_.findAnyOf<Ident>("g");
+    const Ident* l = lexs_.findAnyOf<Ident>("l");
 
     Environment env = prog->env();
     UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
@@ -327,8 +327,8 @@ def g():
 
     PyVerifyBasicCode(prog.get());
 
-    const Ident* g = lexemes_.findAnyOf<Ident>("g");
-    const Ident* l = lexemes_.findAnyOf<Ident>("l");
+    const Ident* g = lexs_.findAnyOf<Ident>("g");
+    const Ident* l = lexs_.findAnyOf<Ident>("l");
 
     Environment env = prog->env();
     UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
@@ -352,9 +352,9 @@ class c2:
 
     PyVerifyBasicCode(prog.get());
 
-    const Ident* c2 = lexemes_.findAnyOf<Ident>("c2");
-    const Ident* m = lexemes_.findAnyOf<Ident>("m");
-    const Ident* sm = lexemes_.findAnyOf<Ident>("sm");
+    const Ident* c2 = lexs_.findAnyOf<Ident>("c2");
+    const Ident* m = lexs_.findAnyOf<Ident>("m");
+    const Ident* sm = lexs_.findAnyOf<Ident>("sm");
 
     Environment env = prog->env();
     UAISO_EXPECT_TRUE(env.searchTypeDecl(c2));

@@ -105,12 +105,12 @@ public:
     SymbolUseVisitor(Environment env,
                      const AstLocator* locator,
                      const Lang* lang,
-                     const LexemeMap* lexemes,
+                     const LexemeMap* lexs,
                      const std::vector<SymbolCollector::MentionInfo>& defs)
         : env_(env)
         , locator_(locator)
         , lang_(lang)
-        , lexemes_(lexemes)
+        , lexs_(lexs)
     {
         // We want only uses that are not defs.
         for (const auto& def : defs)
@@ -122,7 +122,7 @@ public:
     Environment env_;
     const AstLocator* locator_;
     const Lang* lang_;
-    const LexemeMap* lexemes_;
+    const LexemeMap* lexs_;
     std::vector<SymbolCollector::MentionInfo> refs_;
     std::unordered_set<LineCol> known_;
 
@@ -167,9 +167,9 @@ public:
 
     VisitResult visitSimpleName(SimpleNameAst* ast)
     {
-        const Decl* sym = searchValueDecl(ast, env_, lexemes_);
+        const Decl* sym = searchValueDecl(ast, env_, lexs_);
         if (!sym) {
-            sym = searchTypeDecl(ast, env_, lexemes_);
+            sym = searchTypeDecl(ast, env_, lexs_);
             if (!sym)
                 return Continue;
         }
@@ -208,12 +208,12 @@ SymbolCollector::collectDefs(ProgramAst* progAst)
 }
 
 std::vector<SymbolCollector::MentionInfo>
-SymbolCollector::collect(ProgramAst* progAst, const LexemeMap* lexemes)
+SymbolCollector::collect(ProgramAst* progAst, const LexemeMap* lexs)
 {
     auto refs = collectDefs(progAst);
 
     SymbolUseVisitor vis(progAst->program_->env(), P->locator_.get(),
-                         P->lang_.get(), lexemes, refs);
+                         P->lang_.get(), lexs, refs);
     auto uses = collectCore(progAst, vis);
 
     refs.reserve(refs.size() + uses.size());

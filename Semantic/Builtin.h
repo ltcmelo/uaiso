@@ -62,43 +62,43 @@ public:
 
     /*!
      * \brief createConstructors
-     * \param lexemes
+     * \param lexs
      * \return
      *
      * Return a list of all builtin value constructors.
      */
-    virtual std::vector<FuncPtr> createConstructors(LexemeMap* lexemes) const;
+    virtual std::vector<FuncPtr> createConstructors(LexemeMap* lexs) const;
 
     /*!
      * \brief globalFuncs
-     * \param lexemes
+     * \param lexs
      * \return
      *
      * Return a list of all builtin (non-constructor) global functions.
      *
      * \sa createConstructors
      */
-    virtual std::vector<FuncPtr> createGlobalFuncs(LexemeMap* lexemes) const;
+    virtual std::vector<FuncPtr> createGlobalFuncs(LexemeMap* lexs) const;
 
     /*!
      * \brief createBasicTypeDecl
-     * \param lexemes
+     * \param lexs
      * \param kind
      * \return
      */
-    virtual TypeDeclPtr createBasicTypeDecl(LexemeMap* lexemes, Type::Kind kind) const;
+    virtual TypeDeclPtr createBasicTypeDecl(LexemeMap* lexs, Type::Kind kind) const;
 
     /*!
      * \brief basicTypeDeclName
-     * \param lexemes
+     * \param lexs
      * \param kind
      * \return
      */
-    virtual const Ident* basicTypeDeclName(LexemeMap* lexemes, Type::Kind kind) const;
+    virtual const Ident* basicTypeDeclName(LexemeMap* lexs, Type::Kind kind) const;
 
     /*!
      * \brief createRootTypeDecl
-     * \param lexemes
+     * \param lexs
      * \return
      *
      * Return the root type decl from which every type inhertis from in a
@@ -106,7 +106,7 @@ public:
      *
      * \sa Lang::isPurelyOO
      */
-    virtual TypeDeclPtr createRootTypeDecl(LexemeMap* lexemes) const;
+    virtual TypeDeclPtr createRootTypeDecl(LexemeMap* lexs) const;
 
     /*!
      * \brief rootTypeDeclName
@@ -116,7 +116,7 @@ public:
      *
      * \sa Builtin::createRootTypeDecl
      */
-    virtual const Ident* rootTypeDeclName(LexemeMap* lexemes) const;
+    virtual const Ident* rootTypeDeclName(LexemeMap* lexs) const;
 
     /*!
      * \brief automaticModules

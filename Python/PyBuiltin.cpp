@@ -41,20 +41,20 @@ const char* const kPyBuiltinInt = "<__pybuiltin_int__>";
 // in the identifiers created for the builtins file.
 int line = 0;
 
-const Ident* insertOrFindIdent(LexemeMap* lexemes, const char* name)
+const Ident* insertOrFindIdent(LexemeMap* lexs, const char* name)
 {
-    auto ident = lexemes->findAnyOf<Ident>(name);
+    auto ident = lexs->findAnyOf<Ident>(name);
     if (!ident)
-        ident = lexemes->insertOrFind<Ident>(name, kPyBuiltin, LineCol(++line, 0));
+        ident = lexs->insertOrFind<Ident>(name, kPyBuiltin, LineCol(++line, 0));
     return ident;
 }
 
 template <class TypeT>
-std::unique_ptr<Func> createFunc(LexemeMap* lexemes, const char* name)
+std::unique_ptr<Func> createFunc(LexemeMap* lexs, const char* name)
 {
     std::unique_ptr<FuncType> funcTy(new FuncType);
     funcTy->setReturnType(std::unique_ptr<Type>(new TypeT));
-    auto ident = insertOrFindIdent(lexemes, name);
+    auto ident = insertOrFindIdent(lexs, name);
     std::unique_ptr<Func> func(new Func(ident));
     func->setIsBuiltin(true);
     func->setType(std::move(funcTy));
@@ -77,56 +77,56 @@ const char* PyBuiltin::tokenSpell(Token tk) const
     }
 }
 
-std::vector<Builtin::FuncPtr> PyBuiltin::createConstructors(LexemeMap* lexemes) const
+std::vector<Builtin::FuncPtr> PyBuiltin::createConstructors(LexemeMap* lexs) const
 {
     std::vector<FuncPtr> ctors;
-    ctors.push_back(createFunc<BoolType>(lexemes, tokenSpell(TK_BOOL)));
-    ctors.push_back(createFunc<IntType>(lexemes, tokenSpell(TK_INT)));
-    ctors.push_back(createFunc<FloatType>(lexemes, tokenSpell(TK_FLOAT32)));
-    ctors.push_back(createFunc<FloatType>(lexemes, tokenSpell(TK_COMPLEX_FLOAT32)));
+    ctors.push_back(createFunc<BoolType>(lexs, tokenSpell(TK_BOOL)));
+    ctors.push_back(createFunc<IntType>(lexs, tokenSpell(TK_INT)));
+    ctors.push_back(createFunc<FloatType>(lexs, tokenSpell(TK_FLOAT32)));
+    ctors.push_back(createFunc<FloatType>(lexs, tokenSpell(TK_COMPLEX_FLOAT32)));
 
     return ctors;
 }
 
-std::vector<Builtin::FuncPtr> PyBuiltin::createGlobalFuncs(LexemeMap* lexemes) const
+std::vector<Builtin::FuncPtr> PyBuiltin::createGlobalFuncs(LexemeMap* lexs) const
 {
     std::vector<FuncPtr> funcs;
-    funcs.push_back(createFunc<IntType>(lexemes, "abs"));
-    funcs.push_back(createFunc<BoolType>(lexemes, "all"));
-    funcs.push_back(createFunc<BoolType>(lexemes, "any"));
-    funcs.push_back(createFunc<StrType>(lexemes, "ascii"));
-    funcs.push_back(createFunc<StrType>(lexemes, "bin"));
+    funcs.push_back(createFunc<IntType>(lexs, "abs"));
+    funcs.push_back(createFunc<BoolType>(lexs, "all"));
+    funcs.push_back(createFunc<BoolType>(lexs, "any"));
+    funcs.push_back(createFunc<StrType>(lexs, "ascii"));
+    funcs.push_back(createFunc<StrType>(lexs, "bin"));
     // TODO: Continue...
     return funcs;
 }
 
-Builtin::TypeDeclPtr PyBuiltin::createRootTypeDecl(LexemeMap* lexemes) const
+Builtin::TypeDeclPtr PyBuiltin::createRootTypeDecl(LexemeMap* lexs) const
 {
     // The `object` class
     Environment env;
-    env.insertTypeDecl(createFunc<RecordType>(lexemes, "__new__"));
-    env.insertTypeDecl(createFunc<VoidType>(lexemes, "__init__"));
-    env.insertTypeDecl(createFunc<VoidType>(lexemes, "__del__"));
-    env.insertTypeDecl(createFunc<StrType>(lexemes, "__repr__"));
-    env.insertTypeDecl(createFunc<StrType>(lexemes, "__str__"));
-    //env.insertTypeDecl(createFunc<ArrayType>(lexemes, "__bytes__"));
-    env.insertTypeDecl(createFunc<StrType>(lexemes, "__format__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__lt__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__le__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__eq__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__ne__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__gt__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__ge__"));
-    env.insertTypeDecl(createFunc<IntType>(lexemes, "__hash__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexemes, "__bool__"));
-    env.insertTypeDecl(createFunc<InferredType>(lexemes, "__getattr__"));
-    env.insertTypeDecl(createFunc<InferredType>(lexemes, "__getattribute__"));
-    env.insertTypeDecl(createFunc<VoidType>(lexemes, "__setattr__"));
-    env.insertTypeDecl(createFunc<VoidType>(lexemes, "__delattr__"));
-    //env.insertTypeDecl(createFunc<ArrayType>(lexemes, "__dir__"));
+    env.insertTypeDecl(createFunc<RecordType>(lexs, "__new__"));
+    env.insertTypeDecl(createFunc<VoidType>(lexs, "__init__"));
+    env.insertTypeDecl(createFunc<VoidType>(lexs, "__del__"));
+    env.insertTypeDecl(createFunc<StrType>(lexs, "__repr__"));
+    env.insertTypeDecl(createFunc<StrType>(lexs, "__str__"));
+    //env.insertTypeDecl(createFunc<ArrayType>(lexs, "__bytes__"));
+    env.insertTypeDecl(createFunc<StrType>(lexs, "__format__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexs, "__lt__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexs, "__le__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexs, "__eq__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexs, "__ne__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexs, "__gt__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexs, "__ge__"));
+    env.insertTypeDecl(createFunc<IntType>(lexs, "__hash__"));
+    env.insertTypeDecl(createFunc<BoolType>(lexs, "__bool__"));
+    env.insertTypeDecl(createFunc<InferredType>(lexs, "__getattr__"));
+    env.insertTypeDecl(createFunc<InferredType>(lexs, "__getattribute__"));
+    env.insertTypeDecl(createFunc<VoidType>(lexs, "__setattr__"));
+    env.insertTypeDecl(createFunc<VoidType>(lexs, "__delattr__"));
+    //env.insertTypeDecl(createFunc<ArrayType>(lexs, "__dir__"));
     std::unique_ptr<RecordType> recTy(new RecordType);
     recTy->setEnv(env);
-    auto ident = insertOrFindIdent(lexemes, "object");
+    auto ident = insertOrFindIdent(lexs, "object");
     std::unique_ptr<Record> rec(new Record(ident));
     rec->setIsBuiltin(true);
     rec->setType(std::move(recTy));
@@ -137,85 +137,85 @@ Builtin::TypeDeclPtr PyBuiltin::createRootTypeDecl(LexemeMap* lexemes) const
 namespace {
 
 template <class NumT>
-void addCommonNumOprtrs(Environment env, LexemeMap* lexemes)
+void addCommonNumOprtrs(Environment env, LexemeMap* lexs)
 {
     // Unary
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__pos__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__neg__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__abs__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__invert__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__round__"));
-    env.insertTypeDecl(createFunc<IntType>(lexemes, "__floor_"));
-    env.insertTypeDecl(createFunc<IntType>(lexemes, "__ceil__"));
-    env.insertTypeDecl(createFunc<IntType>(lexemes, "__trunc__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__pos__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__neg__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__abs__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__invert__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__round__"));
+    env.insertTypeDecl(createFunc<IntType>(lexs, "__floor_"));
+    env.insertTypeDecl(createFunc<IntType>(lexs, "__ceil__"));
+    env.insertTypeDecl(createFunc<IntType>(lexs, "__trunc__"));
 
     // Binary
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__add__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__sub__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__mul__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__floordiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__div__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__truediv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__mod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__divmod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__pow__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__lshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rand__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ror__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rxor__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__radd__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rsub__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rmul__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rfloordiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rdiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rtruediv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rmod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rdivmod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rpow__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rlshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rrshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rand__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ror__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rxor__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__add__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__sub__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__mul__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__floordiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__div__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__truediv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__mod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__divmod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__pow__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__lshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rand__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__ror__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rxor__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__radd__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rsub__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rmul__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rfloordiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rdiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rtruediv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rmod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rdivmod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rpow__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rlshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rrshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rand__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__ror__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__rxor__"));
 
     // Augmented assignment
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__iadd__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__isub__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__imul__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ifloordiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__idiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__itruediv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__imod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__idivmod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ipow__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ilshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__irshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__iand__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ior__"));
-    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ixor__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__iadd__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__isub__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__imul__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__ifloordiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__idiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__itruediv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__imod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__idivmod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__ipow__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__ilshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__irshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__iand__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__ior__"));
+    env.insertTypeDecl(createFunc<NumT>(lexs, "__ixor__"));
 }
 
 } // namespace anonymous
 
-const Ident* PyBuiltin::rootTypeDeclName(LexemeMap *lexemes) const
+const Ident* PyBuiltin::rootTypeDeclName(LexemeMap *lexs) const
 {
-    return insertOrFindIdent(lexemes, "object");
+    return insertOrFindIdent(lexs, "object");
 }
 
 Builtin::TypeDeclPtr
-PyBuiltin::createBasicTypeDecl(LexemeMap* lexemes, Type::Kind kind) const
+PyBuiltin::createBasicTypeDecl(LexemeMap* lexs, Type::Kind kind) const
 {
     switch (kind) {
     case Type::Kind::Int: {
         Environment env;
-        addCommonNumOprtrs<IntType>(env, lexemes);
-        env.insertTypeDecl(createFunc<IntType>(lexemes, "bit_length"));
-        env.insertTypeDecl(createFunc<IntType>(lexemes, "to_bytes"));
-        env.insertTypeDecl(createFunc<IntType>(lexemes, "from_bytes"));
+        addCommonNumOprtrs<IntType>(env, lexs);
+        env.insertTypeDecl(createFunc<IntType>(lexs, "bit_length"));
+        env.insertTypeDecl(createFunc<IntType>(lexs, "to_bytes"));
+        env.insertTypeDecl(createFunc<IntType>(lexs, "from_bytes"));
         std::unique_ptr<RecordType> recTy(new RecordType);
         recTy->setEnv(env);
-        auto ident = insertOrFindIdent(lexemes, kPyBuiltinInt);
+        auto ident = insertOrFindIdent(lexs, kPyBuiltinInt);
         std::unique_ptr<Record> rec(new Record(ident));
         rec->setIsBuiltin(true);
         rec->setIsFake(true);
@@ -225,14 +225,14 @@ PyBuiltin::createBasicTypeDecl(LexemeMap* lexemes, Type::Kind kind) const
 
     case Type::Kind::Float: {
         Environment env;
-        addCommonNumOprtrs<FloatType>(env, lexemes);
-        env.insertTypeDecl(createFunc<FloatType>(lexemes, "as_integer_ratio"));
-        env.insertTypeDecl(createFunc<FloatType>(lexemes, "is_integer"));
-        env.insertTypeDecl(createFunc<FloatType>(lexemes, "hex"));
-        env.insertTypeDecl(createFunc<FloatType>(lexemes, "from_hex"));
+        addCommonNumOprtrs<FloatType>(env, lexs);
+        env.insertTypeDecl(createFunc<FloatType>(lexs, "as_integer_ratio"));
+        env.insertTypeDecl(createFunc<FloatType>(lexs, "is_integer"));
+        env.insertTypeDecl(createFunc<FloatType>(lexs, "hex"));
+        env.insertTypeDecl(createFunc<FloatType>(lexs, "from_hex"));
         std::unique_ptr<RecordType> recTy(new RecordType);
         recTy->setEnv(env);
-        auto ident = insertOrFindIdent(lexemes, kPyBuiltinFloat);
+        auto ident = insertOrFindIdent(lexs, kPyBuiltinFloat);
         std::unique_ptr<Record> rec(new Record(ident));
         rec->setIsBuiltin(true);
         rec->setIsFake(true);
@@ -245,14 +245,14 @@ PyBuiltin::createBasicTypeDecl(LexemeMap* lexemes, Type::Kind kind) const
     }
 }
 
-const Ident* PyBuiltin::basicTypeDeclName(LexemeMap* lexemes, Type::Kind kind) const
+const Ident* PyBuiltin::basicTypeDeclName(LexemeMap* lexs, Type::Kind kind) const
 {
     switch (kind) {
     case Type::Kind::Int:
-        return insertOrFindIdent(lexemes, kPyBuiltinInt);
+        return insertOrFindIdent(lexs, kPyBuiltinInt);
 
     case Type::Kind::Float:
-        return insertOrFindIdent(lexemes, kPyBuiltinFloat);
+        return insertOrFindIdent(lexs, kPyBuiltinFloat);
 
     default:
         return nullptr;

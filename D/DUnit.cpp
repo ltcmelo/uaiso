@@ -64,11 +64,11 @@ void D_yyerror(D_YYLTYPE* yylocp,
 }
 
 void DUnit::parseCore(TokenMap* tokens,
-                      LexemeMap* lexemes,
+                      LexemeMap* lexs,
                       DParsingContext* context)
 {
     P->ast_.reset(nullptr);
-    context->collectLexemes(lexemes);
+    context->collectLexemes(lexs);
     context->collectTokens(tokens);
     context->collectReports(P->reports_.get());
     context->setFileName(P->fullFileName_.c_str()); // Filename for Flex actions.
@@ -97,17 +97,17 @@ void DUnit::parseCore(TokenMap* tokens,
     D_yylex_destroy(scanner);
 }
 
-void DUnit::parse(TokenMap* tokens, LexemeMap* lexemes)
+void DUnit::parse(TokenMap* tokens, LexemeMap* lexs)
 {
     DParsingContext context;
-    parseCore(tokens, lexemes, &context);
+    parseCore(tokens, lexs, &context);
 }
 
 void DUnit::parse(TokenMap* tokens,
-                  LexemeMap* lexemes,
+                  LexemeMap* lexs,
                   const LineCol& lineCol)
 {
     DParsingContext context;
     context.setStopMark(lineCol);
-    parseCore(tokens, lexemes, &context);
+    parseCore(tokens, lexs, &context);
 }

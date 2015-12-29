@@ -53,10 +53,10 @@ CompletionProposer::CompletionProposerTest::runCore(
     std::vector<std::string> searchPaths = readSearchPaths();
 
     TokenMap tokens;
-    LexemeMap lexemes;
+    LexemeMap lexs;
     Snapshot snapshot;
     Manager manager;
-    manager.config(factory.get(), &tokens, &lexemes, snapshot);
+    manager.config(factory.get(), &tokens, &lexs, snapshot);
     Manager::BehaviourFlags flags = 0;
     if (disableBuiltins_)
         flags |= Manager::BehaviourFlag::IgnoreBuiltins;
@@ -81,12 +81,12 @@ CompletionProposer::CompletionProposerTest::runCore(
     UAISO_EXPECT_FALSE(prog->env().isEmpty());
 
     TypeChecker checker(factory.get());
-    checker.setLexemes(&lexemes);
+    checker.setLexemes(&lexs);
     checker.setTokens(&tokens);
     checker.check(progAst);
 
     CompletionProposer completer(factory.get());
-    auto syms = std::get<0>(completer.propose(progAst, &lexemes));
+    auto syms = std::get<0>(completer.propose(progAst, &lexs));
     if (dumpCompletions_) {
         std::ostringstream oss;
         oss << "Produced completions\n";

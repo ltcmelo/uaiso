@@ -83,17 +83,17 @@ public:
     /*!
      * \brief parse
      * \param tokens
-     * \param lexemes
+     * \param lexs
      *
      * Parse the assigned input.
      */
     virtual void parse(TokenMap* tokens,
-                       LexemeMap* lexemes) = 0;
+                       LexemeMap* lexs) = 0;
 
     /*!
      * \brief parse
      * \param tokens
-     * \param lexemes
+     * \param lexs
      * \param lineCol
      *
      * Parse the assigned input with a request for code completion at the
@@ -101,7 +101,7 @@ public:
      * last valid token (e.g. `.`).
      */
     virtual void parse(TokenMap* tokens,
-                       LexemeMap* lexemes,
+                       LexemeMap* lexs,
                        const LineCol& lineCol) = 0;
 
     /*!

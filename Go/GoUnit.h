@@ -34,16 +34,16 @@ class GoParsingContext;
 class UAISO_API GoUnit final : public Unit
 {
 public:
-    void parse(TokenMap* tokens, LexemeMap* lexemes) override;
+    void parse(TokenMap* tokens, LexemeMap* lexs) override;
 
     void parse(TokenMap* tokens,
-               LexemeMap* lexemes,
+               LexemeMap* lexs,
                const LineCol& lineCol) override;
 
 private:
     DECL_CLASS_TEST(GoUnit)
 
-    void parseCore(TokenMap* tokens, LexemeMap* lexemes, GoParsingContext*);
+    void parseCore(TokenMap* tokens, LexemeMap* lexs, GoParsingContext*);
 };
 
 } // namespace uaiso

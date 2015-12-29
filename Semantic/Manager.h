@@ -50,7 +50,7 @@ public:
 
     void config(Factory* factory,
                 TokenMap* tokens,
-                LexemeMap* lexemes,
+                LexemeMap* lexs,
                 Snapshot snapshot);
 
     void addSearchPath(const std::string& searchPath);

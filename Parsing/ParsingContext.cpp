@@ -136,36 +136,36 @@ void ParsingContext::trackToken(Token tk, const LineCol& lineCol)
 }
 
 template <class LexemeT>
-void ParsingContext::trackLexeme(const char* lexeme, const LineCol& lineCol)
+void ParsingContext::trackLexeme(const char* lex, const LineCol& lineCol)
 {
-    if (lexemes_)
-        lexemes_->insertOrFind<LexemeT>(lexeme, fileName_, lineCol);
+    if (lexs_)
+        lexs_->insertOrFind<LexemeT>(lex, fileName_, lineCol);
 }
 
 template <class LexemeT>
-void ParsingContext::trackLexeme(const char* lexeme,
+void ParsingContext::trackLexeme(const char* lex,
                                  int count,
                                  const LineCol& lineCol)
 {
-    if (lexemes_)
-        lexemes_->insertOrFind<LexemeT>(std::string(lexeme, count),
+    if (lexs_)
+        lexs_->insertOrFind<LexemeT>(std::string(lex, count),
                                         fileName_,
                                         lineCol);
 }
 
 // Explicit instantiations for the known lexemes.
 template void
-ParsingContext::trackLexeme<Ident>(const char* lexeme, const LineCol& lineCol);
+ParsingContext::trackLexeme<Ident>(const char* lex, const LineCol& lineCol);
 template void
-ParsingContext::trackLexeme<Ident>(const char* lexeme, int count, const LineCol& lineCol);
+ParsingContext::trackLexeme<Ident>(const char* lex, int count, const LineCol& lineCol);
 template void
-ParsingContext::trackLexeme<StrLit>(const char* lexeme, const LineCol& lineCol);
+ParsingContext::trackLexeme<StrLit>(const char* lex, const LineCol& lineCol);
 template void
-ParsingContext::trackLexeme<StrLit>(const char* lexeme, int count, const LineCol& lineCol);
+ParsingContext::trackLexeme<StrLit>(const char* lex, int count, const LineCol& lineCol);
 template void
-ParsingContext::trackLexeme<NumLit>(const char* lexeme, const LineCol& lineCol);
+ParsingContext::trackLexeme<NumLit>(const char* lex, const LineCol& lineCol);
 template void
-ParsingContext::trackLexeme<NumLit>(const char* lexeme, int count, const LineCol& lineCol);
+ParsingContext::trackLexeme<NumLit>(const char* lex, int count, const LineCol& lineCol);
 
 void ParsingContext::takeAst(std::unique_ptr<Ast> ast)
 {

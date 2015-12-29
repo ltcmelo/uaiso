@@ -67,7 +67,7 @@ public:
     using Symbols = std::vector<const Decl*>;
     using Result = std::tuple<Symbols, ResultCode>;
 
-    Result propose(ProgramAst* ast, const LexemeMap* lexemes);
+    Result propose(ProgramAst* ast, const LexemeMap* lexs);
 
 private:
     DECL_PIMPL(CompletionProposer)

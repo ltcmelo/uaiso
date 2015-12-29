@@ -82,10 +82,10 @@ public:
 
     void reset() override
     {
-        lexemes_.clear();
+        lexs_.clear();
     }
 
-    LexemeMap lexemes_;
+    LexemeMap lexs_;
 };
 
 } // namespace uaiso

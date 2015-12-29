@@ -141,7 +141,7 @@ public:
         std::unique_ptr<Unit> unit(factory->makeUnit());
         unit->setFileName(fileName_);
         unit->assignInput(file_);
-        unit->parse(&tokens_, &lexemes_);
+        unit->parse(&tokens_, &lexs_);
         fclose(file_);
         std::unique_ptr<DiagnosticReports> reports(unit->releaseReports());
         UAISO_EXPECT_INT_EQ(0, reports->size());
@@ -149,7 +149,7 @@ public:
         ProgramAst* progAst = Program_Cast(unit->ast());
 
         Binder binder(factory.get());
-        binder.setLexemes(&lexemes_);
+        binder.setLexemes(&lexs_);
         binder.setTokens(&tokens_);
         binder.collectDiagnostics(reports.get());
         UAISO_EXPECT_INT_EQ(0, reports->size());
@@ -158,7 +158,7 @@ public:
         UAISO_EXPECT_FALSE(prog->env().isEmpty());
 
         TypeChecker typeChecker(factory.get());
-        typeChecker.setLexemes(&lexemes_);
+        typeChecker.setLexemes(&lexs_);
         typeChecker.setTokens(&tokens_);
         typeChecker.collectDiagnostics(reports.get());
         UAISO_EXPECT_INT_EQ(0, reports->size());
@@ -169,7 +169,7 @@ public:
     bool singlePass_;
     FILE* file_;
     std::string fileName_;
-    LexemeMap lexemes_;
+    LexemeMap lexs_;
     TokenMap tokens_;
 
     std::vector<std::string> testFiles_

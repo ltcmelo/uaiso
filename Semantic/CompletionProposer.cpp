@@ -61,12 +61,12 @@ public:
     {}
 
     bool analyse(const ProgramAst* progAst,
-                 const LexemeMap* lexemes,
+                 const LexemeMap* lexs,
                  Environment env)
     {
-        UAISO_ASSERT(lexemes, return false);
+        UAISO_ASSERT(lexs, return false);
 
-        lexemes_ = lexemes;
+        lexs_ = lexs;
         env_ = env;
 
         auto result = traverseProgram(progAst, this, lang_);
@@ -75,7 +75,7 @@ public:
     }
 
     Environment env_;
-    const LexemeMap* lexemes_ { nullptr };
+    const LexemeMap* lexs_ { nullptr };
     std::stack<Ast*> asts_;
     size_t collectName_ { 0 }; // Collect names only when it matters.
     std::vector<const Ident*> name_;
@@ -90,7 +90,7 @@ public:
     VisitResult visitSimpleName(SimpleNameAst* ast)
     {
         if (collectName_) {
-            auto name = lexemes_->findAt<Ident>(ast->nameLoc_.fileName_,
+            auto name = lexs_->findAt<Ident>(ast->nameLoc_.fileName_,
                                                 ast->nameLoc_.lineCol());
             name_.push_back(name);
         }
@@ -217,22 +217,22 @@ struct uaiso::CompletionProposer::CompletionProposerImpl
         return syms;
     }
 
-    Symbols& addBasicTypeDecls(const LexemeMap* lexemes,
+    Symbols& addBasicTypeDecls(const LexemeMap* lexs,
                                Environment env,
                                Symbols& syms,
                                Type::Kind kind)
     {
-        auto ident = builtin_->basicTypeDeclName(const_cast<LexemeMap*>(lexemes), kind);
+        auto ident = builtin_->basicTypeDeclName(const_cast<LexemeMap*>(lexs), kind);
         if (!ident)
             return syms;
         return typeDecls(env, syms, ident);
     }
 
-    Symbols& addRootRecordDecls(const LexemeMap* lexemes,
+    Symbols& addRootRecordDecls(const LexemeMap* lexs,
                                 Environment env,
                                 Symbols& syms)
     {
-        auto ident = builtin_->rootTypeDeclName(const_cast<LexemeMap*>(lexemes));
+        auto ident = builtin_->rootTypeDeclName(const_cast<LexemeMap*>(lexs));
         UAISO_ASSERT(ident, return syms);
         return typeDecls(env, syms, ident);
     }
@@ -255,7 +255,7 @@ CompletionProposer::~CompletionProposer()
 {}
 
 CompletionProposer::Result
-CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
+CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexs)
 {
     using Symbols = std::vector<const Decl*>;
 
@@ -263,7 +263,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                  return Result(Symbols(), CompletionAstNotFound));
 
     CompletionContext context(P->lang_.get());
-    auto ok = context.analyse(progAst, lexemes, progAst->program_->env());
+    auto ok = context.analyse(progAst, lexs, progAst->program_->env());
 
     if (!ok) {
         DEBUG_TRACE("completion AST node not found\n");
@@ -347,8 +347,8 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                 }
 
                 Symbols syms;
-                P->addRootRecordDecls(lexemes, env, syms);
-                P->addBasicTypeDecls(lexemes, env, syms, ty->kind());
+                P->addRootRecordDecls(lexs, env, syms);
+                P->addBasicTypeDecls(lexs, env, syms, ty->kind());
                 return Result(syms, Success);
             }
         }
@@ -386,7 +386,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
         }
 
         if (P->lang_->isPurelyOO())
-            P->addRootRecordDecls(lexemes, env, syms);
+            P->addRootRecordDecls(lexs, env, syms);
 
         return Result(syms, Success);
     }

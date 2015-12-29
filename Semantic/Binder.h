@@ -44,11 +44,11 @@ public:
 
     /*!
      * \brief setLexemes
-     * \param lexemes
+     * \param lexs
      *
      * Set the lexeme map.
      */
-    void setLexemes(const LexemeMap* lexemes);
+    void setLexemes(const LexemeMap* lexs);
 
     /*!
      * \brief setTokens

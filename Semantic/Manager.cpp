@@ -47,13 +47,13 @@ using namespace uaiso;
 #define ENSURE_CONFIG \
     UAISO_ASSERT(P->factory_, return std::unique_ptr<Unit>()); \
     UAISO_ASSERT(P->tokens_, return std::unique_ptr<Unit>()); \
-    UAISO_ASSERT(P->lexemes_, return std::unique_ptr<Unit>())
+    UAISO_ASSERT(P->lexs_, return std::unique_ptr<Unit>())
 
 struct uaiso::Manager::ManagerImpl
 {
     Factory* factory_ { nullptr };
     TokenMap* tokens_ { nullptr };
-    LexemeMap* lexemes_ { nullptr };
+    LexemeMap* lexs_ { nullptr };
     Snapshot snapshot_;
     std::vector<std::string> searchPaths_;
     std::unique_ptr<Sanitizer> sanitizer_ { nullptr };
@@ -73,9 +73,9 @@ struct uaiso::Manager::ManagerImpl
             unit->assignInput(code);
 
         if (lineCol.isEmpty())
-            unit->parse(tokens_, lexemes_);
+            unit->parse(tokens_, lexs_);
         else
-            unit->parse(tokens_, lexemes_, lineCol);
+            unit->parse(tokens_, lexs_, lineCol);
 
         if (file)
             fclose(file);
@@ -91,7 +91,7 @@ struct uaiso::Manager::ManagerImpl
         UAISO_ASSERT(unit->ast()->kind() == Ast::Kind::Program, return Prog());
 
         Binder binder(factory_);
-        binder.setLexemes(lexemes_);
+        binder.setLexemes(lexs_);
         binder.setTokens(tokens_);
         Manager::BehaviourFlags flags(behaviour_);
         if (flags & BehaviourFlag::IgnoreBuiltins)
@@ -111,12 +111,12 @@ Manager::~Manager()
 
 void Manager::config(Factory *factory,
                      TokenMap* tokens,
-                     LexemeMap* lexemes,
+                     LexemeMap* lexs,
                      Snapshot snapshot)
 {
     P->factory_ = factory;
     P->tokens_ = tokens;
-    P->lexemes_ = lexemes;
+    P->lexs_ = lexs;
     P->snapshot_ = snapshot;
     P->sanitizer_ = factory->makeSanitizer();
 }

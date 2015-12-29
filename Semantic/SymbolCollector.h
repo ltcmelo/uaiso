@@ -68,13 +68,13 @@ public:
      * \brief collect
      * \param ast
      * \param context
-     * \param lexemes
+     * \param lexs
      * \pre The AST must have already been gone through the Binder.
      * \return
      *
      * Collect symbol definitions and uses.
      */
-    std::vector<MentionInfo> collect(ProgramAst* ast, const LexemeMap* lexemes);
+    std::vector<MentionInfo> collect(ProgramAst* ast, const LexemeMap* lexs);
 
 private:
     DECL_PIMPL(SymbolCollector)

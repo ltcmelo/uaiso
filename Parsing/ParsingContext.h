@@ -82,12 +82,12 @@ public:
 
     /*!
      * \brief collectLexemes
-     * \param lexemes
+     * \param lexs
      *
      * Specify the map in which lexemes should be collected. If not set,
      * lexemes won't be stored anyhow.
      */
-    void collectLexemes(LexemeMap* lexemes) { lexemes_ = lexemes; }
+    void collectLexemes(LexemeMap* lexs) { lexs_ = lexs; }
 
     /*!
      * \brief collectTokens
@@ -118,20 +118,20 @@ public:
 
     /*!
      * \brief trackLexeme
-     * \param lexeme     - must be null terminated
+     * \param lex     - must be null terminated
      * \param lineCol    - line and column
      */
     template <class LexemeT>
-    void trackLexeme(const char* lexeme, const LineCol& lineCol);
+    void trackLexeme(const char* lex, const LineCol& lineCol);
 
     /*!
      * \brief trackLexeme
-     * \param lexeme     - doesn't need to be null terminated
-     * \param count      - number of lexeme characters
+     * \param lex     - doesn't need to be null terminated
+     * \param count      - number of lex characters
      * \param lineCol    - line and column
      */
     template <class LexemeT>
-    void trackLexeme(const char* lexeme, int count, const LineCol& lineCol);
+    void trackLexeme(const char* lex, int count, const LineCol& lineCol);
 
     /*!
      * \brief trackToken
@@ -234,7 +234,7 @@ public:
 
 protected:
     const char* fileName_ { nullptr };
-    LexemeMap* lexemes_ { nullptr };
+    LexemeMap* lexs_ { nullptr };
     TokenMap* tokens_ { nullptr };
     Phrasing* phrasing_ { nullptr };
     DiagnosticReports* reports_ { nullptr };

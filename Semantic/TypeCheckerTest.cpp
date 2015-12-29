@@ -49,11 +49,11 @@ TypeChecker::TypeCheckerTest::runCore(std::unique_ptr<Factory> factory,
     std::vector<std::string> searchPaths = readSearchPaths();
 
     TokenMap tokens;
-    LexemeMap lexemes;
+    LexemeMap lexs;
     Snapshot snapshot;
     DiagnosticReports reports;
     Manager manager;
-    manager.config(factory.get(), &tokens, &lexemes, snapshot);
+    manager.config(factory.get(), &tokens, &lexs, snapshot);
     for (const auto& path : searchPaths)
         manager.addSearchPath(path);
 
@@ -63,7 +63,7 @@ TypeChecker::TypeCheckerTest::runCore(std::unique_ptr<Factory> factory,
     UAISO_EXPECT_TRUE(prog);
 
     TypeChecker typeChecker(factory.get());
-    typeChecker.setLexemes(&lexemes);
+    typeChecker.setLexemes(&lexs);
     typeChecker.setTokens(&tokens);
     typeChecker.collectDiagnostics(&reports);
     typeChecker.check(Program_Cast(unit->ast()));

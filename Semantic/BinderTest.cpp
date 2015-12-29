@@ -37,12 +37,12 @@ std::unique_ptr<Program> Binder::BinderTest::core(std::unique_ptr<Factory> facto
     std::unique_ptr<Unit> unit(factory->makeUnit());
     unit->assignInput(code);
     unit->setFileName(fullFileName);
-    unit->parse(&tokens, &lexemes_);
+    unit->parse(&tokens, &lexs_);
     ProgramAst* ast = Program_Cast(unit->ast());
     UAISO_EXPECT_TRUE(ast);
 
     Binder binder(factory.get());
-    binder.setLexemes(&lexemes_);
+    binder.setLexemes(&lexs_);
     binder.setTokens(&tokens);
     return binder.bind(ast, unit->fileName());
 }

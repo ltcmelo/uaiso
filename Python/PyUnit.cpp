@@ -35,12 +35,12 @@
 using namespace uaiso;
 
 void PyUnit::parseCore(TokenMap* tokens,
-                       LexemeMap* lexemes,
+                       LexemeMap* lexs,
                        ParsingContext* context)
 {
     P->ast_.reset(nullptr);
 
-    context->collectLexemes(lexemes);
+    context->collectLexemes(lexs);
     context->collectTokens(tokens);
     context->collectReports(P->reports_.get());
     context->setFileName(P->fullFileName_.c_str());
@@ -66,17 +66,17 @@ void PyUnit::parseCore(TokenMap* tokens,
         P->ast_.reset(context->releaseAst());
 }
 
-void PyUnit::parse(TokenMap* tokens, LexemeMap* lexemes)
+void PyUnit::parse(TokenMap* tokens, LexemeMap* lexs)
 {
     ParsingContext context;
-    parseCore(tokens, lexemes, &context);
+    parseCore(tokens, lexs, &context);
 }
 
 void PyUnit::parse(TokenMap* tokens,
-                   LexemeMap* lexemes,
+                   LexemeMap* lexs,
                    const LineCol& lineCol)
 {
     ParsingContext context;
     context.setStopMark(lineCol);
-    parseCore(tokens, lexemes, &context);
+    parseCore(tokens, lexs, &context);
 }

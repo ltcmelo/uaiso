@@ -45,12 +45,12 @@ protected:
                                   const std::string& code,
                                   const std::string& fullFileName = "")
     {
-        LexemeMap lexemes;
+        LexemeMap lexs;
         TokenMap tokens;
         std::unique_ptr<Unit> unit(factory->makeUnit());
         unit->assignInput(code);
         unit->setFileName(fullFileName);
-        unit->parse(&tokens, &lexemes);
+        unit->parse(&tokens, &lexs);
         ProgramAst* ast = Program_Cast(unit->ast());
         UAISO_EXPECT_TRUE(ast);
 

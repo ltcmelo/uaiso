@@ -274,11 +274,11 @@ bool operator!=(const Environment& env1, const Environment& env2);
 
 const ValueDecl* searchValueDecl(const NameAst* name,
                                  Environment env,
-                                 const LexemeMap* lexemes);
+                                 const LexemeMap* lexs);
 
 const TypeDecl* searchTypeDecl(const NameAst* name,
                                Environment env,
-                               const LexemeMap* lexemes);
+                               const LexemeMap* lexs);
 
 } // namespace uaiso
 

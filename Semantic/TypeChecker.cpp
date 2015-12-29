@@ -56,7 +56,7 @@ using namespace uaiso;
 struct uaiso::TypeChecker::TypeCheckerImpl
 {
     TypeCheckerImpl(Factory* factory)
-        : lexemes_(nullptr)
+        : lexs_(nullptr)
         , tokens_(nullptr)
         , prevSym_(nullptr)
         , keepSym_(false)
@@ -96,7 +96,7 @@ struct uaiso::TypeChecker::TypeCheckerImpl
     }
 
      //!< Lexeme map of all AST locations.
-    const LexemeMap* lexemes_;
+    const LexemeMap* lexs_;
 
     //!< Token map of all AST locations.
     const TokenMap* tokens_;
@@ -142,9 +142,9 @@ TypeChecker::TypeChecker(Factory* factory)
 TypeChecker::~TypeChecker()
 {}
 
-void TypeChecker::setLexemes(const LexemeMap* lexemes)
+void TypeChecker::setLexemes(const LexemeMap* lexs)
 {
-    P->lexemes_ = lexemes;
+    P->lexs_ = lexs;
 }
 
 void TypeChecker::setTokens(const TokenMap* tokens)
@@ -1174,7 +1174,7 @@ TypeChecker::VisitResult TypeChecker::traverseRecordInitExpr(RecordInitExprAst* 
 {
     if (ast->spec_ && ast->spec_->kind() == Ast::Kind::NamedSpec) {
         auto tySym = searchTypeDecl(NamedSpec_Cast(ast->spec_.get())->name_.get(),
-                                P->env_, P->lexemes_);
+                                P->env_, P->lexs_);
         if (tySym) {
             P->exprTy_.emplace(tySym->type()->clone());
             return Continue;
@@ -1272,9 +1272,9 @@ TypeChecker::VisitResult TypeChecker::visitThisExpr(ThisExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::visitIdentExpr(IdentExprAst* ast)
 {
-    auto valSym = searchValueDecl(ast->name(), P->env_, P->lexemes_);
+    auto valSym = searchValueDecl(ast->name(), P->env_, P->lexs_);
     if (!valSym) {
-        auto tySym = searchTypeDecl(ast->name(), P->env_, P->lexemes_);
+        auto tySym = searchTypeDecl(ast->name(), P->env_, P->lexs_);
         if (!tySym) {
             P->report(Diagnostic::UndeclaredIdentifier, ast->name_.get(), P->locator_.get());
             P->exprTy_.emplace(new InferredType);

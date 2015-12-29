@@ -99,8 +99,8 @@ namespace {
 class AstToLexeme final : public AstVisitor<AstToLexeme>
 {
 public:
-    AstToLexeme(const LexemeMap* lexemes)
-        : lexemes_(lexemes)
+    AstToLexeme(const LexemeMap* lexs)
+        : lexs_(lexs)
     {}
 
     std::vector<const Lexeme*> process(ExprAst* ast)
@@ -120,7 +120,7 @@ public:
 private:
     friend class AstVisitor<AstToLexeme>;
 
-    const LexemeMap* lexemes_;
+    const LexemeMap* lexs_;
     std::vector<const Lexeme*> ids_;
     bool firstOnly_;
 
@@ -129,32 +129,32 @@ private:
         ids_.clear();
     }
 
-    VisitResult pushName(const Lexeme* lexeme)
+    VisitResult pushName(const Lexeme* lex)
     {
-        if (!lexeme)
+        if (!lex)
             return Abort;
 
-        ids_.push_back(lexeme);
+        ids_.push_back(lex);
         return Continue;
     }
 
     VisitResult visitSimpleName(SimpleNameAst* ast)
     {
-        auto name = lexemes_->findAt<Ident>(ast->nameLoc_.fileName_,
+        auto name = lexs_->findAt<Ident>(ast->nameLoc_.fileName_,
                                           ast->nameLoc_.lineCol());
         return pushName(name);
     }
 
     VisitResult visitGenName(GenNameAst* ast)
     {
-        auto name = lexemes_->findAt<Ident>(ast->genLoc_.fileName_,
+        auto name = lexs_->findAt<Ident>(ast->genLoc_.fileName_,
                                           ast->genLoc_.lineCol());
         return pushName(name);
     }
 
     VisitResult visitStrLitExpr(StrLitExprAst* ast)
     {
-        auto name = lexemes_->findAt<StrLit>(ast->litLoc_.fileName_,
+        auto name = lexs_->findAt<StrLit>(ast->litLoc_.fileName_,
                                            ast->litLoc_.lineCol());
         return pushName(name);
     }
@@ -170,7 +170,7 @@ private:
 struct uaiso::Binder::BinderImpl
 {
     BinderImpl(Factory* factory)
-        : lexemes_(nullptr)
+        : lexs_(nullptr)
         , tokens_(nullptr)
         , ownedBlocks_(0)
         , sanitizer_(factory->makeSanitizer())
@@ -218,7 +218,7 @@ struct uaiso::Binder::BinderImpl
             reports_->add(std::forward<Args>(args)...);
     }
 
-    const LexemeMap* lexemes_; //!< Lexeme map of all AST locations.
+    const LexemeMap* lexs_; //!< Lexeme map of all AST locations.
     const TokenMap* tokens_;   //!< Token map of all AST locations.
 
     //! File name corresponding the to given AST.
@@ -282,9 +282,9 @@ Binder::Binder(Factory* factory)
 Binder::~Binder()
 {}
 
-void Binder::setLexemes(const LexemeMap* lexemes)
+void Binder::setLexemes(const LexemeMap* lexs)
 {
-    P->lexemes_ = lexemes;
+    P->lexs_ = lexs;
 }
 
 void Binder::setTokens(const TokenMap* tokens)
@@ -351,14 +351,14 @@ void Binder::insertBuiltins()
         }
     };
 
-    LexemeMap* lexemes = const_cast<LexemeMap*>(P->lexemes_);
-    insertFunc(P->builtins_->createConstructors(lexemes));
-    insertFunc(P->builtins_->createGlobalFuncs(lexemes));
+    LexemeMap* lexs = const_cast<LexemeMap*>(P->lexs_);
+    insertFunc(P->builtins_->createConstructors(lexs));
+    insertFunc(P->builtins_->createGlobalFuncs(lexs));
 
     if (P->lang_->isPurelyOO()) {
-        P->env_.insertTypeDecl(P->builtins_->createRootTypeDecl(lexemes));
+        P->env_.insertTypeDecl(P->builtins_->createRootTypeDecl(lexs));
         P->env_.insertTypeDecl(
-                P->builtins_->createBasicTypeDecl(lexemes, Type::Kind::Int));
+                P->builtins_->createBasicTypeDecl(lexs, Type::Kind::Int));
     }
 }
 
@@ -379,7 +379,7 @@ void Binder::importAutomaticModules()
 Binder::VisitResult Binder::visitSimpleName(SimpleNameAst* ast)
 {
     const SourceLoc& loc = ast->nameLoc_;
-    auto ident = P->lexemes_->findAt<Ident>(loc.fileName_, loc.lineCol());
+    auto ident = P->lexs_->findAt<Ident>(loc.fileName_, loc.lineCol());
     UAISO_ASSERT(ident, return Abort, "SourceLoc:", loc);
     P->declId_.push_back(ident);
 
@@ -1009,7 +1009,7 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
     // it's still evaluated so the module and given namespace are collected.
 
     UAISO_ASSERT(ast->expr_.get(), return Abort);
-    AstToLexeme pickupName(P->lexemes_);
+    AstToLexeme pickupName(P->lexs_);
     const auto& baseLexs = pickupName.process(ast->expr_.get());
 
     if (baseLexs.empty()) {
@@ -1037,7 +1037,7 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
     if (!localName) {
         auto pos = moduleName.find_last_of(P->lang_->packageSeparator());
         auto moduleLocalName = moduleName.substr(pos == std::string::npos ? 0 : pos);
-        localName = const_cast<LexemeMap*>(P->lexemes_)
+        localName = const_cast<LexemeMap*>(P->lexs_)
                 ->insertOrFind<Ident>(moduleLocalName, P->fileName_, ast->asLoc_.lineCol());
         DEBUG_TRACE("no explicit local name, assign %s\n", moduleLocalName.c_str());
     }
@@ -1428,12 +1428,12 @@ Binder::VisitResult Binder::traverseAssignExpr(AssignExprAst* ast)
             }
             auto baseName = IdentExpr_Cast(member->exprOrSpec_.get())->name();
 
-            // Retrieve the lexeme of the base name and check whether
+            // Retrieve the lex of the base name and check whether
             // it's a "self". If so, bind the corresponding name.
-            AstToLexeme pickupName(P->lexemes_);
+            AstToLexeme pickupName(P->lexs_);
             const auto& baseLexemes = pickupName.process(baseName);
             if (baseLexemes.empty() ||
-                    baseLexemes[0] != P->lexemes_->self()) {
+                    baseLexemes[0] != P->lexs_->self()) {
                 continue;
             }
 

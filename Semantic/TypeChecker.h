@@ -43,7 +43,7 @@ public:
     TypeChecker(Factory* factory);
     ~TypeChecker();
 
-    void setLexemes(const LexemeMap* lexemes);
+    void setLexemes(const LexemeMap* lexs);
 
     void setTokens(const TokenMap* tokens);
 
