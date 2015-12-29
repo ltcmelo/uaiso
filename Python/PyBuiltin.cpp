@@ -32,18 +32,29 @@ using namespace uaiso;
 
 namespace {
 
-const std::string kPyBuiltin = "<__pybuiltin__>";
+const char* const kPyBuiltin = "<__pybuiltin__>";
+const char* const kPyBuiltinBool = "<__pybuiltin_bool__>";
+const char* const kPyBuiltinFloat = "<__pybuiltin_float__>";
+const char* const kPyBuiltinInt = "<__pybuiltin_int__>";
 
 // An incremented-per-use line to make sure there are no location collisions
 // in the identifiers created for the builtins file.
 int line = 0;
+
+const Ident* insertOrFindIdent(LexemeMap* lexemes, const char* name)
+{
+    auto ident = lexemes->findAnyOf<Ident>(name);
+    if (!ident)
+        ident = lexemes->insertOrFind<Ident>(name, kPyBuiltin, LineCol(++line, 0));
+    return ident;
+}
 
 template <class TypeT>
 std::unique_ptr<Func> createFunc(LexemeMap* lexemes, const char* name)
 {
     std::unique_ptr<FuncType> funcTy(new FuncType);
     funcTy->setReturnType(std::unique_ptr<Type>(new TypeT));
-    auto ident = lexemes->insertOrFind<Ident>(name, kPyBuiltin, LineCol(++line, 0));
+    auto ident = insertOrFindIdent(lexemes, name);
     std::unique_ptr<Func> func(new Func(ident));
     func->setIsBuiltin(true);
     func->setType(std::move(funcTy));
@@ -66,7 +77,7 @@ const char* PyBuiltin::tokenSpell(Token tk) const
     }
 }
 
-std::vector<Builtin::FuncPtr> PyBuiltin::valueConstructors(LexemeMap* lexemes) const
+std::vector<Builtin::FuncPtr> PyBuiltin::createConstructors(LexemeMap* lexemes) const
 {
     std::vector<FuncPtr> ctors;
     ctors.push_back(createFunc<BoolType>(lexemes, tokenSpell(TK_BOOL)));
@@ -77,7 +88,7 @@ std::vector<Builtin::FuncPtr> PyBuiltin::valueConstructors(LexemeMap* lexemes) c
     return ctors;
 }
 
-std::vector<Builtin::FuncPtr> PyBuiltin::globalFuncs(LexemeMap* lexemes) const
+std::vector<Builtin::FuncPtr> PyBuiltin::createGlobalFuncs(LexemeMap* lexemes) const
 {
     std::vector<FuncPtr> funcs;
     funcs.push_back(createFunc<IntType>(lexemes, "abs"));
@@ -89,13 +100,9 @@ std::vector<Builtin::FuncPtr> PyBuiltin::globalFuncs(LexemeMap* lexemes) const
     return funcs;
 }
 
-std::vector<Builtin::TypeDeclPtr> PyBuiltin::typeDecls(LexemeMap* lexemes) const
+Builtin::TypeDeclPtr PyBuiltin::createRootTypeDecl(LexemeMap* lexemes) const
 {
-    std::vector<TypeDeclPtr> types;
-
     // The `object` class
-    std::unique_ptr<RecordType> recTy(new RecordType);
-    recTy->setVariety(RecordVariety::Class);
     Environment env;
     env.insertTypeDecl(createFunc<RecordType>(lexemes, "__new__"));
     env.insertTypeDecl(createFunc<VoidType>(lexemes, "__init__"));
@@ -117,20 +124,139 @@ std::vector<Builtin::TypeDeclPtr> PyBuiltin::typeDecls(LexemeMap* lexemes) const
     env.insertTypeDecl(createFunc<VoidType>(lexemes, "__setattr__"));
     env.insertTypeDecl(createFunc<VoidType>(lexemes, "__delattr__"));
     //env.insertTypeDecl(createFunc<ArrayType>(lexemes, "__dir__"));
+    std::unique_ptr<RecordType> recTy(new RecordType);
     recTy->setEnv(env);
-    auto ident = lexemes->insertOrFind<Ident>("object", kPyBuiltin, LineCol(++line, 0));
+    auto ident = insertOrFindIdent(lexemes, "object");
     std::unique_ptr<Record> rec(new Record(ident));
     rec->setIsBuiltin(true);
     rec->setType(std::move(recTy));
-    types.push_back(std::move(rec));
 
-    return types;
+    return TypeDeclPtr(rec.release());
 }
 
-Builtin::BaseRecordPtr PyBuiltin::implicitBase(LexemeMap* lexemes) const
+namespace {
+
+template <class NumT>
+void addCommonNumOprtrs(Environment env, LexemeMap* lexemes)
 {
-    auto ident = lexemes->insertOrFind<Ident>("object", kPyBuiltin, LineCol(++line, 0));
-    return BaseRecordPtr(new BaseRecord(ident));
+    // Unary
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__pos__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__neg__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__abs__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__invert__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__round__"));
+    env.insertTypeDecl(createFunc<IntType>(lexemes, "__floor_"));
+    env.insertTypeDecl(createFunc<IntType>(lexemes, "__ceil__"));
+    env.insertTypeDecl(createFunc<IntType>(lexemes, "__trunc__"));
+
+    // Binary
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__add__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__sub__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__mul__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__floordiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__div__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__truediv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__mod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__divmod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__pow__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__lshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rand__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ror__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rxor__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__radd__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rsub__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rmul__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rfloordiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rdiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rtruediv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rmod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rdivmod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rpow__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rlshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rrshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rand__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ror__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__rxor__"));
+
+    // Augmented assignment
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__iadd__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__isub__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__imul__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ifloordiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__idiv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__itruediv__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__imod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__idivmod__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ipow__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ilshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__irshift__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__iand__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ior__"));
+    env.insertTypeDecl(createFunc<NumT>(lexemes, "__ixor__"));
+}
+
+} // namespace anonymous
+
+const Ident* PyBuiltin::rootTypeDeclName(LexemeMap *lexemes) const
+{
+    return insertOrFindIdent(lexemes, "object");
+}
+
+Builtin::TypeDeclPtr
+PyBuiltin::createBasicTypeDecl(LexemeMap* lexemes, Type::Kind kind) const
+{
+    switch (kind) {
+    case Type::Kind::Int: {
+        Environment env;
+        addCommonNumOprtrs<IntType>(env, lexemes);
+        env.insertTypeDecl(createFunc<IntType>(lexemes, "bit_length"));
+        env.insertTypeDecl(createFunc<IntType>(lexemes, "to_bytes"));
+        env.insertTypeDecl(createFunc<IntType>(lexemes, "from_bytes"));
+        std::unique_ptr<RecordType> recTy(new RecordType);
+        recTy->setEnv(env);
+        auto ident = insertOrFindIdent(lexemes, kPyBuiltinInt);
+        std::unique_ptr<Record> rec(new Record(ident));
+        rec->setIsBuiltin(true);
+        rec->setIsFake(true);
+        rec->setType(std::move(recTy));
+        return TypeDeclPtr(rec.release());
+    }
+
+    case Type::Kind::Float: {
+        Environment env;
+        addCommonNumOprtrs<FloatType>(env, lexemes);
+        env.insertTypeDecl(createFunc<FloatType>(lexemes, "as_integer_ratio"));
+        env.insertTypeDecl(createFunc<FloatType>(lexemes, "is_integer"));
+        env.insertTypeDecl(createFunc<FloatType>(lexemes, "hex"));
+        env.insertTypeDecl(createFunc<FloatType>(lexemes, "from_hex"));
+        std::unique_ptr<RecordType> recTy(new RecordType);
+        recTy->setEnv(env);
+        auto ident = insertOrFindIdent(lexemes, kPyBuiltinFloat);
+        std::unique_ptr<Record> rec(new Record(ident));
+        rec->setIsBuiltin(true);
+        rec->setIsFake(true);
+        rec->setType(std::move(recTy));
+        return TypeDeclPtr(rec.release());
+    }
+
+    default:
+        return TypeDeclPtr();
+    }
+}
+
+const Ident* PyBuiltin::basicTypeDeclName(LexemeMap* lexemes, Type::Kind kind) const
+{
+    switch (kind) {
+    case Type::Kind::Int:
+        return insertOrFindIdent(lexemes, kPyBuiltinInt);
+
+    case Type::Kind::Float:
+        return insertOrFindIdent(lexemes, kPyBuiltinFloat);
+
+    default:
+        return nullptr;
+    }
 }
 
 std::vector<std::string> PyBuiltin::automaticModules() const

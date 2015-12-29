@@ -1158,7 +1158,7 @@ TypeChecker::VisitResult TypeChecker::traverseCallExpr(CallExprAst* ast)
     if (ty->kind() == Type::Kind::Func) {
         FuncType* funcTy = FuncType_Cast(ty.get());
         if (funcTy->returnType()) {
-            P->exprTy_.emplace(ty.release());
+            P->exprTy_.emplace(funcTy->returnType()->clone());
             return Continue;
         }
     }

@@ -120,8 +120,10 @@ public:
     list(SymbolTable<SymbolT> EnvironmentImpl::* symTable) const
     {
         std::vector<const SymbolT*> syms;
-        for (auto& sym : (this->*symTable).table_)
-            syms.push_back(sym.second.get());
+        for (auto& sym : (this->*symTable).table_) {
+            if (!sym.second->isFake())
+                syms.push_back(sym.second.get());
+        }
 
         for (auto env : mergedEnvs_) {
             auto other = env.P->list(symTable);

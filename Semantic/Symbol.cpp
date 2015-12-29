@@ -55,6 +55,7 @@ struct uaiso::Symbol::SymbolImpl
         uint64_t auto_          : 1;
         uint64_t declAttrs_     : 10;
         uint64_t builtin_       : 1;
+        uint64_t fake_          : 1;
     };
     union
     {
@@ -98,6 +99,16 @@ void Symbol::setIsBuiltin(bool isBuiltin)
 bool Symbol::isBuiltin() const
 {
     return impl_->bit_.builtin_;
+}
+
+void Symbol::setIsFake(bool isFake)
+{
+    impl_->bit_.fake_ = isFake;
+}
+
+bool Symbol::isFake() const
+{
+    return impl_->bit_.fake_;
 }
 
     //--- Decl ---//

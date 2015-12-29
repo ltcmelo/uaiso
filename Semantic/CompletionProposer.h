@@ -64,7 +64,8 @@ public:
         Success                      //!< Success
     };
 
-    using Result = std::tuple<std::vector<const Decl*>, ResultCode>;
+    using Symbols = std::vector<const Decl*>;
+    using Result = std::tuple<Symbols, ResultCode>;
 
     Result propose(ProgramAst* ast, const LexemeMap* lexemes);
 

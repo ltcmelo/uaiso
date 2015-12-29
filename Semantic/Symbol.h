@@ -96,6 +96,28 @@ public:
      */
     bool isBuiltin() const;
 
+    /*!
+     * \brief setIsFake
+     * \param isFake
+     *
+     * Set whether the symbol is fake. A fake symbol doesn't exist in actual
+     * code nor is it built anyhow into the language. It's essentially an
+     * artificial artificat used as an implementation helper.
+     *
+     * Although a fake symbol may be inserted into an \ref Environment and
+     * searched for by its name, it won't be listed in conjunction with
+     * regular symbols.
+     */
+    void setIsFake(bool isFake);
+
+    /*!
+     * \brief isFake
+     * \return
+     *
+     * Return whether the symbol is fake.
+     */
+    bool isFake() const;
+
 protected:
     Symbol(Symbol::Kind kind);
 

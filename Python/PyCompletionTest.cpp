@@ -544,12 +544,80 @@ z.
 
 namespace {
 
-const std::vector<const char*>& addRootObjectNames(std::vector<const char*>& v)
+std::vector<const char*>& addRootObjectNames(std::vector<const char*>& v)
 {
     auto names { "__gt__", "__new__", "__getattribute__", "__str__",
                  "__format__", "__ge__", "__lt__", "__repr__", "__setattr__",
                  "__delattr__", "__ne__", "__getattr__", "__init__",
                  "__del__", "__le__", "__bool__", "__eq__", "__hash__" };
+    v.insert(v.begin(), names.begin(), names.end());
+    return v;
+}
+
+std::vector<const char*>& addIntObjectNames(std::vector<const char*>& v)
+{
+    auto names {
+        // Unary
+        "__pos__",
+        "__neg__",
+        "__abs__",
+        "__invert__",
+        "__round__",
+        "__floor_",
+        "__ceil__",
+        "__trunc__",
+
+        // Binary
+        "__add__",
+        "__sub__",
+        "__mul__",
+        "__floordiv__",
+        "__div__",
+        "__truediv__",
+        "__mod__",
+        "__divmod__",
+        "__pow__",
+        "__lshift__",
+        "__rshift__",
+        "__rand__",
+        "__ror__",
+        "__rxor__",
+        "__radd__",
+        "__rsub__",
+        "__rmul__",
+        "__rfloordiv__",
+        "__rdiv__",
+        "__rtruediv__",
+        "__rmod__",
+        "__rdivmod__",
+        "__rpow__",
+        "__rlshift__",
+        "__rrshift__",
+        "__rand__",
+        "__ror__",
+        "__rxor__",
+
+        // Augmented assignment
+        "__iadd__",
+        "__isub__",
+        "__imul__",
+        "__ifloordiv__",
+        "__idiv__",
+        "__itruediv__",
+        "__imod__",
+        "__idivmod__",
+        "__ipow__",
+        "__ilshift__",
+        "__irshift__",
+        "__iand__",
+        "__ior__",
+        "__ixor__",
+
+        // Extra
+        "bit_length",
+        "to_bytes",
+        "from_bytes"
+    };
     v.insert(v.begin(), names.begin(), names.end());
     return v;
 }
@@ -570,7 +638,7 @@ i.
     disableBuiltins_ = false;
     std::vector<const char*> expected;
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
-            addRootObjectNames(expected));
+            addRootObjectNames(addIntObjectNames(expected)));
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase25()
@@ -587,7 +655,7 @@ i.
     disableBuiltins_ = false;
     std::vector<const char*> expected;
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
-            addRootObjectNames(expected));
+            addRootObjectNames(addIntObjectNames(expected)));
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase26()
@@ -625,8 +693,50 @@ o.
 
 void CompletionProposer::CompletionProposerTest::PyTestCase28()
 {
+    std::string code = R"raw(
+class Z:
+    z = 3
+
+                                                 # line 4
+
+z = Z()
+z.
+# ^
+# |
+# complete at up-arrow
+)raw";
+
+    lineCol_ = { 7, 2 };
+    disableBuiltins_ = false;
+    std::vector<const char*> expected = { "z" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+            addRootObjectNames(expected));
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase29()
 {
+    std::string code = R"raw(
+class X:
+    x = 1
+
+class Y:
+    y = 2
+
+class Z(X,Y):
+    z = 3
+
+                                                 # line 10
+
+z = Z()
+z.
+# ^
+# |
+# complete at up-arrow
+)raw";
+
+    lineCol_ = { 13, 2 };
+    disableBuiltins_ = false;
+    std::vector<const char*> expected = { "x", "y", "z" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+            addRootObjectNames(expected));
 }

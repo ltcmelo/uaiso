@@ -45,24 +45,34 @@ const char* Builtin::tokenSpell(Token tk) const
     return tokenName[tk];
 }
 
-std::vector<Builtin::FuncPtr> Builtin::valueConstructors(LexemeMap*) const
+std::vector<Builtin::FuncPtr> Builtin::createConstructors(LexemeMap*) const
 {
     return std::vector<FuncPtr>();
 }
 
-std::vector<Builtin::FuncPtr> Builtin::globalFuncs(LexemeMap*) const
+std::vector<Builtin::FuncPtr> Builtin::createGlobalFuncs(LexemeMap*) const
 {
     return std::vector<FuncPtr>();
 }
 
-std::vector<Builtin::TypeDeclPtr> Builtin::typeDecls(LexemeMap*) const
+Builtin::TypeDeclPtr Builtin::createBasicTypeDecl(LexemeMap*, Type::Kind) const
 {
-    return std::vector<TypeDeclPtr>();
+    return TypeDeclPtr();
 }
 
-Builtin::BaseRecordPtr Builtin::implicitBase(LexemeMap*) const
+const Ident* Builtin::basicTypeDeclName(LexemeMap*, Type::Kind) const
 {
-    return BaseRecordPtr();
+    return nullptr;
+}
+
+Builtin::TypeDeclPtr Builtin::createRootTypeDecl(LexemeMap*) const
+{
+    return TypeDeclPtr();
+}
+
+const Ident* Builtin::rootTypeDeclName(LexemeMap*) const
+{
+    return nullptr;
 }
 
 std::vector<std::string> Builtin::automaticModules() const

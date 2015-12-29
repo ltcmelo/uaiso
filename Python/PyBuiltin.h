@@ -33,13 +33,18 @@ class UAISO_API PyBuiltin final : public Builtin
 public:
     const char* tokenSpell(Token tk) const override;
 
-    std::vector<FuncPtr> valueConstructors(LexemeMap* lexemes) const override;
+    std::vector<FuncPtr> createConstructors(LexemeMap* lexemes) const override;
 
-    std::vector<FuncPtr> globalFuncs(LexemeMap* lexemes) const override;
+    std::vector<FuncPtr> createGlobalFuncs(LexemeMap* lexemes) const override;
 
-    std::vector<TypeDeclPtr> typeDecls(LexemeMap* lexemes) const override;
+    TypeDeclPtr createRootTypeDecl(LexemeMap* lexemes) const override;
 
-    BaseRecordPtr implicitBase(LexemeMap* lexemes) const override;
+    const Ident* rootTypeDeclName(LexemeMap *lexemes) const override;
+
+    TypeDeclPtr createBasicTypeDecl(LexemeMap* lexemes, Type::Kind kind) const override;
+
+    const Ident* basicTypeDeclName(LexemeMap* lexemes,
+                                   Type::Kind kind) const override;
 
     std::vector<std::string> automaticModules() const override;
 };

@@ -199,6 +199,44 @@ struct uaiso::CompletionProposer::CompletionProposerImpl
         , resolver_(factory)
     {}
 
+    Symbols& typeDecls(Environment env, Symbols& syms, const Ident* ident)
+    {
+        auto sym = env.searchTypeDecl(ident);
+        if (!sym) {
+            DEBUG_TRACE("symbol is unknown\n");
+            return syms;
+        }
+
+        bool hasEnv;
+        std::tie(hasEnv, env) = envForType(sym->type(), env);
+        if (hasEnv) {
+            auto extraSyms = env.listDecls();
+            std::copy(extraSyms.begin(), extraSyms.end(), std::back_inserter(syms));
+        }
+
+        return syms;
+    }
+
+    Symbols& addBasicTypeDecls(const LexemeMap* lexemes,
+                               Environment env,
+                               Symbols& syms,
+                               Type::Kind kind)
+    {
+        auto ident = builtin_->basicTypeDeclName(const_cast<LexemeMap*>(lexemes), kind);
+        if (!ident)
+            return syms;
+        return typeDecls(env, syms, ident);
+    }
+
+    Symbols& addRootRecordDecls(const LexemeMap* lexemes,
+                                Environment env,
+                                Symbols& syms)
+    {
+        auto ident = builtin_->rootTypeDeclName(const_cast<LexemeMap*>(lexemes));
+        UAISO_ASSERT(ident, return syms);
+        return typeDecls(env, syms, ident);
+    }
+
     //! Language-specific details.
     std::unique_ptr<const Lang> lang_;
 
@@ -308,18 +346,10 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                     return Result(Symbols(), InvalidType);
                 }
 
-                auto base = P->builtin_->implicitBase(const_cast<LexemeMap*>(lexemes));
-                UAISO_ASSERT(base, return Result(Symbols(), InternalError));
-                auto baseTySym = env.searchTypeDecl(base->name());
-                if (!baseTySym) {
-                    DEBUG_TRACE("implicit base is unknown\n");
-                    return Result(Symbols(), UnknownSymbol);
-                }
-
-                bool baseHasEnv;
-                Environment baseEnv;
-                std::tie(baseHasEnv, baseEnv) = envForType(baseTySym->type(), baseEnv);
-                return Result(baseEnv.listDecls(), Success);
+                Symbols syms;
+                P->addRootRecordDecls(lexemes, env, syms);
+                P->addBasicTypeDecls(lexemes, env, syms, ty->kind());
+                return Result(syms, Success);
             }
         }
 
@@ -354,6 +384,9 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexemes)
                 }
             }
         }
+
+        if (P->lang_->isPurelyOO())
+            P->addRootRecordDecls(lexemes, env, syms);
 
         return Result(syms, Success);
     }

@@ -248,7 +248,7 @@ struct uaiso::Binder::BinderImpl
     //! Language-specific AST locator.
     std::unique_ptr<const AstLocator> locator_;
 
-    //! Language-specific lang.
+    //! Language-specific details.
     std::unique_ptr<const Lang> lang_;
 
     //! Language-specific type system.
@@ -351,13 +351,14 @@ void Binder::insertBuiltins()
         }
     };
 
-    LexemeMap* lexs = const_cast<LexemeMap*>(P->lexemes_);
-    insertFunc(P->builtins_->valueConstructors(lexs));
-    insertFunc(P->builtins_->globalFuncs(lexs));
+    LexemeMap* lexemes = const_cast<LexemeMap*>(P->lexemes_);
+    insertFunc(P->builtins_->createConstructors(lexemes));
+    insertFunc(P->builtins_->createGlobalFuncs(lexemes));
 
-    for (auto& tySym : P->builtins_->typeDecls(lexs)) {
-        UAISO_ASSERT(tySym, return);
-        P->env_.insertTypeDecl(std::move(tySym));
+    if (P->lang_->isPurelyOO()) {
+        P->env_.insertTypeDecl(P->builtins_->createRootTypeDecl(lexemes));
+        P->env_.insertTypeDecl(
+                P->builtins_->createBasicTypeDecl(lexemes, Type::Kind::Int));
     }
 }
 
