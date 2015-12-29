@@ -39,12 +39,24 @@ public:
     TokenMap();
     ~TokenMap();
 
+    /*!
+     * \brief insertOrFind
+     *
+     * Insert the token \a tk at line/column \a lineCol of the file
+     * \a fullFileName.
+     */
     Token insertOrFind(int tk,
                        const std::string& fullFileName,
                        const LineCol& lineCol);
 
-    Token find(const std::string& fullFileName,
-               const LineCol& lineCol) const;
+    /*!
+     * \brief findAt
+     *
+     * Return the token at the line/column \a lineCol of the file
+     * \a fullFileName. If no token can be found, return an invalid one.
+     */
+    Token findAt(const std::string& fullFileName,
+                 const LineCol& lineCol) const;
 
     void clear();
     void clear(const std::string& fullFileName);

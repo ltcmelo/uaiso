@@ -320,7 +320,7 @@ bool operator!=(const Environment& env1, const Environment& env2)
 
 const Ident* nameToIdent(const SimpleNameAst* name, const LexemeMap* lexemes)
 {
-    return lexemes->find<Ident>(name->nameLoc_.fileName_, name->nameLoc_.lineCol());
+    return lexemes->findAt<Ident>(name->nameLoc_.fileName_, name->nameLoc_.lineCol());
 }
 
 const ValueDecl* searchValueDecl(const NameAst* name,

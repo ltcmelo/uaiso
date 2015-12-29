@@ -53,7 +53,7 @@ namespace std {
 // value of a lexeme based on the underlying string (not on the pointer).
 template <> struct hash<std::unique_ptr<Lexeme>>
 {
-    size_t operator()(const std::unique_ptr<Lexeme>& value)
+    size_t operator()(const std::unique_ptr<Lexeme>& value) const
     {
         return std::hash<std::string>()(value->s_);
     }
@@ -64,7 +64,7 @@ template <> struct hash<std::unique_ptr<Lexeme>>
 template <> struct equal_to<std::unique_ptr<Lexeme>>
 {
     bool operator()(const std::unique_ptr<Lexeme>& a,
-                    const std::unique_ptr<Lexeme>& b)
+                    const std::unique_ptr<Lexeme>& b) const
     {
         return a->s_ == b->s_;
     }
@@ -100,8 +100,26 @@ void LexemeMap::insertPredefined()
     P->self_ = insertOrFind<Ident>("self", "<__predefined__>", LineCol(-1, -1));
 }
 
+namespace {
+
 template <class ValueT>
-const ValueT* LexemeMap::insertOrFind(const std::string& s,
+DataIndex<std::unique_ptr<Lexeme>>::Data::const_iterator
+findDataIt(const std::string& spell,
+           const DataIndex<std::unique_ptr<Lexeme>>::Data& data)
+{
+    // A hack to allow looking it up without actually allocating a new value.
+    static char local[sizeof(ValueT)];
+    std::unique_ptr<Lexeme> helper(new (local) ValueT(spell));
+    auto it = data.find(helper);
+    helper.release();
+
+    return it;
+}
+
+} // namespace anonymous
+
+template <class ValueT>
+const ValueT* LexemeMap::insertOrFind(const std::string& spell,
                                       const std::string& fullFileName,
                                       const LineCol& lineCol)
 {
@@ -114,18 +132,11 @@ const ValueT* LexemeMap::insertOrFind(const std::string& s,
             return static_cast<const ValueT*>(posIt->second->get());
     }
 
-    // A mapping for this line/col doesn't exist, but this value might
-    // be in the global index (from another occurrence). We use a hack
-    // to allow looking it up without actually allocating a new value.
-    static char local[sizeof(ValueT)];
-    std::unique_ptr<Lexeme> helper(new (local) ValueT(s));
-    auto valIt = P->data_.find(helper);
-    helper.release();
-
-    if (valIt == P->data_.end()) {
-        // The value is not in the index, we must create it.
-        valIt = P->data_.emplace(new ValueT(s)).first;
-    }
+    // A mapping for this line/col doesn't exist, but this value might be in
+    // global index (from another occurrence). If not, we must create it.
+    auto valIt = findDataIt<ValueT>(spell, P->data_);
+    if (valIt == P->data_.end())
+        valIt = P->data_.emplace(new ValueT(spell)).first;
 
     // Now, add a mapping from the line/col to the value.
     byFile->emplace(lineCol, valIt);
@@ -134,8 +145,8 @@ const ValueT* LexemeMap::insertOrFind(const std::string& s,
 }
 
 template <class ValueT>
-const ValueT* LexemeMap::find(const std::string& fullFileName,
-                              const LineCol& lineCol) const
+const ValueT* LexemeMap::findAt(const std::string& fullFileName,
+                                const LineCol& lineCol) const
 {
     auto byFileIt = P->fileIndex_.find(fullFileName);
     if (byFileIt == P->fileIndex_.end()
@@ -148,6 +159,15 @@ const ValueT* LexemeMap::find(const std::string& fullFileName,
         return nullptr;
 
     return static_cast<const ValueT*>(it->second->get());
+}
+
+template <class ValueT>
+const ValueT* LexemeMap::findAnyOf(const std::string& spell) const
+{
+    auto valIt = findDataIt<ValueT>(spell, P->data_);
+    if (valIt == P->data_.end())
+        return nullptr;
+    return static_cast<const ValueT*>(valIt->get());
 }
 
 template <class ValueT>
@@ -196,11 +216,18 @@ LexemeMap::insertOrFind<NumLit>(const std::string&,
                                 const std::string&,
                                 const LineCol& lineCol);
 template const Ident*
-LexemeMap::find<Ident>(const std::string&, const LineCol& lineCol) const;
+LexemeMap::findAt<Ident>(const std::string&, const LineCol& lineCol) const;
 template const StrLit*
-LexemeMap::find<StrLit>(const std::string&, const LineCol& lineCol) const;
+LexemeMap::findAt<StrLit>(const std::string&, const LineCol& lineCol) const;
 template const NumLit*
-LexemeMap::find<NumLit>(const std::string&, const LineCol& lineCol) const;
+LexemeMap::findAt<NumLit>(const std::string&, const LineCol& lineCol) const;
+
+template const Ident*
+LexemeMap::findAnyOf<Ident>(const std::string&) const;
+template const StrLit*
+LexemeMap::findAnyOf<StrLit>(const std::string&) const;
+template const NumLit*
+LexemeMap::findAnyOf<NumLit>(const std::string&) const;
 
 template std::vector<std::tuple<const Ident*, LineCol>>
 LexemeMap::list<Ident>(const std::string&) const;
@@ -246,8 +273,8 @@ Token TokenMap::insertOrFind(int tk,
     return Token(*valPair.first);
 }
 
-Token TokenMap::find(const std::string& fullFileName,
-                     const LineCol& lineCol) const
+Token TokenMap::findAt(const std::string& fullFileName,
+                       const LineCol& lineCol) const
 {
     auto byFileIt = P->fileIndex_.find(fullFileName);
     if (byFileIt == P->fileIndex_.end() || !byFileIt->second)

@@ -140,21 +140,21 @@ private:
 
     VisitResult visitSimpleName(SimpleNameAst* ast)
     {
-        auto name = lexemes_->find<Ident>(ast->nameLoc_.fileName_,
+        auto name = lexemes_->findAt<Ident>(ast->nameLoc_.fileName_,
                                           ast->nameLoc_.lineCol());
         return pushName(name);
     }
 
     VisitResult visitGenName(GenNameAst* ast)
     {
-        auto name = lexemes_->find<Ident>(ast->genLoc_.fileName_,
+        auto name = lexemes_->findAt<Ident>(ast->genLoc_.fileName_,
                                           ast->genLoc_.lineCol());
         return pushName(name);
     }
 
     VisitResult visitStrLitExpr(StrLitExprAst* ast)
     {
-        auto name = lexemes_->find<StrLit>(ast->litLoc_.fileName_,
+        auto name = lexemes_->findAt<StrLit>(ast->litLoc_.fileName_,
                                            ast->litLoc_.lineCol());
         return pushName(name);
     }
@@ -378,7 +378,7 @@ void Binder::importAutomaticModules()
 Binder::VisitResult Binder::visitSimpleName(SimpleNameAst* ast)
 {
     const SourceLoc& loc = ast->nameLoc_;
-    auto ident = P->lexemes_->find<Ident>(loc.fileName_, loc.lineCol());
+    auto ident = P->lexemes_->findAt<Ident>(loc.fileName_, loc.lineCol());
     UAISO_ASSERT(ident, return Abort, "SourceLoc:", loc);
     P->declId_.push_back(ident);
 
@@ -443,7 +443,7 @@ Binder::VisitResult Binder::visitInferredSpec(InferredSpecAst* ast)
 Binder::VisitResult Binder::visitBuiltinSpec(BuiltinSpecAst* ast)
 {
     const SourceLoc& loc = ast->keyLoc_;
-    Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
+    Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     std::unique_ptr<Type> ty;
     switch (tk) {
@@ -626,7 +626,7 @@ Binder::VisitResult Binder::traverseNamedSpec(NamedSpecAst* ast)
 Binder::VisitResult Binder::visitVisibilityAttr(VisibilityAttrAst* ast)
 {
     const SourceLoc& loc = ast->keyLoc_;
-    Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
+    Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
     Decl* sym = DeclSymbol_Cast(P->sym_.top().get());
@@ -671,7 +671,7 @@ Binder::VisitResult Binder::visitAnnotAttr(AnnotAttrAst* ast)
 Binder::VisitResult Binder::visitDeclAttr(DeclAttrAst* ast)
 {
     const SourceLoc& loc = ast->keyLoc_;
-    Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
+    Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
     Decl* sym = TypeDecl_Cast(P->sym_.top().get());
@@ -729,7 +729,7 @@ Binder::VisitResult Binder::visitDeclAttr(DeclAttrAst* ast)
 Binder::VisitResult Binder::visitAutoAttr(AutoAttrAst* ast)
 {
     const SourceLoc& loc = ast->keyLoc_;
-    Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
+    Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
     Decl* sym = DeclSymbol_Cast(P->sym_.top().get());
@@ -758,7 +758,7 @@ Binder::VisitResult Binder::visitCodegenAttr(CodegenAttrAst* ast)
 Binder::VisitResult Binder::visitParamDirAttr(ParamDirAttrAst* ast)
 {
     const SourceLoc& loc = ast->keyLoc_;
-    Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
+    Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS(Param);
     Param* param = Param_Cast(P->sym_.top().get());
@@ -791,7 +791,7 @@ Binder::VisitResult Binder::visitParamDirAttr(ParamDirAttrAst* ast)
 Binder::VisitResult Binder::visitEvalStrategyAttr(EvalStrategyAttrAst* ast)
 {
     const SourceLoc& loc = ast->keyLoc_;
-    Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
+    Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS(Param);
     Param* param = Param_Cast(P->sym_.top().get());
@@ -821,7 +821,7 @@ Binder::VisitResult Binder::visitEvalStrategyAttr(EvalStrategyAttrAst* ast)
 Binder::VisitResult Binder::visitStorageClassAttr(StorageClassAttrAst* ast)
 {
     const SourceLoc& loc = ast->keyLoc_;
-    Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
+    Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
     Decl* sym = DeclSymbol_Cast(P->sym_.top().get());
@@ -857,7 +857,7 @@ Binder::VisitResult Binder::visitStorageClassAttr(StorageClassAttrAst* ast)
 Binder::VisitResult Binder::visitLinkageAttr(LinkageAttrAst* ast)
 {
     const SourceLoc& loc = ast->keyLoc_;
-    Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
+    Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_VALUEDECL;
     ValueDecl* sym = ValueDecl_Cast(P->sym_.top().get());
@@ -887,7 +887,7 @@ Binder::VisitResult Binder::visitLinkageAttr(LinkageAttrAst* ast)
 Binder::VisitResult Binder::visitTypeQualAttr(TypeQualAttrAst* ast)
 {
     const SourceLoc& loc = ast->keyLoc_;
-    Token tk = P->tokens_->find(loc.fileName_, loc.lineCol());
+    Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_NONEMPTY_TYPE_STACK;
     Type* ty = P->declTy_.top().get();

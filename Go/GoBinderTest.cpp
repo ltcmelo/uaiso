@@ -117,86 +117,31 @@ void Binder::BinderTest::GoTestCase1()
     UAISO_EXPECT_STR_EQ(program->moduleName(), "code");
     UAISO_EXPECT_STR_EQ(program->packageName(), "runtime");
 
-    const Ident* runtime = nullptr;
-    const Ident* ticks = nullptr;
-    const Ident* lock = nullptr;
-    const Ident* val = nullptr;
-    const Ident* tls0 = nullptr;
-    const Ident* tickspersecond = nullptr;
-    const Ident* r = nullptr;
-    const Ident* t0 = nullptr;
-    const Ident* c0 = nullptr;
-    const Ident* t1 = nullptr;
-    const Ident* c1 = nullptr;
-    const Ident* makeStringSlice = nullptr;
-    const Ident* parforalloc = nullptr;
-    const Ident* parfor = nullptr;
-    const Ident* thr = nullptr;
-    const Ident* nthrmax = nullptr;
-    const Ident* envs = nullptr;
-    const Ident* argslice = nullptr;
-    const Ident* runtime_envs = nullptr;
-    const Ident* runtime_args = nullptr;
-    const Ident* vertex = nullptr;
-    const Ident* x = nullptr;
-    const Ident* y = nullptr;
-    const Ident* main = nullptr;
-    const Ident* v = nullptr;
-
-    auto tuples = lexemes_.list<Ident>("/from/go/source/runtime/code.go");
-    for (auto tuple : tuples) {
-        const Ident* ident = std::get<0>(tuple);
-        if (ident->str() == "runtime")
-            runtime = ident;
-        else if (ident->str() == "ticks")
-            ticks = ident;
-        else if (ident->str() == "lock")
-            lock = ident;
-        else if (ident->str() == "val")
-            val = ident;
-        else if (ident->str() == "tls0")
-            tls0 = ident;
-        else if (ident->str() == "tickspersecond")
-            tickspersecond = ident;
-        else if (ident->str() == "r")
-            r = ident;
-        else if (ident->str() == "t0")
-            t0 = ident;
-        else if (ident->str() == "c0")
-            c0 = ident;
-        else if (ident->str() == "t1")
-            t1 = ident;
-        else if (ident->str() == "c1")
-            c1 = ident;
-        else if (ident->str() == "makeStringSlice")
-            makeStringSlice = ident;
-        else if (ident->str() == "parforalloc")
-            parforalloc = ident;
-        else if (ident->str() == "parfor")
-            parfor = ident;
-        else if (ident->str() == "thr")
-            thr = ident;
-        else if (ident->str() == "nthrmax")
-            nthrmax = ident;
-        else if (ident->str() == "envs")
-            envs = ident;
-        else if (ident->str() == "argslice")
-            argslice = ident;
-        else if (ident->str() == "runtime_envs")
-            runtime_envs = ident;
-        else if (ident->str() == "runtime_args")
-            runtime_args = ident;
-        else if (ident->str() == "vertex") {
-            vertex = ident;
-        } else if (ident->str() == "x")
-            x = ident;
-        else if (ident->str() == "y")
-            y = ident;
-        else if (ident->str() == "main")
-            main = ident;
-        else if (ident->str() == "v")
-            v = ident;
-    }
+    const Ident* runtime = lexemes_.findAnyOf<Ident>("runtime");
+    const Ident* ticks = lexemes_.findAnyOf<Ident>("ticks");
+    const Ident* lock = lexemes_.findAnyOf<Ident>("lock");
+    const Ident* val = lexemes_.findAnyOf<Ident>("val");
+    const Ident* tls0 = lexemes_.findAnyOf<Ident>("tls0");
+    const Ident* tickspersecond = lexemes_.findAnyOf<Ident>("tickspersecond");
+    const Ident* r = lexemes_.findAnyOf<Ident>("r");
+    const Ident* t0 = lexemes_.findAnyOf<Ident>("t0");
+    const Ident* c0 = lexemes_.findAnyOf<Ident>("c0");
+    const Ident* t1 = lexemes_.findAnyOf<Ident>("t1");
+    const Ident* c1 = lexemes_.findAnyOf<Ident>("c1");
+    const Ident* makeStringSlice = lexemes_.findAnyOf<Ident>("makeStringSlice");
+    const Ident* parforalloc = lexemes_.findAnyOf<Ident>("parforalloc");
+    const Ident* parfor = lexemes_.findAnyOf<Ident>("parfor");
+    const Ident* thr = lexemes_.findAnyOf<Ident>("thr");
+    const Ident* nthrmax = lexemes_.findAnyOf<Ident>("nthrmax");
+    const Ident* envs = lexemes_.findAnyOf<Ident>("envs");
+    const Ident* argslice = lexemes_.findAnyOf<Ident>("argslice");
+    const Ident* runtime_envs = lexemes_.findAnyOf<Ident>("runtime_envs");
+    const Ident* runtime_args = lexemes_.findAnyOf<Ident>("runtime_args");
+    const Ident* vertex = lexemes_.findAnyOf<Ident>("vertex");
+    const Ident* x = lexemes_.findAnyOf<Ident>("x");
+    const Ident* y = lexemes_.findAnyOf<Ident>("y");
+    const Ident* main = lexemes_.findAnyOf<Ident>("main");
+    const Ident* v = lexemes_.findAnyOf<Ident>("v");
 
     Environment moduleEnv = program->env();
     UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(vertex));

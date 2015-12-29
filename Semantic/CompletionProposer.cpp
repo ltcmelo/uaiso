@@ -90,8 +90,8 @@ public:
     VisitResult visitSimpleName(SimpleNameAst* ast)
     {
         if (collectName_) {
-            auto name = lexemes_->find<Ident>(ast->nameLoc_.fileName_,
-                                              ast->nameLoc_.lineCol());
+            auto name = lexemes_->findAt<Ident>(ast->nameLoc_.fileName_,
+                                                ast->nameLoc_.lineCol());
             name_.push_back(name);
         }
         return Continue;

@@ -54,23 +54,38 @@ public:
     LexemeMap& operator=(const LexemeMap&) = delete;
     ~LexemeMap();
 
-    /*!
-     * \brief insertOrFind
-     */
-    template <class ValueT>
-    const ValueT* insertOrFind(const std::string& s,
-                               const std::string& fullFileName,
-                               const LineCol& lineCol);
-
     template <class ValueT>
     using LexemeInfo = std::tuple<const ValueT*, LineCol>;
 
     /*!
-     * \brief find
+     * \brief insertOrFind
+     *
+     * Insert the lexeme with the spelling \a spell at line/column
+     * \a lineCol of the file \a fullFileName.
      */
     template <class ValueT>
-    const ValueT* find(const std::string& fullFileName,
-                       const LineCol& lineCol) const;
+    const ValueT* insertOrFind(const std::string& spell,
+                               const std::string& fullFileName,
+                               const LineCol& lineCol);
+
+    /*!
+     * \brief findAt
+     *
+     * Return the lexeme at the line/column \a lineCol of the file
+     * \a fullFileName. If no lexeme can be found, return null.
+     */
+    template <class ValueT>
+    const ValueT* findAt(const std::string& fullFileName,
+                         const LineCol& lineCol) const;
+
+    /*!
+     * \brief findAnyOf
+     *
+     * Return a lexeme with the spelling \a spell when it can be found
+     * anywhere in any of the known files. Otherwise, return null.
+     */
+    template <class ValueT>
+    const ValueT* findAnyOf(const std::string& spell) const;
 
     /*!
      * \brief list

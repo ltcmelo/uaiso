@@ -491,7 +491,7 @@ TypeChecker::VisitResult TypeChecker::traverseUnitTestDecl(UnitTestDeclAst* ast)
 
 TypeChecker::VisitResult TypeChecker::visitNumLitExpr(NumLitExprAst* ast)
 {
-    Token tk = P->tokens_->find(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
+    Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
     case TK_INTEGER_LITERAL:
@@ -510,7 +510,7 @@ TypeChecker::VisitResult TypeChecker::visitNumLitExpr(NumLitExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::visitBoolLitExpr(BoolLitExprAst* ast)
 {
-    Token tk = P->tokens_->find(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
+    Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
     case TK_TRUE_LITERAL:
@@ -526,7 +526,7 @@ TypeChecker::VisitResult TypeChecker::visitBoolLitExpr(BoolLitExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::visitCharLitExpr(CharLitExprAst* ast)
 {
-    Token tk = P->tokens_->find(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
+    Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
     case TK_CHAR_LITERAL:
@@ -541,7 +541,7 @@ TypeChecker::VisitResult TypeChecker::visitCharLitExpr(CharLitExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::visitStrLitExpr(StrLitExprAst* ast)
 {
-    Token tk = P->tokens_->find(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
+    Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
     case TK_STRING_LITERAL:
@@ -556,7 +556,7 @@ TypeChecker::VisitResult TypeChecker::visitStrLitExpr(StrLitExprAst* ast)
 
 TypeChecker::VisitResult TypeChecker::visitNullLitExpr(NullLitExprAst* ast)
 {
-    Token tk = P->tokens_->find(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
+    Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
     case TK_NULL_LITERAL:

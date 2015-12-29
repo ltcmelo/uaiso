@@ -61,8 +61,7 @@ public:
 
     //--- Python ---//
 
-    void PyVerifyBasicCode(const Program* prog,
-                           const std::vector<LexemeMap::LexemeInfo<Ident>>& lexemesInfo);
+    void PyVerifyBasicCode(const Program* prog);
     void PyTestCase1();
     void PyTestCase2();
     void PyTestCase3();

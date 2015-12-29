@@ -54,30 +54,15 @@ o = c()
 } // namespace anonymous
 
 void Binder::BinderTest::
-PyVerifyBasicCode(const Program* prog,
-                  const std::vector<LexemeMap::LexemeInfo<Ident>>& lexemesInfo)
+PyVerifyBasicCode(const Program* prog)
 {
     UAISO_EXPECT_TRUE(prog);
 
-    const Ident* i = nullptr;
-    const Ident* s = nullptr;
-    const Ident* f = nullptr;
-    const Ident* c = nullptr;
-    const Ident* o = nullptr;
-
-    for (const auto& tuple : lexemesInfo) {
-        const Ident* ident = std::get<0>(tuple);
-        if (ident->str() == "i")
-            i = ident;
-        else if (ident->str() == "s")
-            s = ident;
-        else if (ident->str() == "f")
-            f = ident;
-        else if (ident->str() == "c")
-            c = ident;
-        else if (ident->str() == "o")
-            o = ident;
-    }
+    const Ident* i = lexemes_.findAnyOf<Ident>("i");
+    const Ident* s = lexemes_.findAnyOf<Ident>("s");
+    const Ident* f = lexemes_.findAnyOf<Ident>("f");
+    const Ident* c = lexemes_.findAnyOf<Ident>("c");
+    const Ident* o = lexemes_.findAnyOf<Ident>("o");
 
     Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
@@ -111,56 +96,21 @@ class bar:
                                        code, "/test.py"));
     UAISO_EXPECT_TRUE(prog);
 
-    const Ident* a = nullptr;
-    const Ident* b = nullptr;
-    const Ident* c = nullptr;
-    const Ident* d = nullptr;
-    const Ident* e = nullptr;
-    const Ident* f = nullptr;
-    const Ident* k = nullptr;
-    const Ident* w = nullptr;
-    const Ident* foo = nullptr;
-    const Ident* foo_local = nullptr;
-    const Ident* bar = nullptr;
-    const Ident* bar_static = nullptr;
-    const Ident* bar_method = nullptr;
-    const Ident* call = nullptr;
-    const Ident* nothing = nullptr;
-
-    auto tuples = lexemes_.list<Ident>("/test.py");
-    for (auto tuple : tuples) {
-        const Ident* ident = std::get<0>(tuple);
-        if (ident->str() == "a")
-            a = ident;
-        else if (ident->str() == "b")
-            b = ident;
-        else if (ident->str() == "c")
-            c = ident;
-        else if (ident->str() == "d")
-            d = ident;
-        else if (ident->str() == "e")
-            e = ident;
-        else if (ident->str() == "f")
-            f = ident;
-        else if (ident->str() == "k")
-            k = ident;
-        else if (ident->str() == "w")
-            w = ident;
-        else if (ident->str() == "foo")
-            foo = ident;
-        else if (ident->str() == "foo_local")
-            foo_local = ident;
-        else if (ident->str() == "bar")
-            bar = ident;
-        else if (ident->str() == "bar_static")
-            bar_static = ident;
-        else if (ident->str() == "bar_method")
-            bar_method = ident;
-        else if (ident->str() == "call")
-            call = ident;
-        else if (ident->str() == "nothing")
-            nothing = ident;
-    }
+    const Ident* a = lexemes_.findAnyOf<Ident>("a");
+    const Ident* b = lexemes_.findAnyOf<Ident>("b");
+    const Ident* c = lexemes_.findAnyOf<Ident>("c");
+    const Ident* d = lexemes_.findAnyOf<Ident>("d");
+    const Ident* e = lexemes_.findAnyOf<Ident>("e");
+    const Ident* f = lexemes_.findAnyOf<Ident>("f");
+    const Ident* k = lexemes_.findAnyOf<Ident>("k");
+    const Ident* w = lexemes_.findAnyOf<Ident>("w");
+    const Ident* foo = lexemes_.findAnyOf<Ident>("foo");
+    const Ident* foo_local = lexemes_.findAnyOf<Ident>("foo_local");
+    const Ident* bar = lexemes_.findAnyOf<Ident>("bar");
+    const Ident* bar_static = lexemes_.findAnyOf<Ident>("bar_static");
+    const Ident* bar_method = lexemes_.findAnyOf<Ident>("bar_method");
+    const Ident* call = lexemes_.findAnyOf<Ident>("call");
+    const Ident* nothing = lexemes_.findAnyOf<Ident>("nothing");
 
     Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
@@ -203,17 +153,8 @@ for g in range(10):
                                        code, "/test.py"));
     UAISO_EXPECT_TRUE(prog);
 
-    const Ident* g = nullptr;
-    const Ident* h = nullptr;
-
-    auto tuples = lexemes_.list<Ident>("/test.py");
-    for (auto tuple : tuples) {
-        const Ident* ident = std::get<0>(tuple);
-        if (ident->str() == "g")
-            g = ident;
-        else if (ident->str() == "h")
-            h = ident;
-    }
+    const Ident* g = lexemes_.findAnyOf<Ident>("g");
+    const Ident* h = lexemes_.findAnyOf<Ident>("h");
 
     UAISO_SKIP_TEST;
 
@@ -239,30 +180,12 @@ class bar:
                                        code, "/test.py"));
     UAISO_EXPECT_TRUE(prog);
 
-    const Ident* bar = nullptr;
-    const Ident* bar_static = nullptr;
-    const Ident* bar_method = nullptr;
-    const Ident* bar_inst1 = nullptr;
-    const Ident* bar_inst2 = nullptr;
-    const Ident* self = nullptr;
-
-    auto tuples = lexemes_.list<Ident>("/test.py");
-    for (auto tuple : tuples) {
-        const Ident* ident = std::get<0>(tuple);
-        if (ident->str() == "bar")
-            bar = ident;
-        else if (ident->str() == "bar_static")
-            bar_static = ident;
-        else if (ident->str() == "bar_method")
-            bar_method = ident;
-        else if (ident->str() == "bar_inst1")
-            bar_inst1 = ident;
-        else if (ident->str() == "bar_inst2")
-            bar_inst2 = ident;
-        else if (ident->str() == "self")
-            self = ident;
-    }
-
+    const Ident* bar = lexemes_.findAnyOf<Ident>("bar");
+    const Ident* bar_static = lexemes_.findAnyOf<Ident>("bar_static");
+    const Ident* bar_method = lexemes_.findAnyOf<Ident>("bar_method");
+    const Ident* bar_inst1 = lexemes_.findAnyOf<Ident>("bar_inst1");
+    const Ident* bar_inst2 = lexemes_.findAnyOf<Ident>("bar_inst2");
+    const Ident* self = lexemes_.findAnyOf<Ident>("self");
 
     Environment env = prog->env();
     UAISO_EXPECT_FALSE(env.isEmpty());
@@ -291,7 +214,7 @@ def g():
 
     std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
                                        code, "/test.py"));
-    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+    PyVerifyBasicCode(prog.get());
 }
 
 void Binder::BinderTest::PyTestCase5()
@@ -303,7 +226,7 @@ def g()
 
     std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
                                        code, "/test.py"));
-    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+    PyVerifyBasicCode(prog.get());
 }
 
 void Binder::BinderTest::PyTestCase6()
@@ -315,7 +238,7 @@ def g(
 
     std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
                                        code, "/test.py"));
-    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+    PyVerifyBasicCode(prog.get());
 }
 
 void Binder::BinderTest::PyTestCase7()
@@ -327,7 +250,7 @@ def g
 
     std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
                                        code, "/test.py"));
-    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+    PyVerifyBasicCode(prog.get());
 }
 
 void Binder::BinderTest::PyTestCase8()
@@ -339,7 +262,7 @@ def
 
     std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
                                        code, "/test.py"));
-    PyVerifyBasicCode(prog.get(), lexemes_.list<Ident>("/test.py"));
+    PyVerifyBasicCode(prog.get());
 }
 
 void Binder::BinderTest::PyTestCase9()
@@ -354,18 +277,10 @@ def g():
     std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
                                        code, "/test.py"));
 
-    const auto& lexemesInfo = lexemes_.list<Ident>("/test.py");
-    PyVerifyBasicCode(prog.get(), lexemesInfo);
+    PyVerifyBasicCode(prog.get());
 
-    const Ident* g = nullptr;
-    const Ident* l = nullptr;
-    for (const auto& tuple : lexemes_.list<Ident>("/test.py")) {
-        const Ident* ident = std::get<0>(tuple);
-        if (ident->str() == "g")
-            g = ident;
-        else if (ident->str() == "l")
-            l = ident;
-    }
+    const Ident* g = lexemes_.findAnyOf<Ident>("g");
+    const Ident* l = lexemes_.findAnyOf<Ident>("l");
 
     Environment env = prog->env();
     UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
@@ -386,18 +301,10 @@ def g():
     std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
                                        code, "/test.py"));
 
-    const auto& lexemesInfo = lexemes_.list<Ident>("/test.py");
-    PyVerifyBasicCode(prog.get(), lexemesInfo);
+    PyVerifyBasicCode(prog.get());
 
-    const Ident* g = nullptr;
-    const Ident* l = nullptr;
-    for (const auto& tuple : lexemes_.list<Ident>("/test.py")) {
-        const Ident* ident = std::get<0>(tuple);
-        if (ident->str() == "g")
-            g = ident;
-        else if (ident->str() == "l")
-            l = ident;
-    }
+    const Ident* g = lexemes_.findAnyOf<Ident>("g");
+    const Ident* l = lexemes_.findAnyOf<Ident>("l");
 
     Environment env = prog->env();
     UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
@@ -418,18 +325,10 @@ def g():
     std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
                                        code, "/test.py"));
 
-    const auto& lexemesInfo = lexemes_.list<Ident>("/test.py");
-    PyVerifyBasicCode(prog.get(), lexemesInfo);
+    PyVerifyBasicCode(prog.get());
 
-    const Ident* g = nullptr;
-    const Ident* l = nullptr;
-    for (const auto& tuple : lexemes_.list<Ident>("/test.py")) {
-        const Ident* ident = std::get<0>(tuple);
-        if (ident->str() == "g")
-            g = ident;
-        else if (ident->str() == "l")
-            l = ident;
-    }
+    const Ident* g = lexemes_.findAnyOf<Ident>("g");
+    const Ident* l = lexemes_.findAnyOf<Ident>("l");
 
     Environment env = prog->env();
     UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
@@ -451,21 +350,11 @@ class c2:
     std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
                                        code, "/test.py"));
 
-    const auto& lexemesInfo = lexemes_.list<Ident>("/test.py");
-    PyVerifyBasicCode(prog.get(), lexemesInfo);
+    PyVerifyBasicCode(prog.get());
 
-    const Ident* c2 = nullptr;
-    const Ident* m = nullptr;
-    const Ident* sm = nullptr;
-    for (const auto& tuple : lexemes_.list<Ident>("/test.py")) {
-        const Ident* ident = std::get<0>(tuple);
-        if (ident->str() == "c2")
-            c2 = ident;
-        else if (ident->str() == "m")
-            m = ident;
-        else if (ident->str() == "sm")
-            sm = ident;
-    }
+    const Ident* c2 = lexemes_.findAnyOf<Ident>("c2");
+    const Ident* m = lexemes_.findAnyOf<Ident>("m");
+    const Ident* sm = lexemes_.findAnyOf<Ident>("sm");
 
     Environment env = prog->env();
     UAISO_EXPECT_TRUE(env.searchTypeDecl(c2));
