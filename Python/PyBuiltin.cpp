@@ -84,7 +84,6 @@ std::vector<Builtin::FuncPtr> PyBuiltin::createConstructors(LexemeMap* lexs) con
     ctors.push_back(createFunc<IntType>(lexs, tokenSpell(TK_INT)));
     ctors.push_back(createFunc<FloatType>(lexs, tokenSpell(TK_FLOAT32)));
     ctors.push_back(createFunc<FloatType>(lexs, tokenSpell(TK_COMPLEX_FLOAT32)));
-
     return ctors;
 }
 
@@ -96,7 +95,55 @@ std::vector<Builtin::FuncPtr> PyBuiltin::createGlobalFuncs(LexemeMap* lexs) cons
     funcs.push_back(createFunc<BoolType>(lexs, "any"));
     funcs.push_back(createFunc<StrType>(lexs, "ascii"));
     funcs.push_back(createFunc<StrType>(lexs, "bin"));
-    // TODO: Continue...
+    funcs.push_back(createFunc<StrType>(lexs, "bytearray"));
+    funcs.push_back(createFunc<StrType>(lexs, "bytes"));
+    funcs.push_back(createFunc<StrType>(lexs, "callable"));
+    funcs.push_back(createFunc<StrType>(lexs, "chr"));
+    funcs.push_back(createFunc<StrType>(lexs, "classmethod"));
+    funcs.push_back(createFunc<StrType>(lexs, "compile"));
+    funcs.push_back(createFunc<StrType>(lexs, "delattr"));
+    funcs.push_back(createFunc<StrType>(lexs, "dir"));
+    funcs.push_back(createFunc<StrType>(lexs, "divmod"));
+    funcs.push_back(createFunc<StrType>(lexs, "enumerate"));
+    funcs.push_back(createFunc<StrType>(lexs, "eval"));
+    funcs.push_back(createFunc<StrType>(lexs, "exec"));
+    funcs.push_back(createFunc<StrType>(lexs, "filter"));
+    funcs.push_back(createFunc<StrType>(lexs, "format"));
+    funcs.push_back(createFunc<StrType>(lexs, "getattr"));
+    funcs.push_back(createFunc<StrType>(lexs, "globals"));
+    funcs.push_back(createFunc<StrType>(lexs, "hasattr"));
+    funcs.push_back(createFunc<StrType>(lexs, "hash"));
+    funcs.push_back(createFunc<StrType>(lexs, "help"));
+    funcs.push_back(createFunc<StrType>(lexs, "id"));
+    funcs.push_back(createFunc<StrType>(lexs, "input"));
+    funcs.push_back(createFunc<StrType>(lexs, "isinstance"));
+    funcs.push_back(createFunc<StrType>(lexs, "issubclass"));
+    funcs.push_back(createFunc<StrType>(lexs, "iter"));
+    funcs.push_back(createFunc<StrType>(lexs, "len"));
+    funcs.push_back(createFunc<StrType>(lexs, "locals"));
+    funcs.push_back(createFunc<StrType>(lexs, "map"));
+    funcs.push_back(createFunc<StrType>(lexs, "max"));
+    funcs.push_back(createFunc<StrType>(lexs, "min"));
+    funcs.push_back(createFunc<StrType>(lexs, "next"));
+    funcs.push_back(createFunc<StrType>(lexs, "oct"));
+    funcs.push_back(createFunc<StrType>(lexs, "open"));
+    funcs.push_back(createFunc<StrType>(lexs, "ord"));
+    funcs.push_back(createFunc<StrType>(lexs, "pow"));
+    funcs.push_back(createFunc<StrType>(lexs, "property"));
+    funcs.push_back(createFunc<StrType>(lexs, "range"));
+    funcs.push_back(createFunc<StrType>(lexs, "repr"));
+    funcs.push_back(createFunc<StrType>(lexs, "reversed"));
+    funcs.push_back(createFunc<StrType>(lexs, "round"));
+    funcs.push_back(createFunc<StrType>(lexs, "setattr"));
+    funcs.push_back(createFunc<StrType>(lexs, "slice"));
+    funcs.push_back(createFunc<StrType>(lexs, "sorted"));
+    funcs.push_back(createFunc<StrType>(lexs, "staticmethod"));
+    funcs.push_back(createFunc<StrType>(lexs, "sum"));
+    funcs.push_back(createFunc<StrType>(lexs, "super"));
+    funcs.push_back(createFunc<StrType>(lexs, "type"));
+    funcs.push_back(createFunc<StrType>(lexs, "vars"));
+    funcs.push_back(createFunc<StrType>(lexs, "zip"));
+    funcs.push_back(createFunc<StrType>(lexs, "__import__"));
     return funcs;
 }
 

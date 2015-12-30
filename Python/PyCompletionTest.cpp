@@ -554,6 +554,75 @@ std::vector<const char*>& addRootObjectNames(std::vector<const char*>& v)
     return v;
 }
 
+std::vector<const char*>& addConstructorNames(std::vector<const char*>& v)
+{
+    auto names { "float", "bool", "int", "complex" };
+    v.insert(v.begin(), names.begin(), names.end());
+    return v;
+}
+
+std::vector<const char*>& addGlobalFuncNames(std::vector<const char*>& v)
+{
+    auto names {
+        "abs",
+        "all",
+        "any",
+        "ascii",
+        "bin",
+        "bytearray",
+        "bytes",
+        "callable",
+        "chr",
+        "classmethod",
+        "compile",
+        "delattr",
+        "dir",
+        "divmod",
+        "enumerate",
+        "eval",
+        "exec",
+        "filter",
+        "format",
+        "getattr",
+        "globals",
+        "hasattr",
+        "hash",
+        "help",
+        "id",
+        "input",
+        "isinstance",
+        "issubclass",
+        "iter",
+        "len",
+        "locals",
+        "map",
+        "max",
+        "min",
+        "next",
+        "oct",
+        "open",
+        "ord",
+        "pow",
+        "property",
+        "range",
+        "repr",
+        "reversed",
+        "round",
+        "setattr",
+        "slice",
+        "sorted",
+        "staticmethod",
+        "sum",
+        "super",
+        "type",
+        "vars",
+        "zip",
+        "__import__"
+    };
+    v.insert(v.begin(), names.begin(), names.end());
+    return v;
+}
+
 std::vector<const char*>& addIntObjectNames(std::vector<const char*>& v)
 {
     auto names {
@@ -669,9 +738,10 @@ i =
 
     lineCol_ = { 1, 3 };
     disableBuiltins_ = false;
-    auto expected { "i", "object", "bin", "ascii", "abs", "float", "bool",
-                    "complex", "int", "all", "any" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    dumpCompletions_ = true;
+    std::vector<const char*> expected { "i", "object" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+            addGlobalFuncNames(addConstructorNames(expected)));
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase27()
