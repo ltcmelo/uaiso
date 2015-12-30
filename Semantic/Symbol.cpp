@@ -66,11 +66,11 @@ struct uaiso::Symbol::SymbolImpl
 };
 
 Symbol::Symbol(Kind kind)
-    : impl_(new SymbolImpl(kind))
+    : P(new SymbolImpl(kind))
 {}
 
 Symbol::Symbol(Symbol::SymbolImpl* impl)
-    : impl_(impl)
+    : P(impl)
 {}
 
 Symbol::~Symbol()
@@ -78,37 +78,45 @@ Symbol::~Symbol()
 
 Symbol::Kind Symbol::kind() const
 {
-    return Symbol::Kind(impl_->bit_.kind_);
+    return Symbol::Kind(P->bit_.kind_);
 }
 
 void Symbol::setSourceLoc(const SourceLoc& loc)
 {
-    impl_->sourceLoc_ = loc;
+    P->sourceLoc_ = loc;
 }
 
 const SourceLoc& Symbol::sourceLoc() const
 {
-    return impl_->sourceLoc_;
+    return P->sourceLoc_;
 }
 
 void Symbol::setIsBuiltin(bool isBuiltin)
 {
-    impl_->bit_.builtin_ = isBuiltin;
+    P->bit_.builtin_ = isBuiltin;
 }
 
 bool Symbol::isBuiltin() const
 {
-    return impl_->bit_.builtin_;
+    return P->bit_.builtin_;
 }
 
 void Symbol::setIsFake(bool isFake)
 {
-    impl_->bit_.fake_ = isFake;
+    P->bit_.fake_ = isFake;
 }
 
 bool Symbol::isFake() const
 {
-    return impl_->bit_.fake_;
+    return P->bit_.fake_;
+}
+
+template <class SymbolT, class... ArgT>
+SymbolT* Symbol::trivialClone(ArgT&&... args) const
+{
+    auto sym = new SymbolT(std::forward<ArgT>(args)...);
+    sym->P->bits_ = P->bits_;
+    return sym;
 }
 
     //--- Decl ---//
@@ -131,32 +139,32 @@ Decl::Decl(Decl::DeclImpl* impl)
 
 void Decl::setVisibility(Visibility visibility)
 {
-    impl_->bit_.visibility_ = static_cast<char>(visibility);
+    P->bit_.visibility_ = static_cast<char>(visibility);
 }
 
 Decl::Visibility Decl::visibility() const
 {
-    return Visibility(impl_->bit_.visibility_);
+    return Visibility(P->bit_.visibility_);
 }
 
 void Decl::setStorage(Decl::Storage store)
 {
-    impl_->bit_.storage_ = static_cast<char>(store);
+    P->bit_.storage_ = static_cast<char>(store);
 }
 
 Decl::Storage Decl::storage() const
 {
-    return Decl::Storage(impl_->bit_.storage_);
+    return Decl::Storage(P->bit_.storage_);
 }
 
 void Decl::setLinkage(Decl::Linkage link)
 {
-    impl_->bit_.linkage_ = static_cast<char>(link);
+    P->bit_.linkage_ = static_cast<char>(link);
 }
 
 Decl::Linkage Decl::linkage() const
 {
-    return Decl::Linkage(impl_->bit_.linkage_);
+    return Decl::Linkage(P->bit_.linkage_);
 }
 
 const Ident* Decl::name() const
@@ -171,22 +179,22 @@ bool Decl::isAnonymous() const
 
 void Decl::markAsAuto()
 {
-    impl_->bit_.auto_ = true;
+    P->bit_.auto_ = true;
 }
 
 bool Decl::isMarkedAuto() const
 {
-    return impl_->bit_.auto_;
+    return P->bit_.auto_;
 }
 
 void Decl::setDeclAttrs(DeclAttrFlags flags)
 {
-    impl_->bit_.declAttrs_ = flags;
+    P->bit_.declAttrs_ = flags;
 }
 
 DeclAttrFlags Decl::declAttrs() const
 {
-    return DeclAttrFlags(impl_->bit_.declAttrs_);
+    return DeclAttrFlags(P->bit_.declAttrs_);
 }
 
     //--- TypeDecl ---//
@@ -216,19 +224,19 @@ struct uaiso::ValueDecl::ValueDeclImpl : Decl::DeclImpl
 {
     using DeclImpl::DeclImpl;
 
-    std::shared_ptr<Type> valueType_;
+    std::shared_ptr<Type> valueTy_;
 };
 
 DEF_PIMPL_CAST(ValueDecl)
 
 void ValueDecl::setValueType(std::unique_ptr<Type> ty)
 {
-    P_CAST->valueType_ = std::move(ty);
+    P_CAST->valueTy_ = std::move(ty);
 }
 
 const Type* ValueDecl::valueType() const
 {
-    return P_CAST->valueType_.get();
+    return P_CAST->valueTy_.get();
 }
 
     //--- Alias ---//
@@ -236,6 +244,11 @@ const Type* ValueDecl::valueType() const
 Alias::Alias(const Ident *name)
     : TypeDecl(new TypeDeclImpl(name, Kind::Alias))
 {}
+
+Alias* Alias::clone() const
+{
+    return trivialClone<Alias>(P_CAST->name_);
+}
 
     //--- Placeholder ---//
 
@@ -252,14 +265,11 @@ Placeholder::Placeholder(const Ident *name)
     : TypeDecl(new TypeDeclImpl(name, Kind::Placeholder))
 {}
 
-void Placeholder::setActual(TypeDecl* sym)
+Placeholder *Placeholder::clone() const
 {
-    P_CAST->actual_ = sym;
-}
-
-const TypeDecl* Placeholder::actual() const
-{
-    return P_CAST->actual_;
+    auto holder = trivialClone<Placeholder>(P_CAST->name_);
+    holder->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
+    return holder;
 }
 
     //--- Func ---//
@@ -298,6 +308,14 @@ void Func::setEnv(Environment env)
 Environment Func::env() const
 {
     return P_CAST->env_;
+}
+
+Func* Func::clone() const
+{
+    auto func = trivialClone<Func>(P_CAST->name_);
+    func->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
+    func->P_CAST->env_ = P_CAST->env_;
+    return func;
 }
 
     //--- Import ---//
@@ -350,6 +368,12 @@ bool Import::mergeEnv() const
     return P_CAST->mergeEnv_;
 }
 
+Import* Import::clone() const
+{
+    return trivialClone<Import>(P_CAST->originDir_, P_CAST->moduleName_,
+                                P_CAST->localName_, P_CAST->mergeEnv_);
+}
+
     //--- Namespace ---//
 
 struct Namespace::NamespaceImpl : Symbol::SymbolImpl
@@ -393,6 +417,13 @@ Environment Namespace::env() const
     return P_CAST->env_;
 }
 
+Namespace* Namespace::clone() const
+{
+    auto space = trivialClone<Namespace>(P_CAST->name_);
+    space->P_CAST->env_ = P_CAST->env_;
+    return space;
+}
+
     //--- Record ---//
 
 struct Record::RecordImpl : TypeDecl::TypeDeclImpl
@@ -419,13 +450,20 @@ const RecordType *Record::type() const
     return ConstRecordType_Cast(TypeDecl::type());
 }
 
+Record* Record::clone() const
+{
+    auto rec = trivialClone<Record>(P_CAST->name_);
+    rec->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
+    return rec;
+}
+
     //--- Enum ---//
 
 struct Enum::EnumImpl : TypeDecl::TypeDeclImpl
 {
     using TypeDeclImpl::TypeDeclImpl;
 
-    std::unique_ptr<Type> baseType_;
+    std::unique_ptr<Type> underTy_;
 };
 
 DEF_PIMPL_CAST(Enum)
@@ -447,14 +485,22 @@ const EnumType *Enum::type() const
     return ConstEnumType_Cast(TypeDecl::type());
 }
 
+Enum* Enum::clone() const
+{
+    auto enun = trivialClone<Enum>(P_CAST->name_);
+    enun->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
+    enun->P_CAST->underTy_ = std::unique_ptr<Type>(P_CAST->underTy_->clone());
+    return enun;
+}
+
 void Enum::setUnderlyingType(std::unique_ptr<Type> ty)
 {
-    P_CAST->baseType_ = std::move(ty);
+    P_CAST->underTy_ = std::move(ty);
 }
 
 const Type* Enum::underlyingType() const
 {
-    return P_CAST->baseType_.get();
+    return P_CAST->underTy_.get();
 }
 
     //--- BaseRecord ---//
@@ -462,6 +508,11 @@ const Type* Enum::underlyingType() const
 BaseRecord::BaseRecord(const Ident* name)
     : Decl(new DeclImpl(name, Kind::BaseRecord))
 {}
+
+BaseRecord *BaseRecord::clone() const
+{
+    return trivialClone<BaseRecord>(P_CAST->name_);
+}
 
     //--- Param ---//
 
@@ -485,22 +536,29 @@ Param::~Param()
 
 void Param::setDirection(Param::Direction dir)
 {
-    impl_->bit_.direction_ = static_cast<char>(dir);
+    P->bit_.direction_ = static_cast<char>(dir);
 }
 
 Param::Direction Param::direction() const
 {
-    return Param::Direction(impl_->bit_.direction_);
+    return Param::Direction(P->bit_.direction_);
 }
 
 void Param::setEvalStrategy(Param::EvalStrategy eval)
 {
-    impl_->bit_.evaluation_ = static_cast<char>(eval);
+    P->bit_.evaluation_ = static_cast<char>(eval);
 }
 
 Param::EvalStrategy Param::evalStrategy() const
 {
-    return Param::EvalStrategy(impl_->bit_.evaluation_);
+    return Param::EvalStrategy(P->bit_.evaluation_);
+}
+
+Param* Param::clone() const
+{
+    auto param = trivialClone<Param>(P_CAST->name_);
+    param->P_CAST->valueTy_ = std::unique_ptr<Type>(P_CAST->valueTy_->clone());
+    return param;
 }
 
     //--- Var ---//
@@ -519,11 +577,25 @@ Var::Var(const Ident* name)
 Var::~Var()
 {}
 
+Var* Var::clone() const
+{
+    auto var = trivialClone<Var>(P_CAST->name_);
+    var->P_CAST->valueTy_ = std::unique_ptr<Type>(P_CAST->valueTy_->clone());
+    return var;
+}
+
     //--- EnumItem ---//
 
 EnumItem::EnumItem(const Ident* name)
     : ValueDecl(new ValueDeclImpl(name, Kind::EnumItem))
 {}
+
+EnumItem* EnumItem::clone() const
+{
+    auto item = trivialClone<EnumItem>(P_CAST->name_);
+    item->P_CAST->valueTy_ = std::unique_ptr<Type>(P_CAST->valueTy_->clone());
+    return item;
+}
 
     //--- Utility functions ---//
 

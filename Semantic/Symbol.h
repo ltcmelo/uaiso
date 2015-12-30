@@ -31,6 +31,7 @@
 #include "Semantic/TypeFwd.h"
 #include "Semantic/SymbolCast.h"
 #include <string>
+#include <memory>
 
 namespace uaiso {
 
@@ -118,8 +119,17 @@ public:
      */
     bool isFake() const;
 
+    /*!
+     * \brief clone
+     * \return
+     */
+    virtual Symbol* clone() const = 0;
+
 protected:
     Symbol(Symbol::Kind kind);
+
+    template <class SymbolT, class... ArgT>
+    SymbolT* trivialClone(ArgT&&...) const;
 
     DECL_PIMPL(Symbol)
     DECL_PIMPL_BASE(Symbol)
@@ -154,6 +164,8 @@ public:
 
     bool mergeEnv() const;
 
+    Import* clone() const override;
+
 private:
     DECL_PIMPL_CAST(Import)
 };
@@ -173,6 +185,8 @@ public:
 
     void setEnv(Environment env);
     Environment env() const;
+
+    Namespace* clone() const override;
 
 private:
     DECL_PIMPL_CAST(Namespace)
@@ -292,6 +306,8 @@ class UAISO_API BaseRecord final : public Decl
 {
 public:
     BaseRecord(const Ident* name);
+
+    BaseRecord* clone() const override;
 };
 
 /*!
@@ -304,9 +320,7 @@ class UAISO_API Placeholder final : public TypeDecl
 public:
     Placeholder(const Ident* name);
 
-    void setActual(TypeDecl* sym);
-
-    const TypeDecl* actual() const;
+    Placeholder* clone() const override;
 
 private:
     DECL_PIMPL_CAST(Placeholder)
@@ -327,6 +341,8 @@ public:
     void setEnv(Environment env);
     Environment env() const;
 
+    Func* clone() const override;
+
 private:
     DECL_PIMPL_CAST(Func)
 };
@@ -338,6 +354,8 @@ class UAISO_API Alias final : public TypeDecl
 {
 public:
     Alias(const Ident* name);
+
+    Alias* clone() const override;
 };
 
 /*!
@@ -351,6 +369,8 @@ public:
 
     void setType(std::unique_ptr<RecordType> type);
     const RecordType* type() const;
+
+    Record* clone() const override;
 
 private:
     DECL_PIMPL_CAST(Record)
@@ -370,6 +390,8 @@ public:
 
     void setType(std::unique_ptr<EnumType> ty);
     const EnumType* type() const;
+
+    Enum* clone() const override;
 
 private:
     DECL_PIMPL_CAST(Enum)
@@ -406,6 +428,8 @@ public:
     void setEvalStrategy(EvalStrategy eval);
     EvalStrategy evalStrategy() const;
 
+    Param* clone() const override;
+
 private:
     DECL_PIMPL_CAST(Param)
 };
@@ -419,6 +443,8 @@ public:
     Var(const Ident* name);
     ~Var();
 
+    Var* clone() const override;
+
 private:
     DECL_PIMPL_CAST(Var)
 };
@@ -430,6 +456,8 @@ class UAISO_API EnumItem final : public ValueDecl
 {
 public:
     EnumItem(const Ident *name);
+
+    EnumItem* clone() const override;
 };
 
     /*--- Utility ---*/

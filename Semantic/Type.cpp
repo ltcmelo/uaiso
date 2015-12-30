@@ -62,11 +62,11 @@ struct uaiso::Type::TypeImpl
 };
 
 Type::Type(Kind kind)
-    : impl_(new TypeImpl(kind))
+    : P(new TypeImpl(kind))
 {}
 
 Type::Type(TypeImpl* impl)
-    : impl_(impl)
+    : P(impl)
 {}
 
 Type::~Type()
@@ -74,24 +74,24 @@ Type::~Type()
 
 Type::Kind Type::kind() const
 {
-    return Kind(impl_->bit_.kind_);
+    return Kind(P->bit_.kind_);
 }
 
 void Type::setTypeQuals(TypeQualFlags flags)
 {
-    impl_->bit_.typeQuals_ = flags;
+    P->bit_.typeQuals_ = flags;
 }
 
 TypeQualFlags Type::typeQuals() const
 {
-    return TypeQualFlags(impl_->bit_.typeQuals_);
+    return TypeQualFlags(P->bit_.typeQuals_);
 }
 
 template <class TypeT, class... ArgT>
 TypeT* Type::trivialClone(ArgT&&... args) const
 {
     auto ty = new TypeT(std::forward<ArgT>(args)...);
-    ty->impl_->bits_ = impl_->bits_;
+    ty->P->bits_ = P->bits_;
     return ty;
 }
 
@@ -125,15 +125,15 @@ InferredType *InferredType::clone() const
 IntType::IntType()
     : Type(Kind::Int)
 {
-    impl_->bit_.signedness_ = static_cast<char>(Signedness::Signed);
-    impl_->bit_.precision_ = static_cast<char>(Precision::BitSize32);
+    P->bit_.signedness_ = static_cast<char>(Signedness::Signed);
+    P->bit_.precision_ = static_cast<char>(Precision::BitSize32);
 }
 
 IntType::IntType(Signedness s, Precision p)
     : Type(Kind::Int)
 {
-    impl_->bit_.signedness_ = static_cast<char>(s);
-    impl_->bit_.precision_ = static_cast<char>(p);
+    P->bit_.signedness_ = static_cast<char>(s);
+    P->bit_.precision_ = static_cast<char>(p);
 }
 
 IntType* IntType::clone() const
@@ -143,22 +143,22 @@ IntType* IntType::clone() const
 
 void IntType::setSignedness(Signedness s)
 {
-    impl_->bit_.signedness_ = static_cast<char>(s);
+    P->bit_.signedness_ = static_cast<char>(s);
 }
 
 Signedness IntType::signedness() const
 {
-    return Signedness(impl_->bit_.signedness_);
+    return Signedness(P->bit_.signedness_);
 }
 
 void IntType::setPrecision(Precision p)
 {
-    impl_->bit_.precision_ = static_cast<char>(p);
+    P->bit_.precision_ = static_cast<char>(p);
 }
 
 Precision IntType::precision() const
 {
-    return Precision(impl_->bit_.precision_);
+    return Precision(P->bit_.precision_);
 }
 
     //--- FloatType ---//
@@ -166,13 +166,13 @@ Precision IntType::precision() const
 FloatType::FloatType()
     : Type(Kind::Float)
 {
-    impl_->bit_.precision_ = static_cast<char>(Precision::BitSize64);
+    P->bit_.precision_ = static_cast<char>(Precision::BitSize64);
 }
 
 FloatType::FloatType(Precision p)
     : Type(Kind::Float)
 {
-    impl_->bit_.precision_ = static_cast<char>(p);
+    P->bit_.precision_ = static_cast<char>(p);
 }
 
 FloatType* FloatType::clone() const
@@ -182,12 +182,12 @@ FloatType* FloatType::clone() const
 
 void FloatType::setPrecision(Precision p)
 {
-    impl_->bit_.precision_ = static_cast<char>(p);
+    P->bit_.precision_ = static_cast<char>(p);
 }
 
 Precision FloatType::precision() const
 {
-    return Precision(impl_->bit_.precision_);
+    return Precision(P->bit_.precision_);
 }
 
     //--- StrType ---//
@@ -328,12 +328,12 @@ std::vector<const BaseRecord*> RecordType::bases() const
 
 void RecordType::setVariety(RecordVariety variety)
 {
-    impl_->bit_.variety_ = static_cast<char>(variety);
+    P->bit_.variety_ = static_cast<char>(variety);
 }
 
 RecordVariety RecordType::variety() const
 {
-    return RecordVariety(impl_->bit_.variety_);
+    return RecordVariety(P->bit_.variety_);
 }
 
 void RecordType::setEnv(Environment env)
@@ -408,12 +408,12 @@ ChanType* ChanType::clone() const
 
 void ChanType::setVariety(ChanVariety variety)
 {
-    impl_->bit_.variety_ = static_cast<char>(variety);
+    P->bit_.variety_ = static_cast<char>(variety);
 }
 
 ChanVariety ChanType::variety() const
 {
-    return ChanVariety(impl_->bit_.variety_);
+    return ChanVariety(P->bit_.variety_);
 }
 
     //--- ArrayType ---//
@@ -436,12 +436,12 @@ ArrayType::~ArrayType()
 
 void ArrayType::setVariety(ArrayVariety variety)
 {
-    impl_->bit_.variety_ = static_cast<char>(variety);
+    P->bit_.variety_ = static_cast<char>(variety);
 }
 
 ArrayVariety ArrayType::variety() const
 {
-    return ArrayVariety(impl_->bit_.variety_);
+    return ArrayVariety(P->bit_.variety_);
 }
 
 void ArrayType::setKeyType(std::unique_ptr<Type> ty)
