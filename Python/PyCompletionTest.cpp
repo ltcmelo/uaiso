@@ -738,7 +738,6 @@ i =
 
     lineCol_ = { 1, 3 };
     disableBuiltins_ = false;
-    dumpCompletions_ = true;
     std::vector<const char*> expected { "i", "object" };
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
             addGlobalFuncNames(addConstructorNames(expected)));

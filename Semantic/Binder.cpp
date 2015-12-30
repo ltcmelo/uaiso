@@ -356,9 +356,15 @@ void Binder::insertBuiltins()
     insertFunc(P->builtins_->createGlobalFuncs(lexs));
 
     if (P->lang_->isPurelyOO()) {
-        P->env_.insertTypeDecl(P->builtins_->createRootTypeDecl(lexs));
-        P->env_.insertTypeDecl(
-                P->builtins_->createBasicTypeDecl(lexs, Type::Kind::Int));
+        auto maybeInsert = [this](Builtin::TypeDeclPtr decl) {
+            if (decl)
+                P->env_.insertTypeDecl(std::move(decl));
+        };
+
+        maybeInsert(P->builtins_->createRootTypeDecl(lexs));
+        maybeInsert(P->builtins_->createBasicTypeDecl(lexs, Type::Kind::Bool));
+        maybeInsert(P->builtins_->createBasicTypeDecl(lexs, Type::Kind::Float));
+        maybeInsert(P->builtins_->createBasicTypeDecl(lexs, Type::Kind::Int));
     }
 }
 
