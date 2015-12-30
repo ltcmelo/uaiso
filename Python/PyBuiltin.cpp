@@ -196,6 +196,20 @@ void addCommonNumOprtrs(Environment env, LexemeMap* lexs)
     env.insertTypeDecl(createFunc<NumT>(lexs, "__ixor__"));
 }
 
+std::unique_ptr<Record> createBasicRecord(LexemeMap* lexs,
+                                          Environment env,
+                                          const char* name)
+{
+    std::unique_ptr<RecordType> recTy(new RecordType);
+    recTy->setEnv(env);
+    auto ident = insertOrFindIdent(lexs, name);
+    std::unique_ptr<Record> rec(new Record(ident));
+    rec->setIsBuiltin(true);
+    rec->setIsFake(true);
+    rec->setType(std::move(recTy));
+    return rec;
+}
+
 } // namespace anonymous
 
 const Ident* PyBuiltin::rootTypeDeclName(LexemeMap *lexs) const
@@ -213,31 +227,17 @@ PyBuiltin::createBasicTypeDecl(LexemeMap* lexs, Type::Kind kind) const
         env.insertTypeDecl(createFunc<IntType>(lexs, "bit_length"));
         env.insertTypeDecl(createFunc<IntType>(lexs, "to_bytes"));
         env.insertTypeDecl(createFunc<IntType>(lexs, "from_bytes"));
-        std::unique_ptr<RecordType> recTy(new RecordType);
-        recTy->setEnv(env);
-        auto ident = insertOrFindIdent(lexs, kPyBuiltinInt);
-        std::unique_ptr<Record> rec(new Record(ident));
-        rec->setIsBuiltin(true);
-        rec->setIsFake(true);
-        rec->setType(std::move(recTy));
-        return TypeDeclPtr(rec.release());
+        return TypeDeclPtr(createBasicRecord(lexs, env, kPyBuiltinInt));
     }
 
     case Type::Kind::Float: {
         Environment env;
         addCommonNumOprtrs<FloatType>(env, lexs);
-        env.insertTypeDecl(createFunc<FloatType>(lexs, "as_integer_ratio"));
-        env.insertTypeDecl(createFunc<FloatType>(lexs, "is_integer"));
-        env.insertTypeDecl(createFunc<FloatType>(lexs, "hex"));
+        env.insertTypeDecl(createFunc<IntType>(lexs, "as_integer_ratio"));
+        env.insertTypeDecl(createFunc<BoolType>(lexs, "is_integer"));
+        env.insertTypeDecl(createFunc<StrType>(lexs, "hex"));
         env.insertTypeDecl(createFunc<FloatType>(lexs, "from_hex"));
-        std::unique_ptr<RecordType> recTy(new RecordType);
-        recTy->setEnv(env);
-        auto ident = insertOrFindIdent(lexs, kPyBuiltinFloat);
-        std::unique_ptr<Record> rec(new Record(ident));
-        rec->setIsBuiltin(true);
-        rec->setIsFake(true);
-        rec->setType(std::move(recTy));
-        return TypeDeclPtr(rec.release());
+        return TypeDeclPtr(createBasicRecord(lexs, env, kPyBuiltinFloat));
     }
 
     default:
