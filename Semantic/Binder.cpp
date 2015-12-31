@@ -141,21 +141,21 @@ private:
     VisitResult visitSimpleName(SimpleNameAst* ast)
     {
         auto name = lexs_->findAt<Ident>(ast->nameLoc_.fileName_,
-                                          ast->nameLoc_.lineCol());
+                                         ast->nameLoc_.lineCol());
         return pushName(name);
     }
 
     VisitResult visitGenName(GenNameAst* ast)
     {
         auto name = lexs_->findAt<Ident>(ast->genLoc_.fileName_,
-                                          ast->genLoc_.lineCol());
+                                         ast->genLoc_.lineCol());
         return pushName(name);
     }
 
     VisitResult visitStrLitExpr(StrLitExprAst* ast)
     {
         auto name = lexs_->findAt<StrLit>(ast->litLoc_.fileName_,
-                                           ast->litLoc_.lineCol());
+                                          ast->litLoc_.lineCol());
         return pushName(name);
     }
 };
@@ -1015,21 +1015,20 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
     // it's still evaluated so the module and given namespace are collected.
 
     UAISO_ASSERT(ast->expr_.get(), return Abort);
-    AstToLexeme pickupName(P->lexs_);
-    const auto& baseLexs = pickupName.process(ast->expr_.get());
-
-    if (baseLexs.empty()) {
+    AstToLexeme astToLexs(P->lexs_);
+    const auto& lexs = astToLexs.process(ast->expr_.get());
+    if (lexs.empty()) {
         P->report(Diagnostic::UnresolvedModule, ast->expr_.get(), P->locator_.get());
         return Continue;
     }
 
     const std::string& moduleName =
-            joinLexemes(baseLexs, P->lang_->packageSeparator());
+            joinLexemes(lexs, P->lang_->packageSeparator());
     DEBUG_TRACE("import module %s\n", moduleName.c_str());
 
     const Ident* localName = nullptr;
     if (ast->localName_) {
-        const auto& localLexemes = pickupName.process(ast->localName_.get());
+        const auto& localLexemes = astToLexs.process(ast->localName_.get());
         if (localLexemes.empty() || localLexemes.size() > 1) {
             P->report(Diagnostic::UnresolvedModule, ast->localName_.get(),
                       P->locator_.get());
@@ -1054,6 +1053,36 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
                            localName,
                            P->sanitizer_->mayMergeImportEnv(localName)));
     import->setSourceLoc(fullLoc(ast, P->locator_.get()));
+
+    // Specific exact symbols if this is a selective import.
+    if (ast->members()) {
+        for (auto decl : *ast->members()) {
+            UAISO_ASSERT(decl->kind() == Ast::Kind::ImportMemberDecl, return Abort);
+            ImportMemberDeclAst* member = ImportMemberDecl_Cast(decl);
+
+            UAISO_ASSERT(member->actualName(), return Abort);
+            const auto& actualNameLexs = astToLexs.process(member->actualName());
+            if (actualNameLexs.size() > 1) {
+                P->report(Diagnostic::UnexpectedQualifiedName, member->actualName(),
+                          P->locator_.get());
+                continue;
+            }
+
+            const Ident* memberName = ConstIdent_Cast(actualNameLexs.back());
+            if (member->nickName()) {
+                const auto& altNameLexs = astToLexs.process(member->nickName());
+                if (altNameLexs.size() > 1) {
+                    P->report(Diagnostic::UnexpectedQualifiedName, member->nickName(),
+                              P->locator_.get());
+                    continue;
+                }
+                import->addSelectedMember(memberName,
+                                          ConstIdent_Cast(altNameLexs.back()));
+            } else {
+                import->addSelectedMember(memberName);
+            }
+        }
+    }
 
     P->env_.includeImport(std::move(import));
 

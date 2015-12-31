@@ -29,7 +29,8 @@
 #include "Semantic/TypeCast.h"
 #include "Ast/AstVariety.h"
 #include "Parsing/Lexeme.h"
-#include <vector>
+#include <unordered_map>
+#include <utility>
 
 using namespace uaiso;
 
@@ -250,6 +251,11 @@ Alias* Alias::clone() const
     return trivialClone<Alias>(P_CAST->name_);
 }
 
+Alias* Alias::clone(const Ident *alternateName) const
+{
+    return trivialClone<Alias>(alternateName);
+}
+
     //--- Placeholder ---//
 
 struct uaiso::Placeholder::PlaceholderImpl : TypeDecl::TypeDeclImpl
@@ -267,7 +273,12 @@ Placeholder::Placeholder(const Ident *name)
 
 Placeholder *Placeholder::clone() const
 {
-    auto holder = trivialClone<Placeholder>(P_CAST->name_);
+    return clone(P_CAST->name_);
+}
+
+Placeholder* Placeholder::clone(const Ident* alternateName) const
+{
+    auto holder = trivialClone<Placeholder>(alternateName);
     holder->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
     return holder;
 }
@@ -312,7 +323,12 @@ Environment Func::env() const
 
 Func* Func::clone() const
 {
-    auto func = trivialClone<Func>(P_CAST->name_);
+    return clone(P_CAST->name_);
+}
+
+Func* Func::clone(const Ident* alternateName) const
+{
+    auto func = trivialClone<Func>(alternateName);
     func->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
     func->P_CAST->env_ = P_CAST->env_;
     return func;
@@ -336,6 +352,8 @@ struct Import::ImportImpl : Symbol::SymbolImpl
     const std::string originDir_;
     const std::string moduleName_;
     const Ident* localName_;
+    std::vector<const Ident*> members_;
+    std::unordered_map<const Ident*, const Ident*> nicks_;
     bool mergeEnv_;
 };
 
@@ -363,9 +381,39 @@ const Ident* Import::localName() const
     return P_CAST->localName_;
 }
 
+bool Import::isSelective() const
+{
+    return !P_CAST->members_.empty();
+}
+
 bool Import::mergeEnv() const
 {
     return P_CAST->mergeEnv_;
+}
+
+void Import::addSelectedMember(const Ident* actualName)
+{
+    P_CAST->members_.push_back(actualName);
+}
+
+void Import::addSelectedMember(const Ident* actualName, const Ident* alternateName)
+{
+    addSelectedMember(actualName);
+    if (alternateName)
+        P_CAST->nicks_.insert(std::make_pair(actualName, alternateName));
+}
+
+const std::vector<const Ident*>& Import::selectedMembers() const
+{
+    return P_CAST->members_;
+}
+
+const Ident* Import::alternateName(const Ident* actualName) const
+{
+    auto it = P_CAST->nicks_.find(actualName);
+    if (it != P_CAST->nicks_.end())
+        return it->second;
+    return nullptr;
 }
 
 Import* Import::clone() const
@@ -452,7 +500,12 @@ const RecordType *Record::type() const
 
 Record* Record::clone() const
 {
-    auto rec = trivialClone<Record>(P_CAST->name_);
+    return clone(P_CAST->name_);
+}
+
+Record* Record::clone(const Ident* alternateName) const
+{
+    auto rec = trivialClone<Record>(alternateName);
     rec->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
     return rec;
 }
@@ -487,7 +540,12 @@ const EnumType *Enum::type() const
 
 Enum* Enum::clone() const
 {
-    auto enun = trivialClone<Enum>(P_CAST->name_);
+    return clone(P_CAST->name_);
+}
+
+Enum* Enum::clone(const Ident* alternateName) const
+{
+    auto enun = trivialClone<Enum>(alternateName);
     enun->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
     enun->P_CAST->underTy_ = std::unique_ptr<Type>(P_CAST->underTy_->clone());
     return enun;

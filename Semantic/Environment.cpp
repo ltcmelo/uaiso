@@ -308,6 +308,11 @@ const Namespace* Environment::fetchNamespace(const Ident* name) const
     return P->recursivelySearch<Namespace>(name, &EnvironmentImpl::namespaces_);
 }
 
+std::vector<const Namespace *> Environment::listNamespaces() const
+{
+    return P->list<Namespace>(&EnvironmentImpl::namespaces_);
+}
+
 namespace uaiso {
 
 bool operator==(const Environment& env1, const Environment& env2)

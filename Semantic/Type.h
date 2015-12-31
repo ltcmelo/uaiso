@@ -340,7 +340,7 @@ private:
  * \brief isNumType
  * \return
  */
-bool isNumType(Type::Kind);
+UAISO_API bool isNumType(Type::Kind);
 
 /*!
  * \brief envForType
@@ -349,7 +349,7 @@ bool isNumType(Type::Kind);
  * If the type has its own environment, return it along with a boolean
  * indicator. Otherwise, return the originally supplied environment.
  */
-std::pair<bool, Environment> envForType(const Type*, Environment env);
+UAISO_API std::pair<bool, Environment> envForType(const Type*, Environment env);
 
 } // namespace uaiso
 

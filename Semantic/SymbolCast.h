@@ -49,6 +49,10 @@
 #define Func_Cast(T) static_cast<uaiso::Func*>(T)
 #define Func_ConstCast(T) const_cast<uaiso::Func*>(ConstFunc_Cast(T))
 
+#define ConstNamespace_Cast(T) static_cast<const Namespace*>(T)
+#define Namespace_Cast(T) static_cast<uaiso::Namespace*>(T)
+#define Namespace_ConstCast(T) const_cast<uaiso::Namespace*>(ConstNamespace_Cast(T))
+
 #define ConstParam_Cast(T) static_cast<const Param*>(T)
 #define Param_Cast(T) static_cast<uaiso::Param*>(T)
 #define Param_ConstCast(T) const_cast<uaiso::Param*>(ConstParam_Cast(T))

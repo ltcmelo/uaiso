@@ -199,7 +199,8 @@ void Manager::processDeps(const std::string& fullFileName) const
 
         // Inspect all imports and, if any of them is not already in the
         // snapshot, parse it, bind it, and start tracking it.
-        auto imports = curProg->env().imports();
+        auto curProgEnv = curProg->env();
+        auto imports = curProgEnv.imports();
         for (auto import : imports) {
             auto fileNames = resolver.resolve(import, P->searchPaths_);
             for (auto& fileName : fileNames) {
@@ -225,12 +226,31 @@ void Manager::processDeps(const std::string& fullFileName) const
                     P->snapshot_.insertOrReplace(fileName, std::move(newProg));
                 }
 
-                // The namespace is the last symbol to be created.
-                std::unique_ptr<Namespace> space(new Namespace(import->localName()));
-                space->setEnv(otherProg->env());
-                curProg->env().injectNamespace(std::move(space), import->mergeEnv());
-                progs.push(otherProg);
-                visited.insert(fileName);
+                auto otherProgEnv = otherProg->env();
+                if (import->isSelective()) {
+                    for (auto actualName : import->selectedMembers()) {
+                        auto tySym = otherProgEnv.searchTypeDecl(actualName);
+                        if (!tySym)
+                            continue;
+
+                        const TypeDecl* clonedSym = nullptr;
+                        if (auto altName = import->alternateName(actualName))
+                            clonedSym = tySym->clone(altName);
+                        else
+                            clonedSym = TypeDecl_Cast(tySym->clone());
+                        curProgEnv.insertTypeDecl(std::unique_ptr<const TypeDecl>(clonedSym));
+                    }
+                } else {
+                    std::unique_ptr<Namespace> space;
+                    if (import->mergeEnv())
+                        space.reset(new Namespace);
+                    else
+                        space.reset(new Namespace(import->localName()));
+                    space->setEnv(otherProgEnv);
+                    curProgEnv.injectNamespace(std::move(space), import->mergeEnv());
+                    progs.push(otherProg);
+                    visited.insert(fileName);
+                }
             }
         }
     }

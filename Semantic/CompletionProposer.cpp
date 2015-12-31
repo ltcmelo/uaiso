@@ -257,8 +257,6 @@ CompletionProposer::~CompletionProposer()
 CompletionProposer::Result
 CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexs)
 {
-    using Symbols = std::vector<const Decl*>;
-
     UAISO_ASSERT(progAst->program_,
                  return Result(Symbols(), CompletionAstNotFound));
 
@@ -278,12 +276,18 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexs)
     auto topAst = context.asts_.top();
     auto env = context.env_;
 
+    auto addExtraSyms = [](const auto& extraSyms,
+                           CompletionProposer::Symbols& syms) {
+        std::copy(extraSyms.begin(), extraSyms.end(), std::back_inserter(syms));
+        return syms;
+    };
+
     // When completing an identifier, simply list the environment.
     if (topAst->kind() == Ast::Kind::IdentExpr) {
         Symbols syms;
         while (true) {
-            auto curSyms = env.listDecls();
-            std::copy(curSyms.begin(), curSyms.end(), std::back_inserter(syms));
+            addExtraSyms(env.listDecls(), syms);
+            addExtraSyms(env.listNamespaces(), syms);
             if (env.isRootEnv())
                 break;
             env = env.outerEnv();
@@ -354,11 +358,14 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexs)
         }
 
         // If completing a namespace, there will be no type.
-        if (!ty)
-            return Result(env.listDecls(), Success);
+        if (!ty) {
+            Symbols syms;
+            return Result(addExtraSyms(env.listDecls(), syms), Success);
+        }
 
         // Look into base classes.
-        Symbols syms = env.listDecls();
+        Symbols syms;
+        addExtraSyms(env.listDecls(), syms);
         std::stack<const Type*> allTy;
         allTy.push(ty);
         while (!allTy.empty()) {
@@ -379,8 +386,7 @@ CompletionProposer::propose(ProgramAst* progAst, const LexemeMap* lexs)
                 std::tie(baseHasEnv, baseEnv) = envForType(baseTySym->type(), baseEnv);
                 if (baseHasEnv) {
                     allTy.push(baseTySym->type());
-                    auto extraSyms = baseEnv.listDecls();
-                    std::copy(extraSyms.begin(), extraSyms.end(), std::back_inserter(syms));
+                    addExtraSyms(baseEnv.listDecls(), syms);
                 }
             }
         }

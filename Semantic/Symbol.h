@@ -30,8 +30,9 @@
 #include "Semantic/DeclAttrs.h"
 #include "Semantic/TypeFwd.h"
 #include "Semantic/SymbolCast.h"
-#include <string>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace uaiso {
 
@@ -146,10 +147,11 @@ class UAISO_API Import final : public Symbol
 public:
     /*!
      * \brief Import
-     * \param originDir  - where the import was made
-     * \param moduleName - module to import
-     * \param localName  - name in the importing program
-     * \param mergeEnv   - whether to merge the imported env
+     * \param originDir   - from where the import was made
+     * \param moduleName  - module to import
+     * \param localName   - binding name in the importing program
+     * \param mergeEnv    - whether to merge the imported symbols into the
+     *                      importing program
      */
     Import(const std::string& originDir,
            const std::string& moduleName,
@@ -162,7 +164,16 @@ public:
 
     const Ident* localName() const;
 
+    bool isSelective() const;
+
     bool mergeEnv() const;
+
+    void addSelectedMember(const Ident* actualName);
+    void addSelectedMember(const Ident* actualName, const Ident* alternateName);
+
+    const std::vector<const Ident*>& selectedMembers() const;
+
+    const Ident* alternateName(const Ident* actualName) const;
 
     Import* clone() const override;
 
@@ -270,6 +281,10 @@ public:
      */
     const Type* type() const;
 
+    using Decl::clone;
+
+    virtual TypeDecl* clone(const Ident* alternateName) const = 0;
+
 protected:
     using Decl::Decl;
 
@@ -321,6 +336,7 @@ public:
     Placeholder(const Ident* name);
 
     Placeholder* clone() const override;
+    Placeholder* clone(const Ident* alternateName) const override;
 
 private:
     DECL_PIMPL_CAST(Placeholder)
@@ -342,6 +358,7 @@ public:
     Environment env() const;
 
     Func* clone() const override;
+    Func* clone(const Ident* alternateName) const override;
 
 private:
     DECL_PIMPL_CAST(Func)
@@ -356,6 +373,7 @@ public:
     Alias(const Ident* name);
 
     Alias* clone() const override;
+    Alias* clone(const Ident* alternateName) const override;
 };
 
 /*!
@@ -371,6 +389,7 @@ public:
     const RecordType* type() const;
 
     Record* clone() const override;
+    Record* clone(const Ident* alternateName) const override;
 
 private:
     DECL_PIMPL_CAST(Record)
@@ -392,6 +411,7 @@ public:
     const EnumType* type() const;
 
     Enum* clone() const override;
+    Enum* clone(const Ident* alternateName) const override;
 
 private:
     DECL_PIMPL_CAST(Enum)
@@ -462,9 +482,9 @@ public:
 
     /*--- Utility ---*/
 
-bool isDecl(const Symbol* symbol);
-bool isTypeDecl(const Symbol* symbol);
-bool isValueDecl(const Symbol* symbol);
+UAISO_API bool isDecl(const Symbol* symbol);
+UAISO_API bool isTypeDecl(const Symbol* symbol);
+UAISO_API bool isValueDecl(const Symbol* symbol);
 
 } // namespace uaiso
 

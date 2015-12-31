@@ -103,6 +103,16 @@ public:
              , &CompletionProposerTest::PyTestCase27
              , &CompletionProposerTest::PyTestCase28
              , &CompletionProposerTest::PyTestCase29
+             , &CompletionProposerTest::PyTestCase30
+             , &CompletionProposerTest::PyTestCase31
+             , &CompletionProposerTest::PyTestCase32
+             , &CompletionProposerTest::PyTestCase33
+             , &CompletionProposerTest::PyTestCase34
+             , &CompletionProposerTest::PyTestCase35
+             , &CompletionProposerTest::PyTestCase36
+             , &CompletionProposerTest::PyTestCase37
+             , &CompletionProposerTest::PyTestCase38
+             , &CompletionProposerTest::PyTestCase39
              )
 
     //--- D ---//
@@ -177,6 +187,16 @@ public:
     void PyTestCase27();
     void PyTestCase28();
     void PyTestCase29();
+    void PyTestCase30();
+    void PyTestCase31();
+    void PyTestCase32();
+    void PyTestCase33();
+    void PyTestCase34();
+    void PyTestCase35();
+    void PyTestCase36();
+    void PyTestCase37();
+    void PyTestCase38();
+    void PyTestCase39();
 
     std::unique_ptr<Unit> runCore(std::unique_ptr<Factory> factory,
                                   const std::string& code,

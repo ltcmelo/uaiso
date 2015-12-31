@@ -809,3 +809,123 @@ z.
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
             addRootObjectNames(expected));
 }
+
+void CompletionProposer::CompletionProposerTest::PyTestCase30()
+{
+    std::string code = R"raw(
+from fibo import fib, fib2
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 2, 0 };
+    auto expected = { "fib", "fib2" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase31()
+{
+    std::string code = R"raw(
+from fibo import fib
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 2, 0 };
+    auto expected = { "fib" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase32()
+{
+    UAISO_SKIP_TEST;
+
+    std::string code = R"raw(
+import sound.effects.echo
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 2, 0 };
+    auto expected = { "sound" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase33()
+{
+    UAISO_SKIP_TEST;
+
+    std::string code = R"raw(
+import sound.effects import echo
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 2, 0 };
+    auto expected = { "echo" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase34()
+{
+    UAISO_SKIP_TEST;
+
+    std::string code = R"raw(
+import sound.effects.echo import echofilter
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 2, 0 };
+    auto expected = { "echofilter" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase35()
+{
+    std::string code = R"raw(
+import fibo
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 2, 0 };
+    auto expected = { "fibo" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase36()
+{
+    std::string code = R"raw(
+import fibo as m
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 2, 0 };
+    auto expected = { "m" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase37()
+{
+    std::string code = R"raw(
+from fibo import fib as f
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 2, 0 };
+    auto expected = { "f" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase38()
+{
+
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase39()
+{
+
+}

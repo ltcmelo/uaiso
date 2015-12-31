@@ -93,6 +93,7 @@ const Diagnostic::Code Diagnostic::InvalidOctalDigit = 48;
 const Diagnostic::Code Diagnostic::InvalidHexDigit = 49;
 const Diagnostic::Code Diagnostic::InvalidFloatSuffix = 50;
 const Diagnostic::Code Diagnostic::InvalidReferenceToSelf = 51;
+const Diagnostic::Code Diagnostic::UnexpectedQualifiedName = 52;
 
 namespace uaiso {
 
@@ -210,6 +211,8 @@ public:
                     "invalid float suffix", Severity::Error },
         { Diagnostic::InvalidReferenceToSelf,
                     "invalid reference to self", Severity::Error },
+        { Diagnostic::UnexpectedQualifiedName,
+                    "unexpected qualified name", Severity::Error },
     };
 };
 

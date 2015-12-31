@@ -130,6 +130,14 @@ public:
     const Namespace* fetchNamespace(const Ident* name) const;
 
     /*!
+     * \brief listNamespaces
+     * \return
+     *
+     * List injected namespaces.
+     */
+    std::vector<const Namespace*> listNamespaces() const;
+
+    /*!
      * \brief includeImport
      * \param import
      *
