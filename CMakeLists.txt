@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(uaiso)
 
 set(UAISO_CXX_FLAGS)
-set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -std=c++11 -g -Wno-deprecated-register")
+set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -std=c++1y -g -Wno-deprecated-register")
 set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -fvisibility=hidden -DEXPORT_API")
 
 set(SCRIPTS_PATH Scripts)

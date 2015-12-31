@@ -90,8 +90,13 @@ CompletionProposer::CompletionProposerTest::runCore(
     if (dumpCompletions_) {
         std::ostringstream oss;
         oss << "Produced completions\n";
-        std::for_each(syms.begin(), syms.end(), [&oss] (const Decl* decl) {
-            oss << decl->name()->str() << " ";
+        std::for_each(syms.begin(), syms.end(), [&oss] (auto sym) {
+            if (isDecl(sym))
+                oss << ConstDeclSymbol_Cast(sym)->name()->str() << " ";
+            else if (sym->kind() == Symbol::Kind::Namespace)
+                oss << ConstNamespace_Cast(sym)->name()->str() << " ";
+            else
+                oss << "<anonymous symbol>";
         });
         oss << std::endl;
         std::cout << oss.str().c_str();
@@ -100,8 +105,12 @@ CompletionProposer::CompletionProposerTest::runCore(
     UAISO_EXPECT_INT_EQ(expected.size(), syms.size());
     for (const auto& s : expected) {
         UAISO_EXPECT_TRUE(std::find_if(syms.begin(), syms.end(),
-                                       [s](const Decl* decl) {
-            return decl->name()->str() == s;
+                                       [s](auto sym) {
+            if (isDecl(sym))
+                return ConstDeclSymbol_Cast(sym)->name()->str() == s;
+            if (sym->kind() == Symbol::Kind::Namespace)
+                return ConstNamespace_Cast(sym)->name()->str() == s;
+            return false;
         }) != syms.end());
     }
 
