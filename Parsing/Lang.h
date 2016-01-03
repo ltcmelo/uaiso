@@ -101,7 +101,8 @@ public:
     enum ImportMechanism
     {
         PerModule,
-        PerPackage
+        PerPackage,
+        PerModuleAndPackage
     };
 
     /*!

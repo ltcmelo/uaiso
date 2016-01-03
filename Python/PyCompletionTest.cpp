@@ -838,8 +838,6 @@ from fibo import fib
 
 void CompletionProposer::CompletionProposerTest::PyTestCase32()
 {
-    UAISO_SKIP_TEST;
-
     std::string code = R"raw(
 import sound.effects.echo
 
@@ -847,16 +845,14 @@ import sound.effects.echo
 )raw";
 
     lineCol_ = { 2, 0 };
-    auto expected = { "sound" };
+    auto expected = { "sound.effects.echo" };
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase33()
 {
-    UAISO_SKIP_TEST;
-
     std::string code = R"raw(
-import sound.effects import echo
+from sound.effects import echo
 
 # complete at first column above
 )raw";
@@ -868,10 +864,23 @@ import sound.effects import echo
 
 void CompletionProposer::CompletionProposerTest::PyTestCase34()
 {
+    std::string code = R"raw(
+from sound.effects import echo, other
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 2, 0 };
+    auto expected = { "echo", "other" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase35()
+{
     UAISO_SKIP_TEST;
 
     std::string code = R"raw(
-import sound.effects.echo import echofilter
+from sound.effects.echo import echofilter
 
 # complete at first column above
 )raw";
@@ -881,7 +890,7 @@ import sound.effects.echo import echofilter
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
-void CompletionProposer::CompletionProposerTest::PyTestCase35()
+void CompletionProposer::CompletionProposerTest::PyTestCase36()
 {
     std::string code = R"raw(
 import fibo
@@ -894,7 +903,7 @@ import fibo
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
-void CompletionProposer::CompletionProposerTest::PyTestCase36()
+void CompletionProposer::CompletionProposerTest::PyTestCase37()
 {
     std::string code = R"raw(
 import fibo as m
@@ -907,7 +916,7 @@ import fibo as m
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
-void CompletionProposer::CompletionProposerTest::PyTestCase37()
+void CompletionProposer::CompletionProposerTest::PyTestCase38()
 {
     std::string code = R"raw(
 from fibo import fib as f
@@ -920,12 +929,79 @@ from fibo import fib as f
     runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
-void CompletionProposer::CompletionProposerTest::PyTestCase38()
-{
-
-}
-
 void CompletionProposer::CompletionProposerTest::PyTestCase39()
 {
+    std::string code = R"raw(
+from sound.effects import echo
+echo.
+#    ^
+#    |
+#    complete at up-arrow
+)raw";
 
+    lineCol_ = { 2, 5 };
+    auto expected = { "echofilter" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase40()
+{
+    std::string code = R"raw(
+from sound.effects import echo, other
+echo.
+#    ^
+#    |
+#    complete at up-arrow
+)raw";
+
+    lineCol_ = { 2, 5 };
+    auto expected = { "echofilter" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase41()
+{
+    std::string code = R"raw(
+from sound.effects import echo, other
+other.
+#     ^
+#     |
+#     complete at up-arrow
+)raw";
+
+    lineCol_ = { 2, 6 };
+    auto expected = { "otherfilter" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase42()
+{
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase43()
+{
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase44()
+{
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase45()
+{
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase46()
+{
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase47()
+{
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase48()
+{
+}
+
+void CompletionProposer::CompletionProposerTest::PyTestCase49()
+{
 }

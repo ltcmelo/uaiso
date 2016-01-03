@@ -51,7 +51,7 @@ public:
      *
      * Attempt to resolve the import locally from the original directory.
      */
-    std::vector<std::string> resolve(const Import* import) const;
+    std::vector<std::string> resolve(Import* import) const;
 
     /*!
      * \brief resolve
@@ -63,7 +63,7 @@ public:
      * if a match if not found make another attempt with the given paths
      * (processed in order).
      */
-    std::vector<std::string> resolve(const Import* import,
+    std::vector<std::string> resolve(Import* import,
                                      const std::vector<std::string>& searchPaths) const;
 
 private:

@@ -1022,9 +1022,9 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
         return Continue;
     }
 
-    const std::string& moduleName =
+    const std::string& target =
             joinLexemes(lexs, P->lang_->packageSeparator());
-    DEBUG_TRACE("import module %s\n", moduleName.c_str());
+    DEBUG_TRACE("import target %s\n", target.c_str());
 
     const Ident* localName = nullptr;
     if (ast->localName_) {
@@ -1038,18 +1038,16 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
         }
     }
 
-    // By default, if local name is empty, assign the module name to it.
+    // By default, if local name is empty, assign the target to it.
     if (!localName) {
-        auto pos = moduleName.find_last_of(P->lang_->packageSeparator());
-        auto moduleLocalName = moduleName.substr(pos == std::string::npos ? 0 : pos);
         localName = const_cast<LexemeMap*>(P->lexs_)
-                ->insertOrFind<Ident>(moduleLocalName, P->fileName_, ast->asLoc_.lineCol());
-        DEBUG_TRACE("no explicit local name, assign %s\n", moduleLocalName.c_str());
+                ->insertOrFind<Ident>(target, P->fileName_, ast->asLoc_.lineCol());
+        DEBUG_TRACE("no explicit local name, assign %s\n", target.c_str());
     }
 
     std::unique_ptr<Import> import(
                 new Import(FileInfo(P->fileName_).fullDir(),
-                           moduleName,
+                           target,
                            localName,
                            P->sanitizer_->mayMergeImportEnv(localName)));
     import->setSourceLoc(fullLoc(ast, P->locator_.get()));
@@ -1076,10 +1074,10 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
                               P->locator_.get());
                     continue;
                 }
-                import->addSelectedMember(memberName,
-                                          ConstIdent_Cast(altNameLexs.back()));
+                import->addSelectedItem(memberName,
+                                        ConstIdent_Cast(altNameLexs.back()));
             } else {
-                import->addSelectedMember(memberName);
+                import->addSelectedItem(memberName);
             }
         }
     }

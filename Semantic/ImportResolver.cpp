@@ -29,9 +29,11 @@
 #include "Tinydir/Tinydir.h"
 #include "Parsing/Factory.h"
 #include "Parsing/Lang.h"
+#include "Parsing/Lexeme.h"
 #include "StringUtils/predicate.hpp"
 #include <fstream>
 #include <iostream>
+#include <unordered_set>
 
 #define TRACE_NAME "ImportResolver"
 
@@ -44,30 +46,37 @@ struct ImportResolver::ImportResolverImpl
         : lang_(factory->makeLang())
     {}
 
-    std::vector<std::string> searchFile(std::string relPath,
-                                        const std::string& basePath)
+    std::pair<std::vector<std::string>, Import::TargetEntity>
+    resolve(std::string target,
+            const std::string& path,
+            const std::unordered_set<std::string>& fileFilter)
     {
-        auto pos = relPath.find(lang_->packageSeparator());
+        auto pos = target.find(lang_->packageSeparator());
         while (pos != std::string::npos) {
-            relPath.replace(pos, 1, std::string(1, FileInfo::dirSeparator()));
-            pos = relPath.find(lang_->packageSeparator(), pos + 1);
+            target.replace(pos, 1, std::string(1, FileInfo::dirSeparator()));
+            pos = target.find(lang_->packageSeparator(), pos + 1);
         }
 
         std::vector<std::string> result;
 
-        if (lang_->importMechanism() == Lang::PerModule) {
-            auto moduleFile = basePath + relPath + lang_->sourceFileSuffix();
+        if (lang_->importMechanism() == Lang::PerModule
+                || lang_->importMechanism() == Lang::PerModuleAndPackage) {
+            auto moduleFile = path + target + lang_->sourceFileSuffix();
             DEBUG_TRACE("search module import %s\n", moduleFile.c_str());
             std::ifstream ifs(moduleFile);
             if (ifs.is_open()) {
                 ifs.close();
                 result.emplace_back(moduleFile);
                 DEBUG_TRACE("module file %s found\n", moduleFile.c_str());
+                return std::make_pair(result, Import::Module);
             }
-            return result;
+            // If the language's import mechanism is per module only, there's
+            // nothing to do. Otherwise, let it search packages.
+            if (lang_->importMechanism() == Lang::PerModule)
+                return std::make_pair(result, Import::Module);
         }
 
-        auto dirPath = basePath + relPath;
+        auto dirPath = path + target;
         DEBUG_TRACE("search package import %s\n", dirPath.c_str());
         tinydir_dir dir;
         tinydir_open(&dir, dirPath.c_str());
@@ -78,15 +87,19 @@ struct ImportResolver::ImportResolverImpl
             std::string fileInDirName(fileInDir.name);
             if (!fileInDir.is_dir
                     && iends_with(fileInDirName, lang_->sourceFileSuffix())) {
-                result.emplace_back(dirPath + "/" + fileInDirName);
-                DEBUG_TRACE("package file %s found\n",
-                            (dirPath + "/" + fileInDirName).c_str());
+                // Add as a result if either the filter is completely empty
+                // or if the file in question is filtered in.
+                if (fileFilter.empty() || fileFilter.count(fileInDirName)) {
+                    result.emplace_back(dirPath + "/" + fileInDirName);
+                    DEBUG_TRACE("package file %s found\n",
+                                (dirPath + "/" + fileInDirName).c_str());
+                }
             }
             tinydir_next(&dir);
         }
         tinydir_close(&dir);
 
-        return result;
+        return std::make_pair(result, Import::Package);
     }
 
     std::unique_ptr<Lang> lang_;
@@ -100,24 +113,35 @@ ImportResolver::~ImportResolver()
 {}
 
 std::vector<std::string> ImportResolver::
-resolve(const Import* import) const
+resolve(Import* import) const
 {
-    return P->searchFile(import->moduleName(), import->originDir());
+    return resolve(import, std::vector<std::string>());
 }
 
 std::vector<std::string> ImportResolver::
-resolve(const Import* import,
+resolve(Import* import,
         const std::vector<std::string>& searchPaths) const
 {
-    auto filesData = resolve(import);
-    if (!filesData.empty())
-        return filesData;
+    std::unordered_set<std::string> selected;
+    std::for_each(import->selectedItems().begin(),
+                  import->selectedItems().end(),
+                  [&selected, this](const Ident* name) {
+        selected.insert(name->str() + P->lang_->sourceFileSuffix());
+    });
 
-    for (const auto& path : searchPaths) {
-        filesData = P->searchFile(import->moduleName(), path);
-        if (!filesData.empty())
-            break;
+    auto data = P->resolve(import->target(), import->fromWhere(), selected);
+    if (!data.first.empty()) {
+        import->setTargetEntity(data.second);
+        return data.first;
     }
 
-    return filesData;
+    for (const auto& searchPath : searchPaths) {
+        data = P->resolve(import->target(), searchPath, selected);
+        if (!data.first.empty()) {
+            import->setTargetEntity(data.second);
+            break;
+        }
+    }
+
+    return data.first;
 }

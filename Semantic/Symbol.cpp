@@ -338,42 +338,43 @@ Func* Func::clone(const Ident* alternateName) const
 
 struct Import::ImportImpl : Symbol::SymbolImpl
 {
-    ImportImpl(const std::string& originDir,
-               const std::string& moduleName,
-               const Ident* name,
-               bool mergeEnv)
+    ImportImpl(const std::string& fromWhere,
+               const std::string& target,
+               const Ident* localName,
+               bool isEmbedded)
         : SymbolImpl(Symbol::Kind::Import)
-        , originDir_(originDir)
-        , moduleName_(moduleName)
-        , localName_(name)
-        , mergeEnv_(mergeEnv)
+        , fromWhere_(fromWhere)
+        , target_(target)
+        , localName_(localName)
+        , isEmbedded_(isEmbedded)
     {}
 
-    const std::string originDir_;
-    const std::string moduleName_;
+    const std::string fromWhere_;
+    const std::string target_;
     const Ident* localName_;
-    std::vector<const Ident*> members_;
+    std::vector<const Ident*> items_;
     std::unordered_map<const Ident*, const Ident*> nicks_;
-    bool mergeEnv_;
+    bool isEmbedded_;
+    TargetEntity entity_;
 };
 
 DEF_PIMPL_CAST(Import)
 
-Import::Import(const std::string& originDir,
-               const std::string& moduleName,
+Import::Import(const std::string& fromWhere,
+               const std::string& target,
                const Ident* localName,
-               bool mergeEnv)
-    : Symbol(new ImportImpl(originDir, moduleName, localName, mergeEnv))
+               bool isEmbedded)
+    : Symbol(new ImportImpl(fromWhere, target, localName, isEmbedded))
 {}
 
-const std::string& Import::moduleName() const
+const std::string& Import::target() const
 {
-    return P_CAST->moduleName_;
+    return P_CAST->target_;
 }
 
-const std::string& Import::originDir() const
+const std::string& Import::fromWhere() const
 {
-    return P_CAST->originDir_;
+    return P_CAST->fromWhere_;
 }
 
 const Ident* Import::localName() const
@@ -381,31 +382,31 @@ const Ident* Import::localName() const
     return P_CAST->localName_;
 }
 
+bool Import::isEmbedded() const
+{
+    return P_CAST->isEmbedded_;
+}
+
 bool Import::isSelective() const
 {
-    return !P_CAST->members_.empty();
+    return !P_CAST->items_.empty();
 }
 
-bool Import::mergeEnv() const
+void Import::addSelectedItem(const Ident* actualName)
 {
-    return P_CAST->mergeEnv_;
+    P_CAST->items_.push_back(actualName);
 }
 
-void Import::addSelectedMember(const Ident* actualName)
+void Import::addSelectedItem(const Ident* actualName, const Ident* alternateName)
 {
-    P_CAST->members_.push_back(actualName);
-}
-
-void Import::addSelectedMember(const Ident* actualName, const Ident* alternateName)
-{
-    addSelectedMember(actualName);
+    addSelectedItem(actualName);
     if (alternateName)
         P_CAST->nicks_.insert(std::make_pair(actualName, alternateName));
 }
 
-const std::vector<const Ident*>& Import::selectedMembers() const
+const std::vector<const Ident*>& Import::selectedItems() const
 {
-    return P_CAST->members_;
+    return P_CAST->items_;
 }
 
 const Ident* Import::alternateName(const Ident* actualName) const
@@ -416,10 +417,20 @@ const Ident* Import::alternateName(const Ident* actualName) const
     return nullptr;
 }
 
+Import::TargetEntity Import::targetEntity() const
+{
+    return P_CAST->entity_;
+}
+
+void Import::setTargetEntity(TargetEntity entity)
+{
+    P_CAST->entity_ = entity;
+}
+
 Import* Import::clone() const
 {
-    return trivialClone<Import>(P_CAST->originDir_, P_CAST->moduleName_,
-                                P_CAST->localName_, P_CAST->mergeEnv_);
+    return trivialClone<Import>(P_CAST->fromWhere_, P_CAST->target_,
+                                P_CAST->localName_, P_CAST->isEmbedded_);
 }
 
     //--- Namespace ---//

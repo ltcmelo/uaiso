@@ -147,31 +147,38 @@ class UAISO_API Import final : public Symbol
 public:
     /*!
      * \brief Import
-     * \param originDir   - from where the import was made
-     * \param moduleName  - module to import
-     * \param localName   - binding name in the importing program
-     * \param mergeEnv    - whether to merge the imported symbols into the
-     *                      importing program
+     * \param fromWhere
+     * \param targetEntity
+     * \param localName
+     * \param isEmbedded
      */
-    Import(const std::string& originDir,
-           const std::string& moduleName,
+    Import(const std::string& fromWhere,
+           const std::string& target,
            const Ident* localName,
-           bool mergeEnv);
+           bool isEmbedded);
 
-    const std::string& originDir() const;
+    const std::string& fromWhere() const;
 
-    const std::string& moduleName() const;
+    const std::string& target() const;
+
+    enum TargetEntity : char
+    {
+        Module,
+        Package
+    };
+
+    TargetEntity targetEntity() const;
 
     const Ident* localName() const;
 
+    bool isEmbedded() const;
+
     bool isSelective() const;
 
-    bool mergeEnv() const;
+    void addSelectedItem(const Ident* actualName);
+    void addSelectedItem(const Ident* actualName, const Ident* alternateName);
 
-    void addSelectedMember(const Ident* actualName);
-    void addSelectedMember(const Ident* actualName, const Ident* alternateName);
-
-    const std::vector<const Ident*>& selectedMembers() const;
+    const std::vector<const Ident*>& selectedItems() const;
 
     const Ident* alternateName(const Ident* actualName) const;
 
@@ -179,6 +186,10 @@ public:
 
 private:
     DECL_PIMPL_CAST(Import)
+
+    friend class ImportResolver;
+
+    void setTargetEntity(TargetEntity kind);
 };
 
 /*!

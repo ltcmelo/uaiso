@@ -39,7 +39,7 @@ PyLang::Structure PyLang::structure() const
 
 PyLang::ImportMechanism PyLang::importMechanism() const
 {
-    return PerModule;
+    return PerModuleAndPackage;
 }
 
 std::string PyLang::sourceFileSuffix() const

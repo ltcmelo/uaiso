@@ -25,7 +25,6 @@
 #include "Semantic/Binder.h"
 #include "Semantic/ImportResolver.h"
 #include "Semantic/Program.h"
-#include "Semantic/Sanitizer.h"
 #include "Semantic/Snapshot.h"
 #include "Semantic/Symbol.h"
 #include "Common/Assert.h"
@@ -56,7 +55,6 @@ struct uaiso::Manager::ManagerImpl
     LexemeMap* lexs_ { nullptr };
     Snapshot snapshot_;
     std::vector<std::string> searchPaths_;
-    std::unique_ptr<Sanitizer> sanitizer_ { nullptr };
     char behaviour_ { 0 };
 
     std::unique_ptr<Unit> parse(const std::string& code,
@@ -118,7 +116,6 @@ void Manager::config(Factory *factory,
     P->tokens_ = tokens;
     P->lexs_ = lexs;
     P->snapshot_ = snapshot;
-    P->sanitizer_ = factory->makeSanitizer();
 }
 
 void Manager::addSearchPath(const std::string& searchPath)
@@ -202,13 +199,14 @@ void Manager::processDeps(const std::string& fullFileName) const
         auto curProgEnv = curProg->env();
         auto imports = curProgEnv.imports();
         for (auto import : imports) {
-            auto fileNames = resolver.resolve(import, P->searchPaths_);
+            DEBUG_TRACE("imported module name: %s\n", import->target().c_str());
+            auto fileNames = resolver.resolve(const_cast<Import*>(import), P->searchPaths_);
             for (auto& fileName : fileNames) {
                 if (visited.count(fileName))
                     continue;
 
+                DEBUG_TRACE("candidate file: %s\n", fileName.c_str());
                 Program* otherProg = P->snapshot_.find(fileName);
-                DEBUG_TRACE("found dependency %s\n", fileName.c_str());
                 if (!otherProg) {
                     FILE* file = fopen(fileName.c_str(), "r");
                     if (!file)
@@ -225,31 +223,51 @@ void Manager::processDeps(const std::string& fullFileName) const
                     otherProg = newProg.get();
                     P->snapshot_.insertOrReplace(fileName, std::move(newProg));
                 }
+                DEBUG_TRACE("import (partially) resolved: %s\n", fileName.c_str());
+                progs.push(otherProg);
+                visited.insert(fileName);
 
-                auto otherProgEnv = otherProg->env();
-                if (import->isSelective()) {
-                    for (auto actualName : import->selectedMembers()) {
-                        auto tySym = otherProgEnv.searchTypeDecl(actualName);
-                        if (!tySym)
-                            continue;
-
-                        const TypeDecl* clonedSym = nullptr;
-                        if (auto altName = import->alternateName(actualName))
-                            clonedSym = tySym->clone(altName);
-                        else
-                            clonedSym = TypeDecl_Cast(tySym->clone());
-                        curProgEnv.insertTypeDecl(std::unique_ptr<const TypeDecl>(clonedSym));
-                    }
-                } else {
+                if (!import->isSelective()) {
                     std::unique_ptr<Namespace> space;
-                    if (import->mergeEnv())
+                    if (import->isEmbedded())
                         space.reset(new Namespace);
                     else
                         space.reset(new Namespace(import->localName()));
-                    space->setEnv(otherProgEnv);
-                    curProgEnv.injectNamespace(std::move(space), import->mergeEnv());
-                    progs.push(otherProg);
-                    visited.insert(fileName);
+                    space->setEnv(otherProg->env());
+                    curProgEnv.injectNamespace(std::move(space), import->isEmbedded());
+                    continue;
+                }
+
+                // When the target of a selective import is a module, the
+                // selected items are symbols be inserted into the current
+                // program's environment (under an alternate name if that's
+                // the case). But when the selective import has a package
+                // target, the selected items are modules (files) themselves,
+                // which have already been filter during import resolution.
+                if (import->targetEntity() == Import::Module) {
+                    for (auto actualName : import->selectedItems()) {
+                        auto tySym = otherProg->env().searchTypeDecl(actualName);
+                        if (!tySym)
+                            continue;
+
+                        const TypeDecl* cloned = nullptr;
+                        if (auto altName = import->alternateName(actualName))
+                            cloned = tySym->clone(altName);
+                        else
+                            cloned = TypeDecl_Cast(tySym->clone());
+                        curProgEnv.insertTypeDecl(std::unique_ptr<const TypeDecl>(cloned));
+                    }
+                } else {
+                    auto baseName = FileInfo(fileName).fileBaseName();
+                    for (auto actualName : import->selectedItems()) {
+                        if (baseName != actualName->str())
+                            continue;
+
+                        std::unique_ptr<Namespace> space(new Namespace(actualName));
+                        space->setEnv(otherProg->env());
+                        curProgEnv.injectNamespace(std::move(space), import->isEmbedded());
+                        break;
+                    }
                 }
             }
         }
