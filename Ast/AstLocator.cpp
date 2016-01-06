@@ -505,22 +505,22 @@ const SourceLoc& AstLocator::loc(ImportModuleDeclAst* ast) const
 
 const SourceLoc& AstLocator::lastLoc(ImportModuleDeclAst* ast) const
 {
-    if (ast->members_)
-        return lastLoc(ast->members_->back());
+    if (ast->items_)
+        return lastLoc(ast->items_->back());
     if (ast->localName_)
         return lastLoc(ast->localName_.get());
     return lastLoc(ast->expr_.get());
 }
 
-const SourceLoc& AstLocator::loc(ImportMemberDeclAst* ast) const
+const SourceLoc& AstLocator::loc(ImportItemDeclAst* ast) const
 {
     return loc(ast->actualName_.get());
 }
 
-const SourceLoc& AstLocator::lastLoc(ImportMemberDeclAst* ast) const
+const SourceLoc& AstLocator::lastLoc(ImportItemDeclAst* ast) const
 {
-    if (ast->nickName_)
-        return lastLoc(ast->nickName_.get());
+    if (ast->alternateName_)
+        return lastLoc(ast->alternateName_.get());
     return lastLoc(ast->actualName_.get());
 }
 

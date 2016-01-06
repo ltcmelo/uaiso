@@ -79,7 +79,7 @@
     GEN_CODE_FOR(Func, Decl) \
     GEN_CODE_FOR(Forward, Decl) \
     GEN_CODE_FOR(ImportClause, Decl) \
-    GEN_CODE_FOR(ImportMember, Decl) \
+    GEN_CODE_FOR(ImportItem, Decl) \
     GEN_CODE_FOR(ImportModule, Decl) \
     GEN_CODE_FOR(Invariant, Decl) \
     GEN_CODE_FOR(Module, Decl) \

@@ -21,27 +21,20 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_SYMBOLFWD_H__
-#define UAISO_SYMBOLFWD_H__
+#include "Ast/AstMisc.h"
+#include "Ast/Ast.h"
 
 namespace uaiso {
 
-class BaseRecord;
-class Block;
-class Decl;
-class Enum;
-class EnumItem;
-class Func;
-class Import;
-class Namespace;
-class Param;
-class Placeholder;
-class Record;
-class Symbol;
-class TypeDecl;
-class ValueDecl;
-class Var;
+SpecAst* undecorateSpec(SpecAst* spec)
+{
+    UAISO_ASSERT(spec, return nullptr);
+    while (spec->kind() == Ast::Kind::DecoratedSpec) {
+        spec = DecoratedSpec_Cast(spec)->spec();
+        UAISO_ASSERT(spec, return nullptr);
+    }
+    return spec;
+}
+
 
 } // namespace uaiso
-
-#endif

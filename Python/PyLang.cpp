@@ -32,6 +32,8 @@ bool PyLang::hasExecutableRecord() const { return true; }
 
 bool PyLang::hasNewlineAsTerminator() const { return true; }
 
+bool PyLang::requiresReturnTypeInference() const { return true; }
+
 PyLang::Structure PyLang::structure() const
 {
     return StmtBased;

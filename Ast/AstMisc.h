@@ -156,6 +156,15 @@ typename AstVisitorT::VisitResult traverseProgram(const ProgramAst* progAst,
     return result;
 }
 
+template <class AstVisitorT>
+typename AstVisitorT::VisitResult traverseProgram(const ProgramAst* progAst,
+                                                  AstVisitorT* visitor,
+                                                  const std::unique_ptr<const Lang>& lang)
+{
+    return traverseProgram(progAst, visitor, lang.get());
+}
+
+SpecAst* undecorateSpec(SpecAst* spec);
 
 } // namespace uaiso
 

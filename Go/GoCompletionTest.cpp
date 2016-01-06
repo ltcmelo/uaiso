@@ -497,3 +497,35 @@ void CompletionProposer::CompletionProposerTest::GoTestCase16()
     runCore(FactoryCreator::create(LangName::Go),
             code, "/path/to/file/go.d", expected);
 }
+
+void CompletionProposer::CompletionProposerTest::GoTestCase17()
+{
+    std::string code = R"raw(                    // line 0
+        package main                             // line 1
+        var toBe bool
+        var (
+            max uint64 = 1 << 64 - 1
+            zero = 0
+        )
+        type Point struct {
+            line int
+            column int
+        }                                        // line 10
+        func calc(total int) {}                  // line 11
+        func makePoint(paramLine, paramColumn int) Point {
+            return Point{paramLine, paramColumn}
+        }
+        func main() {                            // line 15
+            p := makePoint(6, 7)
+            p.
+        //    ^
+        //    |
+        //    complete at up-arrow
+        }
+    )raw";
+
+    lineCol_ = { 17, 14 };
+    auto expected = { "column", "line" };
+    runCore(FactoryCreator::create(LangName::Go),
+            code, "/path/to/file/go.d", expected);
+}

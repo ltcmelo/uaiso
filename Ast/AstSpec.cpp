@@ -27,8 +27,8 @@ using namespace uaiso;
 
 FuncSpecAst* FuncSpecAst::setResult(SpecAst* spec)
 {
-    auto group = makeAstRaw<ParamGroupDeclAst>()->setSpec(spec);
     auto clause = makeAstRaw<ParamClauseDeclAst>();
+    auto group = makeAstRaw<ParamGroupDeclAst>()->setSpec(spec);
     clause->decls_.reset(DeclAstList::create(group));
     result_.reset(clause);
     return this;

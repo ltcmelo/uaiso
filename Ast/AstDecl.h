@@ -280,6 +280,7 @@ public:
 
     ParamDeclAst()
         : DeclAst(Kind::ParamDecl)
+        , sym_(nullptr)
     {}
 
     NAMED_AST_PARAM(Name, name, NameAst)
@@ -294,6 +295,8 @@ public:
     virtual const SourceLoc& variadicLoc() const { return kEmptyLoc; }
 
     std::unique_ptr<NameAst> name_;
+
+    Param* sym_;
 };
 
 struct ParamDefaultArg__
@@ -737,31 +740,31 @@ public:
     NAMED_LOC_PARAM(As, as)
     NAMED_AST_PARAM(LocalName, localName, NameAst)
     NAMED_LOC_PARAM(Select, select)
-    NAMED_AST_LIST_PARAM(Member, members, DeclAst)
+    NAMED_AST_LIST_PARAM(Item, items, DeclAst)
 
     std::unique_ptr<ExprAst> expr_;
     SourceLoc asLoc_;
     std::unique_ptr<NameAst> localName_;
     SourceLoc selectLoc_;
-    std::unique_ptr<DeclAstList> members_;
+    std::unique_ptr<DeclAstList> items_;
 };
 
-class UAISO_API ImportMemberDeclAst : public DeclAst
+class UAISO_API ImportItemDeclAst : public DeclAst
 {
 public:
-    using Self = ImportMemberDeclAst;
+    using Self = ImportItemDeclAst;
 
-    ImportMemberDeclAst()
-        : DeclAst(Kind::ImportMemberDecl)
+    ImportItemDeclAst()
+        : DeclAst(Kind::ImportItemDecl)
     {}
 
     NAMED_AST_PARAM(ActualName, actualName, NameAst)
     NAMED_LOC_PARAM(As, as)
-    NAMED_AST_PARAM(NickName, nickName, NameAst)
+    NAMED_AST_PARAM(AlternateName, alternateName, NameAst)
 
     std::unique_ptr<NameAst> actualName_;
     SourceLoc asLoc_;
-    std::unique_ptr<NameAst> nickName_;
+    std::unique_ptr<NameAst> alternateName_;
 };
 
 /*!

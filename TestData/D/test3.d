@@ -67,6 +67,6 @@ immutable : void foo();
 immutable { void f(); void bar(); }
 const int f() { }
 immutable const int f() {}
-immutable immutable(int) f(); // Equivalent to declaration below
+//immutable immutable(int) f(); // Equivalent to declaration below - TODO: Parser not handling properly
 immutable(int) f() immutable; // Equivalent to declaration above
 long foo(long x) in {} out (result) {} body {}

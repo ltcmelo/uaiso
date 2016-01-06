@@ -318,11 +318,11 @@ std::unique_ptr<Program> Binder::bind(ProgramAst* progAst,
 
     P->enterSubEnv();
 
-    VisitResult result = traverseDecl(progAst->module_.get());
+    VisitResult result = traverseDecl(progAst->module());
     if (result == Continue) {
-        result = traverseDecl(progAst->package_.get());
+        result = traverseDecl(progAst->package());
         if (result == Continue) {
-            result = traverseProgram(progAst, this, P->lang_.get());
+            result = traverseProgram(progAst, this, P->lang_);
 
             // If everything finishes alright, stacks must be empty.
             UAISO_ASSERT(P->declTy_.empty(), {});
@@ -449,7 +449,7 @@ Binder::VisitResult Binder::visitInferredSpec(InferredSpecAst* ast)
 
 Binder::VisitResult Binder::visitBuiltinSpec(BuiltinSpecAst* ast)
 {
-    const SourceLoc& loc = ast->keyLoc_;
+    const SourceLoc& loc = ast->keyLoc();
     Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     std::unique_ptr<Type> ty;
@@ -557,14 +557,14 @@ Binder::VisitResult Binder::visitChanSpec(ChanSpecAst* ast)
 
 Binder::VisitResult Binder::traverseArraySpec(ArraySpecAst* ast)
 {
-    VIS_CALL(traverseSpec(ast->baseSpec_.get()));
+    VIS_CALL(traverseSpec(ast->baseSpec()));
     ENSURE_NONEMPTY_TYPE_STACK;
     std::unique_ptr<ArrayType> array(new ArrayType(P->popDeclType<>()));
     array->setVariety(ast->variety());
 
-    if (ast->exprOrSpec_) {
-        if (ast->exprOrSpec_->isSpec()) {
-            VIS_CALL(traverseSpec(Spec_Cast(ast->exprOrSpec_.get())));
+    if (ast->exprOrSpec()) {
+        if (ast->exprOrSpec()->isSpec()) {
+            VIS_CALL(traverseSpec(Spec_Cast(ast->exprOrSpec())));
             ENSURE_NONEMPTY_TYPE_STACK;
             array->setKeyType(P->popDeclType<>());
         }
@@ -580,7 +580,7 @@ Binder::VisitResult Binder::traverseArraySpec(ArraySpecAst* ast)
 
 Binder::VisitResult Binder::visitOpaqueSpec(OpaqueSpecAst* ast)
 {
-    return traverseSpec(ast->baseSpec_.get());
+    return traverseSpec(ast->baseSpec());
 }
 
 Binder::VisitResult Binder::visitTypeofSpec(TypeofSpecAst* ast)
@@ -608,10 +608,50 @@ Binder::VisitResult Binder::traverseFuncSpec(FuncSpecAst* ast)
 {
     P->declTy_.emplace(new FuncType);
 
-    // TODO: Assign function's signature as ty.
+    VIS_CALL(traverseDecl(ast->param()));
+    VIS_CALL(traverseDecl(ast->result()));
 
-    VIS_CALL(traverseDecl(ast->param_.get()));
-    VIS_CALL(traverseDecl(ast->result_.get()));
+    if (P->lang_->requiresReturnTypeInference() || !ast->result())
+        return Continue;
+
+    // Assign the function's return type. The result must be a parameter clause.
+    UAISO_ASSERT(ast->result()->kind() == Ast::Kind::ParamClauseDecl,return Abort);
+    ParamClauseDeclAst* clause = ParamClauseDecl_Cast(ast->result());
+    if (!clause->decls())
+        return Continue;
+
+    // TODO: Currently supports only simple types, only the first parameter
+    // group is considered.
+    UAISO_ASSERT(clause->decls()->head()->kind() == Ast::Kind::ParamGroupDecl,
+                 return Abort);
+    ParamGroupDeclAst* group = ParamGroupDecl_Cast(clause->decls()->head());
+
+    // When as a result, a parameter group might contain actual declarations
+    // (if the language has named return values) or might simply be a type
+    // specifier. For the former case the return type is take from the
+    // parameter symbol, while in the later the return type is taken through
+    // a regular traversal over the spec.
+    UAISO_ASSERT(group->decls() || group->spec(), return Abort);
+    std::unique_ptr<Type> retTy;
+    if (group->decls()) {
+        UAISO_ASSERT(group->decls()->head()->kind() == Ast::Kind::ParamDecl,
+                     return Abort);
+        Param* ret = ParamDecl_Cast(group->decls()->head())->sym_;
+        if (ret->valueType()
+                && ret->valueType()->kind() != Type::Kind::Inferred) {
+            retTy.reset(ret->valueType()->clone());
+        }
+    } else {
+        VIS_CALL(traverseSpec(group->spec()));
+        ENSURE_NONEMPTY_TYPE_STACK;
+        retTy = P->popDeclType<>();
+    }
+
+    if (retTy) {
+        ENSURE_TOP_TYPE_IS(Func);
+        FuncType* funcTy = FuncType_Cast(P->declTy_.top().get());
+        funcTy->setReturnType(std::move(retTy));
+    }
 
     return Continue;
 }
@@ -619,7 +659,6 @@ Binder::VisitResult Binder::traverseFuncSpec(FuncSpecAst* ast)
 Binder::VisitResult Binder::traverseNamedSpec(NamedSpecAst* ast)
 {
     VIS_CALL(Base::traverseNamedSpec(ast));
-
     ENSURE_NAME_AVAILABLE;
     P->declTy_.emplace(new ElaborateType(P->declId_.back()));
 
@@ -632,7 +671,7 @@ Binder::VisitResult Binder::traverseNamedSpec(NamedSpecAst* ast)
 
 Binder::VisitResult Binder::visitVisibilityAttr(VisibilityAttrAst* ast)
 {
-    const SourceLoc& loc = ast->keyLoc_;
+    const SourceLoc& loc = ast->keyLoc();
     Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
@@ -677,7 +716,7 @@ Binder::VisitResult Binder::visitAnnotAttr(AnnotAttrAst* ast)
 
 Binder::VisitResult Binder::visitDeclAttr(DeclAttrAst* ast)
 {
-    const SourceLoc& loc = ast->keyLoc_;
+    const SourceLoc& loc = ast->keyLoc();
     Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
@@ -735,7 +774,7 @@ Binder::VisitResult Binder::visitDeclAttr(DeclAttrAst* ast)
 
 Binder::VisitResult Binder::visitAutoAttr(AutoAttrAst* ast)
 {
-    const SourceLoc& loc = ast->keyLoc_;
+    const SourceLoc& loc = ast->keyLoc();
     Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
@@ -764,7 +803,7 @@ Binder::VisitResult Binder::visitCodegenAttr(CodegenAttrAst* ast)
 
 Binder::VisitResult Binder::visitParamDirAttr(ParamDirAttrAst* ast)
 {
-    const SourceLoc& loc = ast->keyLoc_;
+    const SourceLoc& loc = ast->keyLoc();
     Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS(Param);
@@ -797,7 +836,7 @@ Binder::VisitResult Binder::visitParamDirAttr(ParamDirAttrAst* ast)
 
 Binder::VisitResult Binder::visitEvalStrategyAttr(EvalStrategyAttrAst* ast)
 {
-    const SourceLoc& loc = ast->keyLoc_;
+    const SourceLoc& loc = ast->keyLoc();
     Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS(Param);
@@ -827,7 +866,7 @@ Binder::VisitResult Binder::visitEvalStrategyAttr(EvalStrategyAttrAst* ast)
 
 Binder::VisitResult Binder::visitStorageClassAttr(StorageClassAttrAst* ast)
 {
-    const SourceLoc& loc = ast->keyLoc_;
+    const SourceLoc& loc = ast->keyLoc();
     Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_DECL;
@@ -863,7 +902,7 @@ Binder::VisitResult Binder::visitStorageClassAttr(StorageClassAttrAst* ast)
 
 Binder::VisitResult Binder::visitLinkageAttr(LinkageAttrAst* ast)
 {
-    const SourceLoc& loc = ast->keyLoc_;
+    const SourceLoc& loc = ast->keyLoc();
     Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_TOP_SYMBOL_IS_VALUEDECL;
@@ -893,7 +932,7 @@ Binder::VisitResult Binder::visitLinkageAttr(LinkageAttrAst* ast)
 
 Binder::VisitResult Binder::visitTypeQualAttr(TypeQualAttrAst* ast)
 {
-    const SourceLoc& loc = ast->keyLoc_;
+    const SourceLoc& loc = ast->keyLoc();
     Token tk = P->tokens_->findAt(loc.fileName_, loc.lineCol());
 
     ENSURE_NONEMPTY_TYPE_STACK;
@@ -955,7 +994,7 @@ Binder::VisitResult Binder::traverseAliasDecl(AliasDeclAst* ast)
 
     ENSURE_NAME_AVAILABLE;
     std::unique_ptr<Alias> alias(new Alias(P->declId_.back()));
-    alias->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    alias->setSourceLoc(fullLoc(ast, P->locator_));
 
     ENSURE_NONEMPTY_TYPE_STACK;
     alias->setType(P->popDeclType<>());
@@ -968,7 +1007,7 @@ Binder::VisitResult Binder::traverseAliasDecl(AliasDeclAst* ast)
 Binder::VisitResult Binder::traverseBlockDecl(BlockDeclAst* ast)
 {
     // TODO: Apply the attributes to each declaration individually.
-    for (auto decl : *ast->decls_.get())
+    for (auto decl : *ast->decls())
         VIS_CALL(traverseDecl(decl));
 
     return Continue;
@@ -976,10 +1015,10 @@ Binder::VisitResult Binder::traverseBlockDecl(BlockDeclAst* ast)
 
 Binder::VisitResult Binder::traverseSelectiveDecl(SelectiveDeclAst* ast)
 {
-    VIS_CALL(traverseExpr(ast->expr_.get()));
+    VIS_CALL(traverseExpr(ast->expr()));
 
     // TODO: Pick the right clause when possible (at least for simple exprs).
-    VIS_CALL(traverseDecl(ast->ifDecl_.get()));
+    VIS_CALL(traverseDecl(ast->ifDecl()));
 
     return Continue;
 }
@@ -1002,7 +1041,7 @@ Binder::VisitResult Binder::traverseForwardDecl(ForwardDeclAst* ast)
 
     ENSURE_NAME_AVAILABLE;
     std::unique_ptr<Placeholder> holder(new Placeholder(P->declId_.back()));
-    holder->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    holder->setSourceLoc(fullLoc(ast, P->locator_));
 
     P->env_.insertTypeDecl(std::move(holder));
 
@@ -1014,11 +1053,11 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
     // An import is not injected into the environment during binding. But
     // it's still evaluated so the module and given namespace are collected.
 
-    UAISO_ASSERT(ast->expr_.get(), return Abort);
+    UAISO_ASSERT(ast->expr(), return Abort);
     AstToLexeme astToLexs(P->lexs_);
-    const auto& lexs = astToLexs.process(ast->expr_.get());
+    const auto& lexs = astToLexs.process(ast->expr());
     if (lexs.empty()) {
-        P->report(Diagnostic::UnresolvedModule, ast->expr_.get(), P->locator_.get());
+        P->report(Diagnostic::UnresolvedModule, ast->expr(), P->locator_);
         return Continue;
     }
 
@@ -1028,10 +1067,9 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
 
     const Ident* localName = nullptr;
     if (ast->localName_) {
-        const auto& localLexemes = astToLexs.process(ast->localName_.get());
+        const auto& localLexemes = astToLexs.process(ast->localName());
         if (localLexemes.empty() || localLexemes.size() > 1) {
-            P->report(Diagnostic::UnresolvedModule, ast->localName_.get(),
-                      P->locator_.get());
+            P->report(Diagnostic::UnresolvedModule, ast->localName(), P->locator_);
         } else {
             localName = ConstIdent_Cast(localLexemes.back());
             DEBUG_TRACE("local module name %s\n", localName->str().c_str());
@@ -1050,34 +1088,33 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
                            target,
                            localName,
                            P->sanitizer_->mayMergeImportEnv(localName)));
-    import->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    import->setSourceLoc(fullLoc(ast, P->locator_));
 
     // Specific exact symbols if this is a selective import.
-    if (ast->members()) {
-        for (auto decl : *ast->members()) {
-            UAISO_ASSERT(decl->kind() == Ast::Kind::ImportMemberDecl, return Abort);
-            ImportMemberDeclAst* member = ImportMemberDecl_Cast(decl);
+    if (ast->items()) {
+        for (auto decl : *ast->items()) {
+            UAISO_ASSERT(decl->kind() == Ast::Kind::ImportItemDecl, return Abort);
+            ImportItemDeclAst* item = ImportItemDecl_Cast(decl);
 
-            UAISO_ASSERT(member->actualName(), return Abort);
-            const auto& actualNameLexs = astToLexs.process(member->actualName());
-            if (actualNameLexs.size() > 1) {
-                P->report(Diagnostic::UnexpectedQualifiedName, member->actualName(),
-                          P->locator_.get());
+            const auto& actualNameLexs = astToLexs.process(item->actualName());
+            if (actualNameLexs.empty() || actualNameLexs.size() > 1) {
+                P->report(Diagnostic::UnexpectedName, item->actualName(),
+                          P->locator_);
                 continue;
             }
 
-            const Ident* memberName = ConstIdent_Cast(actualNameLexs.back());
-            if (member->nickName()) {
-                const auto& altNameLexs = astToLexs.process(member->nickName());
-                if (altNameLexs.size() > 1) {
-                    P->report(Diagnostic::UnexpectedQualifiedName, member->nickName(),
-                              P->locator_.get());
+            const Ident* itemName = ConstIdent_Cast(actualNameLexs.back());
+            if (item->alternateName()) {
+                const auto& altNameLexs = astToLexs.process(item->alternateName());
+                if (altNameLexs.empty() || altNameLexs.size() > 1) {
+                    P->report(Diagnostic::UnexpectedName, item->alternateName(),
+                              P->locator_);
                     continue;
                 }
-                import->addSelectedItem(memberName,
+                import->addSelectedItem(itemName,
                                         ConstIdent_Cast(altNameLexs.back()));
             } else {
-                import->addSelectedItem(memberName);
+                import->addSelectedItem(itemName);
             }
         }
     }
@@ -1107,10 +1144,10 @@ Binder::VisitResult Binder::traverseTemplateParamClauseDecl(TemplateParamClauseD
 
 Binder::VisitResult Binder::traverseParamGroupDecl(ParamGroupDeclAst* ast)
 {
-    if (!ast->decls_ || !ast->spec_)
+    if (!ast->decls() || !ast->spec())
         return Continue;
 
-    for (auto decl : *(ast->decls_.get())) {
+    for (auto decl : *ast->decls()) {
         UAISO_ASSERT(decl->kind() == Ast::Kind::ParamDecl, return Abort);
         ParamDeclAst* paramDecl = ParamDecl_Cast(decl);
 
@@ -1118,7 +1155,7 @@ Binder::VisitResult Binder::traverseParamGroupDecl(ParamGroupDeclAst* ast)
         ENSURE_TOP_SYMBOL_IS(Param);
         Param* param = Param_Cast(P->sym_.top().get());
 
-        VIS_CALL(traverseSpec(ast->spec_.get()));
+        VIS_CALL(traverseSpec(ast->spec()));
         ENSURE_NONEMPTY_TYPE_STACK;
         param->setValueType(P->popDeclType<>());
 
@@ -1130,17 +1167,19 @@ Binder::VisitResult Binder::traverseParamGroupDecl(ParamGroupDeclAst* ast)
 
 Binder::VisitResult Binder::traverseParamDecl(ParamDeclAst* ast)
 {
-    VIS_CALL(traverseName(ast->name_.get()));
+    VIS_CALL(traverseName(ast->name()));
 
     if (P->declId_.empty()) {
         if (!P->sanitizer_->allowAnonymous(Symbol::Kind::Param))
-            P->report(Diagnostic::IdentifierExpected, ast, P->locator_.get());
+            P->report(Diagnostic::IdentifierExpected, ast, P->locator_);
         return Continue;
     }
 
     ENSURE_NAME_AVAILABLE;
     std::unique_ptr<Param> param(new Param(P->declId_.back()));
-    param->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    param->setSourceLoc(fullLoc(ast, P->locator_));
+
+    ast->sym_ = param.get(); // Annotate AST with the symbol
 
     P->sym_.push(std::move(param));
 
@@ -1184,7 +1223,7 @@ Binder::VisitResult Binder::traverseVarDecl(VarDeclAst* ast)
     VIS_CALL(traverseName(ast->name()));
     ENSURE_NAME_AVAILABLE;
     std::unique_ptr<Var> var(new Var(P->declId_.back()));
-    var->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    var->setSourceLoc(fullLoc(ast, P->locator_));
 
     ast->sym_ = var.get(); // Annotate AST with the symbol
 
@@ -1197,16 +1236,16 @@ Binder::VisitResult Binder::traverseRecordDecl(RecordDeclAst* ast)
 {
     // TODO: Proper "namespace" handling.
 
-    VIS_CALL(traverseName(ast->name_.get()));
+    VIS_CALL(traverseName(ast->name()));
     ENSURE_NAME_AVAILABLE;
     std::unique_ptr<Record> record(new Record(P->declId_.back()));
-    record->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    record->setSourceLoc(fullLoc(ast, P->locator_));
 
     ast->sym_ = record.get(); // Annotate AST with the symbol
 
     P->sym_.push(std::move(record));
 
-    VIS_CALL(traverseSpec(ast->spec_.get()));
+    VIS_CALL(traverseSpec(ast->spec()));
 
     ENSURE_TOP_SYMBOL_IS(Record);
     record = P->popSymbol<Record>();
@@ -1224,7 +1263,7 @@ Binder::VisitResult Binder::traverseBaseDecl(BaseDeclAst* ast)
     VIS_CALL(Base::traverseBaseDecl(ast));
     ENSURE_NAME_AVAILABLE;
     std::unique_ptr<BaseRecord> base(new BaseRecord(P->declId_.back()));
-    base->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    base->setSourceLoc(fullLoc(ast, P->locator_));
 
     ENSURE_TOP_TYPE_IS(Record);
     RecordType* ty = RecordType_Cast(P->declTy_.top().get());
@@ -1235,24 +1274,26 @@ Binder::VisitResult Binder::traverseBaseDecl(BaseDeclAst* ast)
 
 Binder::VisitResult Binder::traverseEnumDecl(EnumDeclAst* ast)
 {
-    VIS_CALL(traverseName(ast->name_.get()));
+    VIS_CALL(traverseName(ast->name()));
     ENSURE_NAME_AVAILABLE;
     std::unique_ptr<Enum> enumm(new Enum(P->declId_.back()));
-    enumm->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    enumm->setSourceLoc(fullLoc(ast, P->locator_));
 
     ast->sym_ = enumm.get(); // Annotate AST with the symbol
 
     P->sym_.push(std::move(enumm));
     P->enterSubEnv();
 
-    for (auto decl : *ast->decls_.get())
-        VIS_CALL(traverseDecl(decl));
+    if (ast->decls()) {
+        for (auto decl : *ast->decls())
+            VIS_CALL(traverseDecl(decl));
 
-    if (ast->spec_) {
-        VIS_CALL(traverseSpec(ast->spec_.get()));
-    } else {
-        // If there's no underlying type spec, assume int.
-        P->declTy_.emplace(new IntType);
+        if (ast->spec_) {
+            VIS_CALL(traverseSpec(ast->spec()));
+        } else {
+            // If there's no underlying type spec, assume int.
+            P->declTy_.emplace(new IntType);
+        }
     }
 
     ENSURE_TOP_SYMBOL_IS(Enum);
@@ -1275,7 +1316,7 @@ Binder::VisitResult Binder::traverseEnumMemberDecl(EnumMemberDeclAst* ast)
     VIS_CALL(Base::traverseEnumMemberDecl(ast));
     ENSURE_NAME_AVAILABLE;
     std::unique_ptr<EnumItem> enumItem(new EnumItem(P->declId_.back()));
-    enumItem->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    enumItem->setSourceLoc(fullLoc(ast, P->locator_));
 
     P->env_.insertValueDecl(std::move(enumItem));
 
@@ -1286,9 +1327,9 @@ Binder::VisitResult Binder::traverseEnumMemberDecl(EnumMemberDeclAst* ast)
 
 Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
 {
-    VIS_CALL(traverseName(ast->name_.get()));
+    VIS_CALL(traverseName(ast->name()));
     std::unique_ptr<Func> func(new Func(P->declId_.back()));
-    func->setSourceLoc(fullLoc(ast, P->locator_.get()));
+    func->setSourceLoc(fullLoc(ast, P->locator_));
 
     ast->sym_ = func.get(); // Annotate AST with the symbol
 
@@ -1297,7 +1338,7 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
     if (P->lang_->hasFuncLevelScope())
         P->enterSubEnv();
 
-    VIS_CALL(traverseSpec(ast->spec_.get()));
+    VIS_CALL(traverseSpec(ast->spec()));
 
     ENSURE_TOP_SYMBOL_IS(Func);
     func = P->popSymbol<Func>();
@@ -1309,10 +1350,10 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
         // A block stmt of a function must have the same environment of
         // its parent function, and not create its own.
         ++P->ownedBlocks_;
-        VIS_CALL(traverseStmt(ast->stmt_.get()));
-        BlockStmt_Cast(ast->stmt_.get())->env_ = P->env_;
+        VIS_CALL(traverseStmt(ast->stmt()));
+        BlockStmt_Cast(ast->stmt())->env_ = P->env_;
     } else {
-        VIS_CALL(traverseStmt(ast->stmt_.get()));
+        VIS_CALL(traverseStmt(ast->stmt()));
     }
 
     if (P->lang_->hasFuncLevelScope())
@@ -1333,8 +1374,8 @@ Binder::VisitResult Binder::traverseModuleDecl(ModuleDeclAst* ast)
     if (!P->declId_.empty()) {
         std::string moduleName = P->declId_.back()->str();
         if (!P->sanitizer_->moduleMatchesFile(P->fileName_, moduleName)) {
-            P->report(Diagnostic::ModuleNameDoesNotMatchFileName,
-                      ast->name_.get(), P->locator_.get());
+            P->report(Diagnostic::ModuleNameDoesNotMatchFileName, ast->name(),
+                      P->locator_);
         }
     }
 
@@ -1349,8 +1390,8 @@ Binder::VisitResult Binder::traversePackageDecl(PackageDeclAst *ast)
     if (!P->declId_.empty()) {
         std::string packageName = P->declId_.back()->str();
         if (!P->sanitizer_->packageMatchesDir(P->fileName_, packageName)) {
-            P->report(Diagnostic::PackageNameDoesNotMatchDirName,
-                      ast->name_.get(), P->locator_.get());
+            P->report(Diagnostic::PackageNameDoesNotMatchDirName, ast->name(),
+                      P->locator_);
         }
     }
 
@@ -1390,7 +1431,7 @@ Binder::VisitResult Binder::visitRecordLitExpr(RecordLitExprAst* ast)
 template <class AstT>
 Binder::VisitResult Binder::keepTypeOfExprSpec(AstT* ast)
 {
-    VIS_CALL(traverseSpec(ast->spec_.get()));
+    VIS_CALL(traverseSpec(ast->spec()));
     ENSURE_NONEMPTY_TYPE_STACK;
     ast->ty_ = P->popDeclType<>();
 
@@ -1411,7 +1452,7 @@ Binder::VisitResult Binder::traverseNestedNewExpr(NestedNewExprAst* ast)
 {
     UAISO_ASSERT(ast->nestedNew_->kind() == Ast::Kind::NewExpr, return Skip);
 
-    return traverseNewExpr(NewExpr_Cast(ast->nestedNew_.get()));
+    return traverseNewExpr(NewExpr_Cast(ast->nestedNew()));
 }
 
 Binder::VisitResult Binder::traverseCastExpr(CastExprAst* ast)
@@ -1432,8 +1473,8 @@ Binder::VisitResult Binder::traverseTypeAssertExpr(TypeAssertExprAst* ast)
 Binder::VisitResult Binder::traverseTypeidExpr(TypeidExprAst* ast)
 {
     // TODO: See comment in TypeidExprAst.
-    if (ast->exprOrSpec_->isSpec()) {
-        VIS_CALL(traverseSpec(Spec_Cast(ast->exprOrSpec_.get())));
+    if (ast->exprOrSpec()->isSpec()) {
+        VIS_CALL(traverseSpec(Spec_Cast(ast->exprOrSpec())));
         ENSURE_NONEMPTY_TYPE_STACK;
         P->popDeclType<>();
     }
@@ -1455,11 +1496,11 @@ Binder::VisitResult Binder::traverseAssignExpr(AssignExprAst* ast)
             name = IdentExpr_Cast(expr)->name();
         } else if (expr->kind() == Ast::Kind::MemberAccessExpr) {
             auto member = MemberAccessExpr_Cast(expr);
-            if (!member->exprOrSpec_
-                    || member->exprOrSpec_->kind() != Ast::Kind::IdentExpr) {
+            if (!member->exprOrSpec()
+                    || member->exprOrSpec()->kind() != Ast::Kind::IdentExpr) {
                 continue;
             }
-            auto baseName = IdentExpr_Cast(member->exprOrSpec_.get())->name();
+            auto baseName = IdentExpr_Cast(member->exprOrSpec())->name();
 
             // Retrieve the lex of the base name and check whether
             // it's a "self". If so, bind the corresponding name.
@@ -1471,12 +1512,10 @@ Binder::VisitResult Binder::traverseAssignExpr(AssignExprAst* ast)
             }
 
             name = member->name();
-            if (P->tyEnv_.empty()) {
-                P->report(Diagnostic::InvalidReferenceToSelf,
-                          fullLoc(name, P->locator_.get()));
-            } else {
+            if (P->tyEnv_.empty())
+                P->report(Diagnostic::InvalidReferenceToSelf, fullLoc(name, P->locator_));
+            else
                 env = P->tyEnv_.top();
-            }
         } else {
             continue;
         }
@@ -1484,7 +1523,7 @@ Binder::VisitResult Binder::traverseAssignExpr(AssignExprAst* ast)
         VIS_CALL(traverseName(name));
         ENSURE_NAME_AVAILABLE;
         std::unique_ptr<Var> var(new Var(P->declId_.back()));
-        var->setSourceLoc(fullLoc(name, P->locator_.get()));
+        var->setSourceLoc(fullLoc(name, P->locator_));
         var->setValueType(std::unique_ptr<Type>(new InferredType));
 
         ast->syms_.push_back(var.get()); // Annotate AST with symbol
@@ -1523,7 +1562,7 @@ Binder::VisitResult Binder::traverseTypeSwitchStmt(TypeSwitchStmtAst* ast)
 {
     // TODO: Don't traverse spec yet (type of decl won't be popped).
 
-    VIS_CALL(traverseStmt(ast->stmt_.get()));
+    VIS_CALL(traverseStmt(ast->stmt()));
 
     return Continue;
 }

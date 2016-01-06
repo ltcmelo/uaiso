@@ -79,6 +79,8 @@ set(UAISO_SOURCES
     ${PROJECT_SOURCE_DIR}/${AST_PATH}/AstList.h
     ${PROJECT_SOURCE_DIR}/${AST_PATH}/AstLocator.cpp
     ${PROJECT_SOURCE_DIR}/${AST_PATH}/AstLocator.h
+    ${PROJECT_SOURCE_DIR}/${AST_PATH}/AstMisc.cpp
+    ${PROJECT_SOURCE_DIR}/${AST_PATH}/AstMisc.h
     ${PROJECT_SOURCE_DIR}/${AST_PATH}/AstName.h
     ${PROJECT_SOURCE_DIR}/${AST_PATH}/AstSerializer.cpp
     ${PROJECT_SOURCE_DIR}/${AST_PATH}/AstSerializer.h

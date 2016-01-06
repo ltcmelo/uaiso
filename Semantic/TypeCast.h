@@ -38,7 +38,7 @@
 
 #define ConstElaborateType_Cast(T) static_cast<const uaiso::ElaborateType*>(T)
 #define ElaborateType_Cast(T) static_cast<uaiso::ElaborateType*>(T)
-#define ElaborateType_ConstCast(T) const_cast<uaiso::ElaborateType*>(ConstConstElaborateType_Cast(T))
+#define ElaborateType_ConstCast(T) const_cast<uaiso::ElaborateType*>(ConstElaborateType_Cast(T))
 
 #define ConstEnumType_Cast(T) static_cast<const uaiso::EnumType*>(T)
 #define EnumType_Cast(T) static_cast<uaiso::EnumType*>(T)

@@ -93,7 +93,7 @@ const Diagnostic::Code Diagnostic::InvalidOctalDigit = 48;
 const Diagnostic::Code Diagnostic::InvalidHexDigit = 49;
 const Diagnostic::Code Diagnostic::InvalidFloatSuffix = 50;
 const Diagnostic::Code Diagnostic::InvalidReferenceToSelf = 51;
-const Diagnostic::Code Diagnostic::UnexpectedQualifiedName = 52;
+const Diagnostic::Code Diagnostic::UnexpectedName = 52;
 
 namespace uaiso {
 
@@ -211,8 +211,8 @@ public:
                     "invalid float suffix", Severity::Error },
         { Diagnostic::InvalidReferenceToSelf,
                     "invalid reference to self", Severity::Error },
-        { Diagnostic::UnexpectedQualifiedName,
-                    "unexpected qualified name", Severity::Error },
+        { Diagnostic::UnexpectedName,
+                    "unexpected name", Severity::Error },
     };
 };
 
@@ -257,12 +257,19 @@ void DiagnosticReports::add(const DiagnosticReport& report)
 
 void DiagnosticReports::add(const Diagnostic::Code code, const SourceLoc& loc)
 {
-    reports_.push_back(DiagnosticReport(code, loc));
+    add(DiagnosticReport(code, loc));
 }
 
 void DiagnosticReports::add(const Diagnostic::Code code,
                             Ast* ast,
                             const AstLocator* locator)
 {
-    reports_.push_back(DiagnosticReport(code, fullLoc(ast, locator)));
+    add(DiagnosticReport(code, fullLoc(ast, locator)));
+}
+
+void DiagnosticReports::add(const Diagnostic::Code code,
+                            Ast* ast,
+                            const std::unique_ptr<const AstLocator>& locator)
+{
+    add(code, ast, locator.get());
 }

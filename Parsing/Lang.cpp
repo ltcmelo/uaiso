@@ -39,6 +39,8 @@ bool Lang::hasNewlineAsTerminator() const { return false; }
 
 bool Lang::isPurelyOO() const { return false; }
 
+bool Lang::requiresReturnTypeInference() const { return false; }
+
 std::string Lang::packageSeparator() const
 {
     return ".";

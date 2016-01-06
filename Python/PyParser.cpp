@@ -578,7 +578,7 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
         // from .. import moduleY
 
         if (wantName || isNameAhead()) {
-            // A selective import, members specified after 'import'.
+            // A selective import, items specified after 'import'.
             auto module = makeAst<ImportModuleDeclAst>();
             module->setExpr(makeAstRaw<IdentExprAst>()->setName(parseDottedName().release()));
             match(TK_IMPORT);
@@ -590,7 +590,7 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
                 star->setNameLoc(lastLoc_);
                 module->setLocalName(star.release());
             } else {
-                module->setMembers(parseSubImports(true).release());
+                module->setItems(parseSubImports(true).release());
             }
             import->addModule(module.release());
         } else {
@@ -630,13 +630,13 @@ std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
             do {
                 if (decls)
                     decls->delim_ = lastLoc_;
-                auto member = makeAst<ImportMemberDeclAst>();
-                member->setActualName(parseName().release());
+                auto item = makeAst<ImportItemDeclAst>();
+                item->setActualName(parseName().release());
                 if (maybeConsume(TK_AS)) {
-                    member->setAsLoc(lastLoc_);
-                    member->setNickName(parseName().release());
+                    item->setAsLoc(lastLoc_);
+                    item->setAlternateName(parseName().release());
                 }
-                addToList(decls, member.release());
+                addToList(decls, item.release());
             } while (maybeConsume(TK_COMMA));
         } else {
             do {

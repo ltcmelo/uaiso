@@ -37,6 +37,8 @@ public:
 
     bool hasNewlineAsTerminator() const override;
 
+    bool requiresReturnTypeInference() const override;
+
     Structure structure() const override;
 
     ImportMechanism importMechanism() const override;

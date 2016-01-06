@@ -632,6 +632,7 @@ public:
 
     MemberAccessExprAst* setSpec(SpecAst* spec);
     MemberAccessExprAst* setExpr(ExprAst* expr);
+    Ast* exprOrSpec() { return exprOrSpec_.get(); }
 
     NAMED_LOC_PARAM(Opr, opr)
     NAMED_AST_PARAM(Name, name, NameAst)
@@ -964,6 +965,7 @@ public:
 
     TypeidExprAst* setSpec(SpecAst* spec);
     TypeidExprAst* setExpr(ExprAst* spec);
+    Ast* exprOrSpec() { return exprOrSpec_.get(); }
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_LOC_PARAM(LDelim, lDelim)

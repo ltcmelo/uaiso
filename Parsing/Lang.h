@@ -125,6 +125,15 @@ public:
     virtual bool isPurelyOO() const;
 
     /*!
+     * \brief requiresReturnTypeInference
+     * \return
+     *
+     * Return whether return types are absent in a function's signature and
+     * are therefre required to be inferred.
+     */
+    virtual bool requiresReturnTypeInference() const;
+
+    /*!
      * \brief sourceFileSuffix
      * \return
      *

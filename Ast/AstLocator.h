@@ -28,6 +28,7 @@
 #include "Ast/AstDefs.h"
 #include "Common/Config.h"
 #include "Parsing/SourceLoc.h"
+#include <memory>
 
 namespace uaiso {
 
@@ -70,6 +71,12 @@ template <class AstT>
 SourceLoc fullLoc(AstT* ast, const AstLocator* locator)
 {
     return joinedLoc(locator->loc(ast), locator->lastLoc(ast));
+}
+
+template <class AstT>
+SourceLoc fullLoc(AstT* ast, const std::unique_ptr<const AstLocator>& locator)
+{
+    return fullLoc(ast, locator.get());
 }
 
 } // namespace uaiso

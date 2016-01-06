@@ -164,7 +164,7 @@ void TypeChecker::check(ProgramAst *progAst)
 
     P->env_ = progAst->program_->env();
 
-    traverseProgram(progAst, this, P->lang_.get());
+    traverseProgram(progAst, this, P->lang_);
 }
 
 void TypeChecker::check(FuncDeclAst* ast)
@@ -174,7 +174,7 @@ void TypeChecker::check(FuncDeclAst* ast)
 
     P->env_ = ast->sym_->env();
 
-    traverseStmt(ast->stmt_.get());
+    traverseStmt(ast->stmt());
 }
 
 bool TypeChecker::escapeCheck(const Type* ty) const
@@ -331,10 +331,13 @@ TypeChecker::VisitResult TypeChecker::traverseEnumDecl(EnumDeclAst* ast)
 {
     ENSURE_VALID_TYPE_SYMBOL;
 
+    if (!ast->decls())
+        return Continue;
+
     P->env_ = ast->sym_->type()->env();
     VIS_CALL(Base::traverseEnumDecl(ast));
 
-    for (auto decl : *ast->decls_.get()) {
+    for (auto decl : *ast->decls()) {
         UAISO_ASSERT(decl->kind() == Ast::Kind::EnumMemberDecl, return Skip);
         EnumMemberDeclAst* enumMemberDecl = EnumMemberDecl_Cast(decl);
 
@@ -343,8 +346,7 @@ TypeChecker::VisitResult TypeChecker::traverseEnumDecl(EnumDeclAst* ast)
             ENSURE_NONEMPTY_STACK;
             std::unique_ptr<Type> ty = P->popExprType();
 
-            analyseInit(ast->sym_->underlyingType(), ty.get(),
-                        fullLoc(ast, P->locator_.get()));
+            analyseInit(ast->sym_->underlyingType(), ty.get(), fullLoc(ast, P->locator_));
         }
     }
 
@@ -374,6 +376,10 @@ TypeChecker::VisitResult TypeChecker::traverseFuncDecl(FuncDeclAst* ast)
         P->env_ = P->env_.outerEnv();
     } else {
         VIS_CALL(Base::traverseFuncDecl(ast));
+    }
+
+    if (P->lang_->requiresReturnTypeInference()) {
+        // TODO
     }
 
     return Continue;
@@ -425,7 +431,7 @@ TypeChecker::VisitResult TypeChecker::traverseVarDecl(VarDeclAst* ast)
         std::unique_ptr<Type> ty = P->popExprType();
 
         Var* var = ast->sym_;
-        analyseInit(var->valueType(), ty.get(), fullLoc(ast, P->locator_.get()));
+        analyseInit(var->valueType(), ty.get(), fullLoc(ast, P->locator_));
         if (var->valueType()->kind() == Type::Kind::Inferred)
             var->setValueType(std::unique_ptr<Type>(ty->clone()));
     }
@@ -436,11 +442,11 @@ TypeChecker::VisitResult TypeChecker::traverseVarDecl(VarDeclAst* ast)
 TypeChecker::VisitResult TypeChecker::traverseVarGroupDecl(VarGroupDeclAst* group)
 {
     if (group->hasInits()) {
-        auto decls = group->decls_.get();
+        auto decls = group->decls();
         for (auto init : *group->inits()) {
             // There should be a decl for every initializer.
             if (!decls->head()) {
-                P->report(Diagnostic::ExtraInitializer, group, P->locator_.get());
+                P->report(Diagnostic::ExtraInitializer, group, P->locator_);
                 break;
             }
 
@@ -453,14 +459,14 @@ TypeChecker::VisitResult TypeChecker::traverseVarGroupDecl(VarGroupDeclAst* grou
             UAISO_ASSERT(varDecl->sym_, return Skip);
             const Type* declTy = varDecl->sym_->valueType();
 
-            analyseInit(declTy, ty.get(), fullLoc(varDecl, P->locator_.get()));
+            analyseInit(declTy, ty.get(), fullLoc(varDecl, P->locator_));
             if (varDecl->sym_->valueType()->kind() == Type::Kind::Inferred)
                 varDecl->sym_->setValueType(std::unique_ptr<Type>(ty->clone()));
 
             decls = decls->subList();
         }
-    } else {
-        for (auto decl : *group->decls_.get())
+    } else if (group->decls()) {
+        for (auto decl : *group->decls())
             VIS_CALL(traverseDecl(decl));
     }
 
@@ -583,14 +589,14 @@ TypeChecker::VisitResult TypeChecker::processArithmetic(ExprAst* expr1,
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty = P->popExprType();
     if (!isNumType(ty->kind())) {
-        P->report(Diagnostic::NumericValueExpected, expr2, P->locator_.get());
+        P->report(Diagnostic::NumericValueExpected, expr2, P->locator_);
         ty.reset(nullptr);
     }
 
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty2 = P->popExprType();
     if (!isNumType(ty2->kind())) {
-        P->report(Diagnostic::NumericValueExpected, expr1, P->locator_.get());
+        P->report(Diagnostic::NumericValueExpected, expr1, P->locator_);
     } else if (!ty) {
         ty = std::move(ty2);
     }
@@ -604,42 +610,42 @@ TypeChecker::VisitResult TypeChecker::traverseAddExpr(AddExprAst* ast)
 {
     VIS_CALL(Base::traverseAddExpr(ast));
 
-    return processArithmetic(ast->expr1_.get(), ast->expr2_.get());
+    return processArithmetic(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseSubExpr(SubExprAst* ast)
 {
     VIS_CALL(Base::traverseSubExpr(ast));
 
-    return processArithmetic(ast->expr1_.get(), ast->expr2_.get());
+    return processArithmetic(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseDivExpr(DivExprAst* ast)
 {
     VIS_CALL(Base::traverseDivExpr(ast));
 
-    return processArithmetic(ast->expr1_.get(), ast->expr2_.get());
+    return processArithmetic(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseModExpr(ModExprAst* ast)
 {
     VIS_CALL(Base::traverseModExpr(ast));
 
-    return processArithmetic(ast->expr1_.get(), ast->expr2_.get());
+    return processArithmetic(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseMulExpr(MulExprAst* ast)
 {
     VIS_CALL(Base::traverseMulExpr(ast));
 
-    return processArithmetic(ast->expr1_.get(), ast->expr2_.get());
+    return processArithmetic(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traversePowerExpr(PowerExprAst* ast)
 {
     VIS_CALL(Base::traversePowerExpr(ast));
 
-    return processArithmetic(ast->expr1_.get(), ast->expr2_.get());
+    return processArithmetic(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseConcatExpr(ConcatExprAst* ast)
@@ -649,14 +655,14 @@ TypeChecker::VisitResult TypeChecker::traverseConcatExpr(ConcatExprAst* ast)
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty = P->popExprType();
     if (ty->kind() != Type::Kind::Str) {
-        P->report(Diagnostic::StringValueExpected, ast->expr1_.get(), P->locator_.get());
+        P->report(Diagnostic::StringValueExpected, ast->expr1(), P->locator_);
         ty.reset(nullptr);
     }
 
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty2 = P->popExprType();
     if (ty2->kind() != Type::Kind::Str) {
-        P->report(Diagnostic::StringValueExpected, ast->expr2_.get(), P->locator_.get());
+        P->report(Diagnostic::StringValueExpected, ast->expr2(), P->locator_);
     } else if (!ty) {
         ty = std::move(ty2);
     }
@@ -720,8 +726,8 @@ TypeChecker::VisitResult TypeChecker::traverseAddrOfExpr(AddrOfExprAst* ast)
 TypeChecker::VisitResult TypeChecker::traverseArrayInitExpr(ArrayInitExprAst* ast)
 {
     // For simplicity (although not really correct), inspect first item only.
-    if (ast->inits_) {
-        VIS_CALL(traverseExpr(ast->inits_->head()));
+    if (ast->inits()) {
+        VIS_CALL(traverseExpr(ast->inits()->head()));
         ENSURE_NONEMPTY_STACK;
         P->exprTy_.emplace(new ArrayType(P->popExprType()));
         return Continue;
@@ -739,12 +745,12 @@ TypeChecker::VisitResult TypeChecker::traverseArraySliceExpr(ArraySliceExprAst* 
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> rangeTy = P->popExprType();
     if (rangeTy->kind() != Type::Kind::Subrange)
-        P->report(Diagnostic::SubrangeValueExpected, ast->range_.get(), P->locator_.get());
+        P->report(Diagnostic::SubrangeValueExpected, ast->range(), P->locator_);
 
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> baseTy = P->popExprType();
     if (baseTy->kind() != Type::Kind::Array) {
-        P->report(Diagnostic::ArrayValueExpected, ast->base_.get(), P->locator_.get());
+        P->report(Diagnostic::ArrayValueExpected, ast->base(), P->locator_);
         P->exprTy_.emplace(new InferredType);
     } else {
         P->exprTy_.push(std::move(baseTy));
@@ -763,14 +769,14 @@ TypeChecker::VisitResult TypeChecker::traverseArrayIndexExpr(ArrayIndexExprAst* 
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> baseTy = P->popExprType();
     if (baseTy->kind() != Type::Kind::Array) {
-        P->report(Diagnostic::ArrayValueExpected, ast->base_.get(), P->locator_.get());
+        P->report(Diagnostic::ArrayValueExpected, ast->base(), P->locator_);
         P->exprTy_.emplace(new InferredType);
     } else {
         ArrayType* arrTy = ArrayType_Cast(baseTy.get());
         if (arrTy->variety() == ArrayVariety::Plain
                 && !isNumType(indexTy->kind())) {
-            P->report(Diagnostic::IntegerValueExpected, ast->index_.get(),
-                      P->locator_.get());
+            P->report(Diagnostic::IntegerValueExpected, ast->index(),
+                      P->locator_);
         }
         P->exprTy_.emplace(arrTy->baseType()->clone());
     }
@@ -829,7 +835,7 @@ TypeChecker::VisitResult TypeChecker::traverseAssignExpr(AssignExprAst* ast)
     // Proceed as long as there are types to be checked against. More work
     // is required to properly diagnose issues of multivalue mismatch.
     size_t idx = 0;
-    for (auto expr1 : *ast->exprs1_.get()) {
+    for (auto expr1 : *ast->exprs1()) {
         P->keepNextSymbol();
         traverseExpr(expr1);
         ENSURE_NONEMPTY_STACK;
@@ -844,8 +850,7 @@ TypeChecker::VisitResult TypeChecker::traverseAssignExpr(AssignExprAst* ast)
             if (P->prevSym_)
                 ValueDecl_ConstCast(P->prevSym_)->setValueType(std::move(exprTy[idx]));
         } else {
-            analyseAssign(ty.get(), exprTy[idx].get(),
-                          fullLoc(ast, P->locator_.get()));
+            analyseAssign(ty.get(), exprTy[idx].get(), fullLoc(ast, P->locator_));
         }
         ++idx;
     }
@@ -864,7 +869,7 @@ TypeChecker::VisitResult TypeChecker::traverseEqExpr(EqExprAst* ast)
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty2 = P->popExprType();
 
-    analyseEq(ty1.get(), ty2.get(), fullLoc(ast, P->locator_.get()));
+    analyseEq(ty1.get(), ty2.get(), fullLoc(ast, P->locator_));
 
     P->exprTy_.emplace(new BoolType);
 
@@ -936,14 +941,14 @@ TypeChecker::VisitResult TypeChecker::processLogical(ExprAst* expr1, ExprAst* ex
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty = P->popExprType();
     if (ty->kind() != Type::Kind::Bool) {
-        P->report(Diagnostic::BooleanValueExpected, expr2, P->locator_.get());
+        P->report(Diagnostic::BooleanValueExpected, expr2, P->locator_);
         ty.reset(nullptr);
     }
 
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty2 = P->popExprType();
     if (ty2->kind() != Type::Kind::Bool)
-        P->report(Diagnostic::BooleanValueExpected, expr1, P->locator_.get());
+        P->report(Diagnostic::BooleanValueExpected, expr1, P->locator_);
     else if (!ty)
         ty = std::move(ty2);
 
@@ -956,14 +961,14 @@ TypeChecker::VisitResult TypeChecker::traverseLogicAndExpr(LogicAndExprAst* ast)
 {
     VIS_CALL(Base::traverseLogicAndExpr(ast));
 
-    return processLogical(ast->expr1_.get(), ast->expr2_.get());
+    return processLogical(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseLogicOrExpr(LogicOrExprAst* ast)
 {
     VIS_CALL(Base::traverseLogicOrExpr(ast));
 
-    return processLogical(ast->expr1_.get(), ast->expr2_.get());
+    return processLogical(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseLogicNotExpr(LogicNotExprAst* ast)
@@ -973,7 +978,7 @@ TypeChecker::VisitResult TypeChecker::traverseLogicNotExpr(LogicNotExprAst* ast)
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty = P->popExprType();
     if (ty->kind() != Type::Kind::Bool) {
-        P->report(Diagnostic::BooleanValueExpected, ast, P->locator_.get());
+        P->report(Diagnostic::BooleanValueExpected, ast, P->locator_);
         P->exprTy_.emplace(new BoolType);
     } else {
         P->exprTy_.push(std::move(ty));
@@ -989,12 +994,12 @@ TypeChecker::VisitResult TypeChecker::traverseRelExpr(RelExprAst* ast)
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty1 = P->popExprType();
     if (!isNumType(ty1->kind()))
-        P->report(Diagnostic::NumericValueExpected, ast->expr1_.get(), P->locator_.get());
+        P->report(Diagnostic::NumericValueExpected, ast->expr1(), P->locator_);
 
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty2 = P->popExprType();
     if (!isNumType(ty2->kind()))
-        P->report(Diagnostic::NumericValueExpected, ast->expr2_.get(), P->locator_.get());
+        P->report(Diagnostic::NumericValueExpected, ast->expr2(), P->locator_);
 
     P->exprTy_.emplace(new BoolType);
 
@@ -1014,7 +1019,7 @@ TypeChecker::VisitResult TypeChecker::traverseCondExpr(CondExprAst* ast)
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty3 = P->popExprType();
     if (ty3->kind() != Type::Kind::Bool)
-        P->report(Diagnostic::BooleanValueExpected, ast->yes_.get(), P->locator_.get());
+        P->report(Diagnostic::BooleanValueExpected, ast->yes(), P->locator_);
 
     P->exprTy_.push(std::move(ty));
 
@@ -1026,14 +1031,14 @@ TypeChecker::VisitResult TypeChecker::processBitwise(ExprAst* expr1, ExprAst* ex
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty = P->popExprType();
     if (ty->kind() != Type::Kind::Int) {
-        P->report(Diagnostic::IntegerValueExpected, expr2, P->locator_.get());
+        P->report(Diagnostic::IntegerValueExpected, expr2, P->locator_);
         ty.reset(nullptr);
     }
 
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty2 = P->popExprType();
     if (ty2->kind() != Type::Kind::Int)
-        P->report(Diagnostic::IntegerValueExpected, expr1, P->locator_.get());
+        P->report(Diagnostic::IntegerValueExpected, expr1, P->locator_);
     else if (!ty)
         ty = std::move(ty2);
 
@@ -1046,28 +1051,28 @@ TypeChecker::VisitResult TypeChecker::traverseBitAndExpr(BitAndExprAst* ast)
 {
     VIS_CALL(Base::traverseBitAndExpr(ast));
 
-    return processBitwise(ast->expr1_.get(), ast->expr2_.get());
+    return processBitwise(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseBitOrExpr(BitOrExprAst* ast)
 {
     VIS_CALL(Base::traverseBitOrExpr(ast));
 
-    return processBitwise(ast->expr1_.get(), ast->expr2_.get());
+    return processBitwise(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseBitXorExpr(BitXorExprAst* ast)
 {
     VIS_CALL(Base::traverseBitXorExpr(ast));
 
-    return processBitwise(ast->expr1_.get(), ast->expr2_.get());
+    return processBitwise(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseShiftExpr(ShiftExprAst* ast)
 {
     VIS_CALL(Base::traverseShiftExpr(ast));
 
-    return processBitwise(ast->expr1_.get(), ast->expr2_.get());
+    return processBitwise(ast->expr1(), ast->expr2());
 }
 
 TypeChecker::VisitResult TypeChecker::traverseBitCompExpr(BitCompExprAst* ast)
@@ -1077,7 +1082,7 @@ TypeChecker::VisitResult TypeChecker::traverseBitCompExpr(BitCompExprAst* ast)
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty = P->popExprType();
     if (ty->kind() != Type::Kind::Int) {
-        P->report(Diagnostic::IntegerValueExpected, ast, P->locator_.get());
+        P->report(Diagnostic::IntegerValueExpected, ast, P->locator_);
         ty.reset(nullptr);
     }
 
@@ -1112,7 +1117,7 @@ TypeChecker::VisitResult TypeChecker::traverseNestedNewExpr(NestedNewExprAst* as
 {
     UAISO_ASSERT(ast->nestedNew_->kind() == Ast::Kind::NewExpr, return Skip);
 
-    NewExprAst* newExprAst = NewExpr_Cast(ast->nestedNew_.get());
+    NewExprAst* newExprAst = NewExpr_Cast(ast->nestedNew());
     UAISO_ASSERT(newExprAst->ty_, return Abort, "no type annotated");
 
     return takeAnnotatedType(newExprAst);
@@ -1173,8 +1178,8 @@ TypeChecker::VisitResult TypeChecker::traverseCallExpr(CallExprAst* ast)
 TypeChecker::VisitResult TypeChecker::traverseRecordInitExpr(RecordInitExprAst* ast)
 {
     if (ast->spec_ && ast->spec_->kind() == Ast::Kind::NamedSpec) {
-        auto tySym = searchTypeDecl(NamedSpec_Cast(ast->spec_.get())->name_.get(),
-                                P->env_, P->lexs_);
+        auto tySym = searchTypeDecl(NamedSpec_Cast(ast->spec())->name(),
+                                    P->env_, P->lexs_);
         if (tySym) {
             P->exprTy_.emplace(tySym->type()->clone());
             return Continue;
@@ -1233,17 +1238,17 @@ TypeChecker::VisitResult TypeChecker::traverseSubrangeExpr(SubrangeExprAst* ast)
 {
     VIS_CALL(Base::traverseSubrangeExpr(ast));
 
-    if (ast->low_) {
+    if (ast->low()) {
         ENSURE_NONEMPTY_STACK;
         P->popExprType();
     }
 
-    if (ast->hi_) {
+    if (ast->hi()) {
         ENSURE_NONEMPTY_STACK;
         P->popExprType();
     }
 
-    if (ast->max_) {
+    if (ast->max()) {
         ENSURE_NONEMPTY_STACK;
         P->popExprType();
     }
@@ -1276,7 +1281,7 @@ TypeChecker::VisitResult TypeChecker::visitIdentExpr(IdentExprAst* ast)
     if (!valSym) {
         auto tySym = searchTypeDecl(ast->name(), P->env_, P->lexs_);
         if (!tySym) {
-            P->report(Diagnostic::UndeclaredIdentifier, ast->name_.get(), P->locator_.get());
+            P->report(Diagnostic::UndeclaredIdentifier, ast->name(), P->locator_);
             P->exprTy_.emplace(new InferredType);
         } else {
             UAISO_ASSERT(tySym->type(), return Abort);

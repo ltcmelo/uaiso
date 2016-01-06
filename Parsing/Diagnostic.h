@@ -29,6 +29,7 @@
 #include "Parsing/Severity.h"
 #include "Parsing/SourceLoc.h"
 #include <iterator>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -102,7 +103,7 @@ public:
     static const Code InvalidHexDigit;
     static const Code InvalidFloatSuffix;
     static const Code InvalidReferenceToSelf;
-    static const Code UnexpectedQualifiedName;
+    static const Code UnexpectedName;
 
 private:
     friend class DiagnosticTable;
@@ -164,10 +165,9 @@ public:
     Cont::size_type size() const { return reports_.size(); }
 
     void add(const DiagnosticReport& report);
-
     void add(const Diagnostic::Code code, const SourceLoc& loc);
-
     void add(const Diagnostic::Code code, Ast* ast, const AstLocator* locator);
+    void add(const Diagnostic::Code code, Ast* ast, const std::unique_ptr<const AstLocator>&);
 };
 
 } // namespace uaiso

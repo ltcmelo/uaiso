@@ -73,6 +73,7 @@ public:
              , &CompletionProposerTest::GoTestCase14
              , &CompletionProposerTest::GoTestCase15
              , &CompletionProposerTest::GoTestCase16
+             , &CompletionProposerTest::GoTestCase17
              // Python
              , &CompletionProposerTest::PyTestCase1
              , &CompletionProposerTest::PyTestCase2
@@ -165,6 +166,7 @@ public:
     void GoTestCase14();
     void GoTestCase15();
     void GoTestCase16();
+    void GoTestCase17();
 
     //--- Python ---//
 

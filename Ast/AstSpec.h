@@ -317,6 +317,7 @@ public:
 
     Self* setSpec(SpecAst* spec);
     Self* setExpr(ExprAst* spec);
+    Ast* exprOrSpec() { return exprOrSpec_.get(); }
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
