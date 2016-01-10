@@ -21,37 +21,32 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_LANGNAME_H__
-#define UAISO_LANGNAME_H__
-
-#include "Common/Config.h"
-#include <string>
-#include <vector>
+#include "Parsing/LangName.h"
 
 namespace uaiso {
 
-/*!
- * \brief The LangName enum
- *
- * An enumeration with supported language's name
- */
-enum class LangName : char
+std::vector<LangName> supportedLangs()
 {
-    D,
-    Go,
-    Py
-};
+    static std::vector<LangName> all = {
+        LangName::D,
+        LangName::Go,
+        LangName::Py
+    };
+    return all;
+}
 
-/*!
- * Return a vector with the supported languages.
- */
-UAISO_API std::vector<LangName> supportedLangs();
+std::string langName(LangName langName)
+{
+    switch (langName) {
+    case LangName::D:
+        return "D";
 
-/*!
- * Return a string representation of the given language name.
- */
-UAISO_API std::string langName(LangName langName);
+    case LangName::Go:
+        return "Go";
+
+    case LangName::Py:
+        return "Python";
+    }
+}
 
 } // namespace uaiso
-
-#endif
