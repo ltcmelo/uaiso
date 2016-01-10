@@ -337,6 +337,15 @@ LexNextToken:
         ch = consumeCharPeekNext();
         while (ch && ch != '\n')
             ch = consumeCharPeekNext();
+        if (context_->allowComments()) {
+            tk = TK_COMMENT;
+            // Immediately return the comment token. Otherwise, if we simply
+            // break, we would mess with the line start logic.
+            LineCol lineCol(line_, col_);
+            context_->trackToken(tk, lineCol);
+            context_->trackPhrase(tk, lineCol, curr_ - mark_);
+            return tk;
+        }
         goto LexNextToken;
 
     default:

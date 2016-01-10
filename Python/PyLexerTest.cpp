@@ -89,6 +89,10 @@ public:
              , &PyLexerTest::testCase53
              , &PyLexerTest::testCase54
              , &PyLexerTest::testCase55
+             , &PyLexerTest::testCase56
+             , &PyLexerTest::testCase57
+             , &PyLexerTest::testCase58
+             , &PyLexerTest::testCase59
              )
 
     // Tests cases (with few exceptions) were taken from CPython.
@@ -148,11 +152,16 @@ public:
     void testCase53();
     void testCase54();
     void testCase55();
+    void testCase56();
+    void testCase57();
+    void testCase58();
+    void testCase59();
 
     std::vector<Token> core(const std::string& code)
     {
         ParsingContext context;
         context.setFileName("/test.py");
+        context.setAllowComments(keepComments_);
 
         PyLexer lexer;
         lexer.setContext(&context);
@@ -187,11 +196,13 @@ public:
     {
         dumpTokens_ = false;
         dumpLocs_ = false;
+        keepComments_ = false;
         locs_.clear();
     }
 
     bool dumpTokens_ { false };
     bool dumpLocs_ { false };
+    bool keepComments_ { false };
     std::vector<SourceLoc> locs_;
 };
 
@@ -1111,6 +1122,60 @@ bla bla bla
     };
     UAISO_EXPECT_INT_EQ(expected.size(), locs_.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, locs_);
+}
+
+void PyLexer::PyLexerTest::testCase56()
+{
+    keepComments_ = true;
+    auto tks = core(R"raw(
+# a comment
+if a:
+    # another comment
+    print a
+)raw");
+
+    std::vector<Token> expected {
+        TK_COMMENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_COMMENT,
+        TK_INDENT, TK_PRINT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase57()
+{
+    keepComments_ = true;
+    auto tks = core(R"raw(
+if a:
+    # comment
+    # again
+    print a
+)raw");
+
+    std::vector<Token> expected {
+        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_COMMENT, TK_COMMENT,
+        TK_INDENT, TK_PRINT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase58()
+{
+    keepComments_ = true;
+    auto tks = core(R"raw(
+if a: # comment
+)raw");
+
+    std::vector<Token> expected {
+        TK_IF, TK_IDENTIFIER, TK_COLON, TK_COMMENT, TK_NEWLINE, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void PyLexer::PyLexerTest::testCase59()
+{
 }
 
 MAKE_CLASS_TEST(PyLexer)

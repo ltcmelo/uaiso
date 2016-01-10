@@ -50,5 +50,4 @@ void PyIncrementalLexer::lex(const std::string& source)
     do {
         tk = lexer.lex();
     } while (tk != TK_EOP);
-    std::cout << std::endl;
 }
