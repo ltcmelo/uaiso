@@ -91,6 +91,11 @@ struct uaiso::TypeChecker::TypeCheckerImpl
     template <class... Args>
     void report(Args&&... args)
     {
+        // TODO: Dynamic type systems are currently storing multiple
+        // "duplicate" symbols. Needs to be worked-out.
+        if (typeSystem_->isDynamic())
+            return;
+
         if (reports_)
             reports_->add(std::forward<Args>(args)...);
     }
