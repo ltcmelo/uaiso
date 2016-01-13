@@ -31,6 +31,7 @@ namespace uaiso {
 class UAISO_API GoFactory final : public Factory
 {
 public:
+    LangName langName() const override;
     std::unique_ptr<AstLocator> makeAstLocator() override;
     std::unique_ptr<Builtin> makeBuiltin() override;
     std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;

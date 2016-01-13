@@ -37,6 +37,11 @@ std::unique_ptr<Unit> PyFactory::makeUnit()
     return std::unique_ptr<Unit>(new PyUnit);
 }
 
+LangName PyFactory::langName() const
+{
+    return LangName::Py;
+}
+
 std::unique_ptr<AstLocator> PyFactory::makeAstLocator()
 {
     return std::unique_ptr<AstLocator>(new PyAstLocator);

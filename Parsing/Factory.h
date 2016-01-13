@@ -44,6 +44,8 @@ class UAISO_API Factory
 public:
     virtual ~Factory();
 
+    virtual LangName langName() const = 0;
+
     virtual std::unique_ptr<AstLocator> makeAstLocator() = 0;
 
     virtual std::unique_ptr<Builtin> makeBuiltin() = 0;
