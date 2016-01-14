@@ -976,10 +976,34 @@ other.
 
 void CompletionProposer::CompletionProposerTest::PyTestCase42()
 {
+    std::string code = R"raw(
+import fibo
+import dingo
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 3, 0 };
+    auto expected = { "fibo", "dingo" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase43()
 {
+    std::string code = R"raw(
+import fibo
+
+import dingo
+
+import hypo
+
+
+# complete at first column above
+)raw";
+
+    lineCol_ = { 7, 0 };
+    auto expected = { "fibo", "dingo", "hypo" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase44()

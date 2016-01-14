@@ -40,4 +40,9 @@ bool operator<(const LineCol& a, const LineCol& b)
     return a.line_ != b.line_ ? a.line_ < b.line_ : a.col_ < b.col_;
 }
 
+LineCol operator+(const LineCol& a, const LineCol& b)
+{
+    return LineCol(a.line_ + b.line_, a.col_ + b.col_);
+}
+
 } // namespace uaiso

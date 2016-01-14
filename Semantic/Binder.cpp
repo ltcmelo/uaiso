@@ -1076,10 +1076,11 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
         }
     }
 
-    // By default, if local name is empty, assign the target to it.
+    // By default, if local name is empty, assign the target to it (at an
+    // artificial column after the import's last location).
     if (!localName) {
-        localName = const_cast<LexemeMap*>(P->lexs_)
-                ->insertOrFind<Ident>(target, P->fileName_, ast->asLoc_.lineCol());
+        localName = const_cast<LexemeMap*>(P->lexs_)->insertOrFind<Ident>(
+                target, P->fileName_, P->locator_->lastLoc(ast).lineCol() + LineCol(0, 1));
         DEBUG_TRACE("no explicit local name, assign %s\n", target.c_str());
     }
 

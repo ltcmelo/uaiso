@@ -58,6 +58,7 @@ public:
 bool operator==(const LineCol& a, const LineCol& b);
 bool operator!=(const LineCol& a, const LineCol& b);
 bool operator<(const LineCol& a, const LineCol& b);
+LineCol operator+(const LineCol& a, const LineCol& b);
 
 UAISO_API inline std::ostream& operator<<(std::ostream& os, const LineCol& lineCol)
 {
