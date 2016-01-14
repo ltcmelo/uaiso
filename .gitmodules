@@ -1,3 +1,6 @@
 [submodule "External/StringUtils"]
 	path = External/StringUtils
 	url = git@github.com:ltcmelo/string_utils.git
+[submodule "Plugins"]
+	path = Plugins
+	url = git@github.com:ltcmelo/uaiso-plugins.git

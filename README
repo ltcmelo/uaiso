@@ -95,11 +95,12 @@ characteristics. Nevertheless, as you can see in the videos below, it's still
 possible to do error recovery at the right places so completion works decently.
 
 
-                        -------------------------
-                         Prototype in Qt Creator
-                        -------------------------
+                                ---------
+                                 Plugins
+                                ---------
 
-The Qt Creator fork used for the videos: git@github.com:ltcmelo/qt-creator.git
+Uaiso plugins live at https://github.com/ltcmelo/uaiso-plugins and are
+available as a sub-module of this repository.
 
 
 Leandro T. C. Melo
