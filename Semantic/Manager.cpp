@@ -81,7 +81,7 @@ struct uaiso::Manager::ManagerImpl
         return unit;
     }
 
-    std::unique_ptr<Program> bind(Unit* unit)
+    std::unique_ptr<Program> bind(Unit* unit, bool isDep)
     {
         using Prog = std::unique_ptr<Program>;
 
@@ -92,9 +92,9 @@ struct uaiso::Manager::ManagerImpl
         binder.setLexemes(lexs_);
         binder.setTokens(tokens_);
         Manager::BehaviourFlags flags(behaviour_);
-        if (flags & BehaviourFlag::IgnoreBuiltins)
+        if (isDep || (flags & BehaviourFlag::IgnoreBuiltins))
             binder.ignoreBuiltins();
-        if (flags & BehaviourFlag::IgnoreAutomaticModules)
+        if (isDep || (flags & BehaviourFlag::IgnoreAutomaticModules))
             binder.ignoreAutomaticModules();
         return binder.bind(Program_Cast(unit->ast()), unit->fileName());
     }
@@ -135,7 +135,7 @@ Manager::BehaviourFlags Manager::behaviour() const
 
 void Manager::processCore(Unit* unit)
 {
-    std::unique_ptr<Program> prog = P->bind(unit);
+    std::unique_ptr<Program> prog = P->bind(unit, false);
     if (!prog)
         return;
 
@@ -216,7 +216,7 @@ void Manager::processDeps(const std::string& fullFileName) const
                     if (!newUnit->ast())
                         continue;
 
-                    std::unique_ptr<Program> newProg = P->bind(newUnit.get());
+                    std::unique_ptr<Program> newProg = P->bind(newUnit.get(), true);
                     if (!newProg)
                         continue;
 

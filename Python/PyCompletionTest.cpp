@@ -1008,6 +1008,20 @@ import hypo
 
 void CompletionProposer::CompletionProposerTest::PyTestCase44()
 {
+    std::string code = R"raw(
+import fibo
+
+def doit():
+    fibo.
+#        ^
+#        |
+#        complete at up-arrow
+)raw";
+
+    lineCol_ = { 4, 9 };
+    disableBuiltins_ = false;
+    auto expected = { "fib", "fib2" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase45()
