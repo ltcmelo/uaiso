@@ -1026,6 +1026,28 @@ def doit():
 
 void CompletionProposer::CompletionProposerTest::PyTestCase45()
 {
+    UAISO_SKIP_TEST;
+
+    std::string code = R"raw(
+class A:
+    def f(): pass
+
+class B(A):
+    def f(): pass
+                                                 # line 6
+b = B()
+
+def foo():
+    b = B()
+    b.
+#     ^
+#     |
+#     complete at up-arrow
+)raw";
+
+    lineCol_ = { 11, 6 };
+    auto expected = { "f" };
+    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase46()
