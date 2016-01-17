@@ -21,6 +21,7 @@
 #include "Semantic/Builtin.h"
 #include "Semantic/DeclAttrs.h"
 #include "Semantic/Environment.h"
+#include "Semantic/Import.h"
 #include "Semantic/Precision.h"
 #include "Semantic/Program.h"
 #include "Semantic/Sanitizer.h"
@@ -1089,7 +1090,6 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
                            target,
                            localName,
                            P->sanitizer_->mayMergeImportEnv(localName)));
-    import->setSourceLoc(fullLoc(ast, P->locator_));
 
     // Specific exact symbols if this is a selective import.
     if (ast->items()) {

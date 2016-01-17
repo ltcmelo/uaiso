@@ -53,7 +53,6 @@ public:
         Enum,
         EnumItem,
         Func,
-        Import,
         Namespace,
         Param,
         Placeholder,
@@ -134,62 +133,6 @@ protected:
 
     DECL_PIMPL(Symbol)
     DECL_PIMPL_BASE(Symbol)
-};
-
-/*!
- * \brief The Import class
- *
- * Import is treated as a symbol, not evaluated when binding, and stored
- * for later processing.
- */
-class UAISO_API Import final : public Symbol
-{
-public:
-    /*!
-     * \brief Import
-     * \param fromWhere
-     * \param targetEntity
-     * \param localName
-     * \param isEmbedded
-     */
-    Import(const std::string& fromWhere,
-           const std::string& target,
-           const Ident* localName,
-           bool isEmbedded);
-
-    const std::string& fromWhere() const;
-
-    const std::string& target() const;
-
-    enum TargetEntity : char
-    {
-        Module,
-        Package
-    };
-
-    TargetEntity targetEntity() const;
-
-    const Ident* localName() const;
-
-    bool isEmbedded() const;
-
-    bool isSelective() const;
-
-    void addSelectedItem(const Ident* actualName);
-    void addSelectedItem(const Ident* actualName, const Ident* alternateName);
-
-    const std::vector<const Ident*>& selectedItems() const;
-
-    const Ident* alternateName(const Ident* actualName) const;
-
-    Import* clone() const override;
-
-private:
-    DECL_PIMPL_CAST(Import)
-
-    friend class ImportResolver;
-
-    void setTargetEntity(TargetEntity kind);
 };
 
 /*!

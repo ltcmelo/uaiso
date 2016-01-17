@@ -36,6 +36,7 @@
 namespace uaiso {
 
 class Ident;
+class Import;
 class LexemeMap;
 
 /*!

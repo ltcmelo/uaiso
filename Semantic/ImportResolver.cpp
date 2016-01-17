@@ -22,7 +22,7 @@
 /*--------------------------*/
 
 #include "Semantic/ImportResolver.h"
-#include "Semantic/Symbol.h"
+#include "Semantic/Import.h"
 #include "Common/FileInfo.h"
 #include "Common/Util__.h"
 #include "Common/Trace__.h"

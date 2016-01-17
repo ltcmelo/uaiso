@@ -29,7 +29,6 @@
 #include "Semantic/TypeCast.h"
 #include "Ast/AstVariety.h"
 #include "Parsing/Lexeme.h"
-#include <unordered_map>
 #include <utility>
 
 using namespace uaiso;
@@ -334,105 +333,6 @@ Func* Func::clone(const Ident* alternateName) const
     return func;
 }
 
-    //--- Import ---//
-
-struct Import::ImportImpl : Symbol::SymbolImpl
-{
-    ImportImpl(const std::string& fromWhere,
-               const std::string& target,
-               const Ident* localName,
-               bool isEmbedded)
-        : SymbolImpl(Symbol::Kind::Import)
-        , fromWhere_(fromWhere)
-        , target_(target)
-        , localName_(localName)
-        , isEmbedded_(isEmbedded)
-    {}
-
-    const std::string fromWhere_;
-    const std::string target_;
-    const Ident* localName_;
-    std::vector<const Ident*> items_;
-    std::unordered_map<const Ident*, const Ident*> nicks_;
-    bool isEmbedded_;
-    TargetEntity entity_;
-};
-
-DEF_PIMPL_CAST(Import)
-
-Import::Import(const std::string& fromWhere,
-               const std::string& target,
-               const Ident* localName,
-               bool isEmbedded)
-    : Symbol(new ImportImpl(fromWhere, target, localName, isEmbedded))
-{}
-
-const std::string& Import::target() const
-{
-    return P_CAST->target_;
-}
-
-const std::string& Import::fromWhere() const
-{
-    return P_CAST->fromWhere_;
-}
-
-const Ident* Import::localName() const
-{
-    return P_CAST->localName_;
-}
-
-bool Import::isEmbedded() const
-{
-    return P_CAST->isEmbedded_;
-}
-
-bool Import::isSelective() const
-{
-    return !P_CAST->items_.empty();
-}
-
-void Import::addSelectedItem(const Ident* actualName)
-{
-    P_CAST->items_.push_back(actualName);
-}
-
-void Import::addSelectedItem(const Ident* actualName, const Ident* alternateName)
-{
-    addSelectedItem(actualName);
-    if (alternateName)
-        P_CAST->nicks_.insert(std::make_pair(actualName, alternateName));
-}
-
-const std::vector<const Ident*>& Import::selectedItems() const
-{
-    return P_CAST->items_;
-}
-
-const Ident* Import::alternateName(const Ident* actualName) const
-{
-    auto it = P_CAST->nicks_.find(actualName);
-    if (it != P_CAST->nicks_.end())
-        return it->second;
-    return nullptr;
-}
-
-Import::TargetEntity Import::targetEntity() const
-{
-    return P_CAST->entity_;
-}
-
-void Import::setTargetEntity(TargetEntity entity)
-{
-    P_CAST->entity_ = entity;
-}
-
-Import* Import::clone() const
-{
-    return trivialClone<Import>(P_CAST->fromWhere_, P_CAST->target_,
-                                P_CAST->localName_, P_CAST->isEmbedded_);
-}
-
     //--- Namespace ---//
 
 struct Namespace::NamespaceImpl : Symbol::SymbolImpl
@@ -673,7 +573,7 @@ namespace uaiso {
 bool isDecl(const Symbol* symbol)
 {
     switch (symbol->kind()) {
-    case Symbol::Kind::Import:
+    case Symbol::Kind::Namespace:
         return false;
     default:
         return true;

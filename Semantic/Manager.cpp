@@ -23,6 +23,7 @@
 
 #include "Semantic/Manager.h"
 #include "Semantic/Binder.h"
+#include "Semantic/Import.h"
 #include "Semantic/ImportResolver.h"
 #include "Semantic/Program.h"
 #include "Semantic/Snapshot.h"

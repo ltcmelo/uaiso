@@ -22,6 +22,7 @@
 /*--------------------------*/
 
 #include "Semantic/Environment.h"
+#include "Semantic/Import.h"
 #include "Semantic/Symbol.h"
 #include "Semantic/Type.h"
 #include "Ast/Ast.h"

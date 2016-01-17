@@ -32,7 +32,6 @@ class Decl;
 class Enum;
 class EnumItem;
 class Func;
-class Import;
 class Namespace;
 class Param;
 class Placeholder;
