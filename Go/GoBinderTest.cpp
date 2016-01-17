@@ -110,7 +110,7 @@ void Binder::BinderTest::GoTestCase1()
         }
     )raw";
 
-    std::unique_ptr<Program> program(core(FactoryCreator::create(LangName::Go),
+    std::unique_ptr<Program> program(core(FactoryCreator::create(LangId::Go),
                                           code,
                                           "/from/go/source/runtime/code.go"));
     UAISO_EXPECT_TRUE(program);

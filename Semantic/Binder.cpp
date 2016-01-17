@@ -39,7 +39,7 @@
 #include "Common/FileInfo.h"
 #include "Common/Trace__.h"
 #include "Parsing/Factory.h"
-#include "Parsing/LangName.h"
+#include "Parsing/LangId.h"
 #include "Parsing/Diagnostic.h"
 #include "Parsing/Lexeme.h"
 #include "Parsing/LexemeMap.h"

@@ -42,9 +42,9 @@ std::unique_ptr<Builtin> GoFactory::makeBuiltin()
     return std::unique_ptr<Builtin>(new Builtin);
 }
 
-LangName GoFactory::langName() const
+LangId GoFactory::langName() const
 {
-    return LangName::Go;
+    return LangId::Go;
 }
 
 std::unique_ptr<AstLocator> GoFactory::makeAstLocator()

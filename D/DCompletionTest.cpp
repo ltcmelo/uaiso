@@ -51,7 +51,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase1()
     lineCol_ = { 12, 22 };
     auto expected = { "paramLine", "paramColumn", "a", "b", "global", "makePoint",
                       "Point" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -79,7 +79,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase2()
 
     lineCol_ = { 13, 36 };
     auto expected = { "paramLine", "paramColumn", "a", "global", "makePoint", "Point" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -108,7 +108,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase3()
 
     lineCol_ = { 14, 30 };
     auto expected = { "id", "line", "column", "nextId" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -137,7 +137,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase4()
 
     lineCol_ = { 14, 22 };
     auto expected = { "paramLine", "paramColumn", "Point", "makePoint", "foo" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -166,7 +166,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase5()
 
     lineCol_ = { 14, 32 };
     auto expected = { "paramLine", "paramColumn", "Point", "makePoint", "foo" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -196,7 +196,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase6()
 
     lineCol_ = { 14, 46 };
     auto expected = { "paramLine", "paramColumn", "Point", "makePoint", "foo" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -225,7 +225,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase7()
     lineCol_ = { 12, 22 };
     auto expected = { "paramLine", "paramColumn", "a", "b", "global", "makePoint",
                       "Point" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -254,7 +254,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase8()
 
     lineCol_ = { 13, 36 };
     auto expected = { "paramLine", "paramColumn", "a", "global", "makePoint", "Point" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -285,7 +285,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase9()
 
     lineCol_ = { 15, 18 };
     auto expected = { "id", "line", "column", "nextId" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -314,7 +314,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase10()
 
     lineCol_ = { 13, 18 };
     auto expected = { "id", "line", "column", "nextId" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -344,7 +344,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase11()
 
     lineCol_ = { 15, 18 };
     auto expected = { "id", "line", "column", "nextId" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -372,7 +372,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase12()
 
     lineCol_ = { 13, 18 };
     auto expected = { "id", "line", "column", "nextId" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -403,7 +403,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase13()
 
     lineCol_ = { 15, 18 };
     auto expected = { "id", "line", "column", "nextId" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -435,7 +435,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase14()
 
     lineCol_ = { 15, 18 };
     auto expected = { "id", "line", "column", "nextId" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -468,7 +468,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase15()
 
     lineCol_ = { 14, 30 };
     auto expected = { "id", "line", "column", "nextId" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -494,7 +494,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase16()
     lineCol_ = { 9, 40 };
     auto expected = { "width", "height", "name", "quadrupleSize",
                       "changeName", "Widget" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -521,7 +521,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase17()
     lineCol_ = { 10, 24 };
     auto expected = { "width", "height", "name", "quadrupleSize",
                       "changeName", "Widget", "abc" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -549,7 +549,7 @@ void CompletionProposer::CompletionProposerTest::DTestCase18()
     lineCol_ = { 10, 24 };
     auto expected = { "width", "height", "name", "quadrupleSize",
                       "changeName", "Widget", "abc" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }
 
@@ -578,6 +578,6 @@ void CompletionProposer::CompletionProposerTest::DTestCase19()
     lineCol_ = { 10, 24 };
     auto expected = { "width", "height", "name", "quadrupleSize",
                       "changeName", "Widget", "abc" };
-    runCore(FactoryCreator::create(LangName::D),
+    runCore(FactoryCreator::create(LangId::D),
             code, "/path/to/file/dummy.d", expected);
 }

@@ -59,7 +59,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase1()
     lineCol_ = { 14, 16 };
     auto expected = { "toBe", "max", "zero", "Point", "calc", "makePoint",
                       "paramLine", "paramColumn", "w", "v" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -88,7 +88,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase2()
     lineCol_ = { 13, 29 };
     auto expected = { "toBe", "max", "zero", "Point", "calc", "makePoint",
                       "paramLine", "paramColumn", "v" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -117,7 +117,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase3()
     lineCol_ = { 13, 29 };
     auto expected = { "toBe", "max", "zero", "Point", "calc", "makePoint",
                       "paramLine", "paramColumn", "v" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -147,7 +147,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase4()
     lineCol_ = { 13, 29 };
     auto expected = { "toBe", "max", "zero", "Point", "calc", "makePoint",
                       "paramLine", "paramColumn", "v" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -177,7 +177,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase5()
     lineCol_ = { 13, 29 };
     auto expected = { "toBe", "max", "zero", "Point", "calc", "makePoint",
                       "paramLine", "paramColumn", "v" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -208,7 +208,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase6()
 
     lineCol_ = { 15, 18 };
     auto expected = { "line", "column", "id", "nextId" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -239,7 +239,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase7()
 
     lineCol_ = { 15, 18 };
     auto expected = { "line", "column", "id", "nextId" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -270,7 +270,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase8()
 
     lineCol_ = { 15, 18 };
     auto expected = { "line", "column", "id", "nextId" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -301,7 +301,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase9()
 
     lineCol_ = { 15, 18 };
     auto expected = { "line", "column", "id", "nextId" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -333,7 +333,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase10()
 
     lineCol_ = { 16, 18 };
     auto expected = { "line", "column", "id", "nextId" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -366,7 +366,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase11()
 
     lineCol_ = { 15, 17 };
     auto expected = { "line", "column", "id", "nextId" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -390,7 +390,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase12()
                       "Formatter", "Stringer", "Write", "WriteString", "pool",
                       "Printf", "Sprintf", "Errorf"
                     };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -412,7 +412,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase13()
                       "Formatter", "Stringer", "Write", "WriteString", "pool",
                       "Printf", "Sprintf", "Errorf"
                     };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -434,7 +434,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase14()
                       "Formatter", "Stringer", "Write", "WriteString", "pool",
                       "Printf", "Sprintf", "Errorf"
                     };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -464,7 +464,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase15()
     lineCol_ = { 13, 32 };
     auto expected = { "toBe", "max", "zero", "Point", "calc", "makePoint",
                       "paramLine", "paramColumn", };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -494,7 +494,7 @@ void CompletionProposer::CompletionProposerTest::GoTestCase16()
     lineCol_ = { 13, 31 };
     auto expected = { "toBe", "max", "zero", "Point", "calc", "makePoint",
                       "paramLine", "paramColumn", };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }
 
@@ -526,6 +526,6 @@ void CompletionProposer::CompletionProposerTest::GoTestCase17()
 
     lineCol_ = { 17, 14 };
     auto expected = { "column", "line" };
-    runCore(FactoryCreator::create(LangName::Go),
+    runCore(FactoryCreator::create(LangId::Go),
             code, "/path/to/file/go.d", expected);
 }

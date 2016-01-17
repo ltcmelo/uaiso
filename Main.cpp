@@ -128,11 +128,11 @@ public:
 
         std::unique_ptr<Factory> factory;
         if (str::ends_with(fileName_, ".d")) {
-            factory = std::move(FactoryCreator::create(LangName::D));
+            factory = std::move(FactoryCreator::create(LangId::D));
         } else if (str::ends_with(fileName_, ".go")) {
-            factory = std::move(FactoryCreator::create(LangName::Go));
+            factory = std::move(FactoryCreator::create(LangId::Go));
         } else if (str::ends_with(fileName_, ".py")) {
-            factory = std::move(FactoryCreator::create(LangName::Py));
+            factory = std::move(FactoryCreator::create(LangId::Py));
         } else {
             UAISO_FAIL_TEST("unrecognized file suffix");
             return;

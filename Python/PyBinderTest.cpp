@@ -92,7 +92,7 @@ class bar:
         print 1
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
     UAISO_EXPECT_TRUE(prog);
 
@@ -149,7 +149,7 @@ for g in range(10):
     print h
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
     UAISO_EXPECT_TRUE(prog);
 
@@ -176,7 +176,7 @@ class bar:
         self.bar_inst2 = "bar"
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
     UAISO_EXPECT_TRUE(prog);
 
@@ -212,7 +212,7 @@ def g():
 
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
     PyVerifyBasicCode(prog.get());
 }
@@ -224,7 +224,7 @@ def g()
 
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
     PyVerifyBasicCode(prog.get());
 }
@@ -236,7 +236,7 @@ def g(
 
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
     PyVerifyBasicCode(prog.get());
 }
@@ -248,7 +248,7 @@ def g
 
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
     PyVerifyBasicCode(prog.get());
 }
@@ -260,7 +260,7 @@ def
 
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
     PyVerifyBasicCode(prog.get());
 }
@@ -274,7 +274,7 @@ def g():
 
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
 
     PyVerifyBasicCode(prog.get());
@@ -298,7 +298,7 @@ def g():
 
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
 
     PyVerifyBasicCode(prog.get());
@@ -322,7 +322,7 @@ def g():
 
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
 
     PyVerifyBasicCode(prog.get());
@@ -347,7 +347,7 @@ class c2:
     foo foo foo
 )raw";
 
-    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangName::Py),
+    std::unique_ptr<Program> prog(core(FactoryCreator::create(LangId::Py),
                                        code, "/test.py"));
 
     PyVerifyBasicCode(prog.get());

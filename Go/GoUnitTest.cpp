@@ -101,7 +101,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase2()
@@ -113,7 +113,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase3()
@@ -124,7 +124,7 @@ public:
                 foo foo foo foo foo
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase4()
@@ -134,7 +134,7 @@ public:
                 v := Vertex{1, 2}
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase5()
@@ -144,7 +144,7 @@ public:
                 v :=
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase6()
@@ -154,7 +154,7 @@ public:
                 v := Vertex{1,
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase7()
@@ -164,7 +164,7 @@ public:
                 v := Vertex{
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase8()
@@ -174,7 +174,7 @@ public:
                 v := Vertex
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase9()
@@ -184,7 +184,7 @@ public:
                 v := Ver
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase10()
@@ -195,7 +195,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase11()
@@ -206,7 +206,7 @@ public:
                 v := Vertex{1, 2}
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase12()
@@ -217,7 +217,7 @@ public:
                 foo foo foo foo foo
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase13()
@@ -229,7 +229,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase14()
@@ -238,7 +238,7 @@ public:
             func other(abc int) {
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase15()
@@ -247,7 +247,7 @@ public:
             func other(abc int)
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase16()
@@ -256,7 +256,7 @@ public:
             func other(abc int
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase17()
@@ -265,7 +265,7 @@ public:
             func other(abc
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase18()
@@ -274,7 +274,7 @@ public:
             func other(
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase19()
@@ -283,7 +283,7 @@ public:
             func other
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase20()
@@ -292,7 +292,7 @@ public:
             func other(abc int,
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase21()
@@ -301,7 +301,7 @@ public:
             func other(abc int, xyz
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase22()
@@ -310,7 +310,7 @@ public:
             func other(abc int, xyz int
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase23()
@@ -320,7 +320,7 @@ public:
             var i, j
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase24()
@@ -330,7 +330,7 @@ public:
             var i, j int =
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase25()
@@ -340,7 +340,7 @@ public:
             var i, j int =
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase26()
@@ -352,7 +352,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase27()
@@ -364,7 +364,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase28()
@@ -376,7 +376,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase29()
@@ -389,7 +389,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase30()
@@ -411,7 +411,7 @@ public:
                 w :=
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 
     void testCase31()
@@ -436,7 +436,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::Go), code);
+        runCore(FactoryCreator::create(LangId::Go), code);
     }
 };
 

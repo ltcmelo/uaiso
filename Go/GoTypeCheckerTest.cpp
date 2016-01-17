@@ -39,7 +39,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase1()
         }
     )raw";
 
-    runCore(FactoryCreator::create(LangName::Go), code,
+    runCore(FactoryCreator::create(LangId::Go), code,
             "/from/go/tour/code.go", std::vector<Diagnostic::Code>(),
             std::make_pair("", Type::Kind::Void));
 }
@@ -57,7 +57,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase2()
     )raw";
 
     auto expected = { Diagnostic::IncompatibleAssignment };
-    runCore(FactoryCreator::create(LangName::Go), code, "/from/go/tour/code.go",
+    runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             expected, std::make_pair("", Type::Kind::Void));
 }
 
@@ -75,7 +75,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase3()
 
     auto expected = { Diagnostic::IncompatibleAssignment,
                       Diagnostic::IncompatibleAssignment };
-    runCore(FactoryCreator::create(LangName::Go), code, "/from/go/tour/code.go",
+    runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             expected, std::make_pair("", Type::Kind::Void));
 }
 
@@ -90,7 +90,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase4()
         }
     )raw";
 
-    runCore(FactoryCreator::create(LangName::Go), code,
+    runCore(FactoryCreator::create(LangId::Go), code,
             "/from/go/tour/code.go", std::vector<Diagnostic::Code>(),
             std::make_pair("inferred", Type::Kind::Int));
 }
@@ -105,7 +105,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase5()
         }
     )raw";
 
-    runCore(FactoryCreator::create(LangName::Go), code, "/from/go/tour/code.go",
+    runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             std::vector<Diagnostic::Code>(),
             std::make_pair("", Type::Kind::Void));
 }
@@ -122,7 +122,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase6()
     )raw";
 
     auto expected = { Diagnostic::IntegerValueExpected };
-    runCore(FactoryCreator::create(LangName::Go), code, "/from/go/tour/code.go",
+    runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             expected,
             std::make_pair("", Type::Kind::Void));
 }
@@ -138,7 +138,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase7()
         }
     )raw";
 
-    runCore(FactoryCreator::create(LangName::Go), code, "/from/go/tour/code.go",
+    runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             std::vector<Diagnostic::Code>(),
             std::make_pair("", Type::Kind::Void));
 }
@@ -155,7 +155,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase8()
         }
     )raw";
 
-    runCore(FactoryCreator::create(LangName::Go), code, "/from/go/tour/code.go",
+    runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             std::vector<Diagnostic::Code>(),
             std::make_pair("", Type::Kind::Void));
 }

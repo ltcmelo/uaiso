@@ -25,7 +25,7 @@
 #define UAISO_FACTORY_H__
 
 #include "Common/Config.h"
-#include "Parsing/LangName.h"
+#include "Parsing/LangId.h"
 #include <memory>
 #include <string>
 
@@ -44,7 +44,7 @@ class UAISO_API Factory
 public:
     virtual ~Factory();
 
-    virtual LangName langName() const = 0;
+    virtual LangId langName() const = 0;
 
     virtual std::unique_ptr<AstLocator> makeAstLocator() = 0;
 
@@ -64,7 +64,7 @@ public:
 class UAISO_API FactoryCreator final
 {
 public:
-    static std::unique_ptr<Factory> create(LangName langName);
+    static std::unique_ptr<Factory> create(LangId langId);
 };
 
 } // namespace uaiso

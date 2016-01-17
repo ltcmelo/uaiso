@@ -32,14 +32,14 @@ using namespace uaiso;
 Factory::~Factory()
 {}
 
-std::unique_ptr<Factory> FactoryCreator::create(LangName langName)
+std::unique_ptr<Factory> FactoryCreator::create(LangId langName)
 {
     switch (langName) {
-    case LangName::D:
+    case LangId::D:
         return std::unique_ptr<Factory>(new DFactory);
-    case LangName::Go:
+    case LangId::Go:
         return std::unique_ptr<Factory>(new GoFactory);
-    case LangName::Py:
+    case LangId::Py:
         return std::unique_ptr<Factory>(new PyFactory);
     default:
         UAISO_ASSERT(false, {});

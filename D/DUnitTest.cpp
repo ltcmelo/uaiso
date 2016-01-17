@@ -87,7 +87,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase2()
@@ -100,7 +100,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase3()
@@ -112,7 +112,7 @@ public:
                 foo foo foo foo foo
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase4()
@@ -123,7 +123,7 @@ public:
                 size_t id = Point.nextId;
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase5()
@@ -134,7 +134,7 @@ public:
                 size_t id =
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase6()
@@ -158,7 +158,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase8()
@@ -170,7 +170,7 @@ public:
                 foo foo foo foo
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase9()
@@ -183,7 +183,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase10()
@@ -192,7 +192,7 @@ public:
             Point makePoint(int line, int column)
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase11()
@@ -201,7 +201,7 @@ public:
             Point makePoint(int line,
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase12()
@@ -210,7 +210,7 @@ public:
             Point makePoint
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase13()
@@ -223,7 +223,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase14()
@@ -236,7 +236,7 @@ public:
             }
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase15()
@@ -246,7 +246,7 @@ public:
             int i, j
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase16()
@@ -256,7 +256,7 @@ public:
             int i =
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 
     void testCase17()
@@ -266,7 +266,7 @@ public:
             int
         )raw";
 
-        runCore(FactoryCreator::create(LangName::D), code);
+        runCore(FactoryCreator::create(LangId::D), code);
     }
 };
 

@@ -42,9 +42,9 @@ std::unique_ptr<Builtin> DFactory::makeBuiltin()
     return std::unique_ptr<Builtin>(new Builtin);
 }
 
-LangName DFactory::langName() const
+LangId DFactory::langName() const
 {
-    return LangName::D;
+    return LangId::D;
 }
 
 std::unique_ptr<AstLocator> DFactory::makeAstLocator()

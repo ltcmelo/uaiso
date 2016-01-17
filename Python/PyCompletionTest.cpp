@@ -46,7 +46,7 @@ p =
 
     lineCol_ = { 9, 3 };
     auto expected = { "p", "Point" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase2()
@@ -69,7 +69,7 @@ p.
 
     lineCol_ = { 10, 2 };
     auto expected = { "x", "y", "show", "__init__" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase3()
@@ -92,7 +92,7 @@ p.
 
     lineCol_ = { 10, 2 };
     auto expected = { "x", "y", "__init__" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase4()
@@ -114,7 +114,7 @@ def foo():
 
     lineCol_ = { 9, 6 };
     auto expected = { "x", "y", "__init__" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase5()
@@ -137,7 +137,7 @@ def foo():
 
     lineCol_ = { 10, 6 };
     auto expected = { "x", "y", "__init__" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase6()
@@ -161,7 +161,7 @@ def foo():
 
     lineCol_ = { 11, 6 };
     auto expected = { "b" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase7()
@@ -187,7 +187,7 @@ p.
 
     lineCol_ = { 13, 2 };
     auto expected = { "a" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase8()
@@ -216,7 +216,7 @@ p.
     lineCol_ = { 13, 2 };
     // Be conservative and show completion for both types.
     auto expected = { "a", "b" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase9()
@@ -233,7 +233,7 @@ def doit():
 
     lineCol_ = { 4, 9 };
     auto expected = { "fib", "fib2" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase10()
@@ -252,7 +252,7 @@ name = "foo"
 
     lineCol_ = { 8, 0 };
     auto expected = { "Point", "name" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase11()
@@ -274,7 +274,7 @@ def f():
 
     lineCol_ = { 9, 8 };
     auto expected = { "Point", "name", "f" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase12()
@@ -296,7 +296,7 @@ if __name__ == "__main__":
 
     lineCol_ = { 9, 26 };
     auto expected = { "Point", "name" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase13()
@@ -320,7 +320,7 @@ if __name__ == "__main__":
 
     lineCol_ = { 11, 4 };
     auto expected = { "Point", "name", "p" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase14()
@@ -344,7 +344,7 @@ def f():
 
     lineCol_ = { 11, 4 };
     auto expected = { "Point", "name", "f", "local" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase15()
@@ -368,7 +368,7 @@ def f():
 
     lineCol_ = { 11, 6 };
     auto expected = { "Point", "name", "f", "local" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase16()
@@ -392,7 +392,7 @@ def f():
 
     lineCol_ = { 11, 2 };
     auto expected = { "Point", "name", "f" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase17()
@@ -414,7 +414,7 @@ def f():
 
     lineCol_ = { 11, 0 };
     auto expected = { "Point", "name", "f" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase18()
@@ -432,7 +432,7 @@ def f():
 
     lineCol_ = { 5, 4 };
     auto expected = { "f", "local", "fib", "fib2" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase19()
@@ -449,7 +449,7 @@ def f():
 
     lineCol_ = { 4, 4 };
     auto expected = { "f", "fib", "fib2" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase20()
@@ -466,7 +466,7 @@ def f():
 
     lineCol_ = { 4, 2 };
     auto expected = { "f", "fib", "fib2" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase21()
@@ -487,7 +487,7 @@ b.
 
     lineCol_ = { 8, 2 };
     auto expected = { "a", "b" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase22()
@@ -513,7 +513,7 @@ c.
 
     lineCol_ = { 13, 2 };
     auto expected = { "a", "b", "c" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase23()
@@ -539,7 +539,7 @@ z.
 
     lineCol_ = { 13, 2 };
     auto expected = { "x", "y", "z" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 namespace {
@@ -706,7 +706,7 @@ i.
     lineCol_ = { 2, 2 };
     disableBuiltins_ = false;
     std::vector<const char*> expected;
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py",
             addRootObjectNames(addIntObjectNames(expected)));
 }
 
@@ -723,7 +723,7 @@ i.
     lineCol_ = { 2, 2 };
     disableBuiltins_ = false;
     std::vector<const char*> expected;
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py",
             addRootObjectNames(addIntObjectNames(expected)));
 }
 
@@ -739,7 +739,7 @@ i =
     lineCol_ = { 1, 3 };
     disableBuiltins_ = false;
     std::vector<const char*> expected { "i", "object" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py",
             addGlobalFuncNames(addConstructorNames(expected)));
 }
 
@@ -756,7 +756,7 @@ o.
     lineCol_ = { 2, 2 };
     disableBuiltins_ = false;
     std::vector<const char*> expected;
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py",
             addRootObjectNames(expected));
 }
 
@@ -778,7 +778,7 @@ z.
     lineCol_ = { 7, 2 };
     disableBuiltins_ = false;
     std::vector<const char*> expected = { "z" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py",
             addRootObjectNames(expected));
 }
 
@@ -806,7 +806,7 @@ z.
     lineCol_ = { 13, 2 };
     disableBuiltins_ = false;
     std::vector<const char*> expected = { "x", "y", "z" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py",
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py",
             addRootObjectNames(expected));
 }
 
@@ -820,7 +820,7 @@ from fibo import fib, fib2
 
     lineCol_ = { 2, 0 };
     auto expected = { "fib", "fib2" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase31()
@@ -833,7 +833,7 @@ from fibo import fib
 
     lineCol_ = { 2, 0 };
     auto expected = { "fib" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase32()
@@ -846,7 +846,7 @@ import sound.effects.echo
 
     lineCol_ = { 2, 0 };
     auto expected = { "sound.effects.echo" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase33()
@@ -859,7 +859,7 @@ from sound.effects import echo
 
     lineCol_ = { 2, 0 };
     auto expected = { "echo" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase34()
@@ -872,7 +872,7 @@ from sound.effects import echo, other
 
     lineCol_ = { 2, 0 };
     auto expected = { "echo", "other" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase35()
@@ -887,7 +887,7 @@ from sound.effects.echo import echofilter
 
     lineCol_ = { 2, 0 };
     auto expected = { "echofilter" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase36()
@@ -900,7 +900,7 @@ import fibo
 
     lineCol_ = { 2, 0 };
     auto expected = { "fibo" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase37()
@@ -913,7 +913,7 @@ import fibo as m
 
     lineCol_ = { 2, 0 };
     auto expected = { "m" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase38()
@@ -926,7 +926,7 @@ from fibo import fib as f
 
     lineCol_ = { 2, 0 };
     auto expected = { "f" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase39()
@@ -941,7 +941,7 @@ echo.
 
     lineCol_ = { 2, 5 };
     auto expected = { "echofilter" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase40()
@@ -956,7 +956,7 @@ echo.
 
     lineCol_ = { 2, 5 };
     auto expected = { "echofilter" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase41()
@@ -971,7 +971,7 @@ other.
 
     lineCol_ = { 2, 6 };
     auto expected = { "otherfilter" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase42()
@@ -985,7 +985,7 @@ import dingo
 
     lineCol_ = { 3, 0 };
     auto expected = { "fibo", "dingo" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase43()
@@ -1003,7 +1003,7 @@ import hypo
 
     lineCol_ = { 7, 0 };
     auto expected = { "fibo", "dingo", "hypo" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase44()
@@ -1021,7 +1021,7 @@ def doit():
     lineCol_ = { 4, 9 };
     disableBuiltins_ = false;
     auto expected = { "fib", "fib2" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase45()
@@ -1047,7 +1047,7 @@ def foo():
 
     lineCol_ = { 11, 6 };
     auto expected = { "f" };
-    runCore(FactoryCreator::create(LangName::Py), code, "/test.py", expected);
+    runCore(FactoryCreator::create(LangId::Py), code, "/test.py", expected);
 }
 
 void CompletionProposer::CompletionProposerTest::PyTestCase46()
