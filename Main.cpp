@@ -51,6 +51,7 @@
 #include "Semantic/Type.h"
 #include "Semantic/TypeChecker.h"
 #include "StringUtils/string.hpp"
+#include <cstring>
 #include <fstream>
 #include <string>
 #include <utility>

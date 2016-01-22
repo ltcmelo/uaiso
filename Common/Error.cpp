@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2014-2015-2015 Leandro T. C. Melo (ltcmelo@gmail.com)
+ * Copyright (c) 2014-2015 Leandro T. C. Melo (ltcmelo@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 
 #include "Common/Error__.h"
 #include <iostream>
+#include <cstdarg>
 #include <cstdio>
 
 using namespace uaiso;

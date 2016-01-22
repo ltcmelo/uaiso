@@ -23,6 +23,7 @@
 
 #include "Common/Trace__.h"
 #include <iostream>
+#include <cstdarg>
 #include <cstdio>
 
 using namespace uaiso;

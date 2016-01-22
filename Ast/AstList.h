@@ -28,6 +28,7 @@
 #include "Common/Assert.h"
 #include "Parsing/SourceLoc.h"
 #include <iostream>
+#include <memory>
 
 namespace uaiso {
 

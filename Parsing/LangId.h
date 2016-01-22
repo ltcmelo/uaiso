@@ -50,7 +50,7 @@ UAISO_API std::vector<LangId> availableLangs();
 /*!
  * Return a string representation of the given language name.
  */
-UAISO_API std::string langId(LangId langId);
+UAISO_API std::string langName(LangId langId);
 
 } // namespace uaiso
 

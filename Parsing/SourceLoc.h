@@ -30,6 +30,7 @@
 #include "Common/LineCol.h"
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>

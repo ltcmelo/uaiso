@@ -28,6 +28,7 @@
 #include "Common/Config.h"
 #include <string>
 #include <iostream>
+#include <memory>
 
 namespace uaiso {
 
