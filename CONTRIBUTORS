@@ -1,0 +1,9 @@
+List of contributors
+
+Adolfo Ochagavía, aochagavia at github
+    - Fixed typo in README file.
+
+Nikita Baryshnikov, nib952051@gmail.com
+    - Added missing headers.
+    - Updated Qt Creator's plugin to master branch.
+
