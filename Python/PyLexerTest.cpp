@@ -95,7 +95,7 @@ public:
              , &PyLexerTest::testCase59
              )
 
-    // Tests cases (with few exceptions) were taken from CPython.
+    // Some test cases were taken from CPython.
 
     void testCase1();
     void testCase2();

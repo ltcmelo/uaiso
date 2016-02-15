@@ -31,6 +31,8 @@ namespace uaiso {
 class UAISO_API PyLang final : public Lang
 {
 public:
+    PyLang();
+
     bool hasBlockLevelScope() const override;
 
     bool hasExecutableRecord() const override;
@@ -46,8 +48,6 @@ public:
     bool isPurelyOO() const override;
 
     std::string sourceFileSuffix() const override;
-
-    Token classifyIdent(const char* spell, size_t length) const override;
 
     bool isStrLitQuote(char ch) const override;
 };

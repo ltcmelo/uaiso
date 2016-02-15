@@ -22,6 +22,7 @@
 /*--------------------------*/
 
 #include "Python/PyLexer.h"
+#include "Python/PyKeywords.h"
 #include "Python/PyLang.h"
 #include "Parsing/Lexeme.h"
 #include "Parsing/ParsingContext.h"
@@ -34,9 +35,14 @@
 
 using namespace uaiso;
 
+namespace {
+
+const PyLang pyLang;
+
+} // anonymous
+
 PyLexer::PyLexer()
     : bits_(0)
-    , lang_(new PyLang)
 {
     bit_.atLineStart_ = true;
     indentStack_.push(0);
@@ -63,6 +69,8 @@ const int oprtrDelimTable[] =
     TK_GREATER, TK_GREATER_EQUAL, TK_GREATER_GREATER, TK_GREATER_GREATER_EQUAL, // 22...25
     TK_CARET, TK_CARET_EQUAL, // 26, 27
     TK_PIPE, TK_PIPE_EQUAL, // 28, 29
+
+    // Indexing
     0, 0, 0, 0, 0, 0, 0,
     0,                                                      // 37 (%)
     2,                                                      // 38 (&)
@@ -217,21 +225,17 @@ LexNextToken:
                 context_->trackLexeme<StrLit>(mark_, curr_ - mark_, LineCol(line_, col_));
                 break;
             }
-            tk = lexIdentOrKeyword(ch, lang_.get());
-            if (tk == TK_IDENTIFIER)
-                context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+            tk = lexIdentOrKeyword(ch, &pyLang);
             break;
         }
         // Certainly an identifier.
-        tk = lexIdentOrKeyword(ch, lang_.get());
-        if (tk == TK_IDENTIFIER)
-            context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+        tk = lexIdentOrKeyword(ch, &pyLang);
         break;
     }
 
     case '.':
         if (std::isdigit(peekChar(1))) {
-            tk = lexNumLit(ch, lang_.get());
+            tk = lexNumLit(ch, &pyLang);
             context_->trackLexeme<NumLit>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
@@ -349,14 +353,13 @@ LexNextToken:
         goto LexNextToken;
 
     default:
-        if (lang_->isIdentFirstChar(ch)) {
-            tk = lexIdentOrKeyword(ch, lang_.get());
-            if (tk == TK_IDENTIFIER)
-                context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+        if (pyLang.isIdentFirstChar(ch)) {
+            tk = lexIdentOrKeyword(ch, &pyLang);
             break;
         }
+
         if (std::isdigit(ch)) {
-            tk = lexNumLit(ch, lang_.get());
+            tk = lexNumLit(ch, &pyLang);
             context_->trackLexeme<NumLit>(mark_, curr_ - mark_, LineCol(line_, col_));
             break;
         }
@@ -394,7 +397,7 @@ Token PyLexer::lexStrLit(char& ch)
     }
 
     do {
-        Base::lexStrLit(ch, quote, triple, lang_.get());
+        Base::lexStrLit(ch, quote, triple, &pyLang);
         if (!ch)
             break;
         ch = consumeCharPeekNext();
@@ -436,4 +439,16 @@ Token PyLexer::lexOprtrOrDelim(char& ch)
     }
 
     return Token(oprtrDelimTable[base]);
+}
+
+Token PyLexer::classifyKeyword(const char* spell, size_t len) const
+{
+    return PyKeywords::classify(spell, len);
+}
+
+Token PyLexer::filterIdent() const
+{
+    context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+
+    return TK_IDENTIFIER;
 }

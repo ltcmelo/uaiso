@@ -14,6 +14,7 @@ set(COMMON_PATH Common)
 set(SEMANTIC_PATH Semantic)
 set(D_PARSER_PATH D)
 set(GO_PARSER_PATH Go)
+set(HS_PARSER_PATH Haskell)
 set(PY_PARSER_PATH Python)
 
 # File generation.
@@ -50,6 +51,8 @@ set(UAISO_TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoIncrementalLexerTest.cpp
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoTypeCheckerTest.cpp
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoUnitTest.cpp
+    # Haskell
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLexerTest.cpp
     # Parsing
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/UnitTest.h
     # Python
@@ -150,6 +153,13 @@ set(UAISO_SOURCES
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoTypeSystem.h
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoUnit.cpp
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoUnit.h
+    # Haskell
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsKeywords.cpp
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsKeywords.h
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLang.cpp
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLang.h
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLexer.cpp
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLexer.h
     # Parsing
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/DataIndex.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Diagnostic.cpp

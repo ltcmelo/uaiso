@@ -77,9 +77,9 @@ public:
 protected:
     Lexer();
 
-    virtual void updatePos();
-    virtual void handleNewLine();
-    virtual void handleNewLineNoColReset();
+    void updatePos();
+    void handleNewLine();
+    void handleNewLineNoColReset();
 
     char peekChar(size_t dist = 0) const;
     void consumeChar(size_t dist = 0);
@@ -88,6 +88,9 @@ protected:
     Token lexStrLit(char& ch, const char quote, const bool mayBreak, const Lang* lang);
     Token lexIdentOrKeyword(char& ch, const Lang* lang);
     Token lexNumLit(char& ch, const Lang* lang);
+
+    virtual Token classifyKeyword(const char* spell, size_t len) const = 0;
+    virtual Token filterIdent() const;
 
     bool inCompletionArea() const;
     bool maybeRealizeCompletion();

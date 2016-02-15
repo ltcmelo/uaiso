@@ -21,42 +21,33 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Python/PyLang.h"
+#ifndef UAISO_HSKEYWORDS_H__
+#define UAISO_HSKEYWORDS_H__
 
-using namespace uaiso;
+#include "Common/Config.h"
+#include "Parsing/Token.h"
+#include <cstddef>
 
-PyLang::PyLang()
-{}
+namespace uaiso {
 
-bool PyLang::hasBlockLevelScope() const { return false; }
-
-bool PyLang::hasExecutableRecord() const { return true; }
-
-bool PyLang::hasNewlineAsTerminator() const { return true; }
-
-bool PyLang::requiresReturnTypeInference() const { return true; }
-
-PyLang::Structure PyLang::structure() const
+class UAISO_API HsKeywords final
 {
-    return StmtBased;
-}
+public:
+    HsKeywords() = delete;
 
-PyLang::ImportMechanism PyLang::importMechanism() const
-{
-    return PerModuleAndPackage;
-}
+    static Token classify(const char* spell, size_t len);
 
-std::string PyLang::sourceFileSuffix() const
-{
-    return ".py";
-}
+private:
+    static Token classify1(const char* spell);
+    static Token classify2(const char* spell);
+    static Token classify3(const char* spell);
+    static Token classify4(const char* spell);
+    static Token classify5(const char* spell);
+    static Token classify6(const char* spell);
+    static Token classify7(const char* spell);
+    static Token classify8(const char* spell);
+};
 
-bool PyLang::isStrLitQuote(char ch) const
-{
-    return ch == '"' || ch == '\'';
-}
+} // namespace uaiso
 
-bool uaiso::PyLang::isPurelyOO() const
-{
-    return true;
-}
+#endif

@@ -66,11 +66,6 @@ bool Lang::isIdentChar(char ch) const
     return std::isalnum(ch) || ch == '_';
 }
 
-Token Lang::classifyIdent(const char* spell, size_t len) const
-{
-    return TK_IDENTIFIER;
-}
-
 bool Lang::isStrLitQuote(char ch) const
 {
     return ch == '"';

@@ -31,8 +31,6 @@
 
 namespace uaiso {
 
-class Lang;
-
 /*!
  * \brief The PyLexer class
  *
@@ -54,6 +52,9 @@ private:
     Token lexStrLit(char& ch);
     Token lexOprtrOrDelim(char& ch);
 
+    Token classifyKeyword(const char* spell, size_t len) const override;
+    Token filterIdent() const override;
+
     struct BitFields
     {
         uint32_t      atLineStart_    : 1;
@@ -68,7 +69,6 @@ private:
     };
 
     std::stack<size_t> indentStack_;
-    std::unique_ptr<Lang> lang_;
 };
 
 } // namespace uaiso

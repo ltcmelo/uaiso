@@ -128,7 +128,16 @@ Token Lexer::lexIdentOrKeyword(char& ch, const Lang* lang)
     while (lang->isIdentChar(ch))
         ch = consumeCharPeekNext();
 
-    return lang->classifyIdent(mark_, curr_ - mark_);
+    const Token& tk = classifyKeyword(mark_, curr_ - mark_);
+    if (tk != TK_INVALID)
+        return tk;
+
+    return filterIdent();
+}
+
+Token Lexer::filterIdent() const
+{
+    return TK_IDENTIFIER;
 }
 
 Token Lexer::lexNumLit(char& ch, const Lang* lang)

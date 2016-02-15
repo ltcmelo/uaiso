@@ -42,7 +42,7 @@ Token PyKeywords::classify(const char* s, size_t len)
     if (len == 8)
         return classify8(s);
 
-    return TK_IDENTIFIER;
+    return TK_INVALID;
 }
 
 Token PyKeywords::classify2(const char* s)
@@ -62,7 +62,7 @@ Token PyKeywords::classify2(const char* s)
             return TK_OR;
     }
 
-    return TK_IDENTIFIER;
+    return TK_INVALID;
 }
 
 Token PyKeywords::classify3(const char* s)
@@ -96,7 +96,7 @@ Token PyKeywords::classify3(const char* s)
         }
     }
 
-    return TK_IDENTIFIER;
+    return TK_INVALID;
 }
 
 Token PyKeywords::classify4(const char* s)
@@ -152,7 +152,7 @@ Token PyKeywords::classify4(const char* s)
         }
     }
 
-    return TK_IDENTIFIER;
+    return TK_INVALID;
 }
 
 Token PyKeywords::classify5(const char* s)
@@ -222,7 +222,7 @@ Token PyKeywords::classify5(const char* s)
         }
     }
 
-    return TK_IDENTIFIER;
+    return TK_INVALID;
 }
 
 Token PyKeywords::classify6(const char* s)
@@ -295,7 +295,7 @@ Token PyKeywords::classify6(const char* s)
         }
     }
 
-    return TK_IDENTIFIER;
+    return TK_INVALID;
 }
 
 Token PyKeywords::classify7(const char* s)
@@ -315,7 +315,7 @@ Token PyKeywords::classify7(const char* s)
         }
     }
 
-    return TK_IDENTIFIER;
+    return TK_INVALID;
 }
 
 Token PyKeywords::classify8(const char* s)
@@ -352,5 +352,5 @@ Token PyKeywords::classify8(const char* s)
         }
     }
 
-    return TK_IDENTIFIER;
+    return TK_INVALID;
 }

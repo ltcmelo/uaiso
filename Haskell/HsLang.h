@@ -21,42 +21,25 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Python/PyLang.h"
+#ifndef UAISO_HSLANG_H__
+#define UAISO_HSLANG_H__
 
-using namespace uaiso;
+#include "Parsing/Lang.h"
 
-PyLang::PyLang()
-{}
+namespace uaiso {
 
-bool PyLang::hasBlockLevelScope() const { return false; }
-
-bool PyLang::hasExecutableRecord() const { return true; }
-
-bool PyLang::hasNewlineAsTerminator() const { return true; }
-
-bool PyLang::requiresReturnTypeInference() const { return true; }
-
-PyLang::Structure PyLang::structure() const
+class UAISO_API HsLang final : public Lang
 {
-    return StmtBased;
-}
+public:
+    HsLang();
 
-PyLang::ImportMechanism PyLang::importMechanism() const
-{
-    return PerModuleAndPackage;
-}
+    Structure structure() const override;
 
-std::string PyLang::sourceFileSuffix() const
-{
-    return ".py";
-}
+    ImportMechanism importMechanism() const override;
 
-bool PyLang::isStrLitQuote(char ch) const
-{
-    return ch == '"' || ch == '\'';
-}
+    std::string sourceFileSuffix() const override;
+};
 
-bool uaiso::PyLang::isPurelyOO() const
-{
-    return true;
-}
+} // namespace uaiso
+
+#endif

@@ -21,42 +21,36 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Python/PyLang.h"
+#ifndef UAISO_HSLEXER_H__
+#define UAISO_HSLEXER_H__
 
-using namespace uaiso;
+#include "Common/Config.h"
+#include "Common/Test.h"
+#include "Parsing/Lexer.h"
 
-PyLang::PyLang()
-{}
+namespace uaiso {
 
-bool PyLang::hasBlockLevelScope() const { return false; }
-
-bool PyLang::hasExecutableRecord() const { return true; }
-
-bool PyLang::hasNewlineAsTerminator() const { return true; }
-
-bool PyLang::requiresReturnTypeInference() const { return true; }
-
-PyLang::Structure PyLang::structure() const
+class UAISO_API HsLexer final : public Lexer
 {
-    return StmtBased;
-}
+public:
+    HsLexer();
+    ~HsLexer();
 
-PyLang::ImportMechanism PyLang::importMechanism() const
-{
-    return PerModuleAndPackage;
-}
+    Token lex() override;
 
-std::string PyLang::sourceFileSuffix() const
-{
-    return ".py";
-}
+private:
+    DECL_CLASS_TEST(HsLexer)
 
-bool PyLang::isStrLitQuote(char ch) const
-{
-    return ch == '"' || ch == '\'';
-}
+    using Base = Lexer;
 
-bool uaiso::PyLang::isPurelyOO() const
-{
-    return true;
-}
+    Token lexOprtrTable(char& ch);
+    Token lexSpecial(char& ch);
+    Token lexAscSymbol(char& ch);
+
+    Token classifyKeyword(const char* spell, size_t len) const override;
+    Token filterIdent() const override;
+};
+
+} // namespace uaiso
+
+#endif

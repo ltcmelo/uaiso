@@ -151,8 +151,6 @@ public:
 
     virtual bool isIdentChar(char ch) const;
 
-    virtual Token classifyIdent(const char* spell, size_t len) const;
-
     virtual bool isStrLitQuote(char ch) const;
 
     virtual bool isOctalPrefix(char ch) const;

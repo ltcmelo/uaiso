@@ -33,6 +33,7 @@
 #include "Go/GoIncrementalLexer.h"
 #include "Go/GoSanitizer.h"
 #include "Go/GoUnit.h"
+#include "Haskell/HsLexer.h"
 #include "Parsing/Factory.h"
 #include "Parsing/LexemeMap.h"
 #include "Parsing/TokenMap.h"
@@ -83,16 +84,17 @@ std::vector<std::string> readSearchPaths()
 }
 
 CALL_CLASS_TEST(Binder)
+CALL_CLASS_TEST(DIncrementalLexer)
+CALL_CLASS_TEST(DUnit)
 CALL_CLASS_TEST(CompletionProposer)
 CALL_CLASS_TEST(Environment)
 CALL_CLASS_TEST(FileInfo)
-CALL_CLASS_TEST(DIncrementalLexer)
-CALL_CLASS_TEST(TypeChecker)
-CALL_CLASS_TEST(DUnit)
 CALL_CLASS_TEST(GoIncrementalLexer)
 CALL_CLASS_TEST(GoUnit)
+CALL_CLASS_TEST(HsLexer)
 CALL_CLASS_TEST(PyLexer)
 CALL_CLASS_TEST(PyParser)
+CALL_CLASS_TEST(TypeChecker)
 
 class WorkflowTest : public Test
 {
@@ -399,6 +401,7 @@ int main(int argc, char* argv[])
         test_GoUnit();
         test_PyLexer();
         test_PyParser();
+        test_HsLexer();
     }
 
     Test::printStats();
