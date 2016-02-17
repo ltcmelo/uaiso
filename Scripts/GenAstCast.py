@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2014-2015 Leandro T. C. Melo (ltcmelo@gmail.com)
+# Copyright (c) 2014-2016 Leandro T. C. Melo (ltcmelo@gmail.com)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ import os.path
 
 _file_header = (
     "/******************************************************************************\n"
-    " * Copyright (c) 2014-2015 Leandro T. C. Melo (ltcmelo@gmail.com)\n"
+    " * Copyright (c) 2014-2016 Leandro T. C. Melo (ltcmelo@gmail.com)\n"
     " *\n"
     " * This library is free software; you can redistribute it and/or\n"
     " * modify it under the terms of the GNU Lesser General Public\n"

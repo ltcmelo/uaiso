@@ -1,6 +1,6 @@
 /******************************************************************************
  * Unified Source Code Modelling Engine
- * Copyright (c) 2014-2015 Leandro T. C. Melo
+ * Copyright (c) 2014-2016 Leandro T. C. Melo
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
