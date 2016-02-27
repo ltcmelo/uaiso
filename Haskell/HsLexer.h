@@ -46,9 +46,13 @@ private:
     Token lexOprtrTable(char& ch);
     Token lexSpecial(char& ch);
     Token lexAscSymbol(char& ch);
+    Token lexAscSymbolMaybe2(char& ch, const char& match, Token reserved);
+    Token lexAscSymbolMaybeMore(char& ch, Token tk);
+
+    bool isAscSymbol(const char& ch) const;
 
     Token classifyKeyword(const char* spell, size_t len) const override;
-    Token filterIdent() const override;
+    Token filterIdent(char& ch) override;
 };
 
 } // namespace uaiso

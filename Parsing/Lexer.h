@@ -90,7 +90,7 @@ protected:
     Token lexNumLit(char& ch, const Lang* lang);
 
     virtual Token classifyKeyword(const char* spell, size_t len) const = 0;
-    virtual Token filterIdent() const;
+    virtual Token filterIdent(char& ch);
 
     bool inCompletionArea() const;
     bool maybeRealizeCompletion();

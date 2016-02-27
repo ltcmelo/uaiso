@@ -53,7 +53,7 @@ private:
     Token lexOprtrOrDelim(char& ch);
 
     Token classifyKeyword(const char* spell, size_t len) const override;
-    Token filterIdent() const override;
+    Token filterIdent(char& ch) override;
 
     struct BitFields
     {

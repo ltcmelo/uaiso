@@ -85,6 +85,7 @@ TOKEN COMPLETION "<completion>"
 
 TOKEN IDENTIFIER "<identifier>"
 TOKEN IDENTIFIER_CAPITALIZED "<identifier_capitalized>"
+TOKEN IDENTIFIER_QUALIFIED "<identifier_qualified>"
 
     //--- Comments ---//
 
@@ -138,6 +139,7 @@ TOKEN CARET_CARET_EQUAL "^^="
 TOKEN CARET_EQUAL "^="
 TOKEN COLON_COLON "::"
 TOKEN COLON_EQUAL ":="
+TOKEN CUSTOM_OPERATOR "<custom_operator>"
 TOKEN SLASH_EQUAL "/="
 TOKEN SLASH_SLASH "//"
 TOKEN SLASH_SLASH_EQUAL "//="

@@ -39,6 +39,11 @@ public:
              , &HsLexerTest::testCase3
              , &HsLexerTest::testCase4
              , &HsLexerTest::testCase5
+             , &HsLexerTest::testCase6
+             , &HsLexerTest::testCase7
+             , &HsLexerTest::testCase8
+             , &HsLexerTest::testCase9
+             , &HsLexerTest::testCase10
              )
 
     void testCase1();
@@ -46,6 +51,11 @@ public:
     void testCase3();
     void testCase4();
     void testCase5();
+    void testCase6();
+    void testCase7();
+    void testCase8();
+    void testCase9();
+    void testCase10();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -149,5 +159,66 @@ void HsLexer::HsLexerTest::testCase5()
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
 
+void HsLexer::HsLexerTest::testCase6()
+{
+    auto tks = core("cool :: Int -> Bool");
+
+    std::vector<Token> expected {
+        TK_IDENTIFIER, TK_COLON_COLON, TK_IDENTIFIER_CAPITALIZED, TK_DASH_ARROW,
+        TK_IDENTIFIER_CAPITALIZED, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase7()
+{
+    auto tks = core("import A.B");
+
+    std::vector<Token> expected {
+        TK_IMPORT, TK_IDENTIFIER_QUALIFIED, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase8()
+{
+    auto tks = core("(<=>) :: Int -> Int -> Int");
+
+    std::vector<Token> expected {
+        TK_LPAREN, TK_CUSTOM_OPERATOR, TK_RPAREN, TK_COLON_COLON,
+        TK_IDENTIFIER_CAPITALIZED, TK_DASH_ARROW, TK_IDENTIFIER_CAPITALIZED,
+        TK_DASH_ARROW, TK_IDENTIFIER_CAPITALIZED, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase9()
+{
+    auto tks = core("x <^> y = x + y * 2");
+
+    std::vector<Token> expected {
+        TK_IDENTIFIER, TK_CUSTOM_OPERATOR, TK_IDENTIFIER, TK_EQUAL,
+        TK_IDENTIFIER, TK_PLUS, TK_IDENTIFIER, TK_STAR, TK_INTEGER_LITERAL,
+        TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase10()
+{
+    auto tks = core("(@@) :: Int -> Int -> Int");
+
+    std::vector<Token> expected {
+        TK_LPAREN, TK_CUSTOM_OPERATOR, TK_RPAREN, TK_COLON_COLON,
+        TK_IDENTIFIER_CAPITALIZED, TK_DASH_ARROW, TK_IDENTIFIER_CAPITALIZED,
+        TK_DASH_ARROW, TK_IDENTIFIER_CAPITALIZED, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }

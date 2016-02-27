@@ -94,12 +94,7 @@ LexNextToken:
     case '&':
     case '*':
     case '+':
-    case '-':
-    case '.':
     case '/':
-    case ':':
-    case '<':
-    case '=':
     case '>':
     case '?':
     case '@':
@@ -108,6 +103,26 @@ LexNextToken:
     case '|':
     case '~':
         tk = lexAscSymbol(ch);
+        break;
+
+    case '.':
+        tk = lexAscSymbolMaybe2(ch, '.', TK_DOT_DOT);
+        break;
+
+    case '-':
+        tk = lexAscSymbolMaybe2(ch, '>', TK_DASH_ARROW);
+        break;
+
+    case '=':
+        tk = lexAscSymbolMaybe2(ch, '>', TK_EQUAL_ARROW);
+        break;
+
+    case '<':
+        tk = lexAscSymbolMaybe2(ch, '-', TK_ARROW_DASH);
+        break;
+
+    case ':':
+        tk = lexAscSymbolMaybe2(ch, ':', TK_COLON_COLON);
         break;
 
     default:
@@ -200,6 +215,8 @@ const int oprtrTable[] =
 
 Token HsLexer::lexOprtrTable(char& ch)
 {
+    UAISO_ASSERT(ch >= 33 && ch <= 126, return TK_INVALID);
+
     const char index = oprtrTable[ch];
     ch = consumeCharPeekNext();
 
@@ -213,7 +230,60 @@ Token HsLexer::lexSpecial(char& ch)
 
 Token HsLexer::lexAscSymbol(char& ch)
 {
-    return lexOprtrTable(ch);
+    Token tk = lexOprtrTable(ch);
+    return lexAscSymbolMaybeMore(ch, tk);
+}
+
+Token HsLexer::lexAscSymbolMaybe2(char& ch, const char& match, Token reserved)
+{
+    Token tk = lexOprtrTable(ch);
+    if (ch == match) {
+        ch = consumeCharPeekNext();
+        tk = reserved;
+    }
+
+    return lexAscSymbolMaybeMore(ch, tk);
+}
+
+Token HsLexer::lexAscSymbolMaybeMore(char &ch, Token tk)
+{
+    if (!isAscSymbol(ch))
+        return tk;
+
+    do {
+        ch = consumeCharPeekNext();
+    } while (isAscSymbol(ch));
+
+    return TK_CUSTOM_OPERATOR;
+}
+
+bool HsLexer::isAscSymbol(const char &ch) const
+{
+    switch (ch) {
+    case '!':
+    case '#':
+    case '$':
+    case '%':
+    case '&':
+    case '*':
+    case '+':
+    case '/':
+    case '>':
+    case '?':
+    case '@':
+    case '\\':
+    case '^':
+    case '|':
+    case '~':
+    case '.':
+    case '=':
+    case '<':
+    case ':':
+        return true;
+
+    default:
+        return false;
+    }
 }
 
 Token HsLexer::classifyKeyword(const char* spell, size_t len) const
@@ -221,11 +291,33 @@ Token HsLexer::classifyKeyword(const char* spell, size_t len) const
     return HsKeywords::classify(spell, len);
 }
 
-Token HsLexer::filterIdent() const
+Token HsLexer::filterIdent(char& ch)
 {
-    context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+    auto leave = [this](Token tk) {
+        context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+        return tk;
+    };
 
-    if (mark_[0] < 97)
-        return TK_IDENTIFIER_CAPITALIZED;
-    return TK_IDENTIFIER;
+    if (mark_[0] >= 97)
+        return leave(TK_IDENTIFIER);
+
+    if (ch != '.')
+        return leave(TK_IDENTIFIER_CAPITALIZED);
+
+    // Identifiers that begin with a capital letter may be a qualified name. In
+    // this case we lex everything as a single lexeme. But only the presence of
+    // the qualifier is not sufficient to have a valid qualified name (we must
+    // check whether the following character is a letter or ASCII symbol).
+    char next = peekChar(1);
+
+    if (hsLang.isIdentChar(next)) {
+        ch = consumeCharPeekNext(1);
+        while (hsLang.isIdentChar(ch))
+            ch = consumeCharPeekNext();
+        return leave(TK_IDENTIFIER_QUALIFIED);
+    }
+
+    // TODO: ASCII symbol.
+
+    return leave(TK_IDENTIFIER);
 }

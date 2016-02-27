@@ -446,7 +446,7 @@ Token PyLexer::classifyKeyword(const char* spell, size_t len) const
     return PyKeywords::classify(spell, len);
 }
 
-Token PyLexer::filterIdent() const
+Token PyLexer::filterIdent(char&)
 {
     context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
 

@@ -132,10 +132,10 @@ Token Lexer::lexIdentOrKeyword(char& ch, const Lang* lang)
     if (tk != TK_INVALID)
         return tk;
 
-    return filterIdent();
+    return filterIdent(ch);
 }
 
-Token Lexer::filterIdent() const
+Token Lexer::filterIdent(char&)
 {
     return TK_IDENTIFIER;
 }
