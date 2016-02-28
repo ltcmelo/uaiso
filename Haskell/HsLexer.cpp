@@ -293,31 +293,43 @@ Token HsLexer::classifyKeyword(const char* spell, size_t len) const
 
 Token HsLexer::filterIdent(char& ch)
 {
-    auto leave = [this](Token tk) {
+    if (mark_[0] >= 97) {
         context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
-        return tk;
-    };
-
-    if (mark_[0] >= 97)
-        return leave(TK_IDENTIFIER);
-
-    if (ch != '.')
-        return leave(TK_IDENTIFIER_CAPITALIZED);
-
-    // Identifiers that begin with a capital letter may be a qualified name. In
-    // this case we lex everything as a single lexeme. But only the presence of
-    // the qualifier is not sufficient to have a valid qualified name (we must
-    // check whether the following character is a letter or ASCII symbol).
-    char next = peekChar(1);
-
-    if (hsLang.isIdentChar(next)) {
-        ch = consumeCharPeekNext(1);
-        while (hsLang.isIdentChar(ch))
-            ch = consumeCharPeekNext();
-        return leave(TK_IDENTIFIER_QUALIFIED);
+        return TK_IDENTIFIER;
     }
 
-    // TODO: ASCII symbol.
+    // We have a capitalized identifier. However, we must check what comes
+    // after it because it can actually be a qualified name or a qualified
+    // operator, which are lexed entirely as a single lexeme.
+    Token tk = TK_IDENTIFIER_CAPITALIZED;
 
-    return leave(TK_IDENTIFIER);
+    std::function<void ()> classifyRecursively = [&]() {
+        if (ch != '.') {
+            context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+            return;
+        }
+
+        // The presence of the `.` is not sufficient condition to characterize
+        // a qualification. It must be followed by an identifier or operator.
+        char next = peekChar(1);
+
+        if (hsLang.isIdentChar(next)) {
+            ch = consumeCharPeekNext(1);
+            while (hsLang.isIdentChar(ch))
+                ch = consumeCharPeekNext();
+            tk = TK_IDENTIFIER_QUALIFIED;
+            classifyRecursively();
+        }
+
+        if (isAscSymbol(next)) {
+            ch = consumeCharPeekNext(1);
+            while (isAscSymbol(ch))
+                ch = consumeCharPeekNext();
+            context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+            tk = TK_QUALIFIED_OPERATOR;
+        }
+    };
+    classifyRecursively();
+
+    return tk;
 }

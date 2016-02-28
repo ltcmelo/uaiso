@@ -44,6 +44,16 @@ public:
              , &HsLexerTest::testCase8
              , &HsLexerTest::testCase9
              , &HsLexerTest::testCase10
+             , &HsLexerTest::testCase11
+             , &HsLexerTest::testCase12
+             , &HsLexerTest::testCase13
+             , &HsLexerTest::testCase14
+             , &HsLexerTest::testCase15
+             , &HsLexerTest::testCase16
+             , &HsLexerTest::testCase17
+             , &HsLexerTest::testCase18
+             , &HsLexerTest::testCase19
+             , &HsLexerTest::testCase20
              )
 
     void testCase1();
@@ -56,6 +66,16 @@ public:
     void testCase8();
     void testCase9();
     void testCase10();
+    void testCase11();
+    void testCase12();
+    void testCase13();
+    void testCase14();
+    void testCase15();
+    void testCase16();
+    void testCase17();
+    void testCase18();
+    void testCase19();
+    void testCase20();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -222,3 +242,65 @@ void HsLexer::HsLexerTest::testCase10()
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }
+
+void HsLexer::HsLexerTest::testCase11()
+{
+    auto tks = core("f.g");
+
+    std::vector<Token> expected {
+        TK_IDENTIFIER, TK_DOT, TK_IDENTIFIER, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase12()
+{
+    auto tks = core("F.g");
+
+    std::vector<Token> expected {
+        TK_IDENTIFIER_QUALIFIED, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase13()
+{
+    auto tks = core("f..");
+
+    std::vector<Token> expected {
+        TK_IDENTIFIER, TK_DOT_DOT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase14()
+{
+    auto tks = core("F..");
+
+    std::vector<Token> expected {
+        TK_QUALIFIED_OPERATOR, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase15()
+{
+    auto tks = core("F.");
+
+    std::vector<Token> expected {
+        TK_IDENTIFIER_CAPITALIZED, TK_DOT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase16() {}
+void HsLexer::HsLexerTest::testCase17() {}
+void HsLexer::HsLexerTest::testCase18() {}
+void HsLexer::HsLexerTest::testCase19() {}
+void HsLexer::HsLexerTest::testCase20() {}
+
