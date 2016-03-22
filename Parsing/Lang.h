@@ -159,7 +159,18 @@ public:
 
     virtual bool isBinPrefix(char ch) const;
 
+    virtual bool isLongSuffix(char ch) const;
+
     virtual bool isExponent(char ch) const;
+
+    /*!
+     * \brief hasStrictDecimalPoint
+     * \return
+     *
+     * Return whether a floating literal must contain digits both before and
+     * after the decimal point, such as in Haskell.
+     */
+    virtual bool hasStrictDecimalPoint() const;
 };
 
 } // namespace uaiso

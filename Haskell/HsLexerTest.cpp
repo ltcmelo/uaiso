@@ -54,6 +54,16 @@ public:
              , &HsLexerTest::testCase18
              , &HsLexerTest::testCase19
              , &HsLexerTest::testCase20
+             , &HsLexerTest::testCase21
+             , &HsLexerTest::testCase22
+             , &HsLexerTest::testCase23
+             , &HsLexerTest::testCase24
+             , &HsLexerTest::testCase25
+             , &HsLexerTest::testCase26
+             , &HsLexerTest::testCase27
+             , &HsLexerTest::testCase28
+             , &HsLexerTest::testCase29
+             , &HsLexerTest::testCase30
              )
 
     void testCase1();
@@ -76,6 +86,16 @@ public:
     void testCase18();
     void testCase19();
     void testCase20();
+    void testCase21();
+    void testCase22();
+    void testCase23();
+    void testCase24();
+    void testCase25();
+    void testCase26();
+    void testCase27();
+    void testCase28();
+    void testCase29();
+    void testCase30();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -298,9 +318,110 @@ void HsLexer::HsLexerTest::testCase15()
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }
 
-void HsLexer::HsLexerTest::testCase16() {}
-void HsLexer::HsLexerTest::testCase17() {}
-void HsLexer::HsLexerTest::testCase18() {}
-void HsLexer::HsLexerTest::testCase19() {}
-void HsLexer::HsLexerTest::testCase20() {}
+void HsLexer::HsLexerTest::testCase16()
+{
+    auto tks = core("let a = 0o123");
 
+    std::vector<Token> expected {
+        TK_LET, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase17()
+{
+    auto tks = core("let a = 0O77");
+
+    std::vector<Token> expected {
+        TK_LET, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase18()
+{
+    auto tks = core("let a = 0xab01ef79");
+
+    std::vector<Token> expected {
+        TK_LET, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase19()
+{
+    auto tks = core("let a = 0123");
+
+    std::vector<Token> expected {
+        TK_LET, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase20()
+{
+    auto tks = core("let a = 0.1");
+
+    std::vector<Token> expected {
+        TK_LET, TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase21()
+{
+    auto tks = core("let a = .1");
+
+    // A floating literal must contain digits before and after a decimal point.
+    std::vector<Token> expected {
+        TK_LET, TK_IDENTIFIER, TK_EQUAL, TK_DOT, TK_INTEGER_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase22()
+{
+    auto tks = core("let a = 1.");
+
+    // A floating literal must contain digits before and after a decimal point.
+    std::vector<Token> expected {
+        TK_LET, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_DOT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase23()
+{
+    auto tks = core("let a = 123.456e22");
+
+    std::vector<Token> expected {
+        TK_LET, TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase24()
+{
+    auto tks = core("let a = 123.456e-2");
+
+    std::vector<Token> expected {
+        TK_LET, TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase25() {}
+void HsLexer::HsLexerTest::testCase26() {}
+void HsLexer::HsLexerTest::testCase27() {}
+void HsLexer::HsLexerTest::testCase28() {}
+void HsLexer::HsLexerTest::testCase29() {}
+void HsLexer::HsLexerTest::testCase30() {}

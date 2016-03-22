@@ -142,56 +142,81 @@ Token Lexer::filterIdent(char&)
 
 Token Lexer::lexNumLit(char& ch, const Lang* lang)
 {
-    UAISO_ASSERT(std::isdigit(ch) || ch == '.', return TK_INVALID);
+    UAISO_ASSERT(std::isdigit(ch)
+                     || (ch == '.' && !lang->hasStrictDecimalPoint()),
+                 return TK_INVALID);
 
     if (ch == '0') {
         ch = consumeCharPeekNext();
-        // Octal
-        if (lang->isOctalPrefix(ch)) {
-            ch = consumeCharPeekNext();
-            if (!(ch >= '0' && ch < '8'))
-                context_->trackReport(Diagnostic::InvalidOctalDigit, tokenLoc());
-            while (ch && ch >= '0' && ch < '8')
+
+        // Octal format
+        auto isOctalDigit = [] (char ch) -> bool {
+            return ch >= '0' && ch < '8';
+        };
+        if (lang->isOctalPrefix(ch) && isOctalDigit(peekChar(1))) {
+            ch = consumeCharPeekNext(1);
+            while (ch && isOctalDigit(ch))
                 ch = consumeCharPeekNext();
         }
-        // Hex
-        if (lang->isHexPrefix(ch)) {
-            ch = consumeCharPeekNext();
-            if (!std::isxdigit(ch))
-                context_->trackReport(Diagnostic::InvalidHexDigit, tokenLoc());
+
+        // Hex format
+        if (lang->isHexPrefix(ch) && std::isxdigit(peekChar(1))) {
+            ch = consumeCharPeekNext(1);
             while (ch && std::isxdigit(ch))
                 ch = consumeCharPeekNext();
         }
-        // Bin
-        if (lang->isBinPrefix(ch)) {
-            ch = consumeCharPeekNext();
-            if (!(ch == '0' || ch == '1'))
-                context_->trackReport(Diagnostic::InvalidBinaryDigit, tokenLoc());
-            while (ch && (ch == '0' || ch == '1'))
+
+        // Bin format
+        auto isBinDigit = [] (char ch) -> bool {
+            return ch == '0' || ch == '1';
+        };
+        if (lang->isBinPrefix(ch) && isBinDigit(peekChar(1))) {
+            ch = consumeCharPeekNext(1);
+            while (ch && isBinDigit(ch))
                 ch = consumeCharPeekNext();
         }
     }
 
-    Token tk = TK_INTEGER_LITERAL;
-
-    while (ch && (std::isdigit(ch)
-                  || ch == '.'
-                  || lang->isExponent(ch))) {
-        if (!std::isdigit(ch))
-            tk = TK_FLOAT_LITERAL;
-        const char prev = ch;
+    while (ch && std::isdigit(ch))
         ch = consumeCharPeekNext();
-        if (lang->isExponent(prev) && (ch == '+' || ch == '-'))
+
+    // Long integer
+    if (ch && lang->isLongSuffix(ch)) {
+        ch = consumeCharPeekNext();
+        return TK_INTEGER_LITERAL;
+    }
+
+    if (ch && (lang->isExponent(ch)
+               || (ch == '.' && (!lang->hasStrictDecimalPoint()
+                                 || std::isdigit(peekChar(1)))))) {
+        return lexFloatLit(ch, lang);
+    }
+
+    return TK_INTEGER_LITERAL;
+}
+
+Token Lexer::lexFloatLit(char& ch, const Lang* lang)
+{
+    UAISO_ASSERT(lang->isExponent(ch)
+                    || (ch == '.' && (!lang->hasStrictDecimalPoint()
+                                      || std::isdigit(peekChar(1)))),
+                  return TK_INVALID);
+
+    if (ch == '.')
+        ch = consumeCharPeekNext();
+
+    while (ch && std::isdigit(ch))
+        ch = consumeCharPeekNext();
+
+    if (lang->isExponent(ch)) {
+        ch = consumeCharPeekNext();
+        if (ch == '+' || ch == '-')
+            ch = consumeCharPeekNext();
+        while (ch && std::isdigit(ch))
             ch = consumeCharPeekNext();
     }
 
-    if (ch && (ch == 'L' || ch == 'l')) {
-        ch = consumeCharPeekNext();
-        if (tk == TK_FLOAT_LITERAL)
-            context_->trackReport(Diagnostic::InvalidFloatSuffix, tokenLoc());
-    }
-
-    return tk;
+    return TK_FLOAT_LITERAL;
 }
 
 bool Lexer::inCompletionArea() const

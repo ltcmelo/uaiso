@@ -38,6 +38,10 @@ public:
     ImportMechanism importMechanism() const override;
 
     std::string sourceFileSuffix() const override;
+
+    bool isBinPrefix(char ch) const override { return false; }
+
+    bool hasStrictDecimalPoint() const override { return true; }
 };
 
 } // namespace uaiso

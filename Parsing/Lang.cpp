@@ -86,7 +86,17 @@ bool Lang::isBinPrefix(char ch) const
     return ch == 'b' || ch == 'B';
 }
 
+bool Lang::isLongSuffix(char ch) const
+{
+    return ch == 'L' || ch == 'l';
+}
+
 bool Lang::isExponent(char ch) const
 {
     return ch == 'e' || ch == 'E';
+}
+
+bool Lang::hasStrictDecimalPoint() const
+{
+    return false;
 }
