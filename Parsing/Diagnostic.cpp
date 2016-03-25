@@ -94,6 +94,7 @@ const Diagnostic::Code Diagnostic::InvalidHexDigit = 49;
 const Diagnostic::Code Diagnostic::InvalidFloatSuffix = 50;
 const Diagnostic::Code Diagnostic::InvalidReferenceToSelf = 51;
 const Diagnostic::Code Diagnostic::UnexpectedName = 52;
+const Diagnostic::Code Diagnostic::UnmatchedStringJoining = 53;
 
 namespace uaiso {
 
@@ -213,6 +214,8 @@ public:
                     "invalid reference to self", Severity::Error },
         { Diagnostic::UnexpectedName,
                     "unexpected name", Severity::Error },
+        { Diagnostic::UnmatchedStringJoining,
+                    "unmatched string joining", Severity::Error },
     };
 };
 

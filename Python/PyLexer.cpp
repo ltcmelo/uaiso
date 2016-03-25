@@ -383,36 +383,35 @@ Token PyLexer::lexStrLit(char& ch)
 {
     UAISO_ASSERT(ch == '"' || ch == '\'', return TK_INVALID);
 
-    char quote = ch;
-    ch = consumeCharPeekNext();
+    const char quote = ch;
 
-    // Check whether this is a triple-quoted string.
+    // Check whether this is a triple-quoted string. If so, consume the input
+    // until the last (third) quote to setup for base's string literal lex.
     bool triple = false;
-    if (ch == quote) {
-        char next = peekChar(1);
-        if (next == quote) {
-            ch = consumeCharPeekNext(2);
-            triple = true;
-        }
+    if (quote == peekChar(1) && quote == peekChar(2)) {
+        ch = consumeCharPeekNext(1);
+        triple = true;
     }
 
-    do {
-        Base::lexStrLit(ch, quote, triple, &pyLang);
-        if (!ch)
-            break;
-        ch = consumeCharPeekNext();
-        if (triple
-                && quote == peekChar()
-                && quote == peekChar(1)) {
-            ch = consumeCharPeekNext(1);
-            triple = false;
-        }
-    } while (triple && ch);
+    Token tk = Base::lexStrLit(ch, triple, &pyLang);
+    if (!triple)
+        return tk;
 
-    if (!ch)
+    while (ch) {
+        if (quote == ch) {
+            ch = consumeCharPeekNext();
+            if (quote == ch)
+                break;
+        }
+        tk = lexStrLitEnd(ch, quote, triple, &pyLang);
+    }
+
+    if (ch)
+        ch = consumeCharPeekNext();
+    else
         context_->trackReport(Diagnostic::UnterminatedString, tokenLoc());
 
-    return TK_STRING_LITERAL;
+    return tk;
 }
 
 Token PyLexer::lexOprtrOrDelim(char& ch)

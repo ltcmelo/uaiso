@@ -101,14 +101,38 @@ char Lexer::consumeCharPeekNext(size_t dist)
     return peekChar();
 }
 
-Token Lexer::lexStrLit(char& ch, const char quote, const bool mayBreak,
-                       const Lang* lang)
+Token Lexer::lexStrLit(char& ch, const bool mayBreak, const Lang* lang)
 {
+    UAISO_ASSERT(ch == '"' || ch == '\'', return TK_INVALID);
+
+    char quote = ch;
+    ch = consumeCharPeekNext();
+
+    return lexStrLitEnd(ch, quote, mayBreak, lang);
+}
+
+Token Lexer::lexStrLitEnd(char& ch, const char quote, const bool mayBreak, const Lang* lang)
+{
+    UAISO_ASSERT(ch != '"' || ch != '\'', return TK_INVALID);
+
     while (ch && ch != quote) {
         if (ch == '\\') {
             ch = consumeCharPeekNext();
-            if (!std::iscntrl(ch) && !std::isprint(ch))
+            // Current character must be a valid escape. This includes a line
+            // split string literal join, if the language supports it, such as
+            // C++ or Python. In addition, a "matcher" for the escape may be
+            // required, as it's the case in Haskell.
+            if (ch == '\n' && lang->hasStrLitJoinEscape()) {
+                while (ch && std::isspace(ch))
+                    ch = consumeCharPeekNext();
+                bool hasMatcher;
+                char matcher;
+                std::tie(hasMatcher, matcher) = lang->strLitJoinEscapeMatcher();
+                if (hasMatcher && ch != matcher)
+                    context_->trackReport(Diagnostic::UnmatchedStringJoining, tokenLoc());
+            } else if (!lang->isStrLitEscape(ch)) {
                 context_->trackReport(Diagnostic::UnknownEscapeSequence, tokenLoc());
+            }
         } else if (ch == '\n') {
             handleNewLineNoColReset();
             if (!mayBreak)
@@ -116,6 +140,11 @@ Token Lexer::lexStrLit(char& ch, const char quote, const bool mayBreak,
         }
         ch = consumeCharPeekNext();
     }
+
+    if (ch)
+        ch = consumeCharPeekNext();
+    else
+        context_->trackReport(Diagnostic::UnterminatedString, tokenLoc());
 
     return TK_STRING_LITERAL;
 }

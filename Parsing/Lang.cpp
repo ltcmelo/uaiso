@@ -66,9 +66,24 @@ bool Lang::isIdentChar(char ch) const
     return std::isalnum(ch) || ch == '_';
 }
 
+bool Lang::isStrLitEscape(char ch) const
+{
+    return std::isprint(ch);
+}
+
 bool Lang::isStrLitQuote(char ch) const
 {
     return ch == '"';
+}
+
+bool Lang::hasStrLitJoinEscape() const
+{
+    return false;
+}
+
+std::pair<bool, char> Lang::strLitJoinEscapeMatcher() const
+{
+    return std::make_pair(false, 0);
 }
 
 bool Lang::isOctalPrefix(char ch) const

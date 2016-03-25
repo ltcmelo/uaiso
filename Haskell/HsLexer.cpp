@@ -125,6 +125,12 @@ LexNextToken:
         tk = lexAscSymbolMaybe2(ch, ':', TK_COLON_COLON);
         break;
 
+    case '"':
+    case '\'':
+        tk = lexStrLit(ch, false, &hsLang);
+        context_->trackLexeme<StrLit>(mark_, curr_ - mark_, LineCol(line_, col_));
+        break;
+
     default:
         if (hsLang.isIdentFirstChar(ch)) {
             tk = lexIdentOrKeyword(ch, &hsLang);

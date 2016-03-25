@@ -104,6 +104,7 @@ public:
     static const Code InvalidFloatSuffix;
     static const Code InvalidReferenceToSelf;
     static const Code UnexpectedName;
+    static const Code UnmatchedStringJoining;
 
 private:
     friend class DiagnosticTable;

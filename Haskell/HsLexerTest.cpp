@@ -22,6 +22,7 @@
 /*--------------------------*/
 
 #include "Haskell/HsLexer.h"
+#include "Parsing/Diagnostic.h"
 #include "Parsing/Lang.h"
 #include "Parsing/ParsingContext.h"
 #include "Parsing/Phrasing.h"
@@ -102,6 +103,8 @@ public:
         ParsingContext context;
         context.setFileName("/test.hs");
         context.setAllowComments(keepComments_);
+        DiagnosticReports reports;
+        context.collectReports(&reports);
 
         HsLexer lexer;
         lexer.setContext(&context);
@@ -113,6 +116,9 @@ public:
                 break;
             locs_.push_back(lexer.tokenLoc());
         }
+
+        UAISO_EXPECT_TRUE((expectError_ && reports.size() > 0)
+                          || (!expectError_ && reports.size() == 0));
 
         if (dumpTokens_) {
             std::copy(tks.begin(), tks.end(),
@@ -132,12 +138,14 @@ public:
         dumpTokens_ = false;
         dumpLocs_ = false;
         keepComments_ = false;
+        expectError_ = false;
         locs_.clear();
     }
 
     bool dumpTokens_ { false };
     bool dumpLocs_ { false };
     bool keepComments_ { false };
+    bool expectError_ { false };
     std::vector<SourceLoc> locs_;
 };
 
@@ -419,9 +427,84 @@ void HsLexer::HsLexerTest::testCase24()
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
 }
 
-void HsLexer::HsLexerTest::testCase25() {}
-void HsLexer::HsLexerTest::testCase26() {}
-void HsLexer::HsLexerTest::testCase27() {}
-void HsLexer::HsLexerTest::testCase28() {}
-void HsLexer::HsLexerTest::testCase29() {}
-void HsLexer::HsLexerTest::testCase30() {}
+void HsLexer::HsLexerTest::testCase25()
+{
+    auto tks = core(R"raw(
+"haskell"
+    )raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase26()
+{
+    auto tks = core(R"raw(
+"a'a"
+    )raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase27()
+{
+    auto tks = core(R"raw(
+"aa\"aa\"aa"
+    )raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase28()
+{
+    auto tks = core(R"raw(
+"aaa\
+        \aaa"
+    )raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase29()
+{
+    expectError_ = true; // String join is not properly matched.
+    auto tks = core(R"raw(
+"aaa\
+        aaa"
+    )raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase30()
+{
+    auto tks = core(R"raw(
+"Here is a backslant \\ as well as \137, \
+    \a numeric escape character, and \^X, a control character."
+    )raw");
+
+    std::vector<Token> expected {
+        TK_STRING_LITERAL, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}

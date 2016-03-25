@@ -56,6 +56,11 @@ bool PyLang::isStrLitQuote(char ch) const
     return ch == '"' || ch == '\'';
 }
 
+bool PyLang::hasStrLitJoinEscape() const
+{
+    return true;
+}
+
 bool uaiso::PyLang::isPurelyOO() const
 {
     return true;

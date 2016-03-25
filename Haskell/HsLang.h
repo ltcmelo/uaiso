@@ -42,6 +42,11 @@ public:
     bool isBinPrefix(char ch) const override { return false; }
 
     bool hasStrictDecimalPoint() const override { return true; }
+
+    bool hasStrLitJoinEscape() const override { return true; }
+
+    std::pair<bool, char> strLitJoinEscapeMatcher() const override;
+
 };
 
 } // namespace uaiso

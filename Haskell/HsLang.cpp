@@ -42,3 +42,8 @@ std::string HsLang::sourceFileSuffix() const
 {
     return ".hs";
 }
+
+std::pair<bool, char> HsLang::strLitJoinEscapeMatcher() const
+{
+    return std::make_pair(true, '\\');
+}

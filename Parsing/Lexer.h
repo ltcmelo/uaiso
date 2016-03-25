@@ -86,7 +86,8 @@ protected:
     char consumeCharPeekNext(size_t dist = 0);
 
     Token lexIdentOrKeyword(char& ch, const Lang* lang);
-    Token lexStrLit(char& ch, const char quote, const bool mayBreak, const Lang* lang);
+    Token lexStrLit(char& ch, const bool mayBreak, const Lang* lang);
+    Token lexStrLitEnd(char& ch, const char quote, const bool mayBreak, const Lang* lang);
     Token lexNumLit(char& ch, const Lang* lang);
     Token lexFloatLit(char& ch, const Lang* lang);
 

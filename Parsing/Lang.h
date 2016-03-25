@@ -153,6 +153,12 @@ public:
 
     virtual bool isStrLitQuote(char ch) const;
 
+    virtual bool isStrLitEscape(char ch) const;
+
+    virtual bool hasStrLitJoinEscape() const;
+
+    virtual std::pair<bool, char> strLitJoinEscapeMatcher() const;
+
     virtual bool isOctalPrefix(char ch) const;
 
     virtual bool isHexPrefix(char ch) const;

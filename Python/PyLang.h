@@ -50,6 +50,8 @@ public:
     std::string sourceFileSuffix() const override;
 
     bool isStrLitQuote(char ch) const override;
+
+    bool hasStrLitJoinEscape() const override;
 };
 
 } // namespace uaiso
