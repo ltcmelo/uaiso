@@ -292,12 +292,12 @@ bool HsLexer::isAscSymbol(const char &ch) const
     }
 }
 
-Token HsLexer::classifyKeyword(const char* spell, size_t len) const
+Token HsLexer::filterKeyword(const char* spell, size_t len) const
 {
-    return HsKeywords::classify(spell, len);
+    return HsKeywords::filter(spell, len);
 }
 
-Token HsLexer::filterIdent(char& ch)
+Token HsLexer::classifyIdent(char& ch)
 {
     if (mark_[0] >= 97) {
         context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));

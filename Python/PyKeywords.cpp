@@ -25,27 +25,27 @@
 
 using namespace uaiso;
 
-Token PyKeywords::classify(const char* s, size_t len)
+Token PyKeywords::filter(const char* s, size_t len)
 {
     if (len == 2)
-        return classify2(s);
+        return filter2(s);
     if (len == 3)
-        return classify3(s);
+        return filter3(s);
     if (len == 4)
-        return classify4(s);
+        return filter4(s);
     if (len == 5)
-        return classify5(s);
+        return filter5(s);
     if (len == 6)
-        return classify6(s);
+        return filter6(s);
     if (len == 7)
-        return classify7(s);
+        return filter7(s);
     if (len == 8)
-        return classify8(s);
+        return filter8(s);
 
     return TK_INVALID;
 }
 
-Token PyKeywords::classify2(const char* s)
+Token PyKeywords::filter2(const char* s)
 {
     if (s[0] == 'a') {
         if (s[1] == 's')
@@ -65,7 +65,7 @@ Token PyKeywords::classify2(const char* s)
     return TK_INVALID;
 }
 
-Token PyKeywords::classify3(const char* s)
+Token PyKeywords::filter3(const char* s)
 {
     if (s[0] == 'a') {
         if (s[1] == 'n') {
@@ -99,7 +99,7 @@ Token PyKeywords::classify3(const char* s)
     return TK_INVALID;
 }
 
-Token PyKeywords::classify4(const char* s)
+Token PyKeywords::filter4(const char* s)
 {
     if (s[0] == 'N') {
         if (s[1] == 'o') {
@@ -155,7 +155,7 @@ Token PyKeywords::classify4(const char* s)
     return TK_INVALID;
 }
 
-Token PyKeywords::classify5(const char* s)
+Token PyKeywords::filter5(const char* s)
 {
     if (s[0] == 'F') {
         if (s[1] == 'a') {
@@ -225,7 +225,7 @@ Token PyKeywords::classify5(const char* s)
     return TK_INVALID;
 }
 
-Token PyKeywords::classify6(const char* s)
+Token PyKeywords::filter6(const char* s)
 {
     if (s[0] == 'a') {
         if (s[1] == 's') {
@@ -298,7 +298,7 @@ Token PyKeywords::classify6(const char* s)
     return TK_INVALID;
 }
 
-Token PyKeywords::classify7(const char* s)
+Token PyKeywords::filter7(const char* s)
 {
     if (s[0] == 'f') {
         if (s[1] == 'i') {
@@ -318,7 +318,7 @@ Token PyKeywords::classify7(const char* s)
     return TK_INVALID;
 }
 
-Token PyKeywords::classify8(const char* s)
+Token PyKeywords::filter8(const char* s)
 {
     if (s[0] == 'c') {
         if (s[1] == 'o') {

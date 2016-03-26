@@ -91,8 +91,8 @@ protected:
     Token lexNumLit(char& ch, const Lang* lang);
     Token lexFloatLit(char& ch, const Lang* lang);
 
-    virtual Token classifyKeyword(const char* spell, size_t len) const = 0;
-    virtual Token filterIdent(char& ch);
+    virtual Token filterKeyword(const char* spell, size_t len) const = 0;
+    virtual Token classifyIdent(char& ch);
 
     bool inCompletionArea() const;
     bool maybeRealizeCompletion();

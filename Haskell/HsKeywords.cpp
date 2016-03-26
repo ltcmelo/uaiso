@@ -25,29 +25,29 @@
 
 using namespace uaiso;
 
-Token HsKeywords::classify(const char* s, size_t len)
+Token HsKeywords::filter(const char* s, size_t len)
 {
     if (len == 1)
-        return classify1(s);
+        return filter1(s);
     if (len == 2)
-        return classify2(s);
+        return filter2(s);
     if (len == 3)
-        return classify3(s);
+        return filter3(s);
     if (len == 4)
-        return classify4(s);
+        return filter4(s);
     if (len == 5)
-        return classify5(s);
+        return filter5(s);
     if (len == 6)
-        return classify6(s);
+        return filter6(s);
     if (len == 7)
-        return classify7(s);
+        return filter7(s);
     if (len == 8)
-        return classify8(s);
+        return filter8(s);
 
     return TK_INVALID;
 }
 
-Token HsKeywords::classify1(const char* s)
+Token HsKeywords::filter1(const char* s)
 {
     if (s[0] == '_')
         return TK_UNDERSCORE;
@@ -55,7 +55,7 @@ Token HsKeywords::classify1(const char* s)
     return TK_INVALID;
 }
 
-Token HsKeywords::classify2(const char* s)
+Token HsKeywords::filter2(const char* s)
 {
     if (s[0] == 'd') {
         if (s[1] == 'o')
@@ -73,7 +73,7 @@ Token HsKeywords::classify2(const char* s)
     return TK_INVALID;
 }
 
-Token HsKeywords::classify3(const char* s)
+Token HsKeywords::filter3(const char* s)
 {
     if (s[0] == 'l') {
         if (s[1] == 'e') {
@@ -85,7 +85,7 @@ Token HsKeywords::classify3(const char* s)
     return TK_INVALID;
 }
 
-Token HsKeywords::classify4(const char* s)
+Token HsKeywords::filter4(const char* s)
 {
     if (s[0] == 'c') {
         if (s[1] == 'a') {
@@ -132,7 +132,7 @@ Token HsKeywords::classify4(const char* s)
     return TK_INVALID;
 }
 
-Token HsKeywords::classify5(const char* s)
+Token HsKeywords::filter5(const char* s)
 {
     if (s[0] == 'c') {
         if (s[1] == 'l') {
@@ -166,7 +166,7 @@ Token HsKeywords::classify5(const char* s)
     return TK_INVALID;
 }
 
-Token HsKeywords::classify6(const char* s)
+Token HsKeywords::filter6(const char* s)
 {
      if (s[0] == 'i') {
         if (s[1] == 'm') {
@@ -208,7 +208,7 @@ Token HsKeywords::classify6(const char* s)
     return TK_INVALID;
 }
 
-Token HsKeywords::classify7(const char* s)
+Token HsKeywords::filter7(const char* s)
 {
     if (s[0] == 'd') {
         if (s[1] == 'e') {
@@ -254,7 +254,7 @@ Token HsKeywords::classify7(const char* s)
     return TK_INVALID;
 }
 
-Token HsKeywords::classify8(const char* s)
+Token HsKeywords::filter8(const char* s)
 {
     if (s[0] == 'd') {
         if (s[1] == 'e') {

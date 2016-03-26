@@ -157,14 +157,14 @@ Token Lexer::lexIdentOrKeyword(char& ch, const Lang* lang)
     while (lang->isIdentChar(ch))
         ch = consumeCharPeekNext();
 
-    const Token& tk = classifyKeyword(mark_, curr_ - mark_);
+    const Token& tk = filterKeyword(mark_, curr_ - mark_);
     if (tk != TK_INVALID)
         return tk;
 
-    return filterIdent(ch);
+    return classifyIdent(ch);
 }
 
-Token Lexer::filterIdent(char&)
+Token Lexer::classifyIdent(char&)
 {
     return TK_IDENTIFIER;
 }

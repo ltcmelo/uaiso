@@ -440,12 +440,12 @@ Token PyLexer::lexOprtrOrDelim(char& ch)
     return Token(oprtrDelimTable[base]);
 }
 
-Token PyLexer::classifyKeyword(const char* spell, size_t len) const
+Token PyLexer::filterKeyword(const char* spell, size_t len) const
 {
-    return PyKeywords::classify(spell, len);
+    return PyKeywords::filter(spell, len);
 }
 
-Token PyLexer::filterIdent(char&)
+Token PyLexer::classifyIdent(char&)
 {
     context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
 

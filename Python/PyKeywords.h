@@ -35,16 +35,16 @@ class UAISO_API PyKeywords final
 public:
     PyKeywords() = delete;
 
-    static Token classify(const char* spell, size_t len);
+    static Token filter(const char* spell, size_t len);
 
 private:
-    static Token classify2(const char* spell);
-    static Token classify3(const char* spell);
-    static Token classify4(const char* spell);
-    static Token classify5(const char* spell);
-    static Token classify6(const char* spell);
-    static Token classify7(const char* spell);
-    static Token classify8(const char* spell);
+    static Token filter2(const char* spell);
+    static Token filter3(const char* spell);
+    static Token filter4(const char* spell);
+    static Token filter5(const char* spell);
+    static Token filter6(const char* spell);
+    static Token filter7(const char* spell);
+    static Token filter8(const char* spell);
 };
 
 } // namespace uaiso

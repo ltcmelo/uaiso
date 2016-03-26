@@ -51,8 +51,8 @@ private:
 
     bool isAscSymbol(const char& ch) const;
 
-    Token classifyKeyword(const char* spell, size_t len) const override;
-    Token filterIdent(char& ch) override;
+    Token filterKeyword(const char* spell, size_t len) const override;
+    Token classifyIdent(char& ch) override;
 };
 
 } // namespace uaiso
