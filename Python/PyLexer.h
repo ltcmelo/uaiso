@@ -57,10 +57,10 @@ private:
 
     struct BitFields
     {
-        uint32_t      atLineStart_    : 1;
-        uint32_t      indent_         : 8;
-        uint32_t      pendingDedent_  : 8;
-        uint32_t      brackets_       : 8;
+        uint32_t atLineStart_    : 1;
+        uint32_t indent_         : 8;
+        uint32_t pendingDedent_  : 8;
+        uint32_t brackets_       : 8;
     };
     union
     {

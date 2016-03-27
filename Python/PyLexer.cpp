@@ -106,8 +106,9 @@ LexNextToken:
     mark_ = curr_; // Mark the start of the upcoming token.
 
     char ch = peekChar();
+
+    // If at the start of a line, ensure indentation rules.
     if (bit_.atLineStart_) {
-        // Look at indentation.
         size_t count = 0;
         if (ch == '\t' || ch == ' ') {
             do {
@@ -181,11 +182,7 @@ LexNextToken:
     case '\t':
     case '\f':
     case ' ':
-        do {
-            ch = consumeCharPeekNext();
-            ++col_;
-            ++mark_;
-        } while (ch == '\t' || ch == '\f' || ch == ' ');
+        skipSpaces(ch);
         goto LexNextToken;
 
     case '\\':

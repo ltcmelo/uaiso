@@ -41,7 +41,10 @@ const HsLang hsLang;
 } // anonymous
 
 HsLexer::HsLexer()
-{}
+    : bits_(0)
+{
+    bit_.atLineStart_ = true;
+}
 
 HsLexer::~HsLexer()
 {}
@@ -55,11 +58,51 @@ LexNextToken:
     mark_ = curr_; // Mark the start of the upcoming token.
 
     char ch = peekChar();
+
+    // If an opening brace is found, consume it and continue. Otherwise,
+    // auto-insert one and keep track of the scope.
+    if (bit_.wantBrace_) {
+        maybeSkipSpaces(ch);
+        bit_.wantBrace_ = false;
+        if (ch == '{') {
+            consumeChar();
+            layoutStack_.push(std::make_pair(false, -1));
+        } else {
+            bit_.waitOffsetMark_ = true;
+            layoutStack_.push(std::make_pair(true, -1));
+        }
+        tk = TK_LBRACE;
+        goto LexDone;
+    }
+
+    // At a line start the layout must be checked. Either a semicolon may be
+    // inserted as a separator or a scope delimiting closing brace (in the case
+    // the matching opening brace has been auto-inserted).
+    if (bit_.atLineStart_ && !bit_.waitOffsetMark_ && !layoutStack_.empty()) {
+        const Layout& layout = layoutStack_.top();
+        if (layout.first) {
+            maybeSkipSpaces(ch);
+            if (ch != '\n') {
+                if (col_ == layout.second) {
+                    tk = TK_SEMICOLON;
+                    goto LexDone;
+                }
+                if (col_ < layout.second) {
+                    layoutStack_.pop();
+                    tk = TK_RBRACE;
+                    goto LexDone;
+                }
+            }
+        }
+    }
+
     switch (ch) {
     case 0:
+        // TODO: Clarify braces/semicolon rule on "invalid" lexeme.
         return TK_EOP;
 
     case '\n':
+        bit_.atLineStart_ = true;
         consumeChar();
         handleNewLine();
         updatePos();
@@ -68,11 +111,7 @@ LexNextToken:
     case '\f':
     case '\t':
     case ' ':
-        do {
-            ch = consumeCharPeekNext();
-            ++col_;
-            ++mark_;
-        } while (ch == '\f' || ch == '\t' || ch == ' ');
+        skipSpaces(ch);
         goto LexNextToken;
 
     case '(':
@@ -82,8 +121,17 @@ LexNextToken:
     case '[':
     case ']':
     case '`':
+        tk = lexSpecial(ch);
+        break;
+
     case '{':
+        layoutStack_.push(std::make_pair(false, -1));
+        tk = lexSpecial(ch);
+        break;
+
     case '}':
+        if (!layoutStack_.empty() && !layoutStack_.top().first)
+            layoutStack_.pop();
         tk = lexSpecial(ch);
         break;
 
@@ -148,6 +196,15 @@ LexNextToken:
         PRINT_TRACE("Unknown char %c at %d,%d\n", ch, 0, 0);
         break;
     }
+
+    if (bit_.waitOffsetMark_) {
+        bit_.waitOffsetMark_ = false;
+        UAISO_ASSERT(!layoutStack_.empty(), return TK_INVALID);
+        layoutStack_.top().second = col_;
+    }
+
+LexDone:
+    bit_.atLineStart_ = false;
 
     LineCol lineCol(line_, col_);
     context_->trackToken(tk, lineCol);
@@ -263,7 +320,7 @@ Token HsLexer::lexAscSymbolMaybeMore(char &ch, Token tk)
     return TK_CUSTOM_OPRTR;
 }
 
-bool HsLexer::isAscSymbol(const char &ch) const
+bool HsLexer::isAscSymbol(const char ch) const
 {
     switch (ch) {
     case '!':
@@ -295,6 +352,21 @@ bool HsLexer::isAscSymbol(const char &ch) const
 Token HsLexer::filterKeyword(const char* spell, size_t len) const
 {
     return HsKeywords::filter(spell, len);
+}
+
+void HsLexer::inspectKeyword(Token tk)
+{
+    switch (tk) {
+    case TK_WHERE:
+    case TK_LET:
+    case TK_DO:
+    case TK_OF:
+        bit_.wantBrace_ = true;
+        break;
+
+    default:
+        break;
+    }
 }
 
 Token HsLexer::classifyIdent(char& ch)

@@ -80,6 +80,23 @@ void Lexer::handleNewLineNoColReset()
     rearLeng_ = 0;
 }
 
+void Lexer::skipSpaces(char& ch)
+{
+    UAISO_ASSERT(ch == '\f' || ch == '\t' || ch == ' ', return);
+
+    do {
+        ch = consumeCharPeekNext();
+        ++col_;
+        ++mark_;
+    } while (ch == '\f' || ch == '\t' || ch == ' ');
+}
+
+void Lexer::maybeSkipSpaces(char& ch)
+{
+    if (ch == '\f' || ch == '\t' || ch == ' ')
+        skipSpaces(ch);
+}
+
 char Lexer::peekChar(size_t dist) const
 {
     if (curr_ + dist >= eof_)
@@ -157,12 +174,17 @@ Token Lexer::lexIdentOrKeyword(char& ch, const Lang* lang)
     while (lang->isIdentChar(ch))
         ch = consumeCharPeekNext();
 
-    const Token& tk = filterKeyword(mark_, curr_ - mark_);
-    if (tk != TK_INVALID)
+    const Token tk = filterKeyword(mark_, curr_ - mark_);
+    if (tk != TK_INVALID) {
+        inspectKeyword(tk);
         return tk;
+    }
 
     return classifyIdent(ch);
 }
+
+void Lexer::inspectKeyword(Token tk)
+{}
 
 Token Lexer::classifyIdent(char&)
 {

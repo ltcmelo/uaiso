@@ -85,13 +85,44 @@ protected:
     void consumeChar(size_t dist = 0);
     char consumeCharPeekNext(size_t dist = 0);
 
+    void skipSpaces(char& ch);
+    void maybeSkipSpaces(char& ch);
+
     Token lexIdentOrKeyword(char& ch, const Lang* lang);
     Token lexStrLit(char& ch, const bool mayBreak, const Lang* lang);
     Token lexStrLitEnd(char& ch, const char quote, const bool mayBreak, const Lang* lang);
     Token lexNumLit(char& ch, const Lang* lang);
     Token lexFloatLit(char& ch, const Lang* lang);
 
+
+    /*!
+     * \brief filterKeyword
+     * \param spell
+     * \param len
+     * \return
+     *
+     * If a keyword is being lexed, return the corresponding token. Otherwise,
+     * return an invalid token.
+     */
     virtual Token filterKeyword(const char* spell, size_t len) const = 0;
+
+    /*!
+     * \brief inspectKeyword
+     * \param tk
+     *
+     * A hook for inspecting a keyword when one has just been lexed. It's
+     * recommended to look into the keyword in this method, as opposed to in
+     * filterKeyword in order to avoid extra checks for an invalid token.
+     */
+    virtual void inspectKeyword(Token tk);
+
+    /*!
+     * \brief classifyIdent
+     * \param ch
+     * \return
+     *
+     * Classify the sort of identifier being lexed.
+     */
     virtual Token classifyIdent(char& ch);
 
     bool inCompletionArea() const;

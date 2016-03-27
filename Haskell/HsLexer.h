@@ -27,6 +27,7 @@
 #include "Common/Config.h"
 #include "Common/Test.h"
 #include "Parsing/Lexer.h"
+#include <stack>
 
 namespace uaiso {
 
@@ -49,10 +50,34 @@ private:
     Token lexAscSymbolMaybe2(char& ch, const char& match, Token reserved);
     Token lexAscSymbolMaybeMore(char& ch, Token tk);
 
-    bool isAscSymbol(const char& ch) const;
+    bool isAscSymbol(const char ch) const;
 
     Token filterKeyword(const char* spell, size_t len) const override;
+    void inspectKeyword(Token tk) override;
+
     Token classifyIdent(char& ch) override;
+
+    struct BitFields
+    {
+        uint32_t atLineStart_    : 1;
+        uint32_t wantBrace_      : 1;
+        uint32_t waitOffsetMark_ : 1;
+    };
+    union
+    {
+        BitFields bit_;
+        uint32_t bits_;
+    };
+
+    //!@{
+    /*!
+     * Layout information is stored in a pair. The first member indicates
+     * whether an opening brace has been auto-inserted. If so, the second
+     * member tells at which offset the scope starts.
+     */
+    using Layout = std::pair<bool, int>;
+    std::stack<Layout> layoutStack_;
+    //!@}
 };
 
 } // namespace uaiso
