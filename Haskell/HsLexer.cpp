@@ -114,7 +114,7 @@ LexNextToken:
         break;
 
     case '=':
-        tk = lexAscSymbolMaybe2(ch, '>', TK_EQUAL_ARROW);
+        tk = lexAscSymbolMaybe2(ch, '>', TK_EQ_ARROW);
         break;
 
     case '<':
@@ -184,11 +184,11 @@ const int oprtrTable[] =
     TK_DOT,
     TK_SLASH,
     TK_COLON,
-    TK_LESS,
-    TK_EQUAL,
-    TK_GREATER,
+    TK_LS,
+    TK_EQ,
+    TK_GR,
     TK_QUESTION,                                           // 23
-    TK_AT_SYMBOL,
+    TK_AT,
     TK_BACKSLASH,
     TK_CARET,
     TK_PIPE,
@@ -260,7 +260,7 @@ Token HsLexer::lexAscSymbolMaybeMore(char &ch, Token tk)
         ch = consumeCharPeekNext();
     } while (isAscSymbol(ch));
 
-    return TK_CUSTOM_OPERATOR;
+    return TK_CUSTOM_OPRTR;
 }
 
 bool HsLexer::isAscSymbol(const char &ch) const
@@ -301,13 +301,13 @@ Token HsLexer::classifyIdent(char& ch)
 {
     if (mark_[0] >= 97) {
         context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
-        return TK_IDENTIFIER;
+        return TK_IDENT;
     }
 
     // We have a capitalized identifier. However, we must check what comes
     // after it because it can actually be a qualified name or a qualified
     // operator, which are lexed entirely as a single lexeme.
-    Token tk = TK_IDENTIFIER_CAPITALIZED;
+    Token tk = TK_CAPITAL_IDENT;
 
     std::function<void ()> classifyRecursively = [&]() {
         if (ch != '.') {
@@ -323,7 +323,7 @@ Token HsLexer::classifyIdent(char& ch)
             ch = consumeCharPeekNext(1);
             while (hsLang.isIdentChar(ch))
                 ch = consumeCharPeekNext();
-            tk = TK_IDENTIFIER_QUALIFIED;
+            tk = TK_CAPITAL_IDENT_LIST;
             classifyRecursively();
         }
 
@@ -332,7 +332,7 @@ Token HsLexer::classifyIdent(char& ch)
             while (isAscSymbol(ch))
                 ch = consumeCharPeekNext();
             context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
-            tk = TK_QUALIFIED_OPERATOR;
+            tk = TK_QUALIFIED_OPRTR;
         }
     };
     classifyRecursively();

@@ -89,33 +89,33 @@ int yyxprevstate; /* Previous state (valid under certain conditions) */
 "@" |
 "#" { PROCESS_TOKEN(yytext[0]); }
 
-"==" { PROCESS_TOKEN(EQUAL_EQUAL); }
-"!=" { PROCESS_TOKEN(EXCLAM_EQUAL); }
+"==" { PROCESS_TOKEN(EQ_EQ); }
+"!=" { PROCESS_TOKEN(EXCLAM_EQ); }
 
-"<=" { PROCESS_TOKEN(LESS_EQUAL); }
-">=" { PROCESS_TOKEN(GREATER_EQUAL); }
-"<>" { PROCESS_TOKEN(LESS_GREATER); }
-"<>=" { PROCESS_TOKEN(LESS_GREATER_EQUAL); }
-"!<>" { PROCESS_TOKEN(EXCLAM_LESS_GREATER); }
-"!<>=" { PROCESS_TOKEN(EXCLAM_LESS_GREATER_EQUAL); }
-"!<" { PROCESS_TOKEN(EXCLAM_LESS); }
-"!<=" { PROCESS_TOKEN(EXCLAM_LESS_EQUAL); }
-"!>" { PROCESS_TOKEN(EXCLAM_GREATER); }
-"!>=" { PROCESS_TOKEN(EXCLAM_GREATER_EQUAL); }
+"<=" { PROCESS_TOKEN(LS_EQ); }
+">=" { PROCESS_TOKEN(GR_EQ); }
+"<>" { PROCESS_TOKEN(LS_GR); }
+"<>=" { PROCESS_TOKEN(LS_GR_EQ); }
+"!<>" { PROCESS_TOKEN(EXCLAM_LS_GR); }
+"!<>=" { PROCESS_TOKEN(EXCLAM_LS_GR_EQ); }
+"!<" { PROCESS_TOKEN(EXCLAM_LS); }
+"!<=" { PROCESS_TOKEN(EXCLAM_LS_EQ); }
+"!>" { PROCESS_TOKEN(EXCLAM_GR); }
+"!>=" { PROCESS_TOKEN(EXCLAM_GR_EQ); }
 
-"+=" { PROCESS_TOKEN(PLUS_EQUAL); }
-"-=" { PROCESS_TOKEN(MINUS_EQUAL); }
-"*=" { PROCESS_TOKEN(STAR_EQUAL); }
-"/=" { PROCESS_TOKEN(SLASH_EQUAL); }
-"%=" { PROCESS_TOKEN(PERCENT_EQUAL); }
-"^=" { PROCESS_TOKEN(CARET_EQUAL); }
-"^^=" { PROCESS_TOKEN(CARET_CARET_EQUAL); }
-"&=" { PROCESS_TOKEN(AMPER_EQUAL); }
-"|=" { PROCESS_TOKEN(PIPE_EQUAL); }
-"<<=" { PROCESS_TOKEN(LESS_LESS_EQUAL); }
-">>=" { PROCESS_TOKEN(GREATER_GREATER_EQUAL); }
-">>>=" { PROCESS_TOKEN(GREATER_GREATER_GREATER_EQUAL); }
-"~=" { PROCESS_TOKEN(TILDE_EQUAL); }
+"+=" { PROCESS_TOKEN(PLUS_EQ); }
+"-=" { PROCESS_TOKEN(MINUS_EQ); }
+"*=" { PROCESS_TOKEN(STAR_EQ); }
+"/=" { PROCESS_TOKEN(SLASH_EQ); }
+"%=" { PROCESS_TOKEN(PERCENT_EQ); }
+"^=" { PROCESS_TOKEN(CARET_EQ); }
+"^^=" { PROCESS_TOKEN(CARET_CARET_EQ); }
+"&=" { PROCESS_TOKEN(AMPER_EQ); }
+"|=" { PROCESS_TOKEN(PIPE_EQ); }
+"<<=" { PROCESS_TOKEN(LS_LS_EQ); }
+">>=" { PROCESS_TOKEN(GR_GR_EQ); }
+">>>=" { PROCESS_TOKEN(GR_GR_GR_EQ); }
+"~=" { PROCESS_TOKEN(TILDE_EQ); }
 
 "&&" { PROCESS_TOKEN(AMPER_AMPER); }
 "||" { PROCESS_TOKEN(PIPE_PIPE); }
@@ -123,12 +123,12 @@ int yyxprevstate; /* Previous state (valid under certain conditions) */
 "++" { PROCESS_TOKEN(PLUS_PLUS); }
 "--" { PROCESS_TOKEN(MINUS_MINUS); }
 
-"<<" { PROCESS_TOKEN(LESS_LESS); }
-">>" { PROCESS_TOKEN(GREATER_GREATER); }
-">>>" { PROCESS_TOKEN(GREATER_GREATER_GREATER); }
+"<<" { PROCESS_TOKEN(LS_LS); }
+">>" { PROCESS_TOKEN(GR_GR); }
+">>>" { PROCESS_TOKEN(GR_GR_GR); }
 
 "^^" { PROCESS_TOKEN(CARET_CARET); }
-"=>" { PROCESS_TOKEN(EQUAL_ARROW); }
+"=>" { PROCESS_TOKEN(EQ_ARROW); }
 ".." { PROCESS_TOKEN(DOT_DOT); }
 "..." { PROCESS_TOKEN(DOT_DOT_DOT); }
 
@@ -288,23 +288,23 @@ int yyxprevstate; /* Previous state (valid under certain conditions) */
 
     /*--- Literals ---*/
 
-"true" { PROCESS_TOKEN(TRUE_LITERAL); }
-"false" { PROCESS_TOKEN(FALSE_LITERAL); }
-"null" { PROCESS_TOKEN(NULL_LITERAL); }
+"true" { PROCESS_TOKEN(TRUE_VALUE); }
+"false" { PROCESS_TOKEN(FALSE_VALUE); }
+"null" { PROCESS_TOKEN(NULL_VALUE); }
 "\"" { BEGIN DQSTRING; ENTER_STATE; yymore(); }
 <DQSTRING>"\\" { yyxprevstate = DQSTRING; BEGIN ESCSEQ; yymore(); }
 <DQSTRING>"\n" { yymore(); };
-<DQSTRING>"\"" { BEGIN INITIAL; LEAVE_STATE; PROCESS_STRING_LITERAL; }
+<DQSTRING>"\"" { BEGIN INITIAL; LEAVE_STATE; PROCESS_STR_LIT; }
 <DQSTRING>. { yymore(); };
 "\'" { BEGIN QCHAR; ENTER_STATE; yymore(); }
 <QCHAR>"\\" { yyxprevstate = QCHAR; BEGIN ESCSEQ; yymore(); }
 <QCHAR>"\n" { yymore(); };
-<QCHAR>"\'" { BEGIN INITIAL; LEAVE_STATE; PROCESS_CHAR_LITERAL; }
+<QCHAR>"\'" { BEGIN INITIAL; LEAVE_STATE; PROCESS_CHAR_LIT; }
 <QCHAR>. { yymore(); };
 <ESCSEQ>. { BEGIN yyxprevstate; yymore(); }
 [0-9][0-9_]*[uUlL]{0,2}? |
 0[bB][0-1_]*[uUlL]{0,2}? |
-0[xX][0-9a-fA-F_]*[uUlL]{0,2}? {  PROCESS_INTEGER_LITERAL; }
+0[xX][0-9a-fA-F_]*[uUlL]{0,2}? {  PROCESS_INT_LIT; }
 ([0-9]+[0-9_]*\.)/[^\.0-9_]{1} |
 ([0-9]+[0-9_]*\.?[0-9_]+)((E|e)(\+|\-)?[0-9_]+)?([fFLi]{0,2})? |
 ([0-9]+[0-9_]*)(E|e)(\+|\-)?[0-9_]+([fFLi]{0,2})? |
@@ -312,11 +312,11 @@ int yyxprevstate; /* Previous state (valid under certain conditions) */
 0[xX]([0-9a-fA-F]+[0-9a-fA-F]*\.)/[^\.0-9_]{1} |
 0[xX]([0-9a-fA-F]+[0-9a-fA-F]*\.?[0-9a-fA-F_]+)((P|p)(\+|\-)?[0-9_]+)?([fFLi]{0,2})? |
 0[xX]([0-9a-fA-F]+[0-9a-fA-F]*)(P|p)(\+|\-)?[0-9_]+([fFLi]{0,2})? |
-0[xX](\.[0-9a-fA-F]+[0-9a-fA-F]*)((P|p)(\+|\-)?[0-9_]+)?([fFLi]{0,2})? { PROCESS_FLOAT_LITERAL; }
+0[xX](\.[0-9a-fA-F]+[0-9a-fA-F]*)((P|p)(\+|\-)?[0-9_]+)?([fFLi]{0,2})? { PROCESS_FLOAT_LIT; }
 
     /*--- Identifier ---*/
 
-[a-zA-Z_]([a-zA-Z0-9_])* { PROCESS_IDENTIFIER; }
+[a-zA-Z_]([a-zA-Z0-9_])* { PROCESS_IDENT; }
 
     /*--- New line ---*/
 

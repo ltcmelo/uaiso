@@ -505,10 +505,10 @@ TypeChecker::VisitResult TypeChecker::visitNumLitExpr(NumLitExprAst* ast)
     Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
-    case TK_INTEGER_LITERAL:
+    case TK_INT_LIT:
         P->exprTy_.emplace(new IntType);
         break;
-    case TK_FLOAT_LITERAL:
+    case TK_FLOAT_LIT:
         P->exprTy_.emplace(new FloatType);
         break;
     default:
@@ -524,8 +524,8 @@ TypeChecker::VisitResult TypeChecker::visitBoolLitExpr(BoolLitExprAst* ast)
     Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
-    case TK_TRUE_LITERAL:
-    case TK_FALSE_LITERAL:
+    case TK_TRUE_VALUE:
+    case TK_FALSE_VALUE:
         P->exprTy_.emplace(new BoolType);
         break;
     default:
@@ -540,7 +540,7 @@ TypeChecker::VisitResult TypeChecker::visitCharLitExpr(CharLitExprAst* ast)
     Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
-    case TK_CHAR_LITERAL:
+    case TK_CHAR_LIT:
         P->exprTy_.emplace(new IntType);
         break;
     default:
@@ -555,7 +555,7 @@ TypeChecker::VisitResult TypeChecker::visitStrLitExpr(StrLitExprAst* ast)
     Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
-    case TK_STRING_LITERAL:
+    case TK_STR_LIT:
         P->exprTy_.emplace(new StrType);
         break;
     default:
@@ -570,7 +570,7 @@ TypeChecker::VisitResult TypeChecker::visitNullLitExpr(NullLitExprAst* ast)
     Token tk = P->tokens_->findAt(ast->litLoc_.fileName_, ast->litLoc_.lineCol());
 
     switch (tk) {
-    case TK_NULL_LITERAL:
+    case TK_NULL_VALUE:
         P->exprTy_.emplace(new PtrType(std::unique_ptr<Type>(new InferredType)));
         break;
     default:

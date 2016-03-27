@@ -42,17 +42,17 @@ UAISO_API inline bool isKeyword(Token tk)
 UAISO_API inline bool isOprtr(Token tk)
 {
     return (tk > BEGIN_ASCII && tk < END_ASCII)
-            || (tk > BEGIN_MULTICHAR_OPERATOR && tk < END_MULTICHAR_OPERATOR);
+            || (tk > BEGIN_MULTICHAR_OPRTR && tk < END_MULTICHAR_OPRTR);
 }
 
 UAISO_API inline bool isNumLit(Token tk)
 {
-    return tk > BEGIN_NUMERIC_LITERAL && tk < END_NUMERIC_LITERAL;
+    return tk > BEGIN_NUM_LIT && tk < END_NUM_LIT;
 }
 
 UAISO_API inline bool isStrLit(Token tk)
 {
-    return tk > BEGIN_STRING_LITERAL && tk < END_STRING_LITERAL;
+    return tk > BEGIN_STR_LIT && tk < END_STR_LIT;
 }
 
 UAISO_API inline bool isComment(Token tk)

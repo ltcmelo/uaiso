@@ -106,21 +106,21 @@ int go_yyxprevstate; /* Previous state (valid under certain conditions) */
 "*" |
 "^" { PROCESS_TOKEN(yytext[0]); }
 
-"==" { PROCESS_TOKEN(EQUAL_EQUAL); }
-"!=" { PROCESS_TOKEN(EXCLAM_EQUAL); }
-"<=" { PROCESS_TOKEN(LESS_EQUAL); }
-">=" { PROCESS_TOKEN(GREATER_EQUAL); }
+"==" { PROCESS_TOKEN(EQ_EQ); }
+"!=" { PROCESS_TOKEN(EXCLAM_EQ); }
+"<=" { PROCESS_TOKEN(LS_EQ); }
+">=" { PROCESS_TOKEN(GR_EQ); }
 
-"+=" { PROCESS_TOKEN(PLUS_EQUAL); }
-"-=" { PROCESS_TOKEN(MINUS_EQUAL); }
-"*=" { PROCESS_TOKEN(STAR_EQUAL); }
-"/=" { PROCESS_TOKEN(SLASH_EQUAL); }
-"%=" { PROCESS_TOKEN(PERCENT_EQUAL); }
-"^=" { PROCESS_TOKEN(CARET_EQUAL); }
-"&=" { PROCESS_TOKEN(AMPER_EQUAL); }
-"|=" { PROCESS_TOKEN(PIPE_EQUAL); }
-"<<=" { PROCESS_TOKEN(LESS_LESS_EQUAL); }
-">>=" { PROCESS_TOKEN(GREATER_GREATER_EQUAL); }
+"+=" { PROCESS_TOKEN(PLUS_EQ); }
+"-=" { PROCESS_TOKEN(MINUS_EQ); }
+"*=" { PROCESS_TOKEN(STAR_EQ); }
+"/=" { PROCESS_TOKEN(SLASH_EQ); }
+"%=" { PROCESS_TOKEN(PERCENT_EQ); }
+"^=" { PROCESS_TOKEN(CARET_EQ); }
+"&=" { PROCESS_TOKEN(AMPER_EQ); }
+"|=" { PROCESS_TOKEN(PIPE_EQ); }
+"<<=" { PROCESS_TOKEN(LS_LS_EQ); }
+">>=" { PROCESS_TOKEN(GR_GR_EQ); }
 "&^=" { PROCESS_TOKEN(AMPER_CARET); }
 
 "&&" { PROCESS_TOKEN(AMPER_AMPER); }
@@ -129,10 +129,10 @@ int go_yyxprevstate; /* Previous state (valid under certain conditions) */
 "++" { PROCESS_TOKEN(PLUS_PLUS); }
 "--" { PROCESS_TOKEN(MINUS_MINUS); }
 
-"<<" { PROCESS_TOKEN(LESS_LESS); }
-">>" { PROCESS_TOKEN(GREATER_GREATER); }
+"<<" { PROCESS_TOKEN(LS_LS); }
+">>" { PROCESS_TOKEN(GR_GR); }
 
-":=" { PROCESS_TOKEN(COLON_EQUAL); }
+":=" { PROCESS_TOKEN(COLON_EQ); }
 "<-" { PROCESS_TOKEN(ARROW_DASH); }
 "..." { PROCESS_TOKEN(DOT_DOT_DOT); }
 
@@ -195,34 +195,34 @@ int go_yyxprevstate; /* Previous state (valid under certain conditions) */
 
     /*--- Literals ---*/
 
-"true" { PROCESS_TOKEN(TRUE_LITERAL); }
-"false" { PROCESS_TOKEN(FALSE_LITERAL); }
-"nil" { PROCESS_TOKEN(NULL_LITERAL); }
+"true" { PROCESS_TOKEN(TRUE_VALUE); }
+"false" { PROCESS_TOKEN(FALSE_VALUE); }
+"nil" { PROCESS_TOKEN(NULL_VALUE); }
 "\"" { BEGIN DQSTRING; ENTER_STATE; yymore(); }
 <DQSTRING>"\\" { go_yyxprevstate = DQSTRING; BEGIN ESCSEQ; yymore(); }
 <DQSTRING>"\n" { yymore(); }
-<DQSTRING>"\"" { BEGIN INITIAL; LEAVE_STATE; PROCESS_STRING_LITERAL; }
+<DQSTRING>"\"" { BEGIN INITIAL; LEAVE_STATE; PROCESS_STR_LIT; }
 <DQSTRING>. { yymore(); };
 "`" { BEGIN RAWSTRING; ENTER_STATE; yymore(); }
-<RAWSTRING>"`" { BEGIN INITIAL; LEAVE_STATE; PROCESS_STRING_LITERAL; }
+<RAWSTRING>"`" { BEGIN INITIAL; LEAVE_STATE; PROCESS_STR_LIT; }
 <RAWSTRING>"\n" { yymore(); };
 <RAWSTRING>. { yymore(); };
 "\'" { BEGIN QCHAR; ENTER_STATE; yymore(); }
 <QCHAR>"\\" { go_yyxprevstate = QCHAR; BEGIN ESCSEQ; yymore(); }
 <QCHAR>"\n" { yymore(); };
-<QCHAR>"\'" { BEGIN INITIAL; LEAVE_STATE; PROCESS_CHAR_LITERAL; }
+<QCHAR>"\'" { BEGIN INITIAL; LEAVE_STATE; PROCESS_CHAR_LIT; }
 <QCHAR>. { yymore(); };
 <ESCSEQ>. { BEGIN go_yyxprevstate; yymore(); }
 [0-9][0-9_]*[i]? |
-0[xX][0-9a-fA-F_]*[i]? {  PROCESS_INTEGER_LITERAL; }
+0[xX][0-9a-fA-F_]*[i]? {  PROCESS_INT_LIT; }
 ([0-9]+[0-9_]*\.)/[^\.0-9_]{1} |
 ([0-9]+[0-9_]*\.?[0-9_]+)((E|e)(\+|\-)?[0-9_]+)?[i]? |
 ([0-9]+[0-9_]*)(E|e)(\+|\-)?[0-9_]+[i]? |
-(\.[0-9]+[0-9_]*)((E|e)(\+|\-)?[0-9_]+)?[i]? { PROCESS_FLOAT_LITERAL; }
+(\.[0-9]+[0-9_]*)((E|e)(\+|\-)?[0-9_]+)?[i]? { PROCESS_FLOAT_LIT; }
 
     /*--- Identifier ---*/
 
-[a-zA-Z_]([a-zA-Z0-9_])* { PROCESS_IDENTIFIER; }
+[a-zA-Z_]([a-zA-Z0-9_])* { PROCESS_IDENT; }
 
     /*--- New line ---*/
 

@@ -58,17 +58,17 @@ namespace {
 // to another.
 const int oprtrDelimTable[] =
 {
-    TK_PERCENT, TK_PERCENT_EQUAL, // 0, 1
-    TK_AMPER, TK_AMPER_EQUAL, // 2, 3
-    TK_STAR, TK_STAR_EQUAL, TK_STAR_STAR, TK_STAR_STAR_EQUAL, // 4...7
-    TK_PLUS, TK_PLUS_EQUAL, // 8, 9
-    TK_MINUS, TK_MINUS_EQUAL, // 10, 11
-    TK_SLASH, TK_SLASH_EQUAL, TK_SLASH_SLASH, TK_SLASH_SLASH_EQUAL, // 12...15
-    TK_LESS, TK_LESS_EQUAL, TK_LESS_LESS, TK_LESS_LESS_EQUAL, // 16...19
-    TK_EQUAL, TK_EQUAL_EQUAL, // 20, 21
-    TK_GREATER, TK_GREATER_EQUAL, TK_GREATER_GREATER, TK_GREATER_GREATER_EQUAL, // 22...25
-    TK_CARET, TK_CARET_EQUAL, // 26, 27
-    TK_PIPE, TK_PIPE_EQUAL, // 28, 29
+    TK_PERCENT, TK_PERCENT_EQ, // 0, 1
+    TK_AMPER, TK_AMPER_EQ, // 2, 3
+    TK_STAR, TK_STAR_EQ, TK_STAR_STAR, TK_STAR_STAR_EQ, // 4...7
+    TK_PLUS, TK_PLUS_EQ, // 8, 9
+    TK_MINUS, TK_MINUS_EQ, // 10, 11
+    TK_SLASH, TK_SLASH_EQ, TK_SLASH_SLASH, TK_SLASH_SLASH_EQ, // 12...15
+    TK_LS, TK_LS_EQ, TK_LS_LS, TK_LS_LS_EQ, // 16...19
+    TK_EQ, TK_EQ_EQ, // 20, 21
+    TK_GR, TK_GR_EQ, TK_GR_GR, TK_GR_GR_EQ, // 22...25
+    TK_CARET, TK_CARET_EQ, // 26, 27
+    TK_PIPE, TK_PIPE_EQ, // 28, 29
 
     // Indexing
     0, 0, 0, 0, 0, 0, 0,
@@ -288,7 +288,7 @@ LexNextToken:
 
     case '@':
         consumeChar();
-        tk = TK_AT_SYMBOL;
+        tk = TK_AT;
         break;
 
     case '(':
@@ -331,7 +331,7 @@ LexNextToken:
         ch = consumeCharPeekNext();
         if (ch == '=') {
             consumeChar();
-            tk = TK_EXCLAM_EQUAL;
+            tk = TK_EXCLAM_EQ;
             break;
         }
         // erro report
@@ -449,5 +449,5 @@ Token PyLexer::classifyIdent(char&)
 {
     context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
 
-    return TK_IDENTIFIER;
+    return TK_IDENT;
 }

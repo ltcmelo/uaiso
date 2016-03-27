@@ -57,7 +57,7 @@ public:
     {
         auto phrase = core("struct ticks {");
         std::vector<Token> expected {
-            TK_STRUCT, TK_IDENTIFIER, TK_LBRACE
+            TK_STRUCT, TK_IDENT, TK_LBRACE
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
         UAISO_EXPECT_CONTAINER_EQ(expected, (*phrase));
@@ -68,7 +68,7 @@ public:
     {
         auto phrase = core("int makeStringSlice(int n) {");
         std::vector<Token> expected {
-            TK_INT, TK_IDENTIFIER, TK_LPAREN, TK_INT, TK_IDENTIFIER,
+            TK_INT, TK_IDENT, TK_LPAREN, TK_INT, TK_IDENT,
             TK_RPAREN, TK_LBRACE
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
@@ -80,7 +80,7 @@ public:
     {
         auto phrase = core("int a; // comment\n");
         std::vector<Token> expected {
-            TK_INT, TK_IDENTIFIER, TK_SEMICOLON, TK_COMMENT
+            TK_INT, TK_IDENT, TK_SEMICOLON, TK_COMMENT
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
         UAISO_EXPECT_CONTAINER_EQ(expected, (*phrase));
@@ -91,7 +91,7 @@ public:
     {
         auto phrase = core("int a; /* multiline comment\n");
         std::vector<Token> expected {
-            TK_INT, TK_IDENTIFIER, TK_SEMICOLON, TK_MULTILINE_COMMENT
+            TK_INT, TK_IDENT, TK_SEMICOLON, TK_MULTILINE_COMMENT
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
         UAISO_EXPECT_CONTAINER_EQ(expected, (*phrase));
@@ -103,7 +103,7 @@ public:
         return;
         auto phrase = core("int /* between */ a");
         std::vector<Token> expected {
-            TK_INT, TK_MULTILINE_COMMENT, TK_IDENTIFIER
+            TK_INT, TK_MULTILINE_COMMENT, TK_IDENT
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
         UAISO_EXPECT_CONTAINER_EQ(expected, (*phrase));
@@ -118,8 +118,8 @@ public:
             int b;
         )raw");
         std::vector<Token> expected {
-            TK_INT, TK_IDENTIFIER, TK_SEMICOLON, TK_MULTILINE_COMMENT, TK_MULTILINE_COMMENT,
-            TK_INT, TK_IDENTIFIER, TK_SEMICOLON
+            TK_INT, TK_IDENT, TK_SEMICOLON, TK_MULTILINE_COMMENT, TK_MULTILINE_COMMENT,
+            TK_INT, TK_IDENT, TK_SEMICOLON
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
         UAISO_EXPECT_CONTAINER_EQ(expected, (*phrase));
@@ -134,7 +134,7 @@ public:
                       still */
         )raw");
         std::vector<Token> expected {
-            TK_INT, TK_IDENTIFIER, TK_SEMICOLON, TK_MULTILINE_COMMENT,
+            TK_INT, TK_IDENT, TK_SEMICOLON, TK_MULTILINE_COMMENT,
             TK_MULTILINE_COMMENT, TK_MULTILINE_COMMENT
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
@@ -151,7 +151,7 @@ public:
         )raw");
         std::vector<Token> expected {
             TK_INT, TK_MULTILINE_COMMENT, TK_MULTILINE_COMMENT, TK_MULTILINE_COMMENT,
-            TK_IDENTIFIER, TK_SEMICOLON
+            TK_IDENT, TK_SEMICOLON
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
         UAISO_EXPECT_CONTAINER_EQ(expected, (*phrase));
@@ -165,7 +165,7 @@ public:
         lexer_.P->context_->clearStopMark();
 
         std::vector<Token> expected {
-            TK_IDENTIFIER, TK_DOT, TK_COMPLETION
+            TK_IDENT, TK_DOT, TK_COMPLETION
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
         UAISO_EXPECT_CONTAINER_EQ(expected, (*phrase));
@@ -179,7 +179,7 @@ public:
         lexer_.P->context_->clearStopMark();
 
         std::vector<Token> expected {
-            TK_IDENTIFIER, TK_DOT, TK_COMPLETION
+            TK_IDENT, TK_DOT, TK_COMPLETION
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
         UAISO_EXPECT_CONTAINER_EQ(expected, (*phrase));
@@ -193,7 +193,7 @@ public:
         lexer_.P->context_->clearStopMark();
 
         std::vector<Token> expected {
-            TK_IDENTIFIER, TK_DOT, TK_COMPLETION, TK_IDENTIFIER
+            TK_IDENT, TK_DOT, TK_COMPLETION, TK_IDENT
         };
         UAISO_EXPECT_INT_EQ(expected.size(), phrase->size());
         UAISO_EXPECT_CONTAINER_EQ(expected, (*phrase));

@@ -132,14 +132,14 @@ bool PyParser::isAtomAhead() const
     case TK_LBRACKET:
     case TK_LBRACE:
     case TK_BACKTICK:
-    case TK_IDENTIFIER:
+    case TK_IDENT:
     case TK_COMPLETION:
-    case TK_INTEGER_LITERAL:
-    case TK_FLOAT_LITERAL:
-    case TK_STRING_LITERAL:
-    case TK_NULL_LITERAL:
-    case TK_TRUE_LITERAL:
-    case TK_FALSE_LITERAL:
+    case TK_INT_LIT:
+    case TK_FLOAT_LIT:
+    case TK_STR_LIT:
+    case TK_NULL_VALUE:
+    case TK_TRUE_VALUE:
+    case TK_FALSE_VALUE:
         return true;
 
     default:
@@ -173,7 +173,7 @@ bool PyParser::isSubscriptAhead() const
 
 bool PyParser::isNameAhead() const
 {
-    return ahead_ == TK_IDENTIFIER || ahead_ == TK_COMPLETION;
+    return ahead_ == TK_IDENT || ahead_ == TK_COMPLETION;
 }
 
 std::pair<PyParser::Precedence, std::unique_ptr<BinaryExprAst>>
@@ -189,8 +189,8 @@ PyParser::fetchPrecAhead() const
     case TK_AMPER:
         return std::make_pair(Precedence::And, makeAst<BitAndExprAst>());
 
-    case TK_LESS_LESS:
-    case TK_GREATER_GREATER:
+    case TK_LS_LS:
+    case TK_GR_GR:
         return std::make_pair(Precedence::Shift, makeAst<ShiftExprAst>());
 
     case TK_PLUS:
@@ -266,7 +266,7 @@ std::unique_ptr<StmtAst> PyParser::parseStmt()
     case TK_BREAK:
     case TK_CONTINUE:
     case TK_RETURN:
-    case TK_THROW:
+    case TK_RAISE:
     case TK_YIELD:
         return parseSimpleStmt();
 
@@ -285,13 +285,13 @@ std::unique_ptr<StmtAst> PyParser::parseStmt()
     case TK_WITH:
         return parseWithStmt();
 
-    case TK_FUNC:
+    case TK_DEF:
         return parseFuncDef();
 
     case TK_CLASS:
         return parseClassDef();
 
-    case TK_AT_SYMBOL:
+    case TK_AT:
         return parseDecorated();
 
     default:
@@ -356,7 +356,7 @@ std::unique_ptr<StmtAst> PyParser::parseSmallStmt()
     case TK_BREAK:
     case TK_CONTINUE:
     case TK_RETURN:
-    case TK_THROW:
+    case TK_RAISE:
     case TK_YIELD:
         return parseFlowStmt();
 
@@ -377,22 +377,22 @@ std::unique_ptr<StmtAst> PyParser::parseExprStmt()
     bool augmented = false;
     while (true) {
         switch (ahead_) {
-        case TK_PLUS_EQUAL:
-        case TK_MINUS_EQUAL:
-        case TK_STAR_EQUAL:
-        case TK_SLASH_EQUAL:
-        case TK_PERCENT_EQUAL:
-        case TK_AMPER_EQUAL:
-        case TK_PIPE_EQUAL:
-        case TK_CARET_EQUAL:
-        case TK_LESS_LESS_EQUAL:
-        case TK_GREATER_GREATER_EQUAL:
-        case TK_STAR_STAR_EQUAL:
-        case TK_SLASH_SLASH_EQUAL:
+        case TK_PLUS_EQ:
+        case TK_MINUS_EQ:
+        case TK_STAR_EQ:
+        case TK_SLASH_EQ:
+        case TK_PERCENT_EQ:
+        case TK_AMPER_EQ:
+        case TK_PIPE_EQ:
+        case TK_CARET_EQ:
+        case TK_LS_LS_EQ:
+        case TK_GR_GR_EQ:
+        case TK_STAR_STAR_EQ:
+        case TK_SLASH_SLASH_EQ:
             augmented = true;
             // Fallthrough
 
-        case TK_EQUAL: {
+        case TK_EQ: {
             consumeToken();
             auto assign = makeAst<AssignExprAst>();
             assign->setOprLoc(lastLoc_);
@@ -403,7 +403,7 @@ std::unique_ptr<StmtAst> PyParser::parseExprStmt()
                 assign->setExpr2s(parseTestList().release());
             exprs.reset(ExprAstList::create(assign.release()));
 
-            if (augmented || ahead_ != TK_EQUAL)
+            if (augmented || ahead_ != TK_EQ)
                 return Stmt(makeAstRaw<ExprStmtAst>()->setExprs(exprs.release()));
 
             break;
@@ -428,7 +428,7 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
     print->setKeyLoc(lastLoc_);
 
     bool wantTest = false;
-    if (maybeConsume(TK_GREATER_GREATER)) {
+    if (maybeConsume(TK_GR_GR)) {
         print->setOprLoc(lastLoc_);
         print->addExpr(parseTest().release());
         if (!maybeConsume(TK_COMMA))
@@ -485,7 +485,7 @@ std::unique_ptr<StmtAst> PyParser::parseFlowStmt()
     UAISO_ASSERT(ahead_ == TK_BREAK
                  || ahead_ == TK_CONTINUE
                  || ahead_ == TK_RETURN
-                 || ahead_ == TK_THROW
+                 || ahead_ == TK_RAISE
                  || ahead_ == TK_YIELD, return Stmt());
 
     switch (ahead_) {
@@ -498,7 +498,7 @@ std::unique_ptr<StmtAst> PyParser::parseFlowStmt()
     case TK_RETURN:
         return parseReturnStmt();
 
-    case TK_THROW:
+    case TK_RAISE:
         return parseRaiseStmt();
 
     case TK_YIELD:
@@ -843,7 +843,7 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
     bool seenElse = false;
     while (true) {
         switch (ahead_) {
-        case TK_CATCH: {
+        case TK_EXCEPT: {
             consumeToken();
             auto catche = makeAst<CatchClauseStmtAst>();
             catche->setKeyLoc(lastLoc_);
@@ -976,11 +976,11 @@ std::unique_ptr<DeclAst> PyParser::parseVarArgsList(bool wantParen)
         group->setSpec(makeAstRaw<InferredSpecAst>());
         switch (ahead_) {
         case TK_COMPLETION:
-        case TK_IDENTIFIER: {
+        case TK_IDENT: {
             if (seenStar)
                 break;
             auto name = parseName();
-            if (maybeConsume(TK_EQUAL)) {
+            if (maybeConsume(TK_EQ)) {
                 auto param = makeAst<ParamDeclAst__<ParamVariadic__Empty__,
                                                     ParamDefaultArg__>>();
                 param->setAssignLoc(lastLoc_);
@@ -1029,9 +1029,9 @@ std::unique_ptr<DeclAst> PyParser::parseVarArgsList(bool wantParen)
  */
 std::unique_ptr<StmtAst> PyParser::parseFuncDef()
 {
-    UAISO_ASSERT(ahead_ == TK_FUNC, return Stmt());
+    UAISO_ASSERT(ahead_ == TK_DEF, return Stmt());
 
-    match(TK_FUNC);
+    match(TK_DEF);
     auto spec = makeAst<FuncSpecAst__<>>();
     spec->setKeyLoc(lastLoc_);
     auto decl = makeAst<FuncDeclAst>();
@@ -1088,9 +1088,9 @@ std::unique_ptr<StmtAst> PyParser::parseClassDef()
  */
 std::unique_ptr<StmtAst> PyParser::parseDecorated()
 {
-    UAISO_ASSERT(ahead_ == TK_AT_SYMBOL, return Stmt());
+    UAISO_ASSERT(ahead_ == TK_AT, return Stmt());
 
-    match(TK_AT_SYMBOL);
+    match(TK_AT);
     do {
         // TODO: Work on decorators.
         parseDottedName();
@@ -1105,13 +1105,13 @@ std::unique_ptr<StmtAst> PyParser::parseDecorated()
             DEBUG_TRACE("parseDecorated, skip to TK_NEWLINE\n");
             skipTo(TK_NEWLINE);
         }
-    } while (maybeConsume(TK_AT_SYMBOL));
+    } while (maybeConsume(TK_AT));
 
     switch (ahead_) {
     case TK_CLASS:
         return parseClassDef();
 
-    case TK_FUNC:
+    case TK_DEF:
         return parseFuncDef();
 
     default:
@@ -1157,9 +1157,9 @@ std::unique_ptr<StmtAst> PyParser::parseYieldStmt()
  */
 std::unique_ptr<StmtAst> PyParser::parseRaiseStmt()
 {
-    UAISO_ASSERT(ahead_ == TK_THROW, return Stmt());
+    UAISO_ASSERT(ahead_ == TK_RAISE, return Stmt());
 
-    match(TK_THROW);
+    match(TK_RAISE);
     auto stmt = makeAst<ThrowStmtAst>();
     stmt->setKeyLoc(lastLoc_);
     if (isTestAhead()) {
@@ -1307,7 +1307,7 @@ std::unique_ptr<ExprAst> PyParser::parseArg()
         return Expr(listCompre.release());
     }
 
-    case TK_EQUAL:
+    case TK_EQ:
         consumeToken();
         return completeAssignExpr(std::move(test), &PyParser::parseTest);
 
@@ -1520,13 +1520,13 @@ std::unique_ptr<ExprAst> PyParser::parseComparison()
     auto expr = parseExpr();
     while (true) {
         switch (ahead_) {
-        case TK_LESS:
-        case TK_GREATER:
-        case TK_EQUAL_EQUAL:
-        case TK_GREATER_EQUAL:
-        case TK_LESS_EQUAL:
-        case TK_LESS_GREATER:
-        case TK_EXCLAM_EQUAL:
+        case TK_LS:
+        case TK_GR:
+        case TK_EQ_EQ:
+        case TK_GR_EQ:
+        case TK_LS_EQ:
+        case TK_LS_GR:
+        case TK_EXCLAM_EQ:
             consumeToken();
             expr = completeBinaryExpr<RelExprAst>(std::move(expr), &PyParser::parseExpr);
             break;
@@ -1709,27 +1709,27 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
     }
 
     case TK_COMPLETION:
-    case TK_IDENTIFIER: {
+    case TK_IDENT: {
         auto ident = makeAst<IdentExprAst>();
         ident->setName(parseName().release());
         return Expr(ident.release());
     }
 
-    case TK_INTEGER_LITERAL:
-    case TK_FLOAT_LITERAL:
+    case TK_INT_LIT:
+    case TK_FLOAT_LIT:
         consumeToken();
         return Expr(makeAstRaw<NumLitExprAst>()->setLitLoc(lastLoc_));
 
-    case TK_NULL_LITERAL:
+    case TK_NULL_VALUE:
         consumeToken();
         return Expr(makeAstRaw<NullLitExprAst>()->setLitLoc(lastLoc_));
 
-    case TK_TRUE_LITERAL:
-    case TK_FALSE_LITERAL:
+    case TK_TRUE_VALUE:
+    case TK_FALSE_VALUE:
         consumeToken();
         return Expr(makeAstRaw<BoolLitExprAst>()->setLitLoc(lastLoc_));
 
-    case TK_STRING_LITERAL:
+    case TK_STR_LIT:
         return parseStrLit();
 
     default:
@@ -2048,7 +2048,7 @@ std::unique_ptr<NameAst> PyParser::parseName()
     // simple name AST. Otherwise we end up with name without a
     // corresponding identifier in the lexeme map. An error name is then
     // create for consistency throughout the pipeline.
-    if (match(TK_IDENTIFIER)) {
+    if (match(TK_IDENT)) {
         auto name = makeAst<SimpleNameAst>();
         name->setNameLoc(lastLoc_);
         return Name(name.release());
@@ -2059,12 +2059,12 @@ std::unique_ptr<NameAst> PyParser::parseName()
 
 std::unique_ptr<ExprAst> PyParser::parseStrLit()
 {
-    UAISO_ASSERT(ahead_ == TK_STRING_LITERAL, return Expr());
+    UAISO_ASSERT(ahead_ == TK_STR_LIT, return Expr());
 
-    match(TK_STRING_LITERAL);
+    match(TK_STR_LIT);
     auto str = makeAst<StrLitExprAst>();
     str->setLitLoc(lastLoc_);
-    if (ahead_ == TK_STRING_LITERAL) {
+    if (ahead_ == TK_STR_LIT) {
         auto concat = makeAst<ConcatExprAst>();
         concat->setExpr1(str.release());
         concat->setExpr2(parseStrLit().release());

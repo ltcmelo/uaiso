@@ -229,9 +229,9 @@ if the_world_is_flat:
 )raw");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_NEWLINE,
-        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_INDENT,
-        TK_PRINT, TK_STRING_LITERAL, TK_NEWLINE, TK_DEDENT, TK_EOP
+        TK_IDENT, TK_EQ, TK_INT_LIT, TK_NEWLINE,
+        TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE, TK_INDENT,
+        TK_PRINT, TK_STR_LIT, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -246,8 +246,8 @@ def check():
 )raw");
 
     std::vector<Token> expected {
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON,
-        TK_NEWLINE, TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON,
+        TK_NEWLINE, TK_INDENT, TK_IF, TK_IDENT, TK_COLON,
         TK_NEWLINE, TK_INDENT, TK_PASS, TK_NEWLINE, TK_DEDENT,
         TK_DEDENT, TK_EOP
     };
@@ -260,7 +260,7 @@ void PyLexer::PyLexerTest::testCase3()
     auto tks = core("0xff <= 255");
 
     std::vector<Token> expected {
-        TK_INTEGER_LITERAL, TK_LESS_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+        TK_INT_LIT, TK_LS_EQ, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -270,7 +270,7 @@ void PyLexer::PyLexerTest::testCase4()
 {
     auto tks = core("0o123 <= 0O123");
     std::vector<Token> expected {
-        TK_INTEGER_LITERAL, TK_LESS_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+        TK_INT_LIT, TK_LS_EQ, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -280,7 +280,7 @@ void PyLexer::PyLexerTest::testCase5()
 {
     auto tks = core("1234567 > ~0x15");
     std::vector<Token> expected {
-        TK_INTEGER_LITERAL, TK_GREATER, TK_TILDE, TK_INTEGER_LITERAL, TK_EOP
+        TK_INT_LIT, TK_GR, TK_TILDE, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -291,7 +291,7 @@ void PyLexer::PyLexerTest::testCase6()
     auto tks = core("2134568 != 1231515");
 
     std::vector<Token> expected {
-        TK_INTEGER_LITERAL, TK_EXCLAM_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+        TK_INT_LIT, TK_EXCLAM_EQ, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -302,8 +302,8 @@ void PyLexer::PyLexerTest::testCase7()
     auto tks = core("(-124561-1) & 200000000");
 
     std::vector<Token> expected {
-        TK_LPAREN, TK_MINUS, TK_INTEGER_LITERAL, TK_MINUS, TK_INTEGER_LITERAL,
-        TK_RPAREN, TK_AMPER, TK_INTEGER_LITERAL, TK_EOP
+        TK_LPAREN, TK_MINUS, TK_INT_LIT, TK_MINUS, TK_INT_LIT,
+        TK_RPAREN, TK_AMPER, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -314,7 +314,7 @@ void PyLexer::PyLexerTest::testCase8()
     auto tks = core("0xdeadbeef != -1");
 
     std::vector<Token> expected {
-        TK_INTEGER_LITERAL, TK_EXCLAM_EQUAL, TK_MINUS, TK_INTEGER_LITERAL, TK_EOP
+        TK_INT_LIT, TK_EXCLAM_EQ, TK_MINUS, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -325,7 +325,7 @@ void PyLexer::PyLexerTest::testCase9()
     auto tks = core("0xdeadc0de & 12345");
 
     std::vector<Token> expected {
-        TK_INTEGER_LITERAL, TK_AMPER, TK_INTEGER_LITERAL, TK_EOP
+        TK_INT_LIT, TK_AMPER, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -336,8 +336,8 @@ void PyLexer::PyLexerTest::testCase10()
     auto tks = core("0xFF & 0x15 | 1234");
 
     std::vector<Token> expected {
-        TK_INTEGER_LITERAL, TK_AMPER, TK_INTEGER_LITERAL, TK_PIPE,
-        TK_INTEGER_LITERAL, TK_EOP
+        TK_INT_LIT, TK_AMPER, TK_INT_LIT, TK_PIPE,
+        TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -348,7 +348,7 @@ void PyLexer::PyLexerTest::testCase11()
     auto tks = core("x = 0");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -359,7 +359,7 @@ void PyLexer::PyLexerTest::testCase12()
     auto tks = core("x = 0xfffffffffff");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -370,7 +370,7 @@ void PyLexer::PyLexerTest::testCase13()
     auto tks = core("x = 3.14159");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_FLOAT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -381,7 +381,7 @@ void PyLexer::PyLexerTest::testCase14()
     auto tks = core("x = 314159.");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_FLOAT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -392,7 +392,7 @@ void PyLexer::PyLexerTest::testCase15()
     auto tks = core("x = .314159");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_FLOAT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -403,7 +403,7 @@ void PyLexer::PyLexerTest::testCase16()
     auto tks = core("x = 3e14159");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_FLOAT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -414,7 +414,7 @@ void PyLexer::PyLexerTest::testCase17()
     auto tks = core("x+y = 3e-1230");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_PLUS, TK_IDENTIFIER, TK_EQUAL, TK_FLOAT_LITERAL, TK_EOP
+        TK_IDENT, TK_PLUS, TK_IDENT, TK_EQ, TK_FLOAT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -425,9 +425,9 @@ void PyLexer::PyLexerTest::testCase18()
     auto tks = core("x = r'abc' + r'ABC' + R'ABC' + R'ABC'");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_STRING_LITERAL, TK_PLUS,
-        TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_PLUS,
-        TK_STRING_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_STR_LIT, TK_PLUS,
+        TK_STR_LIT, TK_PLUS, TK_STR_LIT, TK_PLUS,
+        TK_STR_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -438,9 +438,9 @@ void PyLexer::PyLexerTest::testCase19()
     auto tks = core(R"raw(y = r"abc" + r"ABC" + R"ABC" + R"ABC")raw");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_STRING_LITERAL, TK_PLUS,
-        TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_PLUS,
-        TK_STRING_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_STR_LIT, TK_PLUS,
+        TK_STR_LIT, TK_PLUS, TK_STR_LIT, TK_PLUS,
+        TK_STR_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -451,7 +451,7 @@ void PyLexer::PyLexerTest::testCase20()
     auto tks = core("u'abc' + U'abc'");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_EOP
+        TK_STR_LIT, TK_PLUS, TK_STR_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -462,7 +462,7 @@ void PyLexer::PyLexerTest::testCase21()
     auto tks = core(R"raw(u"abc" + U"abc")raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_EOP
+        TK_STR_LIT, TK_PLUS, TK_STR_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -473,8 +473,8 @@ void PyLexer::PyLexerTest::testCase22()
     auto tks = core("br'abc' + bR'abc' + Br'abc' + BR'abc'");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_PLUS,
-        TK_STRING_LITERAL, TK_PLUS, TK_STRING_LITERAL, TK_EOP
+        TK_STR_LIT, TK_PLUS, TK_STR_LIT, TK_PLUS,
+        TK_STR_LIT, TK_PLUS, TK_STR_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -485,10 +485,10 @@ void PyLexer::PyLexerTest::testCase23()
     auto tks = core("def d22(a, b, c=2, d=2, *k): pass");
 
     std::vector<Token> expected {
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_IDENTIFIER, TK_COMMA,
-        TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL,
-        TK_COMMA, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_COMMA,
-        TK_STAR, TK_IDENTIFIER, TK_RPAREN, TK_COLON, TK_PASS, TK_EOP
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_IDENT, TK_COMMA,
+        TK_IDENT, TK_COMMA, TK_IDENT, TK_EQ, TK_INT_LIT,
+        TK_COMMA, TK_IDENT, TK_EQ, TK_INT_LIT, TK_COMMA,
+        TK_STAR, TK_IDENT, TK_RPAREN, TK_COLON, TK_PASS, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -499,8 +499,8 @@ void PyLexer::PyLexerTest::testCase24()
     auto tks = core("def d01v_(a=1, *k, **w): pass");
 
     std::vector<Token> expected {
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL,
-        TK_COMMA, TK_STAR, TK_IDENTIFIER, TK_COMMA, TK_STAR_STAR, TK_IDENTIFIER,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_IDENT, TK_EQ, TK_INT_LIT,
+        TK_COMMA, TK_STAR, TK_IDENT, TK_COMMA, TK_STAR_STAR, TK_IDENT,
         TK_RPAREN, TK_COLON, TK_PASS, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -512,10 +512,10 @@ void PyLexer::PyLexerTest::testCase25()
     auto tks = core("x = 1 - y + 15 - 1 + 0x124 + z + a[5]");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_MINUS, TK_IDENTIFIER,
-        TK_PLUS, TK_INTEGER_LITERAL, TK_MINUS, TK_INTEGER_LITERAL, TK_PLUS,
-        TK_INTEGER_LITERAL, TK_PLUS, TK_IDENTIFIER, TK_PLUS, TK_IDENTIFIER, TK_LBRACKET,
-        TK_INTEGER_LITERAL, TK_RBRACKET, TK_EOP
+        TK_IDENT, TK_EQ, TK_INT_LIT, TK_MINUS, TK_IDENT,
+        TK_PLUS, TK_INT_LIT, TK_MINUS, TK_INT_LIT, TK_PLUS,
+        TK_INT_LIT, TK_PLUS, TK_IDENT, TK_PLUS, TK_IDENT, TK_LBRACKET,
+        TK_INT_LIT, TK_RBRACKET, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -526,9 +526,9 @@ void PyLexer::PyLexerTest::testCase26()
     auto tks = core("~1 ^ 1 & 1 |1 ^ -1");
 
     std::vector<Token> expected {
-        TK_TILDE, TK_INTEGER_LITERAL, TK_CIRCUMFLEX, TK_INTEGER_LITERAL,
-        TK_AMPER, TK_INTEGER_LITERAL, TK_PIPE, TK_INTEGER_LITERAL, TK_CIRCUMFLEX,
-        TK_MINUS, TK_INTEGER_LITERAL, TK_EOP
+        TK_TILDE, TK_INT_LIT, TK_CIRCUMFLEX, TK_INT_LIT,
+        TK_AMPER, TK_INT_LIT, TK_PIPE, TK_INT_LIT, TK_CIRCUMFLEX,
+        TK_MINUS, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -542,9 +542,9 @@ x = sys.modules['time'].time()
 )raw");
 
     std::vector<Token> expected {
-        TK_IMPORT, TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER, TK_NEWLINE,
-        TK_IDENTIFIER, TK_EQUAL, TK_IDENTIFIER, TK_DOT, TK_IDENTIFIER,
-        TK_LBRACKET, TK_STRING_LITERAL, TK_RBRACKET, TK_DOT, TK_IDENTIFIER,
+        TK_IMPORT, TK_IDENT, TK_COMMA, TK_IDENT, TK_NEWLINE,
+        TK_IDENT, TK_EQ, TK_IDENT, TK_DOT, TK_IDENT,
+        TK_LBRACKET, TK_STR_LIT, TK_RBRACKET, TK_DOT, TK_IDENT,
         TK_LPAREN, TK_RPAREN, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -559,8 +559,8 @@ def foo(x,y): pass
 )raw");
 
     std::vector<Token> expected {
-        TK_AT_SYMBOL, TK_IDENTIFIER, TK_NEWLINE, TK_FUNC,
-        TK_IDENTIFIER, TK_LPAREN, TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER,
+        TK_AT, TK_IDENT, TK_NEWLINE, TK_DEF,
+        TK_IDENT, TK_LPAREN, TK_IDENT, TK_COMMA, TK_IDENT,
         TK_RPAREN, TK_COLON, TK_PASS, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -571,7 +571,7 @@ void PyLexer::PyLexerTest::testCase29()
 {
     auto tks = core("class async(Bar):pass");
     std::vector<Token> expected {
-        TK_CLASS, TK_IDENTIFIER, TK_LPAREN, TK_IDENTIFIER, TK_RPAREN,
+        TK_CLASS, TK_IDENT, TK_LPAREN, TK_IDENT, TK_RPAREN,
         TK_COLON, TK_PASS, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -590,13 +590,13 @@ async def foo():
 )raw");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_FUNC, TK_IDENTIFIER,
-        TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE, TK_INDENT, TK_FUNC,
-        TK_IDENTIFIER, TK_LPAREN, TK_IDENTIFIER, TK_RPAREN, TK_COLON,
-        TK_NEWLINE, TK_INDENT, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL,
-        TK_NEWLINE, TK_DEDENT, TK_IF, TK_INTEGER_LITERAL, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_IDENTIFIER,
-        TK_PLUS_EQUAL, TK_INTEGER_LITERAL, TK_NEWLINE, TK_DEDENT, TK_EOP
+        TK_IDENT, TK_DEF, TK_IDENT,
+        TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE, TK_INDENT, TK_DEF,
+        TK_IDENT, TK_LPAREN, TK_IDENT, TK_RPAREN, TK_COLON,
+        TK_NEWLINE, TK_INDENT, TK_IDENT, TK_EQ, TK_INT_LIT,
+        TK_NEWLINE, TK_DEDENT, TK_IF, TK_INT_LIT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_IDENT,
+        TK_PLUS_EQ, TK_INT_LIT, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -610,9 +610,9 @@ a = [1, 2,
 )raw");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_LBRACKET, TK_INTEGER_LITERAL, TK_COMMA,
-        TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL, TK_COMMA,
-        TK_INTEGER_LITERAL, TK_RBRACKET, TK_NEWLINE, TK_EOP
+        TK_IDENT, TK_EQ, TK_LBRACKET, TK_INT_LIT, TK_COMMA,
+        TK_INT_LIT, TK_COMMA, TK_INT_LIT, TK_COMMA,
+        TK_INT_LIT, TK_RBRACKET, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -627,9 +627,9 @@ if a:
 )raw");
 
     std::vector<Token> expected {
-        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
-        TK_LBRACKET, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
-        TK_COMMA, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
+        TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
+        TK_LBRACKET, TK_INT_LIT, TK_COMMA, TK_INT_LIT,
+        TK_COMMA, TK_INT_LIT, TK_COMMA, TK_INT_LIT,
         TK_RBRACKET, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -645,9 +645,9 @@ if a:
 )raw");
 
     std::vector<Token> expected {
-        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
-        TK_LBRACKET, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
-        TK_COMMA, TK_INTEGER_LITERAL, TK_COMMA, TK_INTEGER_LITERAL,
+        TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
+        TK_LBRACKET, TK_INT_LIT, TK_COMMA, TK_INT_LIT,
+        TK_COMMA, TK_INT_LIT, TK_COMMA, TK_INT_LIT,
         TK_RBRACKET, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -664,10 +664,10 @@ else:
 )raw");
 
     std::vector<Token> expected {
-        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_INDENT,
-        TK_PRINT, TK_INTEGER_LITERAL, TK_NEWLINE, TK_DEDENT,
+        TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE, TK_INDENT,
+        TK_PRINT, TK_INT_LIT, TK_NEWLINE, TK_DEDENT,
         TK_ELSE, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
-        TK_INTEGER_LITERAL, TK_NEWLINE, TK_DEDENT, TK_EOP
+        TK_INT_LIT, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -680,7 +680,7 @@ void PyLexer::PyLexerTest::testCase35()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -693,7 +693,7 @@ void PyLexer::PyLexerTest::testCase36()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -706,7 +706,7 @@ void PyLexer::PyLexerTest::testCase37()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -719,7 +719,7 @@ void PyLexer::PyLexerTest::testCase38()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -734,8 +734,8 @@ if a:
 )raw");
 
     std::vector<Token> expected {
-        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_INDENT,
-        TK_PRINT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_EOP
+        TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE, TK_INDENT,
+        TK_PRINT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -752,10 +752,10 @@ def g():
 )raw");
 
     std::vector<Token> expected {
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_EQUAL, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT,
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_EQUAL, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_EQ, TK_IDENT, TK_NEWLINE, TK_DEDENT,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_EQ, TK_IDENT, TK_NEWLINE, TK_DEDENT,
         TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -779,15 +779,15 @@ finally:
 )raw");
 
     std::vector<Token> expected {
-        TK_TRY, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INTEGER_LITERAL,
-        TK_NEWLINE, TK_DEDENT, TK_CATCH, TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER,
-        TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INTEGER_LITERAL,
-        TK_NEWLINE, TK_DEDENT, TK_CATCH, TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER,
-        TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INTEGER_LITERAL, TK_NEWLINE,
-        TK_PRINT, TK_INTEGER_LITERAL, TK_NEWLINE, TK_IF, TK_LPAREN,
-        TK_IDENTIFIER, TK_RPAREN, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
-        TK_INTEGER_LITERAL, TK_NEWLINE, TK_DEDENT, TK_DEDENT, TK_FINALLY, TK_COLON,
-        TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INTEGER_LITERAL, TK_NEWLINE, TK_DEDENT,
+        TK_TRY, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INT_LIT,
+        TK_NEWLINE, TK_DEDENT, TK_EXCEPT, TK_IDENT, TK_COMMA, TK_IDENT,
+        TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INT_LIT,
+        TK_NEWLINE, TK_DEDENT, TK_EXCEPT, TK_IDENT, TK_COMMA, TK_IDENT,
+        TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INT_LIT, TK_NEWLINE,
+        TK_PRINT, TK_INT_LIT, TK_NEWLINE, TK_IF, TK_LPAREN,
+        TK_IDENT, TK_RPAREN, TK_COLON, TK_NEWLINE, TK_INDENT, TK_PRINT,
+        TK_INT_LIT, TK_NEWLINE, TK_DEDENT, TK_DEDENT, TK_FINALLY, TK_COLON,
+        TK_NEWLINE, TK_INDENT, TK_PRINT, TK_INT_LIT, TK_NEWLINE, TK_DEDENT,
         TK_EOP
     };
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -806,12 +806,12 @@ def f():
 )raw");
 
     std::vector<Token> expected {
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
-        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
+        TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
         TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -832,12 +832,12 @@ def f():
 )raw");
 
     std::vector<Token> expected {
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
-        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
+        TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_DEDENT,
         TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -856,11 +856,11 @@ def g():
 )raw");
 
     std::vector<Token> expected {
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT, TK_DEDENT,
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_DEDENT, TK_DEDENT,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
         TK_INDENT, TK_PASS, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -881,11 +881,11 @@ def g():
 )raw");
 
     std::vector<Token> expected {
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_DEDENT, TK_DEDENT,
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_DEDENT, TK_DEDENT,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
         TK_INDENT, TK_PASS, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -902,9 +902,9 @@ def f():
 )raw");
 
     std::vector<Token> expected {
-        TK_FUNC, TK_IDENTIFIER, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
-        TK_INDENT, TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_NEWLINE,
-        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_NEWLINE,
+        TK_DEF, TK_IDENT, TK_LPAREN, TK_RPAREN, TK_COLON, TK_NEWLINE,
+        TK_INDENT, TK_IDENT, TK_EQ, TK_INT_LIT, TK_NEWLINE,
+        TK_IDENT, TK_EQ, TK_INT_LIT, TK_NEWLINE,
         TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -916,7 +916,7 @@ void PyLexer::PyLexerTest::testCase47()
     auto tks = core("x = 0xffffffffL");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -927,7 +927,7 @@ void PyLexer::PyLexerTest::testCase48()
     auto tks = core("x = 1L");
 
     std::vector<Token> expected {
-        TK_IDENTIFIER, TK_EQUAL, TK_INTEGER_LITERAL, TK_EOP
+        TK_IDENT, TK_EQ, TK_INT_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -943,8 +943,8 @@ from a import \
 )raw");
 
     std::vector<Token> expected {
-        TK_FROM, TK_IDENTIFIER, TK_IMPORT, TK_IDENTIFIER, TK_COMMA,
-        TK_IDENTIFIER, TK_COMMA, TK_IDENTIFIER, TK_NEWLINE, TK_EOP
+        TK_FROM, TK_IDENT, TK_IMPORT, TK_IDENT, TK_COMMA,
+        TK_IDENT, TK_COMMA, TK_IDENT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1149,8 +1149,8 @@ if a:
 )raw");
 
     std::vector<Token> expected {
-        TK_COMMENT, TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_COMMENT,
-        TK_INDENT, TK_PRINT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_EOP
+        TK_COMMENT, TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE, TK_COMMENT,
+        TK_INDENT, TK_PRINT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1167,8 +1167,8 @@ if a:
 )raw");
 
     std::vector<Token> expected {
-        TK_IF, TK_IDENTIFIER, TK_COLON, TK_NEWLINE, TK_COMMENT, TK_COMMENT,
-        TK_INDENT, TK_PRINT, TK_IDENTIFIER, TK_NEWLINE, TK_DEDENT, TK_EOP
+        TK_IF, TK_IDENT, TK_COLON, TK_NEWLINE, TK_COMMENT, TK_COMMENT,
+        TK_INDENT, TK_PRINT, TK_IDENT, TK_NEWLINE, TK_DEDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1182,7 +1182,7 @@ if a: # comment
 )raw");
 
     std::vector<Token> expected {
-        TK_IF, TK_IDENTIFIER, TK_COLON, TK_COMMENT, TK_NEWLINE, TK_EOP
+        TK_IF, TK_IDENT, TK_COLON, TK_COMMENT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1195,7 +1195,7 @@ void PyLexer::PyLexerTest::testCase59()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1208,7 +1208,7 @@ void PyLexer::PyLexerTest::testCase60()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1221,7 +1221,7 @@ void PyLexer::PyLexerTest::testCase61()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1234,7 +1234,7 @@ void PyLexer::PyLexerTest::testCase62()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1247,7 +1247,7 @@ void PyLexer::PyLexerTest::testCase63()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1261,7 +1261,7 @@ void PyLexer::PyLexerTest::testCase64()
 
     // Errors, since the last string literal is unfinished.
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_STRING_LITERAL, TK_EOP
+        TK_STR_LIT, TK_STR_LIT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1274,7 +1274,7 @@ void PyLexer::PyLexerTest::testCase65()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -1287,7 +1287,7 @@ void PyLexer::PyLexerTest::testCase66()
 )raw");
 
     std::vector<Token> expected {
-        TK_STRING_LITERAL, TK_STRING_LITERAL, TK_NEWLINE, TK_EOP
+        TK_STR_LIT, TK_STR_LIT, TK_NEWLINE, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);

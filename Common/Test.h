@@ -135,7 +135,7 @@ struct UAISO_API TestSkipped {};
     } while (0)
 
 #define UAISO_EQ_OPR(A, B) A == B
-#define UAISO_STD_EQUAL(A, B) std::equal(A.begin(), A.end(), B.begin())
+#define UAISO_STD_EQ(A, B) std::equal(A.begin(), A.end(), B.begin())
 
 #define UAISO_EXPECT_PTR_EQ(EXPECTED, ACTUAL) \
     UAISO_EXPECT_EQ(EXPECTED, ACTUAL, UAISO_EQ_OPR)
@@ -144,7 +144,7 @@ struct UAISO_API TestSkipped {};
 #define UAISO_EXPECT_INT_EQ(EXPECTED, ACTUAL) \
     UAISO_EXPECT_EQ(EXPECTED, ACTUAL, UAISO_EQ_OPR)
 #define UAISO_EXPECT_CONTAINER_EQ(EXPECTED, ACTUAL) \
-    UAISO_EXPECT_EQ(EXPECTED, ACTUAL, UAISO_STD_EQUAL)
+    UAISO_EXPECT_EQ(EXPECTED, ACTUAL, UAISO_STD_EQ)
 
 #define UAISO_EXPECT(EXPR, BOOLEAN) \
     do { \

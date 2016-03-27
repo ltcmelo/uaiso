@@ -75,7 +75,7 @@ Token PyKeywords::filter3(const char* s)
     } else if (s[0] == 'd') {
         if (s[1] == 'e') {
             if (s[2] == 'f')
-                return TK_FUNC;
+                return TK_DEF;
             if (s[2] == 'l')
                 return TK_DELETE;
         }
@@ -105,14 +105,14 @@ Token PyKeywords::filter4(const char* s)
         if (s[1] == 'o') {
             if (s[2] == 'n') {
                 if (s[3] == 'e')
-                    return TK_NULL_LITERAL;
+                    return TK_NULL_VALUE;
             }
         }
     } else if (s[0] == 'T') {
         if (s[1] == 'r') {
             if (s[2] == 'u') {
                 if (s[3] == 'e')
-                    return TK_TRUE_LITERAL;
+                    return TK_TRUE_VALUE;
             }
         }
     } else if (s[0] == 'e') {
@@ -162,7 +162,7 @@ Token PyKeywords::filter5(const char* s)
             if (s[2] == 'l') {
                 if (s[3] == 's') {
                     if (s[4] == 'e')
-                        return TK_FALSE_LITERAL;
+                        return TK_FALSE_VALUE;
                 }
             }
         }
@@ -198,7 +198,7 @@ Token PyKeywords::filter5(const char* s)
             if (s[2] == 'i') {
                 if (s[3] == 's') {
                     if (s[4] == 'e')
-                        return TK_THROW;
+                        return TK_RAISE;
                 }
             }
         }
@@ -244,7 +244,7 @@ Token PyKeywords::filter6(const char* s)
                 if (s[3] == 'e') {
                     if (s[4] == 'p') {
                         if (s[5] == 't')
-                            return TK_CATCH;
+                            return TK_EXCEPT;
                     }
                 }
             }

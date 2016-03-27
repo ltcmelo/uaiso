@@ -2,16 +2,16 @@
  * Copyright (c) 2015 Leandro T. C. Melo (ltcmelo@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * modify it under the terms of the GNU LSer General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * LSer General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
+ * You should have received a copy of the GNU LSer General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
@@ -22,15 +22,12 @@
 /*--------------------------*/
 
     /*
-       Tokens are possibly defined as according to their meaning, not
-       to their spelling in a particular language. For example, in D
-       a 64-bit integer is `long`, but it should be mapped to token
-       INT64. Sometimes the name will "coincidently" match, given that
-       in Go an 64-bit integer is indeed `int64`. This strategy allows
-       simplified generic handline in higher level layers. When the
-       actual spelling of a token is necessary, it can always be
-       recovered from the source from the editor (look token maps and
-       phrasing).
+       Tokens for fundamental types are defined according to their meaning, not
+       to their spelling in a particular language. For example, in D a 64-bit
+       integer is `long`, but it's represented by token TK_INT64. Sometimes the
+       the name will coincidently match, like in Go, where a 64-bit integer is
+       indeed `int64`. This strategy allows simplified generic handline in higher
+       level layers.
     */
 
     //--- ASCII (consistent with Bison) ---//
@@ -54,11 +51,11 @@ TOKEN PERIOD "." DOT
 TOKEN SLASH "/" 47
 TOKEN COLON ":" 58
 TOKEN SEMICOLON ";" 59
-TOKEN LESS "<" 60
-TOKEN EQUAL "=" 61
-TOKEN GREATER ">" 62
+TOKEN LS "<" 60
+TOKEN EQ "=" 61
+TOKEN GR ">" 62
 TOKEN QUESTION "?" 63
-TOKEN AT_SYMBOL "@" 64
+TOKEN AT "@" 64
 TOKEN LBRACKET "[" 91
 TOKEN BACKSLASH "\\" 92
 TOKEN RBRACKET "]" 93
@@ -83,9 +80,9 @@ TOKEN COMPLETION "<completion>"
 
     //--- Identifier ---//
 
-TOKEN IDENTIFIER "<identifier>"
-TOKEN IDENTIFIER_CAPITALIZED "<identifier_capitalized>"
-TOKEN IDENTIFIER_QUALIFIED "<identifier_qualified>"
+TOKEN IDENT "<identifier>"
+TOKEN CAPITAL_IDENT "<capitalized_identifier>"
+TOKEN CAPITAL_IDENT_LIST "<capitalized_identifier_list>"
 
     //--- Comments ---//
 
@@ -99,86 +96,86 @@ TOKEN END_COMMENT "$comments_end_marker$"
 
     //--- Literals ---//
 
-TOKEN BEGIN_LITERAL "$literal_begin_marker$"
-TOKEN BEGIN_NUMERIC_LITERAL "$numeric_literal_begin_marker$"
-TOKEN INTEGER_LITERAL "<integer_literal>"
-TOKEN FLOAT_LITERAL "<float_literal>"
-TOKEN END_NUMERIC_LITERAL "$numeric_literal_end_marker$"
-TOKEN BEGIN_CHAR_LITERAL "$char_literal_begin_marker$"
-TOKEN CHAR_LITERAL "<char_literal>"
-TOKEN CHAR_UTF16_LITERAL "<char_utf16_literal>"
-TOKEN CHAR_UTF32_LITERAL "<char_utf32_literal>"
-TOKEN END_CHAR_LITERAL "$char_literal_end_marker$"
-TOKEN BEGIN_STRING_LITERAL "$string_literal_begin_marker$"
-TOKEN STRING_LITERAL "<string_literal>"
-TOKEN STRING_UTF8_LITERAL "<string_utf8_literal>"
-TOKEN STRING_UTF16_LITERAL "<string_utf16_literal>"
-TOKEN STRING_UTF32_LITERAL "<string_utf32_literal>"
-TOKEN RAW_STRING_LITERAL "<raw_string_literal>"
-TOKEN RAW_UTF8_STRING_LITERAL "<raw_utf8_string_literal>"
-TOKEN RAW_UTF16_STRING_LITERAL "<raw_utf16_string_literal>"
-TOKEN RAW_UTF32_STRING_LITERAL "<raw_utf32_string_literal>"
-TOKEN END_STRING_LITERAL "$string_literal_end_marker$"
-TOKEN NULL_LITERAL "<null_literal>"
-TOKEN FALSE_LITERAL "<false_literal>"
-TOKEN TRUE_LITERAL "<true_literal>"
-TOKEN END_LITERAL "$literal_end_marker$"
+TOKEN BEGIN_LIT "$literal_begin_marker$"
+TOKEN BEGIN_NUM_LIT "$numeric_LIT_begin_marker$"
+TOKEN INT_LIT "<integer_literal>"
+TOKEN FLOAT_LIT "<float_literal>"
+TOKEN END_NUMERIC_LIT "$numeric_LIT_end_marker$"
+TOKEN BEGIN_CHAR_LIT "$char_LIT_begin_marker$"
+TOKEN CHAR_LIT "<char_literal>"
+TOKEN CHAR_UTF16_LIT "<char_utf16_literal>"
+TOKEN CHAR_UTF32_LIT "<char_utf32_literal>"
+TOKEN END_CHAR_LIT "$char_LIT_end_marker$"
+TOKEN BEGIN_STR_LIT "$STR_LIT_begin_marker$"
+TOKEN STR_LIT "<STR_literal>"
+TOKEN STR_UTF8_LIT "<STR_utf8_literal>"
+TOKEN STR_UTF16_LIT "<STR_utf16_literal>"
+TOKEN STR_UTF32_LIT "<STR_utf32_literal>"
+TOKEN RAW_STR_LIT "<raw_STR_literal>"
+TOKEN RAW_UTF8_STR_LIT "<raw_utf8_STR_literal>"
+TOKEN RAW_UTF16_STR_LIT "<raw_utf16_STR_literal>"
+TOKEN RAW_UTF32_STR_LIT "<raw_utf32_STR_literal>"
+TOKEN END_STR_LIT "$STR_LIT_end_marker$"
+TOKEN NULL_VALUE "<null_value>"
+TOKEN FALSE_VALUE "<false_value>"
+TOKEN TRUE_VALUE "<true_value>"
+TOKEN END_LIT "$literal_end_marker$"
 
-    //--- Multi-character operators ---//
+    //--- Multi-character OPRTRs ---//
 
-TOKEN BEGIN_MULTICHAR_OPERATOR "$multichar_operator_begin_marker$"
-TOKEN CUSTOM_OPERATOR "<custom_operator>"
-TOKEN QUALIFIED_OPERATOR "<qualified_operator>"
+TOKEN BEGIN_MULTICHAR_OPRTR "$multichar_operator_begin_marker$"
+TOKEN CUSTOM_OPRTR "<custom_OPRTR>"
+TOKEN QUALIFIED_OPRTR "<qualified_OPRTR>"
 TOKEN AMPER_AMPER "&&"
 TOKEN AMPER_CARET "&^"
-TOKEN AMPER_CARET_EQUAL "&^="
-TOKEN AMPER_EQUAL "&="
+TOKEN AMPER_CARET_EQ "&^="
+TOKEN AMPER_EQ "&="
 TOKEN ARROW_DASH "<-"
 TOKEN DASH_ARROW "->"
 TOKEN DASH_ARROW_STAR "->*"
 TOKEN CARET_CARET "^^"
-TOKEN CARET_CARET_EQUAL "^^="
-TOKEN CARET_EQUAL "^="
+TOKEN CARET_CARET_EQ "^^="
+TOKEN CARET_EQ "^="
 TOKEN COLON_COLON "::"
-TOKEN COLON_EQUAL ":="
-TOKEN SLASH_EQUAL "/="
+TOKEN COLON_EQ ":="
+TOKEN SLASH_EQ "/="
 TOKEN SLASH_SLASH "//"
-TOKEN SLASH_SLASH_EQUAL "//="
+TOKEN SLASH_SLASH_EQ "//="
 TOKEN DOT_DOT ".."
 TOKEN DOT_DOT_DOT "..."
 TOKEN DOT_STAR ".*"
-TOKEN EQUAL_EQUAL "=="
-TOKEN EQUAL_ARROW "=>"
-TOKEN EXCLAM_EQUAL "!="
-TOKEN EXCLAM_GREATER "!>"
-TOKEN EXCLAM_GREATER_EQUAL "!>="
-TOKEN EXCLAM_LESS "!<"
-TOKEN EXCLAM_LESS_EQUAL "!<="
-TOKEN EXCLAM_LESS_GREATER "!<>"
-TOKEN EXCLAM_LESS_GREATER_EQUAL "!<>="
-TOKEN GREATER_EQUAL ">="
-TOKEN GREATER_GREATER ">>"
-TOKEN GREATER_GREATER_GREATER ">>>"
-TOKEN GREATER_GREATER_GREATER_EQUAL ">>>="
-TOKEN GREATER_GREATER_EQUAL ">>="
-TOKEN LESS_EQUAL "<="
-TOKEN LESS_LESS "<<"
-TOKEN LESS_LESS_EQUAL "<<="
-TOKEN LESS_GREATER "<>"
-TOKEN LESS_GREATER_EQUAL "<>="
-TOKEN MINUS_EQUAL "-="
+TOKEN EQ_EQ "=="
+TOKEN EQ_ARROW "=>"
+TOKEN EXCLAM_EQ "!="
+TOKEN EXCLAM_GR "!>"
+TOKEN EXCLAM_GR_EQ "!>="
+TOKEN EXCLAM_LS "!<"
+TOKEN EXCLAM_LS_EQ "!<="
+TOKEN EXCLAM_LS_GR "!<>"
+TOKEN EXCLAM_LS_GR_EQ "!<>="
+TOKEN GR_EQ ">="
+TOKEN GR_GR ">>"
+TOKEN GR_GR_GR ">>>"
+TOKEN GR_GR_GR_EQ ">>>="
+TOKEN GR_GR_EQ ">>="
+TOKEN LS_EQ "<="
+TOKEN LS_LS "<<"
+TOKEN LS_LS_EQ "<<="
+TOKEN LS_GR "<>"
+TOKEN LS_GR_EQ "<>="
+TOKEN MINUS_EQ "-="
 TOKEN MINUS_MINUS "--"
-TOKEN PERCENT_EQUAL "%="
-TOKEN PIPE_EQUAL "|="
+TOKEN PERCENT_EQ "%="
+TOKEN PIPE_EQ "|="
 TOKEN PIPE_PIPE "||"
-TOKEN PLUS_EQUAL "+="
+TOKEN PLUS_EQ "+="
 TOKEN PLUS_PLUS "++"
 TOKEN POUND_POUND "##"
-TOKEN STAR_EQUAL "*="
+TOKEN STAR_EQ "*="
 TOKEN STAR_STAR "**"
-TOKEN STAR_STAR_EQUAL "**="
-TOKEN TILDE_EQUAL "~="
-TOKEN END_MULTICHAR_OPERATOR "$multichar_operator_end_marker$"
+TOKEN STAR_STAR_EQ "**="
+TOKEN TILDE_EQ "~="
+TOKEN END_MULTICHAR_OPRTR "$multichar_operator_end_marker$"
 
     //--- Keywords ---//
 
@@ -188,6 +185,7 @@ TOKEN ALIAS "alias"
 TOKEN ALIGN "align"
 TOKEN ALIGNAS "alignas"
 TOKEN ALIGNOF "aligonf"
+TOKEN AND "and"
 TOKEN AS "as"
 TOKEN ASM "asm"
 TOKEN ASSERT "assert"
@@ -219,6 +217,7 @@ TOKEN DYNAMIC_CAST "dynamic_cast"
 TOKEN ELIF "elif"
 TOKEN ELSE "else"
 TOKEN ENUM "enum"
+TOKEN EXCEPT "except"
 TOKEN EXEC "exec"
 TOKEN EXPLICIT "explicit"
 TOKEN EXPORT "export"
@@ -265,11 +264,13 @@ TOKEN NEWTYPE "newtype"
 TOKEN NOEXCEPT "noexcept"
 TOKEN NOGC "nogc"
 TOKEN NONLOCAL "nonlocal"
+TOKEN NOT "not"
 TOKEN NOTHROW "nothrow"
 TOKEN NOT_IN_HACK "!_in_hack"
 TOKEN NOT_IS_HACK "!_is_hack"
-TOKEN OPERATOR "operator"
+TOKEN OPRTR "OPRTR"
 TOKEN OF "of"
+TOKEN OR "or"
 TOKEN OUT "out"
 TOKEN OVERRIDE "override"
 TOKEN PACKAGE "package"
@@ -281,6 +282,7 @@ TOKEN PROPERTY "property"
 TOKEN PROTECTED "protected"
 TOKEN PUBLIC "public"
 TOKEN PURE "pure"
+TOKEN RAISE "raise"
 TOKEN RANGE "range"
 TOKEN REF "ref"
 TOKEN REGISTER "register"
@@ -357,20 +359,6 @@ TOKEN UINT32 "uint32"
 TOKEN UINT64 "uint64"
 TOKEN VOID "void"
 TOKEN END_BUILTIN_TYPES "$builtin_types_end_marker$"
-
-    //--- Misc ---//
-
-TOKEN OR "||" PIPE_PIPE
-TOKEN AND "&&" AMPER_AMPER
-TOKEN NOT "!" EXCLAM
-TOKEN XOR "^" CARET
-TOKEN BITOR "|" PIPE
-TOKEN COMPL "~" TILDE
-TOKEN OR_EQ "|=" PIPE_EQUAL
-TOKEN AND_EQ "&=" AMPER_EQUAL
-TOKEN BITAND "&" AMPER
-TOKEN NOT_EQ "!=" EXCLAM_EQUAL
-TOKEN XOR_EQ "^=" CARET_EQUAL
 
     //--- Special ---//
 

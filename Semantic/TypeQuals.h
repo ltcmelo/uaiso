@@ -21,8 +21,8 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_TYPEQUALIFIERS_H__
-#define UAISO_TYPEQUALIFIERS_H__
+#ifndef UAISO_TYPEQIFIERS_H__
+#define UAISO_TYPEQIFIERS_H__
 
 #include "Common/Flag.h"
 

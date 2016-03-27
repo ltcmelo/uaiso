@@ -201,12 +201,12 @@ def build_token_map():
         Where DATA is optional and might be the token's number or an alias
         to another token. When DATA is not present, the token's number is
         is taken from incremental counter, starting from the token
-        IDENTIFIER that begins at 258 (where bison starts numbering non-
+        IDENT that begins at 258 (where bison starts numbering non-
         single-character ASCII tokens).
     """
 
     file_path = "Parsing/Tokens.def"
-    token_num_counter = 259 # Bison starts from 258, which matches our IDENTIFIER.
+    token_num_counter = 259 # Bison starts from 258, which matches our IDENT.
 
     print "Generating tokens from %s" % file_path
 

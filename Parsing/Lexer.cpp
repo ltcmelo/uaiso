@@ -146,7 +146,7 @@ Token Lexer::lexStrLitEnd(char& ch, const char quote, const bool mayBreak, const
     else
         context_->trackReport(Diagnostic::UnterminatedString, tokenLoc());
 
-    return TK_STRING_LITERAL;
+    return TK_STR_LIT;
 }
 
 Token Lexer::lexIdentOrKeyword(char& ch, const Lang* lang)
@@ -166,7 +166,7 @@ Token Lexer::lexIdentOrKeyword(char& ch, const Lang* lang)
 
 Token Lexer::classifyIdent(char&)
 {
-    return TK_IDENTIFIER;
+    return TK_IDENT;
 }
 
 Token Lexer::lexNumLit(char& ch, const Lang* lang)
@@ -212,7 +212,7 @@ Token Lexer::lexNumLit(char& ch, const Lang* lang)
     // Long integer
     if (ch && lang->isLongSuffix(ch)) {
         ch = consumeCharPeekNext();
-        return TK_INTEGER_LITERAL;
+        return TK_INT_LIT;
     }
 
     if (ch && (lang->isExponent(ch)
@@ -221,7 +221,7 @@ Token Lexer::lexNumLit(char& ch, const Lang* lang)
         return lexFloatLit(ch, lang);
     }
 
-    return TK_INTEGER_LITERAL;
+    return TK_INT_LIT;
 }
 
 Token Lexer::lexFloatLit(char& ch, const Lang* lang)
@@ -245,7 +245,7 @@ Token Lexer::lexFloatLit(char& ch, const Lang* lang)
             ch = consumeCharPeekNext();
     }
 
-    return TK_FLOAT_LITERAL;
+    return TK_FLOAT_LIT;
 }
 
 bool Lexer::inCompletionArea() const

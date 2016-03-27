@@ -36,14 +36,14 @@ int GoParsingContext::interceptRawToken(int token)
 {
     switch (token) {
     case TK_COMPLETION:
-    case TK_IDENTIFIER:
-    case TK_STRING_LITERAL:
-    case TK_CHAR_LITERAL:
-    case TK_INTEGER_LITERAL:
-    case TK_FLOAT_LITERAL:
-    case TK_TRUE_LITERAL:
-    case TK_FALSE_LITERAL:
-    case TK_NULL_LITERAL:
+    case TK_IDENT:
+    case TK_STR_LIT:
+    case TK_CHAR_LIT:
+    case TK_INT_LIT:
+    case TK_FLOAT_LIT:
+    case TK_TRUE_VALUE:
+    case TK_FALSE_VALUE:
+    case TK_NULL_VALUE:
     case TK_BREAK:
     case TK_CONTINUE:
     case TK_FALLTHROUGH:
