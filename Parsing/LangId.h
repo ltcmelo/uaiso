@@ -39,6 +39,7 @@ enum class LangId : char
 {
     D,
     Go,
+    Hs,
     Py
 };
 

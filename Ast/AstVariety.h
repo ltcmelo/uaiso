@@ -45,10 +45,8 @@ namespace uaiso {
 enum class NumLitVariety : char
 {
     Unknown,
-    IntegerFormat,
-    FloatFormat,
-    DoubleFormat,
-    ReadlFormat
+    IntFormat,
+    FloatFormat
 };
 
 /*!

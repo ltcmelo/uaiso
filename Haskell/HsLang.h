@@ -46,7 +46,6 @@ public:
     bool hasStrLitJoinEscape() const override { return true; }
 
     std::pair<bool, char> strLitJoinEscapeMatcher() const override;
-
 };
 
 } // namespace uaiso

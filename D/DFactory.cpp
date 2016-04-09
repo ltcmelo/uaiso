@@ -28,6 +28,8 @@
 #include "D/DLang.h"
 #include "D/DTypeSystem.h"
 #include "D/DUnit.h"
+#include "Parsing/Lexer.h"
+#include "Parsing/Parser.h"
 #include "Semantic/Builtin.h"
 
 using namespace uaiso;
@@ -70,4 +72,14 @@ std::unique_ptr<TypeSystem> DFactory::makeTypeSystem()
 std::unique_ptr<Lang> DFactory::makeLang()
 {
     return std::unique_ptr<Lang>(new DLang);
+}
+
+std::unique_ptr<Lexer> DFactory::makeLexer()
+{
+    return std::unique_ptr<Lexer>(); // Wrap flex's lexer?
+}
+
+std::unique_ptr<Parser> DFactory::makeParser()
+{
+    return std::unique_ptr<Parser>(); // Wrap bison's parser?
 }

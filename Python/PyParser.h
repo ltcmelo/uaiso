@@ -24,11 +24,8 @@
 #ifndef UAISO_PYPARSER_H__
 #define UAISO_PYPARSER_H__
 
-#include "Parsing/Parser.h"
-#include "Ast/AstFwd.h"
-#include "Ast/AstList.h"
 #include "Common/Test.h"
-#include "Parsing/Token.h"
+#include "Parsing/Parser.h"
 #include <functional>
 #include <initializer_list>
 #include <utility>
@@ -53,12 +50,6 @@ public:
 private:
     DECL_CLASS_TEST(PyParser)
 
-    void consumeToken();
-    bool maybeConsume(Token tk);
-    void skipTo(Token tk);
-    bool match(Token tk);
-    void failMatch(bool consume);
-
     enum Precedence
     {
         Zero = 0,
@@ -71,13 +62,6 @@ private:
     };
 
     std::pair<Precedence, std::unique_ptr<BinaryExprAst>> fetchPrecAhead() const;
-
-    using Decl = std::unique_ptr<DeclAst>;
-    using Expr = std::unique_ptr<ExprAst>;
-    using Name = std::unique_ptr<NameAst>;
-    using Stmt = std::unique_ptr<StmtAst>;
-    using DeclList = std::unique_ptr<DeclAstList>;
-    using ExprList = std::unique_ptr<ExprAstList>;
 
     using ListCompre = std::unique_ptr<ListCompreExprAst>;
     using ParamGroup = std::unique_ptr<ParamGroupDeclAst>;
@@ -189,11 +173,6 @@ private:
               bool (PyParser::*checkAhead) () const,
               std::unique_ptr<typename AstListT::AstType> (PyParser::*) (),
               bool acceptTrailing = true);
-
-    Lexer* lexer_ { nullptr };
-    ParsingContext* context_ { nullptr };
-    Token ahead_ { TK_INVALID };
-    SourceLoc lastLoc_;
 };
 
 } // namespace uaiso

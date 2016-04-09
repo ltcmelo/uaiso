@@ -26,6 +26,8 @@
 #include "Python/PyIncrementalLexer.h"
 #include "Python/PySanitizer.h"
 #include "Python/PyLang.h"
+#include "Python/PyLexer.h"
+#include "Python/PyParser.h"
 #include "Python/PyTypeSystem.h"
 #include "Python/PyUnit.h"
 #include "Python/PyBuiltin.h"
@@ -70,4 +72,14 @@ std::unique_ptr<TypeSystem> PyFactory::makeTypeSystem()
 std::unique_ptr<Lang> PyFactory::makeLang()
 {
     return std::unique_ptr<Lang>(new PyLang);
+}
+
+std::unique_ptr<Lexer> PyFactory::makeLexer()
+{
+    return std::unique_ptr<Lexer>(new PyLexer);
+}
+
+std::unique_ptr<Parser> PyFactory::makeParser()
+{
+    return std::unique_ptr<Parser>(new PyParser);
 }

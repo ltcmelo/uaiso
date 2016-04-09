@@ -24,6 +24,7 @@
 #include "Parsing/Factory.h"
 #include "Common/Assert.h"
 #include "D/DFactory.h"
+#include "Haskell/HsFactory.h"
 #include "Go/GoFactory.h"
 #include "Python/PyFactory.h"
 
@@ -39,6 +40,8 @@ std::unique_ptr<Factory> FactoryCreator::create(LangId langName)
         return std::unique_ptr<Factory>(new DFactory);
     case LangId::Go:
         return std::unique_ptr<Factory>(new GoFactory);
+    case LangId::Hs:
+        return std::unique_ptr<Factory>(new HsFactory);
     case LangId::Py:
         return std::unique_ptr<Factory>(new PyFactory);
     default:

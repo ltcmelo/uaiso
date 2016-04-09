@@ -53,7 +53,9 @@ set(UAISO_TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/${GO_PARSER_PATH}/GoUnitTest.cpp
     # Haskell
     ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLexerTest.cpp
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsParserTest.cpp
     # Parsing
+    ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/ParserTest.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/UnitTest.h
     # Python
     ${PROJECT_SOURCE_DIR}/${PY_PARSER_PATH}/PyBinderTest.cpp
@@ -156,10 +158,14 @@ set(UAISO_SOURCES
     # Haskell
     ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsKeywords.cpp
     ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsKeywords.h
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsFactory.cpp
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsFactory.h
     ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLang.cpp
     ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLang.h
     ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLexer.cpp
     ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsLexer.h
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsParser.cpp
+    ${PROJECT_SOURCE_DIR}/${HS_PARSER_PATH}/HsParser.h
     # Parsing
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/DataIndex.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Diagnostic.cpp
@@ -180,6 +186,7 @@ set(UAISO_SOURCES
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Lexer.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Lexer.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Parser.h
+    ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Parser.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/ParsingContext.cpp
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/ParsingContext.h
     ${PROJECT_SOURCE_DIR}/${PARSING_PATH}/Phrasing.cpp

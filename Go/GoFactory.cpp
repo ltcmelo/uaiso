@@ -28,6 +28,8 @@
 #include "Go/GoLang.h"
 #include "Go/GoTypeSystem.h"
 #include "Go/GoUnit.h"
+#include "Parsing/Lexer.h"
+#include "Parsing/Parser.h"
 #include "Semantic/Builtin.h"
 
 using namespace uaiso;
@@ -70,4 +72,14 @@ std::unique_ptr<TypeSystem> GoFactory::makeTypeSystem()
 std::unique_ptr<Lang> GoFactory::makeLang()
 {
     return std::unique_ptr<Lang>(new GoLang);
+}
+
+std::unique_ptr<Lexer> GoFactory::makeLexer()
+{
+    return std::unique_ptr<Lexer>(); // Wrap flex's lexer?
+}
+
+std::unique_ptr<Parser> GoFactory::makeParser()
+{
+    return std::unique_ptr<Parser>(); // Wrap bison's parser?
 }

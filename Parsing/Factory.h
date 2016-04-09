@@ -36,6 +36,8 @@ class Builtin;
 class IncrementalLexer;
 class Sanitizer;
 class Lang;
+class Lexer;
+class Parser;
 class TypeSystem;
 class Unit;
 
@@ -52,9 +54,13 @@ public:
 
     virtual std::unique_ptr<IncrementalLexer> makeIncrementalLexer() = 0;
 
-    virtual std::unique_ptr<Sanitizer> makeSanitizer() = 0;
-
     virtual std::unique_ptr<Lang> makeLang() = 0;
+
+    virtual std::unique_ptr<Lexer> makeLexer() = 0;
+
+    virtual std::unique_ptr<Parser> makeParser() = 0;
+
+    virtual std::unique_ptr<Sanitizer> makeSanitizer() = 0;
 
     virtual std::unique_ptr<TypeSystem> makeTypeSystem() = 0;
 

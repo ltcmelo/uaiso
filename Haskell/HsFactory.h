@@ -21,36 +21,28 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Parsing/LangId.h"
+#ifndef UAISO_HSFACTORY_H__
+#define UAISO_HSFACTORY_H__
+
+#include "Parsing/Factory.h"
 
 namespace uaiso {
 
-std::vector<LangId> availableLangs()
+class UAISO_API HsFactory final : public Factory
 {
-    static std::vector<LangId> all = {
-        LangId::D,
-        LangId::Go,
-        // LangId::Hs,
-        LangId::Py
-    };
-    return all;
-}
+public:
+    LangId langName() const override;
+    std::unique_ptr<AstLocator> makeAstLocator() override;
+    std::unique_ptr<Builtin> makeBuiltin() override;
+    std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
+    std::unique_ptr<Sanitizer> makeSanitizer() override;
+    std::unique_ptr<Lang> makeLang() override;
+    std::unique_ptr<Lexer> makeLexer() override;
+    std::unique_ptr<Parser> makeParser() override;
+    std::unique_ptr<TypeSystem> makeTypeSystem() override;
+    std::unique_ptr<Unit> makeUnit() override;
+};
 
-std::string langName(LangId langName)
-{
-    switch (langName) {
-    case LangId::D:
-        return "D";
+} // namespace uaiso;
 
-    case LangId::Go:
-        return "Go";
-
-    case LangId::Hs:
-        return "Haskell";
-
-    case LangId::Py:
-        return "Python";
-    }
-}
-
-} // namespace uaiso
+#endif

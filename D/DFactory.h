@@ -37,6 +37,8 @@ public:
     std::unique_ptr<IncrementalLexer> makeIncrementalLexer() override;
     std::unique_ptr<Sanitizer> makeSanitizer() override;
     std::unique_ptr<Lang> makeLang() override;
+    std::unique_ptr<Lexer> makeLexer() override;
+    std::unique_ptr<Parser> makeParser() override;
     std::unique_ptr<TypeSystem> makeTypeSystem() override;
     std::unique_ptr<Unit> makeUnit() override;
 };

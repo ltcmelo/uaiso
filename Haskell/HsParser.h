@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2014-2016 Leandro T. C. Melo (ltcmelo@gmail.com)
+ * CoHsright (c) 2014-2016 Leandro T. C. Melo (ltcmelo@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
+ * You should have received a coHs of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
@@ -21,36 +21,35 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#include "Parsing/LangId.h"
+#ifndef UAISO_HSPARSER_H__
+#define UAISO_HSPARSER_H__
+
+#include "Ast/AstFwd.h"
+#include "Ast/AstList.h"
+#include "Common/Test.h"
+#include "Parsing/Parser.h"
 
 namespace uaiso {
 
-std::vector<LangId> availableLangs()
+class Lexer;
+class ParsingContext;
+
+class UAISO_API HsParser final : public Parser
 {
-    static std::vector<LangId> all = {
-        LangId::D,
-        LangId::Go,
-        // LangId::Hs,
-        LangId::Py
-    };
-    return all;
-}
+public:
+    HsParser();
 
-std::string langName(LangId langName)
-{
-    switch (langName) {
-    case LangId::D:
-        return "D";
+    bool parse(Lexer* lexer, ParsingContext* context) override;
 
-    case LangId::Go:
-        return "Go";
+private:
+    DECL_CLASS_TEST(HsParser)
 
-    case LangId::Hs:
-        return "Haskell";
+    //--- Expressions ---//
 
-    case LangId::Py:
-        return "Python";
-    }
-}
+    Expr parseExpr();
+    Expr parseAExpr();
+};
 
 } // namespace uaiso
+
+#endif

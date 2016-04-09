@@ -24,17 +24,17 @@
 #include "Python/PyParser.h"
 #include "Python/PyLexer.h"
 #include "Python/PyLang.h"
-#include "Ast/AstDumper.h"
-#include "Ast/AstSerializer.h"
-#include "Parsing/ParsingContext.h"
-#include <iostream>
-#include <sstream>
+#include "Parsing/LangId.h"
+#include "Parsing/ParserTest.h"
 
 using namespace uaiso;
 
-class PyParser::PyParserTest : public Test
+class PyParser::PyParserTest : public ParserTest
 {
 public:
+    PyParserTest() : ParserTest(LangId::Py)
+    {}
+
     TEST_RUN(PyParserTest
              , &PyParserTest::testCase1
              , &PyParserTest::testCase2
@@ -195,7 +195,6 @@ public:
              , &PyParserTest::testcase157
              , &PyParserTest::testcase158
              , &PyParserTest::testcase159
-
             )
 
     void testCase1();
@@ -384,14 +383,6 @@ public:
             std::cout << oss.str();
         }
     }
-
-    void reset() override
-    {
-        dumpAst_ = false;
-    }
-
-    bool dumpAst_ { false };
-
 };
 
 MAKE_CLASS_TEST(PyParser)

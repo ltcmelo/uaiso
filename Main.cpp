@@ -34,6 +34,7 @@
 #include "Go/GoSanitizer.h"
 #include "Go/GoUnit.h"
 #include "Haskell/HsLexer.h"
+#include "Haskell/HsParser.h"
 #include "Parsing/Factory.h"
 #include "Parsing/LexemeMap.h"
 #include "Parsing/TokenMap.h"
@@ -92,6 +93,7 @@ CALL_CLASS_TEST(FileInfo)
 CALL_CLASS_TEST(GoIncrementalLexer)
 CALL_CLASS_TEST(GoUnit)
 CALL_CLASS_TEST(HsLexer)
+CALL_CLASS_TEST(HsParser)
 CALL_CLASS_TEST(PyLexer)
 CALL_CLASS_TEST(PyParser)
 CALL_CLASS_TEST(TypeChecker)
@@ -402,6 +404,7 @@ int main(int argc, char* argv[])
         test_PyLexer();
         test_PyParser();
         test_HsLexer();
+        test_HsParser();
     }
 
     Test::printStats();

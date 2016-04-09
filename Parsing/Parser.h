@@ -24,7 +24,11 @@
 #ifndef UAISO_PARSER_H__
 #define UAISO_PARSER_H__
 
+#include "Ast/AstFwd.h"
+#include "Ast/AstList.h"
 #include "Common/Config.h"
+#include "Parsing/SourceLoc.h"
+#include "Parsing/Token.h"
 
 namespace uaiso {
 
@@ -40,6 +44,51 @@ public:
 
 protected:
     Parser() = default;
+
+    using Decl = std::unique_ptr<DeclAst>;
+    using Expr = std::unique_ptr<ExprAst>;
+    using Name = std::unique_ptr<NameAst>;
+    using Stmt = std::unique_ptr<StmtAst>;
+    using DeclList = std::unique_ptr<DeclAstList>;
+    using ExprList = std::unique_ptr<ExprAstList>;
+    using NameList = std::unique_ptr<NameAstList>;
+    using StmtList = std::unique_ptr<StmtAstList>;
+
+    /*!
+     * \brief consumeToken
+     */
+    void consumeToken();
+
+    /*!
+     * \brief maybeConsume
+     * \param tk
+     * \return
+     */
+    bool maybeConsume(Token tk);
+
+    /*!
+     * \brief skipTo
+     * \param tk
+     */
+    void skipTo(Token tk);
+
+    /*!
+     * \brief match
+     * \param tk
+     * \return
+     */
+    bool match(Token tk);
+
+    /*!
+     * \brief failMatch
+     * \param consume
+     */
+    void failMatch(bool consume);
+
+    Lexer* lexer_ { nullptr };
+    ParsingContext* context_ { nullptr };
+    Token ahead_ { TK_INVALID };
+    SourceLoc lastLoc_;
 };
 
 } // namespace uaiso

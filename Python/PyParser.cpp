@@ -37,54 +37,6 @@ using namespace uaiso;
 PyParser::PyParser()
 {}
 
-void PyParser::consumeToken()
-{
-    if (ahead_ == TK_EOP)
-        return;
-
-    // Track previous token location.
-    lastLoc_ = lexer_->tokenLoc();
-    lastLoc_.fileName_ = context_->fileName();
-    ahead_ = lexer_->lex();
-}
-
-bool PyParser::maybeConsume(Token tk)
-{
-    if (ahead_ == tk) {
-        consumeToken();
-        return true;
-    }
-    return false;
-}
-
-void PyParser::skipTo(Token tk)
-{
-    while (!(ahead_ == tk || ahead_ == TK_EOP))
-        consumeToken();
-}
-
-bool PyParser::match(Token tk)
-{
-    auto actual = ahead_;
-    consumeToken(); // Move on, regardless of a match.
-    if (actual != tk) {
-        failMatch(false);
-        return false;
-    }
-    return true;
-}
-
-void PyParser::failMatch(bool consume)
-{
-    // Location in the report is always from the lastly consumed token.
-    if (consume)
-        consumeToken();
-
-    DEBUG_TRACE("error at %d:%d unexpected token (%s)\n",
-                lastLoc_.lastLine_, lastLoc_.lastCol_, lastLoc_.fileName_.c_str());
-    context_->trackReport(Diagnostic::UnexpectedToken, lastLoc_);
-}
-
 bool PyParser::isTestAhead() const
 {
     switch (ahead_) {

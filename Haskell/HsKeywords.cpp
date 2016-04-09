@@ -127,6 +127,13 @@ Token HsKeywords::filter4(const char* s)
                     return TK_TYPE;
             }
         }
+    } else if (s[0] == 'T') {
+        if (s[1] == 'r') {
+            if (s[2] == 'u') {
+                if (s[3] == 'e')
+                    return TK_TRUE_VALUE; // Not really keyword, but lex as so.
+            }
+        }
     }
 
     return TK_INVALID;
@@ -158,6 +165,15 @@ Token HsKeywords::filter5(const char* s)
                 if (s[3] == 'r') {
                     if (s[4] == 'e')
                         return TK_WHERE;
+                }
+            }
+        }
+    } else if (s[0] == 'F') {
+        if (s[1] == 'a') {
+            if (s[2] == 'l') {
+                if (s[3] == 's') {
+                    if (s[4] == 'e')
+                        return TK_FALSE_VALUE; // Not really keyword, but lex as so.
                 }
             }
         }
