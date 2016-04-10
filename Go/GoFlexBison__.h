@@ -59,10 +59,10 @@ public:
         if (decl_) {
             delete ast;
             decl_->setTerminLoc(loc);
-            return makeAstRaw<DeclStmtAst>()->setDecl(decl_.release());
+            return newAst<DeclStmtAst>()->setDecl(decl_.release());
         }
 
-        return makeAstRaw<ExprStmtAst>()->addExpr(ast)->setTerminLoc(loc);
+        return newAst<ExprStmtAst>()->addExpr(ast)->setTerminLoc(loc);
     }
 
 private:
@@ -76,19 +76,19 @@ private:
             for (auto expr1 : *ast->exprs1_.get()) {
                 if (expr1->kind() == Ast::Kind::IdentExpr) {
                     auto name = IdentExpr_Cast(expr1)->name_.release();
-                    auto var = makeAstRaw<VarDeclAst>()->setName(name);
+                    auto var = newAst<VarDeclAst>()->setName(name);
                     if (decl_) {
                         decl_->decls_->pushBack(var);
                     } else {
                         VarGroupDeclAst* group = nullptr;
                         if (ast->exprs2_) {
-                            auto groupInit = makeAstRaw<VarGroupDeclAst__<VarGroupInits__>>();
+                            auto groupInit = newAst<VarGroupDeclAst__<VarGroupInits__>>();
                             groupInit->setInits__(ast->exprs2_.release());
                             group = groupInit;
                         } else {
-                            group = makeAstRaw<VarGroupDeclAst>();
+                            group = newAst<VarGroupDeclAst>();
                         }
-                        group->setSpec(makeAstRaw<InferredSpecAst>());
+                        group->setSpec(newAst<InferredSpecAst>());
                         group->decls_.reset(DeclAstList::create(var));
                         decl_.reset(group);
                     }

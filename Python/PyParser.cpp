@@ -133,35 +133,35 @@ PyParser::fetchPrecAhead() const
 {
     switch (ahead_) {
     case TK_PIPE:
-        return std::make_pair(Precedence::Or, makeAst<BitOrExprAst>());
+        return std::make_pair(Precedence::Or, BitOrExprAst::create());
 
     case TK_CARET:
-        return std::make_pair(Precedence::Xor, makeAst<BitXorExprAst>());
+        return std::make_pair(Precedence::Xor, BitXorExprAst::create());
 
     case TK_AMPER:
-        return std::make_pair(Precedence::And, makeAst<BitAndExprAst>());
+        return std::make_pair(Precedence::And, BitAndExprAst::create());
 
     case TK_LS_LS:
     case TK_GR_GR:
-        return std::make_pair(Precedence::Shift, makeAst<ShiftExprAst>());
+        return std::make_pair(Precedence::Shift, ShiftExprAst::create());
 
     case TK_PLUS:
-        return std::make_pair(Precedence::Term, makeAst<AddExprAst>());
+        return std::make_pair(Precedence::Term, AddExprAst::create());
 
     case TK_MINUS:
-        return std::make_pair(Precedence::Term, makeAst<SubExprAst>());
+        return std::make_pair(Precedence::Term, SubExprAst::create());
 
     case TK_STAR:
-        return std::make_pair(Precedence::Factor, makeAst<MulExprAst>());
+        return std::make_pair(Precedence::Factor, MulExprAst::create());
 
     case TK_SLASH:
-        return std::make_pair(Precedence::Factor, makeAst<DivExprAst>());
+        return std::make_pair(Precedence::Factor, DivExprAst::create());
 
     case TK_SLASH_SLASH:
-        return std::make_pair(Precedence::Factor, makeAst<DivExprAst>());
+        return std::make_pair(Precedence::Factor, DivExprAst::create());
 
     case TK_PERCENT:
-        return std::make_pair(Precedence::Factor, makeAst<ModExprAst>());
+        return std::make_pair(Precedence::Factor, ModExprAst::create());
 
     default:
         return std::make_pair(Precedence::Zero, std::unique_ptr<BinaryExprAst>());
@@ -188,7 +188,7 @@ bool PyParser::parse(Lexer* lexer, ParsingContext* context)
     }
 
     if (stmts) {
-        auto prog = makeAst<ProgramAst>();
+        auto prog = std::unique_ptr<ProgramAst>(newAst<ProgramAst>());
         prog->setStmts(stmts.release());
         context->takeAst(std::unique_ptr<Ast>(prog.release()));
         return true;
@@ -260,7 +260,7 @@ std::unique_ptr<StmtAst> PyParser::parseSimpleStmt()
     if (maybeConsume(TK_NEWLINE))
         return stmt;
 
-    auto block = makeAst<BlockStmtAst>();
+    auto block = BlockStmtAst::create();
     block->addStmt(stmt.release());
     while (maybeConsume(TK_SEMICOLON)) {
         if (ahead_ == TK_NEWLINE || ahead_ == TK_EOP)
@@ -346,7 +346,7 @@ std::unique_ptr<StmtAst> PyParser::parseExprStmt()
 
         case TK_EQ: {
             consumeToken();
-            auto assign = makeAst<AssignExprAst>();
+            auto assign = AssignExprAst::create();
             assign->setOprLoc(lastLoc_);
             assign->setExpr1s(exprs.release());
             if (ahead_ == TK_YIELD)
@@ -356,13 +356,13 @@ std::unique_ptr<StmtAst> PyParser::parseExprStmt()
             exprs.reset(ExprAstList::create(assign.release()));
 
             if (augmented || ahead_ != TK_EQ)
-                return Stmt(makeAstRaw<ExprStmtAst>()->setExprs(exprs.release()));
+                return Stmt(newAst<ExprStmtAst>()->setExprs(exprs.release()));
 
             break;
         }
 
         default:
-            return Stmt(makeAstRaw<ExprStmtAst>()->setExprs(exprs.release()));
+            return Stmt(newAst<ExprStmtAst>()->setExprs(exprs.release()));
         }
     }
 }
@@ -376,7 +376,7 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
     UAISO_ASSERT(ahead_ == TK_PRINT, return Stmt());
 
     match(TK_PRINT);
-    auto print = makeAst<PrintExprAst>();
+    auto print = PrintExprAst::create();
     print->setKeyLoc(lastLoc_);
 
     bool wantTest = false;
@@ -384,7 +384,7 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
         print->setOprLoc(lastLoc_);
         print->addExpr(parseTest().release());
         if (!maybeConsume(TK_COMMA))
-            return Stmt(makeAstRaw<ExprStmtAst>()->addExpr(print.release()));
+            return Stmt(newAst<ExprStmtAst>()->addExpr(print.release()));
 
         if (print->exprs())
             print->exprs()->lastSubList()->delim_ = lastLoc_;
@@ -401,7 +401,7 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
         }
     }
 
-    return Stmt(makeAstRaw<ExprStmtAst>()->addExpr(print.release()));
+    return Stmt(newAst<ExprStmtAst>()->addExpr(print.release()));
 }
 
 /*
@@ -412,10 +412,10 @@ std::unique_ptr<StmtAst> PyParser::parseDelStmt()
     UAISO_ASSERT(ahead_ == TK_DELETE, return Stmt());
 
     match(TK_DELETE);
-    auto del = makeAst<DelExprAst>();
+    auto del = DelExprAst::create();
     del->setKeyLoc(lastLoc_);
     del->setExprs(parseExprList().release());
-    return Stmt(makeAstRaw<ExprStmtAst>()->addExpr(del.release()));
+    return Stmt(newAst<ExprStmtAst>()->addExpr(del.release()));
 }
 
 /*
@@ -426,7 +426,7 @@ std::unique_ptr<StmtAst> PyParser::parsePassStmt()
     UAISO_ASSERT(ahead_ == TK_PASS, return Stmt());
 
     match(TK_PASS);
-    return Stmt(makeAstRaw<EmptyStmtAst>()->setKeyLoc(lastLoc_));
+    return Stmt(newAst<EmptyStmtAst>()->setKeyLoc(lastLoc_));
 }
 
 /*
@@ -474,13 +474,13 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
     switch (ahead_) {
     case TK_IMPORT: {
         consumeToken();
-        auto import = makeAst<ImportClauseDeclAst>();
+        auto import = ImportClauseDeclAst::create();
         import->setKeyLoc(lastLoc_);
         do {
             if (import->modules_)
                 import->modules_->delim_ = lastLoc_;
-            auto module = makeAst<ImportModuleDeclAst>();
-            module->setExpr(makeAstRaw<IdentExprAst>()->setName(parseDottedName().release()));
+            auto module = ImportModuleDeclAst::create();
+            module->setExpr(newAst<IdentExprAst>()->setName(parseDottedName().release()));
             if (maybeConsume(TK_AS)) {
                 module->setAsLoc(lastLoc_);
                 module->setLocalName(parseName().release());
@@ -490,12 +490,12 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
         if (!import->modules_)
             failMatch(true);
 
-        return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(import.release()));
+        return Stmt(newAst<DeclStmtAst>()->setDecl(import.release()));
     }
 
     case TK_FROM: {
         consumeToken();
-        auto import = makeAst<ImportClauseDeclAst>();
+        auto import = ImportClauseDeclAst::create();
         import->setKeyLoc(lastLoc_);
 
         // DESIGN: Store the dots (relative location info).
@@ -531,14 +531,14 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
 
         if (wantName || isNameAhead()) {
             // A selective import, items specified after 'import'.
-            auto module = makeAst<ImportModuleDeclAst>();
-            module->setExpr(makeAstRaw<IdentExprAst>()->setName(parseDottedName().release()));
+            auto module = ImportModuleDeclAst::create();
+            module->setExpr(newAst<IdentExprAst>()->setName(parseDottedName().release()));
             match(TK_IMPORT);
             module->setSelectLoc(lastLoc_);
             // Look for a select-all import without going further. If it's
             // the case, set the asterisk as a local name "marker".
             if (maybeConsume(TK_STAR)) {
-                auto star = makeAst<SimpleNameAst>();
+                auto star = SimpleNameAst::create();
                 star->setNameLoc(lastLoc_);
                 module->setLocalName(star.release());
             } else {
@@ -553,7 +553,7 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
             import->setModules(parseSubImports(false).release());
         }
 
-        return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(import.release()));
+        return Stmt(newAst<DeclStmtAst>()->setDecl(import.release()));
     }
 
     default:
@@ -582,7 +582,7 @@ std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
             do {
                 if (decls)
                     decls->delim_ = lastLoc_;
-                auto item = makeAst<ImportItemDeclAst>();
+                auto item = ImportItemDeclAst::create();
                 item->setActualName(parseName().release());
                 if (maybeConsume(TK_AS)) {
                     item->setAsLoc(lastLoc_);
@@ -594,8 +594,8 @@ std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
             do {
                 if (decls)
                     decls->delim_ = lastLoc_;
-                auto module = makeAst<ImportModuleDeclAst>();
-                module->setExpr(makeAstRaw<IdentExprAst>()->setName(parseName().release()));
+                auto module = ImportModuleDeclAst::create();
+                module->setExpr(newAst<IdentExprAst>()->setName(parseName().release()));
                 if (maybeConsume(TK_AS)) {
                     module->setAsLoc(lastLoc_);
                     module->setLocalName(parseName().release());
@@ -622,18 +622,18 @@ std::unique_ptr<StmtAst> PyParser::parseGlobalStmt()
     UAISO_ASSERT(ahead_ == TK_GLOBAL, return Stmt());
 
     match(TK_GLOBAL);
-    auto group = makeAst<VarGroupDeclAst>();
-    group->setSpec(makeAstRaw<InferredSpecAst>());
+    auto group = VarGroupDeclAst::create();
+    group->setSpec(newAst<InferredSpecAst>());
     group->setKeyLoc(lastLoc_);
     do {
         if (group->decls_)
             group->decls_->delim_ = lastLoc_;
-        group->addDecl(makeAstRaw<VarDeclAst>()->setName(parseName().release()));
+        group->addDecl(newAst<VarDeclAst>()->setName(parseName().release()));
     } while (maybeConsume(TK_COMMA));
     if (!group->decls())
         failMatch(true);
 
-    return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(group.release()));
+    return Stmt(newAst<DeclStmtAst>()->setDecl(group.release()));
 }
 
 /*
@@ -644,7 +644,7 @@ std::unique_ptr<StmtAst> PyParser::parseExecStmt()
     UAISO_ASSERT(ahead_ == TK_EXEC, return Stmt());
 
     match(TK_EXEC);
-    auto eval = makeAst<EvalStmtAst>();
+    auto eval = EvalStmtAst::create();
     eval->setKeyLoc(lastLoc_);
     eval->setExpr(parseExpr().release());
 
@@ -666,7 +666,7 @@ std::unique_ptr<StmtAst> PyParser::parseAssertStmt()
     UAISO_ASSERT(ahead_ == TK_ASSERT, return Stmt());
 
     match(TK_ASSERT);
-    auto expr = makeAst<AssertExprAst>();
+    auto expr = AssertExprAst::create();
     expr->setKeyLoc(lastLoc_);
     expr->setExpr(parseTest().release());
 
@@ -674,7 +674,7 @@ std::unique_ptr<StmtAst> PyParser::parseAssertStmt()
     if (maybeConsume(TK_COMMA))
         parseTest();
 
-    return Stmt(makeAstRaw<ExprStmtAst>()->addExpr(expr.release()));
+    return Stmt(newAst<ExprStmtAst>()->addExpr(expr.release()));
 }
 
 /*
@@ -695,7 +695,7 @@ std::unique_ptr<StmtAst> PyParser::parseIfStmt()
  */
 std::unique_ptr<StmtAst> PyParser::parseIfElseIfStmt()
 {
-    auto ef = makeAst<IfStmtAst>();
+    auto ef = IfStmtAst::create();
     ef->setIfLoc(lastLoc_);
     ef->setExpr(parseTest().release());
     match(TK_COLON);
@@ -720,7 +720,7 @@ std::unique_ptr<StmtAst> PyParser::parseWhileStmt()
     UAISO_ASSERT(ahead_ == TK_WHILE, return Stmt());
 
     match(TK_WHILE);
-    auto whyle = makeAst<WhileStmtAst>();
+    auto whyle = WhileStmtAst::create();
     whyle->setWhileLoc(lastLoc_);
     whyle->setExpr(parseTest().release());
     match(TK_COLON);
@@ -743,17 +743,17 @@ std::unique_ptr<StmtAst> PyParser::parseForStmt()
     UAISO_ASSERT(ahead_ == TK_FOR, return Stmt());
 
     match(TK_FOR);
-    auto four = makeAst<ForeachStmtAst>();
+    auto four = ForeachStmtAst::create();
 
     // Convert the exprs (when plain identifiers) into var decls.
     auto exprs = parseExprList();
-    auto group = makeAst<VarGroupDeclAst>();
-    group->setSpec(makeAstRaw<InferredSpecAst>());
+    auto group = VarGroupDeclAst::create();
+    group->setSpec(newAst<InferredSpecAst>());
     for (auto expr : *exprs) {
         if (expr->kind() != Ast::Kind::IdentExpr)
             continue;
         auto name = IdentExpr_Cast(expr)->name_.release();
-        group->addDecl(makeAstRaw<VarDeclAst>()->setName(name));
+        group->addDecl(newAst<VarDeclAst>()->setName(name));
     }
     four->setDecl(group.release());
 
@@ -787,7 +787,7 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
     UAISO_ASSERT(ahead_ == TK_TRY, return Stmt());
 
     match(TK_TRY);
-    auto trie = makeAst<TryStmtAst>();
+    auto trie = TryStmtAst::create();
     trie->setKeyLoc(lastLoc_);
     match(TK_COLON);
     trie->setStmt(parseSuite().release());
@@ -797,16 +797,16 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
         switch (ahead_) {
         case TK_EXCEPT: {
             consumeToken();
-            auto catche = makeAst<CatchClauseStmtAst>();
+            auto catche = CatchClauseStmtAst::create();
             catche->setKeyLoc(lastLoc_);
             if (isTestAhead()) {
                 auto test = parseTest();
                 if (test) {
-                    auto group = makeAst<ParamGroupDeclAst>();
+                    auto group = ParamGroupDeclAst::create();
                     if (test->kind() != Ast::Kind::IdentExpr) {
                         // TODO: This is an error, right?
                     } else {
-                        group->setSpec(makeAstRaw<NamedSpecAst>()->setName(
+                        group->setSpec(newAst<NamedSpecAst>()->setName(
                                 IdentExpr_Cast(test.get())->name_.release()));
                     }
                     if (maybeConsume(TK_AS) || maybeConsume(TK_COMMA)) {
@@ -816,7 +816,7 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
                                 context_->trackReport(Diagnostic::IdentifierExpected,
                                                       lastLoc_);
                             } else {
-                                group->addDecl(makeAstRaw<ParamDeclAst>()
+                                group->addDecl(newAst<ParamDeclAst>()
                                     ->setName(IdentExpr_Cast(ident.get())->name_.release()));
                             }
                         }
@@ -832,7 +832,7 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
 
         case TK_FINALLY: {
             consumeToken();
-            auto finaly = makeAst<FinallyClauseStmtAst>();
+            auto finaly = FinallyClauseStmtAst::create();
             finaly->setKeyLoc(lastLoc_);
             match(TK_COLON);
             finaly->setStmt(parseSuite().release());
@@ -871,7 +871,7 @@ std::unique_ptr<StmtAst> PyParser::parseWithStmt()
     UAISO_ASSERT(ahead_ == TK_WITH, return Stmt());
 
     match(TK_WITH);
-    auto with = makeAst<WithStmtAst>();
+    auto with = WithStmtAst::create();
     with->setKeyLoc(lastLoc_);
     with->setExprs(parseList<ExprAstList>(TK_COMMA,
                                           &PyParser::isTestAhead,
@@ -893,7 +893,7 @@ std::unique_ptr<ExprAst> PyParser::parseWithItem()
 {
     auto test = parseTest();
     if (maybeConsume(TK_AS)) {
-        auto assign = makeAst<AssignExprAst>();
+        auto assign = AssignExprAst::create();
         assign->setOprLoc(lastLoc_);
         assign->addExpr1(test.release());
         assign->addExpr2(parseExpr().release());
@@ -912,7 +912,7 @@ std::unique_ptr<ExprAst> PyParser::parseWithItem()
  */
 std::unique_ptr<DeclAst> PyParser::parseVarArgsList(bool wantParen)
 {
-    auto clause = makeAst<ParamClauseDeclAst>();
+    auto clause = ParamClauseDeclAst::create();
     if (wantParen) {
         match(TK_LPAREN);
         clause->setLDelimLoc(lastLoc_);
@@ -924,8 +924,8 @@ std::unique_ptr<DeclAst> PyParser::parseVarArgsList(bool wantParen)
         if (clause->decls_)
             clause->decls_->lastSubList()->delim_ = lastLoc_;
 
-        auto group = makeAst<ParamGroupDeclAst>();
-        group->setSpec(makeAstRaw<InferredSpecAst>());
+        auto group = ParamGroupDeclAst::create();
+        group->setSpec(newAst<InferredSpecAst>());
         switch (ahead_) {
         case TK_COMPLETION:
         case TK_IDENT: {
@@ -933,14 +933,15 @@ std::unique_ptr<DeclAst> PyParser::parseVarArgsList(bool wantParen)
                 break;
             auto name = parseName();
             if (maybeConsume(TK_EQ)) {
-                auto param = makeAst<ParamDeclAst__<ParamVariadic__Empty__,
-                                                    ParamDefaultArg__>>();
+                auto param = std::unique_ptr<ParamDeclAst__<
+                        ParamVariadic__Empty__, ParamDefaultArg__>>(newAst<
+                        ParamDeclAst__<ParamVariadic__Empty__, ParamDefaultArg__>>());
                 param->setAssignLoc(lastLoc_);
                 param->setName(name.release());
                 param->setDefaultArg(parseTest().release());
                 group->addDecl(param.release());
             } else {
-                group->addDecl(makeAstRaw<ParamDeclAst>()->setName(name.release()));
+                group->addDecl(newAst<ParamDeclAst>()->setName(name.release()));
             }
             clause->addDecl(group.release());
             break;
@@ -984,9 +985,9 @@ std::unique_ptr<StmtAst> PyParser::parseFuncDef()
     UAISO_ASSERT(ahead_ == TK_DEF, return Stmt());
 
     match(TK_DEF);
-    auto spec = makeAst<FuncSpecAst__<>>();
+    auto spec = std::unique_ptr<FuncSpecAst__<>>(newAst<FuncSpecAst__<>>());
     spec->setKeyLoc(lastLoc_);
-    auto decl = makeAst<FuncDeclAst>();
+    auto decl = FuncDeclAst::create();
     decl->setName(parseName().release());
     spec->setParam(parseVarArgsList(true).release());
 
@@ -995,7 +996,7 @@ std::unique_ptr<StmtAst> PyParser::parseFuncDef()
     decl->setStmt(parseSuite().release());
     decl->setSpec(spec.release());
 
-    return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(decl.release()));
+    return Stmt(newAst<DeclStmtAst>()->setDecl(decl.release()));
 }
 
 /*
@@ -1006,9 +1007,9 @@ std::unique_ptr<StmtAst> PyParser::parseClassDef()
     UAISO_ASSERT(ahead_ == TK_CLASS, return Stmt());
 
     match(TK_CLASS);
-    auto spec = makeAst<RecordSpecAst>();
+    auto spec = RecordSpecAst::create();
     spec->setKeyLoc(lastLoc_);
-    auto decl = makeAst<RecordDeclAst>();
+    auto decl = RecordDeclAst::create();
     decl->setName(parseName().release());
 
     if (maybeConsume(TK_LPAREN)) {
@@ -1017,7 +1018,7 @@ std::unique_ptr<StmtAst> PyParser::parseClassDef()
             if (base->kind() != Ast::Kind::IdentExpr)
                 continue;
             auto name = IdentExpr_Cast(base)->name_.release();
-            spec->addBase(makeAstRaw<BaseDeclAst>()->setName(name));
+            spec->addBase(newAst<BaseDeclAst>()->setName(name));
         }
         if (!match(TK_RPAREN)) {
             DEBUG_TRACE("parseClassDef, skip to TK_RPAREN\n");
@@ -1030,7 +1031,7 @@ std::unique_ptr<StmtAst> PyParser::parseClassDef()
     spec->setProto(parseSuite().release());
     decl->setSpec(spec.release());
 
-    return Stmt(makeAstRaw<DeclStmtAst>()->setDecl(decl.release()));
+    return Stmt(newAst<DeclStmtAst>()->setDecl(decl.release()));
 }
 
 /*
@@ -1080,7 +1081,7 @@ std::unique_ptr<StmtAst> PyParser::parseContinueStmt()
     UAISO_ASSERT(ahead_ == TK_CONTINUE, return Stmt());
 
     match(TK_CONTINUE);
-    return Stmt(makeAstRaw<ContinueStmtAst>()->setKeyLoc(lastLoc_));
+    return Stmt(newAst<ContinueStmtAst>()->setKeyLoc(lastLoc_));
 }
 
 /*
@@ -1091,7 +1092,7 @@ std::unique_ptr<StmtAst> PyParser::parseBreakStmt()
     UAISO_ASSERT(ahead_ == TK_BREAK, return Stmt());
 
     match(TK_BREAK);
-    return Stmt(makeAstRaw<BreakStmtAst>()->setKeyLoc(lastLoc_));
+    return Stmt(newAst<BreakStmtAst>()->setKeyLoc(lastLoc_));
 }
 
 /*
@@ -1101,7 +1102,7 @@ std::unique_ptr<StmtAst> PyParser::parseYieldStmt()
 {
     UAISO_ASSERT(ahead_ == TK_YIELD, return Stmt());
 
-    return Stmt(makeAstRaw<YieldStmtAst>()->setExpr(parseYieldExpr().release()));
+    return Stmt(newAst<YieldStmtAst>()->setExpr(parseYieldExpr().release()));
 }
 
 /*
@@ -1112,7 +1113,7 @@ std::unique_ptr<StmtAst> PyParser::parseRaiseStmt()
     UAISO_ASSERT(ahead_ == TK_RAISE, return Stmt());
 
     match(TK_RAISE);
-    auto stmt = makeAst<ThrowStmtAst>();
+    auto stmt = ThrowStmtAst::create();
     stmt->setKeyLoc(lastLoc_);
     if (isTestAhead()) {
         stmt->setExpr(parseTest().release());
@@ -1136,7 +1137,7 @@ std::unique_ptr<StmtAst> PyParser::parseReturnStmt()
     UAISO_ASSERT(ahead_ == TK_RETURN, return Stmt());
 
     match(TK_RETURN);
-    auto stmt = makeAst<ReturnStmtAst>();
+    auto stmt = ReturnStmtAst::create();
     stmt->setKeyLoc(lastLoc_);
     if (isTestAhead())
         stmt->setExprs(parseTestList().release());
@@ -1154,13 +1155,13 @@ std::unique_ptr<StmtAst> PyParser::parseSuite()
     // Special handling that allows triggering of completion with a more
     // relaxed location requirement, where an indent would be expected.
     if (ahead_ == TK_COMPLETION) {
-        auto ident = makeAst<IdentExprAst>();
+        auto ident = IdentExprAst::create();
         ident->setName(parseName().release());
-        return Stmt(makeAstRaw<ExprStmtAst>()->addExpr(ident.release()));
+        return Stmt(newAst<ExprStmtAst>()->addExpr(ident.release()));
     }
 
     match(TK_INDENT);
-    auto block = makeAst<BlockStmtAst>();
+    auto block = BlockStmtAst::create();
     block->addStmt(parseStmt().release());
     while (!maybeConsume(TK_DEDENT) && ahead_ != TK_EOP)
         block->addStmt(parseStmt().release());
@@ -1189,7 +1190,7 @@ std::unique_ptr<ExprAst> PyParser::parseTest()
     auto orTest = parseOrTest();
     if (maybeConsume(TK_IF)) {
         // Must be a conditional.
-        auto condExpr = makeAst<CondExprAst>();
+        auto condExpr = CondExprAst::create();
         condExpr->setYes(orTest.release());
         condExpr->setQuestionLoc(lastLoc_);
         condExpr->setCond(parseOrTest().release());
@@ -1254,7 +1255,7 @@ std::unique_ptr<ExprAst> PyParser::parseArg()
     auto test = parseTest();
     switch (ahead_) {
     case TK_FOR: {
-        auto listCompre = parseCompFor(makeAst<ListCompreExprAst>());
+        auto listCompre = parseCompFor(ListCompreExprAst::create());
         listCompre->setExpr(test.release());
         return Expr(listCompre.release());
     }
@@ -1287,7 +1288,7 @@ std::unique_ptr<ExprAstList> PyParser::parseArgList()
 
     bool wantStarStar = false;
     if (maybeConsume(TK_STAR)) {
-        auto unpack = makeAst<UnpackExprAst>();
+        auto unpack = UnpackExprAst::create();
         unpack->setKeyLoc(lastLoc_);
         unpack->setExpr(parseTest().release());
         addToList(args, unpack.release());
@@ -1308,7 +1309,7 @@ std::unique_ptr<ExprAstList> PyParser::parseArgList()
     }
 
     if (maybeConsume(TK_STAR_STAR)) {
-        auto unpack = makeAst<UnpackExprAst>();
+        auto unpack = UnpackExprAst::create();
         unpack->setKeyLoc(lastLoc_);
         unpack->setExpr(parseTest().release());
         addToList(args, unpack.release());
@@ -1330,7 +1331,7 @@ PyParser::parseCompFor(std::unique_ptr<ListCompreExprAst> listCompre)
     UAISO_ASSERT(listCompre, return listCompre);
 
     match(TK_FOR);
-    listCompre->addGen(makeAstRaw<GeneratorAst>());
+    listCompre->addGen(newAst<GeneratorAst>());
     auto gen = listCompre->gens()->back();
     gen->setPatterns(parseExprList().release());
 
@@ -1353,7 +1354,7 @@ PyParser::parseListFor(std::unique_ptr<ListCompreExprAst> listCompre)
     UAISO_ASSERT(listCompre, return listCompre);
 
     match(TK_FOR);
-    listCompre->addGen(makeAstRaw<GeneratorAst>());
+    listCompre->addGen(newAst<GeneratorAst>());
     auto gen = listCompre->gens()->back();
     gen->setPatterns(parseExprList().release());
 
@@ -1454,7 +1455,7 @@ std::unique_ptr<ExprAst> PyParser::parseAndTest()
 std::unique_ptr<ExprAst> PyParser::parseNotTest()
 {
     if (maybeConsume(TK_NOT)) {
-        auto notTest = makeAst<LogicNotExprAst>();
+        auto notTest = LogicNotExprAst::create();
         notTest->setOprLoc(lastLoc_);
         notTest->setExpr(parseNotTest().release());
         return Expr(notTest.release());
@@ -1575,7 +1576,7 @@ std::unique_ptr<ExprAst> PyParser::parsePower()
         switch (ahead_) {
         case TK_LPAREN: {
             consumeToken();
-            auto call = makeAst<CallExprAst>();
+            auto call = CallExprAst::create();
             call->setLDelimLoc(lastLoc_);
             call->setBase(atom.release());
             if (isArgAhead())
@@ -1591,7 +1592,7 @@ std::unique_ptr<ExprAst> PyParser::parsePower()
 
         case TK_LBRACKET: {
             consumeToken();
-            auto arrayAccess = makeAst<ArraySliceExprAst>(); // See comment in this AST.
+            auto arrayAccess = ArraySliceExprAst::create(); // See comment in this AST.
             arrayAccess->setLDelimLoc(lastLoc_);
             arrayAccess->setBase(atom.release());
             arrayAccess->setRange(parseSubscript().release());
@@ -1605,7 +1606,7 @@ std::unique_ptr<ExprAst> PyParser::parsePower()
 
         case TK_DOT: {
             consumeToken();
-            auto member = makeAst<MemberAccessExprAst>();
+            auto member = MemberAccessExprAst::create();
             member->setOprLoc(lastLoc_);
             member->setExpr(atom.release());
             member->setName(parseName().release());
@@ -1649,7 +1650,7 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
 
     case TK_BACKTICK: {
         consumeToken();
-        auto str = makeAst<TypeidExprAst>();
+        auto str = TypeidExprAst::create();
         str->setLDelimLoc(lastLoc_);
         parseTestList1(); // Let it die.
         if (!match(TK_BACKTICK)) {
@@ -1662,7 +1663,7 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
 
     case TK_COMPLETION:
     case TK_IDENT: {
-        auto ident = makeAst<IdentExprAst>();
+        auto ident = IdentExprAst::create();
         ident->setName(parseName().release());
         return Expr(ident.release());
     }
@@ -1670,16 +1671,16 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
     case TK_INT_LIT:
     case TK_FLOAT_LIT:
         consumeToken();
-        return Expr(makeAstRaw<NumLitExprAst>()->setLitLoc(lastLoc_));
+        return Expr(newAst<NumLitExprAst>()->setLitLoc(lastLoc_));
 
     case TK_NULL_VALUE:
         consumeToken();
-        return Expr(makeAstRaw<NullLitExprAst>()->setLitLoc(lastLoc_));
+        return Expr(newAst<NullLitExprAst>()->setLitLoc(lastLoc_));
 
     case TK_TRUE_VALUE:
     case TK_FALSE_VALUE:
         consumeToken();
-        return Expr(makeAstRaw<BoolLitExprAst>()->setLitLoc(lastLoc_));
+        return Expr(newAst<BoolLitExprAst>()->setLitLoc(lastLoc_));
 
     case TK_STR_LIT:
         return parseStrLit();
@@ -1700,7 +1701,7 @@ std::unique_ptr<ExprAst> PyParser::parseSubscript()
     case TK_DOT_DOT_DOT:
         // TODO: Model this kind of slice.
         consumeToken();
-        return makeAst<SubrangeExprAst>();
+        return SubrangeExprAst::create();
 
     case TK_COLON:
         consumeToken();
@@ -1735,7 +1736,7 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
     UAISO_ASSERT(ahead_ == TK_LBRACE, return Expr());
 
     match(TK_LBRACE);
-    auto dictOrSet = makeAst<ArrayInitExprAst>();
+    auto dictOrSet = ArrayInitExprAst::create();
     // DESIGN: Differentiate a set literal, '{1, 2}', from a list literal,
     // '(1, 2)'. Both are parsed as ArrayInitExprAst. Perhaps add a variety
     // to the AST or handle through Lang.
@@ -1749,13 +1750,13 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
     switch (ahead_) {
     case TK_COLON: {
         consumeToken();
-        auto desig = makeAst<DesignateExprAst>();
+        auto desig = DesignateExprAst::create();
         desig->setDelimLoc(lastLoc_);
         desig->setId(test.release());
         desig->setValue(parseTest().release());
 
         if (ahead_ == TK_FOR) {
-            auto listCompre = parseListFor(makeAst<ListCompreExprAst>());
+            auto listCompre = parseListFor(ListCompreExprAst::create());
             listCompre->setLDelimLoc(dictOrSet->lDelimLoc());
             listCompre->setExpr(desig.release());
             if (!match(TK_RBRACE)) {
@@ -1772,7 +1773,7 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
                 break;
             if (dictOrSet->inits())
                 dictOrSet->inits()->delim_ = lastLoc_;
-            desig = makeAst<DesignateExprAst>();
+            desig = DesignateExprAst::create();
             desig->setId(parseTest().release());
             match(TK_COLON);
             desig->setDelimLoc(lastLoc_);
@@ -1788,7 +1789,7 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
     }
 
     case TK_FOR:  {
-        auto listCompre = parseListFor(makeAst<ListCompreExprAst>());
+        auto listCompre = parseListFor(ListCompreExprAst::create());
         listCompre->setLDelimLoc(dictOrSet->lDelimLoc());
         listCompre->setExpr(test.release());
         if (!match(TK_RBRACE)) {
@@ -1829,7 +1830,7 @@ std::unique_ptr<ExprAst> PyParser::parseListMaker()
     UAISO_ASSERT(ahead_ == TK_LBRACKET, return Expr());
 
     match(TK_LBRACKET);
-    auto list = makeAst<ArrayInitExprAst>();
+    auto list = ArrayInitExprAst::create();
     list->setLDelimLoc(lastLoc_);
     if (maybeConsume(TK_RBRACKET)) {
         list->setRDelimLoc(lastLoc_);
@@ -1839,7 +1840,7 @@ std::unique_ptr<ExprAst> PyParser::parseListMaker()
     auto test = parseTest();
     switch (ahead_) {
     case TK_FOR: {
-        auto listCompre = parseListFor(makeAst<ListCompreExprAst>());
+        auto listCompre = parseListFor(ListCompreExprAst::create());
         listCompre->setLDelimLoc(list->lDelimLoc());
         listCompre->setExpr(test.release());
         if (!match(TK_RBRACKET)) {
@@ -1885,7 +1886,7 @@ std::unique_ptr<ExprAst> PyParser::parseWrappedOrTuple()
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Expr());
 
     match(TK_LPAREN);
-    auto tuple = makeAst<TupleLitExprAst>();
+    auto tuple = TupleLitExprAst::create();
     tuple->setLDelimLoc(lastLoc_);
     if (maybeConsume(TK_RPAREN)) {
         tuple->setRDelimLoc(lastLoc_);
@@ -1899,7 +1900,7 @@ std::unique_ptr<ExprAst> PyParser::parseWrappedOrTuple()
     switch (ahead_) {
     case TK_FOR:
         return completeWrapped([&test, this] () {
-            auto listCompre = parseListFor(makeAst<ListCompreExprAst>());
+            auto listCompre = parseListFor(ListCompreExprAst::create());
             listCompre->setExpr(test.release());
             return listCompre;
         });
@@ -1931,7 +1932,7 @@ std::unique_ptr<ExprAst> PyParser::parseYieldExpr()
     UAISO_ASSERT(ahead_ == TK_YIELD, return Expr());
 
     match(TK_YIELD);
-    auto yield = makeAst<YieldExprAst>();
+    auto yield = YieldExprAst::create();
     yield->setKeyLoc(lastLoc_);
     if (isTestAhead())
         yield->setExprs(parseTestList().release());
@@ -1959,15 +1960,15 @@ std::unique_ptr<ExprAst> PyParser::parseLambdaCore(Expr (PyParser::*parseFunc) (
     UAISO_ASSERT(ahead_ == TK_LAMBDA, return Expr());
 
     match(TK_LAMBDA);
-    auto spec = makeAst<FuncSpecAst__<>>();
+    auto spec = std::unique_ptr<FuncSpecAst__<>>(newAst<FuncSpecAst__<>>());
     spec->setKeyLoc(lastLoc_);
     spec->setParam(parseVarArgsList(false).release());
 
     match(TK_COLON);
     spec->setLDelimLoc(lastLoc_);
-    auto lambda = makeAst<FuncLitExprAst>();
+    auto lambda = FuncLitExprAst::create();
     lambda->setSpec(spec.release());
-    lambda->setStmt(makeAstRaw<ExprStmtAst>()->addExpr(((this)->*(parseFunc))().release()));
+    lambda->setStmt(newAst<ExprStmtAst>()->addExpr(((this)->*(parseFunc))().release()));
 
     return Expr(lambda.release());
 }
@@ -1979,7 +1980,7 @@ std::unique_ptr<ExprAst> PyParser::parseLambdaCore(Expr (PyParser::*parseFunc) (
  */
 std::unique_ptr<NameAst> PyParser::parseDottedName()
 {
-    auto name = makeAst<NestedNameAst>();
+    auto name = NestedNameAst::create();
     name->setNames(parseList<NameAstList>(TK_DOT,
                                           &PyParser::isNameAhead,
                                           &PyParser::parseName,
@@ -1990,7 +1991,7 @@ std::unique_ptr<NameAst> PyParser::parseDottedName()
 std::unique_ptr<NameAst> PyParser::parseName()
 {
     if (maybeConsume(TK_COMPLETION)) {
-        auto name = makeAst<CompletionNameAst>();
+        auto name = CompletionNameAst::create();
         name->setNameLoc(lastLoc_);
         return Name(name.release());
     }
@@ -2001,12 +2002,12 @@ std::unique_ptr<NameAst> PyParser::parseName()
     // corresponding identifier in the lexeme map. An error name is then
     // create for consistency throughout the pipeline.
     if (match(TK_IDENT)) {
-        auto name = makeAst<SimpleNameAst>();
+        auto name = SimpleNameAst::create();
         name->setNameLoc(lastLoc_);
         return Name(name.release());
     }
 
-    return Name(makeAstRaw<ErrorNameAst>()->setErrorLoc(lastLoc_));
+    return Name(newAst<ErrorNameAst>()->setErrorLoc(lastLoc_));
 }
 
 std::unique_ptr<ExprAst> PyParser::parseStrLit()
@@ -2014,10 +2015,10 @@ std::unique_ptr<ExprAst> PyParser::parseStrLit()
     UAISO_ASSERT(ahead_ == TK_STR_LIT, return Expr());
 
     match(TK_STR_LIT);
-    auto str = makeAst<StrLitExprAst>();
+    auto str = StrLitExprAst::create();
     str->setLitLoc(lastLoc_);
     if (ahead_ == TK_STR_LIT) {
-        auto concat = makeAst<ConcatExprAst>();
+        auto concat = ConcatExprAst::create();
         concat->setExpr1(str.release());
         concat->setExpr2(parseStrLit().release());
         return Expr(concat.release());
@@ -2028,7 +2029,7 @@ std::unique_ptr<ExprAst> PyParser::parseStrLit()
 
 std::unique_ptr<ExprAst> PyParser::completeSubrangeExpr(Expr expr)
 {
-    auto range = makeAst<SubrangeExprAst>();
+    auto range = SubrangeExprAst::create();
     range->setDelim1Loc(lastLoc_);
     range->setLow(expr.release());
     if (isTestAhead())
@@ -2043,7 +2044,7 @@ std::unique_ptr<ExprAst> PyParser::completeSubrangeExpr(Expr expr)
 std::unique_ptr<ExprAst>
 PyParser::completeWrapped(const std::function<Expr ()> exprFunc)
 {
-    auto wrap = makeAst<WrappedExprAst>();
+    auto wrap = WrappedExprAst::create();
     wrap->setLDelimLoc(lastLoc_);
     wrap->setExpr(exprFunc().release());
     if (!match(TK_RPAREN)) {
@@ -2057,7 +2058,7 @@ PyParser::completeWrapped(const std::function<Expr ()> exprFunc)
 template <class UnaryAstT> std::unique_ptr<ExprAst>
 PyParser::completeUnaryExpr(Expr (PyParser::*parseFunc) ())
 {
-    auto unary = makeAst<UnaryAstT>();
+    auto unary = UnaryAstT::create();
     unary->setOprLoc(lastLoc_);
     unary->setExpr((((this)->*(parseFunc))()).release());
     return Expr(unary.release());
@@ -2066,7 +2067,7 @@ PyParser::completeUnaryExpr(Expr (PyParser::*parseFunc) ())
 template <class BinaryAstT> std::unique_ptr<ExprAst>
 PyParser::completeBinaryExpr(Expr expr, Expr (PyParser::*parseFunc) ())
 {
-    auto bin = makeAst<BinaryAstT>();
+    auto bin = BinaryAstT::create();
     bin->setOprLoc(lastLoc_);
     bin->setExpr1(expr.release());
     bin->setExpr2((((this)->*(parseFunc))()).release());
@@ -2076,7 +2077,7 @@ PyParser::completeBinaryExpr(Expr expr, Expr (PyParser::*parseFunc) ())
 std::unique_ptr<ExprAst>
 PyParser::completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ())
 {
-    auto assign = makeAst<AssignExprAst>();
+    auto assign = AssignExprAst::create();
     assign->setOprLoc(lastLoc_);
     assign->setExpr1s(ExprAstList::create(expr.release()));
     assign->setExpr2s(ExprAstList::create((((this)->*(parseFunc))()).release()));
@@ -2085,7 +2086,7 @@ PyParser::completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ())
 
 std::unique_ptr<DeclAst> PyParser::completeParam(ParamGroup group)
 {
-    auto param = makeAst<ParamDeclAst__<ParamVariadic__>>();
+    auto param = ParamDeclAst__<ParamVariadic__>::create();
     param->setVariadicLoc(lastLoc_);
     param->setName(parseName().release());
     group->addDecl(param.release());

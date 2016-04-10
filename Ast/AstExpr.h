@@ -47,7 +47,7 @@ public:
 class UAISO_API CondExprAst final : public ExprAst
 {
 public:
-    using Self = CondExprAst;
+    AST_CLASS(Cond, Expr)
 
     CondExprAst()
         : ExprAst(Kind::CondExpr)
@@ -69,14 +69,14 @@ public:
 class UAISO_API PrimaryExprAst : public ExprAst
 {
 public:
-    using Self = PrimaryExprAst;
+    AST_CLASS(Primary, Expr)
     using ExprAst::ExprAst;
 };
 
 class UAISO_API CharLitExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = CharLitExprAst;
+    AST_CLASS(CharLit, Expr)
 
     CharLitExprAst()
         : PrimaryExprAst(Kind::CharLitExpr)
@@ -90,7 +90,7 @@ public:
 class UAISO_API StrLitExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = StrLitExprAst;
+    AST_CLASS(StrLit, Expr)
 
     StrLitExprAst()
         : PrimaryExprAst(Kind::StrLitExpr)
@@ -104,7 +104,7 @@ public:
 class UAISO_API NumLitExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = NumLitExprAst;
+    AST_CLASS(NumLit, Expr)
 
     NumLitExprAst()
         : PrimaryExprAst(Kind::NumLitExpr)
@@ -122,7 +122,7 @@ public:
 class UAISO_API BoolLitExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = BoolLitExprAst;
+    AST_CLASS(BoolLit, Expr)
 
     BoolLitExprAst()
         : PrimaryExprAst(Kind::BoolLitExpr)
@@ -136,7 +136,7 @@ public:
 class UAISO_API NullLitExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = NullLitExprAst;
+    AST_CLASS(NullLit, Expr)
 
     NullLitExprAst()
         : PrimaryExprAst(Kind::NullLitExpr)
@@ -150,7 +150,7 @@ public:
 class UAISO_API FuncLitExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = FuncLitExprAst;
+    AST_CLASS(FuncLit, Expr)
 
     FuncLitExprAst()
         : PrimaryExprAst(Kind::FuncLitExpr)
@@ -170,7 +170,7 @@ public:
 class UAISO_API RecordLitExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = RecordLitExprAst;
+    AST_CLASS(RecordLit, Expr)
 
     RecordLitExprAst()
         : PrimaryExprAst(Kind::RecordLitExpr)
@@ -188,7 +188,7 @@ public:
 class UAISO_API ThisExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = ThisExprAst;
+    AST_CLASS(This, Expr)
 
     ThisExprAst()
         : PrimaryExprAst(Kind::ThisExpr)
@@ -202,7 +202,7 @@ public:
 class UAISO_API SuperExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = SuperExprAst;
+    AST_CLASS(Super, Expr)
 
     SuperExprAst()
         : PrimaryExprAst(Kind::SuperExpr)
@@ -216,7 +216,7 @@ public:
 class UAISO_API ArrayLengthExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = ArrayLengthExprAst;
+    AST_CLASS(ArrayLength, Expr)
 
     ArrayLengthExprAst()
         : PrimaryExprAst(Kind::ArrayLengthExpr)
@@ -230,7 +230,7 @@ public:
 class UAISO_API IdentExprAst final : public PrimaryExprAst
 {
 public:
-    using Self = IdentExprAst;
+    AST_CLASS(Ident, Expr)
 
     IdentExprAst()
         : PrimaryExprAst(Kind::IdentExpr)
@@ -249,7 +249,7 @@ public:
 class UAISO_API TypeQueryExprAst : public PrimaryExprAst
 {
 public:
-    using Self = TypeQueryExprAst;
+    AST_CLASS(TypeQuery, Expr)
 
     TypeQueryExprAst()
         : PrimaryExprAst(Kind::TypeQueryExpr)
@@ -274,7 +274,7 @@ public:
 class UAISO_API UnaryExprAst : public ExprAst
 {
 public:
-    using Self = UnaryExprAst;
+    AST_CLASS(Unary, Expr)
     using ExprAst::ExprAst;
 
     NAMED_LOC_PARAM(Opr, opr)
@@ -287,7 +287,7 @@ public:
 class UAISO_API AddrOfExprAst final : public UnaryExprAst
 {
 public:
-    using Self = AddrOfExprAst;
+    AST_CLASS(AddrOf, Expr)
 
     AddrOfExprAst()
         : UnaryExprAst(Kind::AddrOfExpr)
@@ -297,7 +297,7 @@ public:
 class UAISO_API PtrDerefExprAst final : public UnaryExprAst
 {
 public:
-    using Self = PtrDerefExprAst;
+    AST_CLASS(PtrDeref, Expr)
 
     PtrDerefExprAst()
         : UnaryExprAst(Kind::PtrDerefExpr)
@@ -307,7 +307,7 @@ public:
 class UAISO_API PlusExprAst final : public UnaryExprAst
 {
 public:
-    using Self = PlusExprAst;
+    AST_CLASS(Plus, Expr)
 
     PlusExprAst()
         : UnaryExprAst(Kind::PlusExpr)
@@ -317,7 +317,7 @@ public:
 class UAISO_API MinusExprAst final : public UnaryExprAst
 {
 public:
-    using Self = MinusExprAst;
+    AST_CLASS(Minus, Expr)
 
     MinusExprAst()
         : UnaryExprAst(Kind::MinusExpr)
@@ -327,7 +327,7 @@ public:
 class UAISO_API LogicNotExprAst final : public UnaryExprAst
 {
 public:
-    using Self = LogicNotExprAst;
+    AST_CLASS(LogicNot, Expr)
 
     LogicNotExprAst()
         : UnaryExprAst(Kind::LogicNotExpr)
@@ -337,7 +337,7 @@ public:
 class UAISO_API IncDecExprAst final : public UnaryExprAst
 {
 public:
-    using Self = IncDecExprAst;
+    AST_CLASS(IncDec, Expr)
 
     IncDecExprAst()
         : UnaryExprAst(Kind::IncDecExpr)
@@ -367,7 +367,7 @@ public:
 class UAISO_API BitCompExprAst final : public UnaryExprAst
 {
 public:
-    using Self = BitCompExprAst;
+    AST_CLASS(BitComp, Expr)
 
     BitCompExprAst()
         : UnaryExprAst(Kind::BitCompExpr)
@@ -377,7 +377,7 @@ public:
 class UAISO_API ChanExprAst final : public UnaryExprAst
 {
 public:
-    using Self = ChanExprAst;
+    AST_CLASS(Chan, Expr)
 
     ChanExprAst()
         : UnaryExprAst(Kind::ChanExpr)
@@ -387,7 +387,7 @@ public:
 class UAISO_API BinaryExprAst : public ExprAst
 {
 public:
-    using Self = BinaryExprAst;
+    AST_CLASS(Binary, Expr)
     using ExprAst::ExprAst;
 
     NAMED_AST_PARAM(Expr1, expr1, ExprAst)
@@ -402,7 +402,7 @@ public:
 class UAISO_API CommaExprAst final : public BinaryExprAst
 {
 public:
-    using Self = CommaExprAst;
+    AST_CLASS(Comma, Expr)
 
     CommaExprAst()
         : BinaryExprAst(Kind::CommaExpr)
@@ -412,7 +412,7 @@ public:
 class UAISO_API EqExprAst final : public BinaryExprAst
 {
 public:
-    using Self = EqExprAst;
+    AST_CLASS(Eq, Expr)
 
     EqExprAst()
         : BinaryExprAst(Kind::EqExpr)
@@ -422,7 +422,7 @@ public:
 class UAISO_API RelExprAst final : public BinaryExprAst
 {
 public:
-    using Self = RelExprAst;
+    AST_CLASS(Rel, Expr)
 
     RelExprAst()
         : BinaryExprAst(Kind::RelExpr)
@@ -432,7 +432,7 @@ public:
 class UAISO_API ShiftExprAst final : public BinaryExprAst
 {
 public:
-    using Self = ShiftExprAst;
+    AST_CLASS(Shift, Expr)
 
     ShiftExprAst()
         : BinaryExprAst(Kind::ShiftExpr)
@@ -442,7 +442,7 @@ public:
 class UAISO_API ConcatExprAst final : public BinaryExprAst
 {
 public:
-    using Self = ConcatExprAst;
+    AST_CLASS(Concat, Expr)
 
     ConcatExprAst()
         : BinaryExprAst(Kind::ConcatExpr)
@@ -452,7 +452,7 @@ public:
 class UAISO_API IsExprAst final : public BinaryExprAst
 {
 public:
-    using Self = IsExprAst;
+    AST_CLASS(Is, Expr)
 
     IsExprAst()
         : BinaryExprAst(Kind::IsExpr)
@@ -462,7 +462,7 @@ public:
 class UAISO_API InExprAst final : public BinaryExprAst
 {
 public:
-    using Self = InExprAst;
+    AST_CLASS(In, Expr)
 
     InExprAst()
         : BinaryExprAst(Kind::InExpr)
@@ -472,7 +472,7 @@ public:
 class UAISO_API BitXorExprAst final : public BinaryExprAst
 {
 public:
-    using Self = BitXorExprAst;
+    AST_CLASS(BitXor, Expr)
 
     BitXorExprAst()
         : BinaryExprAst(Kind::BitXorExpr)
@@ -482,7 +482,7 @@ public:
 class UAISO_API BitOrExprAst final : public BinaryExprAst
 {
 public:
-    using Self = BitOrExprAst;
+    AST_CLASS(BitOr, Expr)
 
     BitOrExprAst()
         : BinaryExprAst(Kind::BitOrExpr)
@@ -492,7 +492,7 @@ public:
 class UAISO_API BitAndExprAst final : public BinaryExprAst
 {
 public:
-    using Self = BitAndExprAst;
+    AST_CLASS(BitAnd, Expr)
 
     BitAndExprAst()
         : BinaryExprAst(Kind::BitAndExpr)
@@ -502,7 +502,7 @@ public:
 class UAISO_API LogicOrExprAst final : public BinaryExprAst
 {
 public:
-    using Self = LogicOrExprAst;
+    AST_CLASS(LogicOr, Expr)
 
     LogicOrExprAst()
         : BinaryExprAst(Kind::LogicOrExpr)
@@ -512,7 +512,7 @@ public:
 class UAISO_API LogicAndExprAst final : public BinaryExprAst
 {
 public:
-    using Self = LogicAndExprAst;
+    AST_CLASS(LogicAnd, Expr)
 
     LogicAndExprAst()
         : BinaryExprAst(Kind::LogicAndExpr)
@@ -522,7 +522,7 @@ public:
 class UAISO_API AddExprAst final : public BinaryExprAst
 {
 public:
-    using Self = AddExprAst;
+    AST_CLASS(Add, Expr)
 
     AddExprAst()
         : BinaryExprAst(Kind::AddExpr)
@@ -532,7 +532,7 @@ public:
 class UAISO_API SubExprAst final : public BinaryExprAst
 {
 public:
-    using Self = SubExprAst;
+    AST_CLASS(Sub, Expr)
 
     SubExprAst()
         : BinaryExprAst(Kind::SubExpr)
@@ -542,7 +542,7 @@ public:
 class UAISO_API MulExprAst final : public BinaryExprAst
 {
 public:
-    using Self = MulExprAst;
+    AST_CLASS(Mul, Expr)
 
     MulExprAst()
         : BinaryExprAst(Kind::MulExpr)
@@ -552,7 +552,7 @@ public:
 class UAISO_API DivExprAst final : public BinaryExprAst
 {
 public:
-    using Self = DivExprAst;
+    AST_CLASS(Div, Expr)
 
     DivExprAst()
         : BinaryExprAst(Kind::DivExpr)
@@ -562,7 +562,7 @@ public:
 class UAISO_API ModExprAst final : public BinaryExprAst
 {
 public:
-    using Self = ModExprAst;
+    AST_CLASS(Mod, Expr)
 
     ModExprAst()
         : BinaryExprAst(Kind::ModExpr)
@@ -572,7 +572,7 @@ public:
 class UAISO_API PowerExprAst final : public BinaryExprAst
 {
 public:
-    using Self = PowerExprAst;
+    AST_CLASS(Power, Expr)
 
     PowerExprAst()
         : BinaryExprAst(Kind::PowerExpr)
@@ -582,7 +582,7 @@ public:
 class UAISO_API DelExprAst final : public ExprAst
 {
 public:
-    using Self = DelExprAst;
+    AST_CLASS(Del, Expr)
 
     DelExprAst()
         : ExprAst(Kind::DelExpr)
@@ -598,7 +598,7 @@ public:
 class UAISO_API AssignExprAst final : public ExprAst
 {
 public:
-    using Self = AssignExprAst;
+    AST_CLASS(Assign, Expr)
 
     AssignExprAst()
         : ExprAst(Kind::AssignExpr)
@@ -624,7 +624,7 @@ public:
 class UAISO_API MemberAccessExprAst final : public ExprAst
 {
 public:
-    using Self = MemberAccessExprAst;
+    AST_CLASS(MemberAccess, Expr)
 
     MemberAccessExprAst()
         : ExprAst(Kind::MemberAccessExpr)
@@ -648,7 +648,7 @@ public:
 class UAISO_API CastExprAst final : public ExprAst
 {
 public:
-    using Self = CastExprAst;
+    AST_CLASS(Cast, Expr)
 
     CastExprAst()
         : ExprAst(Kind::CastExpr)
@@ -672,7 +672,7 @@ public:
 class UAISO_API WrappedExprAst final : public ExprAst
 {
 public:
-    using Self = WrappedExprAst;
+    AST_CLASS(Wrapped, Expr)
 
     WrappedExprAst()
         : ExprAst(Kind::WrappedExpr)
@@ -690,7 +690,7 @@ public:
 class UAISO_API VoidInitExprAst final : public ExprAst
 {
 public:
-    using Self = VoidInitExprAst;
+    AST_CLASS(VoidInit, Expr)
 
     VoidInitExprAst()
         : ExprAst(Kind::VoidInitExpr)
@@ -704,7 +704,7 @@ public:
 class UAISO_API RecordInitExprAst final : public ExprAst
 {
 public:
-    using Self = RecordInitExprAst;
+    AST_CLASS(RecordInit, Expr)
 
     RecordInitExprAst()
         : ExprAst(Kind::RecordInitExpr)
@@ -724,7 +724,7 @@ public:
 class UAISO_API ArrayInitExprAst final : public ExprAst
 {
 public:
-    using Self = ArrayInitExprAst;
+    AST_CLASS(ArrayInit, Expr)
 
     ArrayInitExprAst()
         : ExprAst(Kind::ArrayInitExpr)
@@ -742,7 +742,7 @@ public:
 class UAISO_API TupleLitExprAst final : public ExprAst
 {
 public:
-    using Self = TupleLitExprAst;
+    AST_CLASS(TupleLit, Expr)
 
     TupleLitExprAst()
         : ExprAst(Kind::TupleLitExpr)
@@ -760,7 +760,7 @@ public:
 class UAISO_API DesignateExprAst final : public ExprAst
 {
 public:
-    using Self = DesignateExprAst;
+    AST_CLASS(Designate, Expr)
 
     DesignateExprAst()
         : ExprAst(Kind::DesignateExpr)
@@ -778,7 +778,7 @@ public:
 class UAISO_API MakeExprAst final : public ExprAst
 {
 public:
-    using Self = MakeExprAst;
+    AST_CLASS(Make, Expr)
 
     MakeExprAst()
         : ExprAst(Kind::MakeExpr)
@@ -806,7 +806,7 @@ public:
 class UAISO_API NewExprAst final : public ExprAst
 {
 public:
-    using Self = NewExprAst;
+    AST_CLASS(New, Expr)
 
     NewExprAst()
         : ExprAst(Kind::NewExpr)
@@ -836,7 +836,7 @@ public:
 class UAISO_API NestedNewExprAst final : public ExprAst
 {
 public:
-    using Self = NestedNewExprAst;
+    AST_CLASS(NestedNew, Expr)
 
     NestedNewExprAst()
         : ExprAst(Kind::NestedNewExpr)
@@ -854,7 +854,7 @@ public:
 class UAISO_API CallExprAst final : public ExprAst
 {
 public:
-    using Self = CallExprAst;
+    AST_CLASS(Call, Expr)
 
     CallExprAst()
         : ExprAst(Kind::CallExpr)
@@ -876,7 +876,7 @@ public:
 class UAISO_API UnpackExprAst final : public ExprAst
 {
 public:
-    using Self = UnpackExprAst;
+    AST_CLASS(Unpack, Expr)
 
     UnpackExprAst()
         : ExprAst(Kind::UnpackExpr)
@@ -892,7 +892,7 @@ public:
 class UAISO_API SubrangeExprAst final : public ExprAst
 {
 public:
-    using Self = SubrangeExprAst;
+    AST_CLASS(Subrange, Expr)
 
     SubrangeExprAst()
         : ExprAst(Kind::SubrangeExpr)
@@ -915,7 +915,7 @@ public:
 class UAISO_API ArrayIndexExprAst final : public ExprAst
 {
 public:
-    using Self = ArrayIndexExprAst;
+    AST_CLASS(ArrayIndex, Expr)
 
     ArrayIndexExprAst()
         : ExprAst(Kind::ArrayIndexExpr)
@@ -936,7 +936,7 @@ public:
 class UAISO_API ArraySliceExprAst : public ExprAst
 {
 public:
-    using Self = ArraySliceExprAst;
+    AST_CLASS(ArraySlice, Expr)
 
     ArraySliceExprAst()
         : ExprAst(Kind::ArraySliceExpr)
@@ -957,7 +957,7 @@ public:
 class UAISO_API TypeidExprAst final : public ExprAst
 {
 public:
-    using Self = TypeidExprAst;
+    AST_CLASS(Typeid, Expr)
 
     TypeidExprAst()
         : ExprAst(Kind::TypeidExpr)
@@ -980,7 +980,7 @@ public:
 class UAISO_API AssertExprAst final : public ExprAst
 {
 public:
-    using Self = AssertExprAst;
+    AST_CLASS(Assert, Expr)
 
     AssertExprAst()
         : ExprAst(Kind::AssertExpr)
@@ -1004,7 +1004,7 @@ public:
 class UAISO_API TypeAssertExprAst final : public ExprAst
 {
 public:
-    using Self = TypeAssertExprAst;
+    AST_CLASS(TypeAssert, Expr)
 
     TypeAssertExprAst()
         : ExprAst(Kind::TypeAssertExpr)
@@ -1028,7 +1028,7 @@ public:
 class UAISO_API MixinExprAst final : public ExprAst
 {
 public:
-    using Self = MixinExprAst;
+    AST_CLASS(Mixin, Expr)
 
     MixinExprAst()
         : ExprAst(Kind::MixinExpr)
@@ -1048,7 +1048,7 @@ public:
 class UAISO_API ErrorExprAst final : public ExprAst
 {
 public:
-    using Self = ErrorExprAst;
+    AST_CLASS(Error, Expr)
 
     ErrorExprAst()
         : ExprAst(Kind::ErrorExpr)
@@ -1062,7 +1062,7 @@ public:
 class UAISO_API PrintExprAst final : public ExprAst
 {
 public:
-    using Self = PrintExprAst;
+    AST_CLASS(Print, Expr)
 
     PrintExprAst()
         : ExprAst(Kind::PrintExpr)
@@ -1080,7 +1080,7 @@ public:
 class UAISO_API YieldExprAst final : public ExprAst
 {
 public:
-    using Self = YieldExprAst;
+    AST_CLASS(Yield, Expr)
 
     YieldExprAst()
         : ExprAst(Kind::YieldExpr)
@@ -1101,7 +1101,7 @@ public:
 class UAISO_API ListCompreExprAst final : public ExprAst
 {
 public:
-    using Self = ListCompreExprAst;
+    AST_CLASS(ListCompre, Expr)
 
     ListCompreExprAst()
         : ExprAst(Kind::ListCompreExpr)

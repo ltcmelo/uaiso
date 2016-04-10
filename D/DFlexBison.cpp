@@ -34,7 +34,7 @@ detail::FullParam::~FullParam()
 
 void detail::actionProgram(ParsingContext* context, DeclAstList* decls)
 {
-    auto program = makeAstRaw<ProgramAst>()->setDeclsSR(decls);
+    auto program = newAst<ProgramAst>()->setDeclsSR(decls);
     context->takeAst(std::unique_ptr<Ast>(program));
     context->notifyProgramMatched();
 }
@@ -42,11 +42,11 @@ void detail::actionProgram(ParsingContext* context, DeclAstList* decls)
 void detail::actionProgram(ParsingContext* context, const SourceLoc& locA,
                            NameAstList* names, const SourceLoc& locB, DeclAstList* decls)
 {
-    auto name = makeAstRaw<NestedNameAst>();
+    auto name = newAst<NestedNameAst>();
     name->setNamesSR(names);
-    auto module = makeAstRaw<ModuleDeclAst>();
+    auto module = newAst<ModuleDeclAst>();
     module->setKeyLoc(locA)->setName(name)->setTerminLoc(locB);
-    auto program = makeAstRaw<ProgramAst>();
+    auto program = newAst<ProgramAst>();
     program->setModule(module)->setDeclsSR(decls);
     context->takeAst(std::unique_ptr<Ast>(program));
     context->notifyProgramMatched();
@@ -54,17 +54,17 @@ void detail::actionProgram(ParsingContext* context, const SourceLoc& locA,
 
 DeclAst* detail::actionVarGroupDecl(SpecAst* spec, DeclAstList* decls, const SourceLoc& locA)
 {
-    auto group = makeAstRaw<VarGroupDeclAst>();
+    auto group = newAst<VarGroupDeclAst>();
     group->setSpec(spec)->setDeclsSR(decls)->setTerminLoc(locA);
     return group;
 }
 
 DeclAst* detail::actionVarGroupDecl(AttrAstList* attrs, DeclAstList* decls, const SourceLoc& locA)
 {
-    auto spec = makeAstRaw<DecoratedSpecAst>();
-    auto inferred = makeAstRaw<InferredSpecAst>()->setKeyLoc(locA);
+    auto spec = newAst<DecoratedSpecAst>();
+    auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
     spec->setSpec(inferred)->setAttrsSR(attrs);
-    auto group = makeAstRaw<VarGroupDeclAst>();
+    auto group = newAst<VarGroupDeclAst>();
     group->setSpec(spec)->setDeclsSR(decls)->setTerminLoc(locA);
     return group;
 }

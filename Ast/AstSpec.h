@@ -45,7 +45,7 @@ public:
 class UAISO_API VoidSpecAst final : public SpecAst
 {
 public:
-    using Self = VoidSpecAst;
+    AST_CLASS(Void, Spec)
 
     VoidSpecAst()
         : SpecAst(Kind::VoidSpec)
@@ -62,7 +62,7 @@ public:
 class UAISO_API BuiltinSpecAst final : public SpecAst
 {
 public:
-    using Self = BuiltinSpecAst;
+    AST_CLASS(Builtin, Spec)
 
     BuiltinSpecAst()
         : SpecAst(Kind::BuiltinSpec)
@@ -79,7 +79,7 @@ public:
 class UAISO_API NamedSpecAst final : public SpecAst
 {
 public:
-    using Self = NamedSpecAst;
+    AST_CLASS(Named, Spec)
 
     NamedSpecAst()
         : SpecAst(Kind::NamedSpec)
@@ -96,7 +96,7 @@ public:
 class UAISO_API TypeofSpecAst final : public SpecAst
 {
 public:
-    using Self = TypeofSpecAst;
+    AST_CLASS(Typeof, Spec)
 
     TypeofSpecAst()
         : SpecAst(Kind::TypeofSpec)
@@ -119,7 +119,7 @@ public:
 class UAISO_API RecordSpecAst final : public SpecAst
 {
 public:
-    using Self = RecordSpecAst;
+    AST_CLASS(Record, Spec)
 
     RecordSpecAst()
         : SpecAst(Kind::RecordSpec)
@@ -174,7 +174,7 @@ public:
 class UAISO_API FuncSpecAst : public SpecAst
 {
 public:
-    using Self = FuncSpecAst;
+    AST_CLASS(Func, Spec)
 
     FuncSpecAst()
         : SpecAst(Kind::FuncSpec)
@@ -268,7 +268,8 @@ public:
 class UAISO_API OpaqueSpecAst : public SpecAst
 {
 public:
-    using Self = OpaqueSpecAst;
+    AST_CLASS(Opaque, Spec)
+
     using SpecAst::SpecAst;
 
     NAMED_AST_PARAM(BaseSpec, baseSpec, SpecAst)
@@ -282,7 +283,7 @@ public:
 class UAISO_API PtrSpecAst final : public OpaqueSpecAst
 {
 public:
-    using Self = PtrSpecAst;
+    AST_CLASS(Ptr, Spec)
 
     PtrSpecAst()
         : OpaqueSpecAst(Kind::PtrSpec)
@@ -300,7 +301,7 @@ public:
 class UAISO_API ArraySpecAst final : public OpaqueSpecAst
 {
 public:
-    using Self = ArraySpecAst;
+    AST_CLASS(Array, Spec)
 
     ArraySpecAst()
         : OpaqueSpecAst(Kind::ArraySpec)
@@ -331,7 +332,7 @@ public:
 class UAISO_API ChanSpecAst final : public OpaqueSpecAst
 {
 public:
-    using Self = ChanSpecAst;
+    AST_CLASS(Chan, Spec)
 
     ChanSpecAst()
         : OpaqueSpecAst(Kind::ChanSpec)
@@ -355,7 +356,7 @@ public:
 class UAISO_API InferredSpecAst final : public SpecAst
 {
 public:
-    using Self = InferredSpecAst;
+    AST_CLASS(Inferred, Spec)
 
     InferredSpecAst()
         : SpecAst(Kind::InferredSpec)
@@ -372,7 +373,7 @@ public:
 class UAISO_API DecoratedSpecAst final : public SpecAst
 {
 public:
-    using Self = DecoratedSpecAst;
+    AST_CLASS(Decorated, Spec)
 
     DecoratedSpecAst()
         : SpecAst(Kind::DecoratedSpec)

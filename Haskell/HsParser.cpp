@@ -63,18 +63,18 @@ Parser::Expr HsParser::parseAExpr()
     switch (ahead_) {
     case TK_INT_LIT:
         consumeToken();
-        return Expr(makeAstRaw<NumLitExprAst>()->setLitLoc(lastLoc_)
+        return Expr(newAst<NumLitExprAst>()->setLitLoc(lastLoc_)
                     ->setVariety(NumLitVariety::IntFormat));
 
     case TK_FLOAT_LIT:
         consumeToken();
-        return Expr(makeAstRaw<NumLitExprAst>()->setLitLoc(lastLoc_)
+        return Expr(newAst<NumLitExprAst>()->setLitLoc(lastLoc_)
                     ->setVariety(NumLitVariety::FloatFormat));
 
     case TK_TRUE_VALUE:
     case TK_FALSE_VALUE:
         consumeToken();
-        return Expr(makeAstRaw<BoolLitExprAst>()->setLitLoc(lastLoc_));
+        return Expr(newAst<BoolLitExprAst>()->setLitLoc(lastLoc_));
 
     default:
         failMatch(true);

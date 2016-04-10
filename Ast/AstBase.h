@@ -184,20 +184,22 @@ private:
 };
 
 template <class AstT>
-AstT* makeAstRaw()
+AstT* newAst()
 {
-    return new AstT;
-}
-
-template <class AstT>
-std::unique_ptr<AstT> makeAst()
-{
-    return std::unique_ptr<AstT>(new AstT);
+    return new AstT; // TODO: Allocate on an AST pool.
 }
 
 } // namespace uaiso
 
-// Macros for named parameters AST functions
+
+// AST macros
+
+#define AST_CLASS(AST_NODE, AST_KIND) \
+    using Self = AST_NODE##AST_KIND##Ast; \
+    static std::unique_ptr<Self> create() \
+    { \
+        return std::unique_ptr<Self>(new Self); \
+    }
 
 #define NAMED_AST_PARAM(NAME, MEMBER, PARAM_TYPE) \
     Self* set##NAME(PARAM_TYPE* param) \

@@ -546,7 +546,7 @@ Expr:
 |   AssignExpr ',' Expr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<CommaExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<CommaExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 ;
 
@@ -555,72 +555,72 @@ AssignExpr:
 |   CondExpr '=' AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "+=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "-=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "*=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "/=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "%=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "|=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "^=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "^^=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "&=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "<<=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr ">>=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr ">>>=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 |   CondExpr "~=" AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
+        $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 ;
 
@@ -629,7 +629,7 @@ CondExpr:
 |   BinaryExpr '?' Expr ':' CondExpr
     {
         DECL_2_LOC(@2, @4);
-        $$ = makeAstRaw<CondExprAst>()->setCond($1)->setQuestionLoc(locA)->setYes($3)
+        $$ = newAst<CondExprAst>()->setCond($1)->setQuestionLoc(locA)->setYes($3)
                 ->setDelimLoc(locB)->setNo($5);
     }
 ;
@@ -639,167 +639,167 @@ BinaryExpr:
 |   BinaryExpr "||" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<LogicOrExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<LogicOrExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "&&" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<LogicAndExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<LogicAndExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '|' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<BitOrExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<BitOrExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '^' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<BitXorExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<BitXorExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '&' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<BitAndExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<BitAndExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "==" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<EqExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<EqExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "!=" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<EqExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<EqExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '<' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '>' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "<=" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr ">=" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "<>" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "<>=" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "!<>" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "!<>=" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "!<" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "!<=" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "!>" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "!>=" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr IS BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<IsExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<IsExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr NOT_IS_HACK BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<IsExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<IsExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr IN BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<InExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<InExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr NOT_IN_HACK BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<InExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<InExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "<<" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<ShiftExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<ShiftExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr ">>" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<ShiftExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<ShiftExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr ">>>" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<ShiftExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<ShiftExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '+' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AddExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<AddExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '-' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<SubExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<SubExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '~' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<ConcatExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<ConcatExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '*' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<MulExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<MulExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '/' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<DivExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<DivExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr '%' BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<ModExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<ModExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 |   BinaryExpr "^^" BinaryExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<PowerExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
+        $$ = newAst<PowerExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
 ;
 
@@ -807,66 +807,66 @@ UnaryExpr:
     '&' UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<AddrOfExprAst>()->setOprLoc(locA)->setExpr($2);
+        $$ = newAst<AddrOfExprAst>()->setOprLoc(locA)->setExpr($2);
     }
 |   '*' UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<PtrDerefExprAst>()->setOprLoc(locA)->setExpr($2);
+        $$ = newAst<PtrDerefExprAst>()->setOprLoc(locA)->setExpr($2);
     }
 |   '-' UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<MinusExprAst>()->setOprLoc(locA)->setExpr($2);
+        $$ = newAst<MinusExprAst>()->setOprLoc(locA)->setExpr($2);
     }
 |   '+' UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<PlusExprAst>()->setOprLoc(locA)->setExpr($2);
+        $$ = newAst<PlusExprAst>()->setOprLoc(locA)->setExpr($2);
     }
 |   '!' UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<LogicNotExprAst>()->setOprLoc(locA)->setExpr($2);
+        $$ = newAst<LogicNotExprAst>()->setOprLoc(locA)->setExpr($2);
     }
 |   '~' UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BitCompExprAst>()->setOprLoc(locA)->setExpr($2);
+        $$ = newAst<BitCompExprAst>()->setOprLoc(locA)->setExpr($2);
     }
 |   "++" UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<IncDecExprAst>()->setPrefixLoc(locA)->setValue($2);
+        $$ = newAst<IncDecExprAst>()->setPrefixLoc(locA)->setValue($2);
     }
 |   "--" UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<IncDecExprAst>()->setPrefixLoc(locA)->setValue($2);
+        $$ = newAst<IncDecExprAst>()->setPrefixLoc(locA)->setValue($2);
     }
 |   DELETE UnaryExpr
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<DelExprAst>()->setKeyLoc(locA)->addExpr($2);
+        $$ = newAst<DelExprAst>()->setKeyLoc(locA)->addExpr($2);
     }
 |   CAST '(' Type ')' UnaryExpr
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<CastExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setSpec($3)
+        $$ = newAst<CastExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setSpec($3)
                 ->setRDelimLoc(locC)->setExpr($5);
     }
 |   CAST '(' ')' UnaryExpr
     {
         /* This case removes any top level type modifiers. */
         DECL_3_LOC(@1, @2, @3);
-        $$ = makeAstRaw<CastExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setExpr($4);
+        $$ = newAst<CastExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setExpr($4);
     }
     /*    |   CAST '(' CastQual ')' UnaryExpr */
 |   '(' Type ')' '.' NestedIdentOrTemplateInst %dprec 1
     {
         DECL_3_LOC(@1, @3, @4);
-        auto name = makeAstRaw<NestedNameAst>()->setNamesSR($5);
-        $$ = makeAstRaw<MemberAccessExprAst>()->setSpec($2)->setOprLoc(locC)->setName(name);
+        auto name = newAst<NestedNameAst>()->setNamesSR($5);
+        $$ = newAst<MemberAccessExprAst>()->setSpec($2)->setOprLoc(locC)->setName(name);
     }
 |   PostfixExpr %dprec 2
 ;
@@ -876,88 +876,88 @@ PostfixExpr:
 |   PostfixExpr "++"
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<IncDecExprAst>()->setValue($1)->setSuffixLoc(locA);
+        $$ = newAst<IncDecExprAst>()->setValue($1)->setSuffixLoc(locA);
     }
 |   PostfixExpr "--"
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<IncDecExprAst>()->setValue($1)->setSuffixLoc(locA);
+        $$ = newAst<IncDecExprAst>()->setValue($1)->setSuffixLoc(locA);
     }
 |   PostfixExpr '.' IdentOrTemplateInst
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<MemberAccessExprAst>()->setExpr($1)->setOprLoc(locA)->setName($3);
+        $$ = newAst<MemberAccessExprAst>()->setExpr($1)->setOprLoc(locA)->setName($3);
     }
 |   PostfixExpr '.' NewExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<NestedNewExprAst>()->setBase($1)->setOprLoc(locA)->setNestedNew($3);
+        $$ = newAst<NestedNewExprAst>()->setBase($1)->setOprLoc(locA)->setNestedNew($3);
     }
 |   PostfixExpr '(' ')'
     {
         DECL_2_LOC(@2, @3);
-        $$ = makeAstRaw<CallExprAst>()->setBase($1)->setLDelimLoc(locA)->setRDelimLoc(locB);
+        $$ = newAst<CallExprAst>()->setBase($1)->setLDelimLoc(locA)->setRDelimLoc(locB);
     }
 |   PostfixExpr '(' ExprList ')'
     {
         DECL_2_LOC(@2, @4);
-        $$ = makeAstRaw<CallExprAst>()->setBase($1)->setLDelimLoc(locA)->setArgsSR($3)->setRDelimLoc(locB);
+        $$ = newAst<CallExprAst>()->setBase($1)->setLDelimLoc(locA)->setArgsSR($3)->setRDelimLoc(locB);
     }
 |   PostfixExpr '(' ExprList error PostfixExprSync
     {
         DECL_2_LOC(@2, @5);
-        $$ = makeAstRaw<CallExprAst>()->setBase($1)->setLDelimLoc(locA)->setArgsSR($3)->setRDelimLoc(locB);
+        $$ = newAst<CallExprAst>()->setBase($1)->setLDelimLoc(locA)->setArgsSR($3)->setRDelimLoc(locB);
         yyerrok;
     }
 |   PostfixExpr '(' ExprList EOP
     {
         DECL_2_LOC(@2, @4);
-        $$ = makeAstRaw<CallExprAst>()->setBase($1)->setLDelimLoc(locA)->setArgsSR($3)->setRDelimLoc(locB);
+        $$ = newAst<CallExprAst>()->setBase($1)->setLDelimLoc(locA)->setArgsSR($3)->setRDelimLoc(locB);
         yyerror(&yylloc, scanner, context, "unexpected <end_of_program>");
     }
 |   PostfixExpr '[' AssignExpr ']'
     {
         DECL_2_LOC(@2, @4);
-        $$ = makeAstRaw<ArrayIndexExprAst>()->setBase($1)->setLDelimLoc(locA)->setIndex($3)->setRDelimLoc(locB);
+        $$ = newAst<ArrayIndexExprAst>()->setBase($1)->setLDelimLoc(locA)->setIndex($3)->setRDelimLoc(locB);
     }
 |   PostfixExpr '[' AssignExpr error PostfixExprSync
     {
         DECL_2_LOC(@2, @5);
-        $$ = makeAstRaw<ArrayIndexExprAst>()->setBase($1)->setLDelimLoc(locA)->setIndex($3)->setRDelimLoc(locB);
+        $$ = newAst<ArrayIndexExprAst>()->setBase($1)->setLDelimLoc(locA)->setIndex($3)->setRDelimLoc(locB);
         yyerrok;
     }
 |   PostfixExpr '[' AssignExpr EOP
     {
         DECL_2_LOC(@2, @4);
-        $$ = makeAstRaw<ArrayIndexExprAst>()->setBase($1)->setLDelimLoc(locA)->setIndex($3)->setRDelimLoc(locB);
+        $$ = newAst<ArrayIndexExprAst>()->setBase($1)->setLDelimLoc(locA)->setIndex($3)->setRDelimLoc(locB);
         yyerror(&yylloc, scanner, context, "unexpected <end_of_program>");
     }
 |   PostfixExpr '[' ']'
     {
         /* This expr creates a slice as large as the array. */
         DECL_2_LOC(@2, @3);
-        $$ = makeAstRaw<ArraySliceExprAst>()->setBase($1)->setLDelimLoc(locA)->setRDelimLoc(locB);
+        $$ = newAst<ArraySliceExprAst>()->setBase($1)->setLDelimLoc(locA)->setRDelimLoc(locB);
     }
 |   PostfixExpr '[' AssignExpr ".." AssignExpr ']'
     {
         DECL_3_LOC(@2, @4, @6);
-        auto range = makeAstRaw<SubrangeExprAst>()->setLow($3)->setDelim1Loc(locB)->setHi($5);
-        $$ = makeAstRaw<ArraySliceExprAst>()->setBase($1)->setLDelimLoc(locA)->setRange(range)
+        auto range = newAst<SubrangeExprAst>()->setLow($3)->setDelim1Loc(locB)->setHi($5);
+        $$ = newAst<ArraySliceExprAst>()->setBase($1)->setLDelimLoc(locA)->setRange(range)
                 ->setRDelimLoc(locC);
     }
 |   PostfixExpr '[' AssignExpr ".." AssignExpr error PostfixExprSync
     {
         DECL_3_LOC(@2, @4, @7);
-        auto range = makeAstRaw<SubrangeExprAst>()->setLow($3)->setDelim1Loc(locB)->setHi($5);
-        $$ = makeAstRaw<ArraySliceExprAst>()->setBase($1)->setLDelimLoc(locA)->setRange(range)
+        auto range = newAst<SubrangeExprAst>()->setLow($3)->setDelim1Loc(locB)->setHi($5);
+        $$ = newAst<ArraySliceExprAst>()->setBase($1)->setLDelimLoc(locA)->setRange(range)
                 ->setRDelimLoc(locC);
         yyerrok;
     }
 |   PostfixExpr '[' AssignExpr ".." AssignExpr EOP
     {
         DECL_3_LOC(@2, @4, @6);
-        auto range = makeAstRaw<SubrangeExprAst>()->setLow($3)->setDelim1Loc(locB)->setHi($5);
-        $$ = makeAstRaw<ArraySliceExprAst>()->setBase($1)->setLDelimLoc(locA)->setRange(range)
+        auto range = newAst<SubrangeExprAst>()->setLow($3)->setDelim1Loc(locB)->setHi($5);
+        $$ = newAst<ArraySliceExprAst>()->setBase($1)->setLDelimLoc(locA)->setRange(range)
                 ->setRDelimLoc(locC);
         yyerror(&yylloc, scanner, context, "unexpected <end_of_program>");
     }
@@ -968,15 +968,15 @@ PostfixExprSync: ']' | ')' | EOP;
 PrimaryExpr:
     IdentOrTemplateInst
     {
-        $$ = makeAstRaw<IdentExprAst>()->setName($1);
+        $$ = newAst<IdentExprAst>()->setName($1);
     }
 |   '.' IdentOrTemplateInst
     {
         DECL_1_LOC(@1);
         context->trackLexeme<Ident>(".", locA.lineCol());
-        auto dot = makeAstRaw<GenNameAst>()->setGenLoc(locA);
-        auto name = makeAstRaw<NestedNameAst>()->setNamesSR(NameAstList::createSR(dot)->handleSR($2));
-        $$ = makeAstRaw<IdentExprAst>()->setName(name);
+        auto dot = newAst<GenNameAst>()->setGenLoc(locA);
+        auto name = newAst<NestedNameAst>()->setNamesSR(NameAstList::createSR(dot)->handleSR($2));
+        $$ = newAst<IdentExprAst>()->setName(name);
     }
 |   ThisExpr
 |   SuperExpr
@@ -988,12 +988,12 @@ PrimaryExpr:
 |   BuiltinType '.' Ident
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<MemberAccessExprAst>()->setSpec($1)->setOprLoc(locA)->setName($3);
+        $$ = newAst<MemberAccessExprAst>()->setSpec($1)->setOprLoc(locA)->setName($3);
     }
 |   '$'
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ArrayLengthExprAst>()->setKeyLoc(locA);
+        $$ = newAst<ArrayLengthExprAst>()->setKeyLoc(locA);
     }
 |   PointerLit
 |   BoolLit
@@ -1005,7 +1005,7 @@ PrimaryExpr:
 |   '(' Expr ')'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<WrappedExprAst>()->setLDelimLoc(locA)->setExpr($2)->setRDelimLoc(locB);
+        $$ = newAst<WrappedExprAst>()->setLDelimLoc(locA)->setExpr($2)->setRDelimLoc(locB);
     }
 ;
 
@@ -1013,7 +1013,7 @@ ThisExpr:
     THIS
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ThisExprAst>()->setKeyLoc(locA);
+        $$ = newAst<ThisExprAst>()->setKeyLoc(locA);
     }
 ;
 
@@ -1021,7 +1021,7 @@ SuperExpr:
     SUPER
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<SuperExprAst>()->setKeyLoc(locA);
+        $$ = newAst<SuperExprAst>()->setKeyLoc(locA);
     }
 ;
 
@@ -1031,69 +1031,69 @@ NewExpr:
     NEW Type %prec PREFER_SHIFT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setSpec($2);
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setSpec($2);
     }
 |   NEW Type '(' ')'
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setSpec($2);
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setSpec($2);
     }
 |   NEW Type '(' ExprList ')'
     {
         DECL_3_LOC(@1, @3, @5);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setSpec($2)->setLArgDelimLoc(locB)
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setSpec($2)->setLArgDelimLoc(locB)
                 ->setArgsSR($4)->setRArgDelimLoc(locC);
     }
 |   NEW '(' ')' Type %prec PREFER_SHIFT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setSpec($4);
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setSpec($4);
     }
 |   NEW '(' ExprList ')' Type %prec PREFER_SHIFT
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
                 ->setRAllocDelimLoc(locC)->setSpec($5);
     }
 |   NEW '(' ExprList ',' ')' Type %prec PREFER_SHIFT
     {
         DECL_3_LOC(@1, @2, @5);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
                 ->setRAllocDelimLoc(locC)->setSpec($6);
     }
 |   NEW '(' ')' Type '(' ')'
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setSpec($4);
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setSpec($4);
     }
 |   NEW '(' ExprList ')' Type '(' ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
                 ->setRAllocDelimLoc(locC)->setSpec($5);
     }
 |   NEW '(' ExprList ',' ')' Type '(' ')'
     {
         DECL_3_LOC(@1, @2, @5);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
                 ->setRAllocDelimLoc(locC)->setSpec($6);
     }
 |   NEW '(' ')' Type '(' ExprList ')'
     {
         DECL_3_LOC(@1, @5, @6);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setSpec($4)->setLArgDelimLoc(locB)
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setSpec($4)->setLArgDelimLoc(locB)
                 ->setArgsSR($6)->setRArgDelimLoc(locC);
     }
 |   NEW '(' ExprList ')' Type '(' ExprList ')'
     {
         DECL_5_LOC(@1, @2, @4, @6, @7);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
             ->setRAllocDelimLoc(locC)->setSpec($5)->setLArgDelimLoc(locD)->setArgsSR($7)->setRArgDelimLoc(locE);
     }
 |   NEW '(' ExprList ',' ')' Type '(' ExprList ')'
     {
         DECL_5_LOC(@1, @2, @5, @6, @8);
-        $$ = makeAstRaw<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
+        $$ = newAst<NewExprAst>()->setKeyLoc(locA)->setLAllocDelimLoc(locB)->setAllocArgsSR($3)
             ->setRAllocDelimLoc(locC)->setSpec($6)->setLArgDelimLoc(locD)->setArgsSR($8)->setRArgDelimLoc(locE);
     }
 ;
@@ -1102,13 +1102,13 @@ TypeidExpr:
     TYPEID '(' NonExprType ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<TypeidExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setSpec($3)
+        $$ = newAst<TypeidExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setSpec($3)
                 ->setRDelimLoc(locC);
     }
 |   TYPEID '(' Expr ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<TypeidExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
+        $$ = newAst<TypeidExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
                 ->setRDelimLoc(locC);
     }
 ;
@@ -1117,12 +1117,12 @@ AssertExpr:
     ASSERT '(' AssignExpr ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<AssertExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setRDelimLoc(locC);
+        $$ = newAst<AssertExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setRDelimLoc(locC);
     }
 |   ASSERT '(' AssignExpr ',' AssignExpr ')'
     {
         DECL_4_LOC(@1, @2, @4, @6);
-        $$ = makeAstRaw<AssertExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setMDelimLoc(locC)
+        $$ = newAst<AssertExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setMDelimLoc(locC)
                 ->setMessage($5)->setRDelimLoc(locD);
     }
 ;
@@ -1131,7 +1131,7 @@ MixinExpr:
     MIXIN '(' AssignExpr ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<MixinExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setRDelimLoc(locC);
+        $$ = newAst<MixinExprAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setRDelimLoc(locC);
     }
 ;
 
@@ -1139,21 +1139,21 @@ TypeQueryExpr:
     IS '(' Type ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto intro = makeAstRaw<TypeQueryExprAst>();
+        auto intro = newAst<TypeQueryExprAst>();
         intro->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setSpec($3);
         $$ = intro;
     }
 |   IS '(' Type ':' IntrospectSpecialization ')'
     {
         DECL_3_LOC(@1, @2, @6);
-        auto intro = makeAstRaw<TypeQueryExprAst>();
+        auto intro = newAst<TypeQueryExprAst>();
         intro->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setSpec($3);
         $$ = intro;
     }
 |   IS '(' Type "==" IntrospectSpecialization ')'
     {
         DECL_3_LOC(@1, @2, @6);
-        auto intro = makeAstRaw<TypeQueryExprAst>();
+        auto intro = newAst<TypeQueryExprAst>();
         intro->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setSpec($3);
         $$ = intro;
     }
@@ -1162,7 +1162,7 @@ TypeQueryExpr:
         IGNORE_FOR_NOW($4);
 
         DECL_3_LOC(@1, @2, @5);
-        auto intro = makeAstRaw<TypeQueryExprAst>();
+        auto intro = newAst<TypeQueryExprAst>();
         intro->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setSpec($3);
         $$ = intro;
     }
@@ -1171,7 +1171,7 @@ TypeQueryExpr:
         IGNORE_FOR_NOW($4);
 
         DECL_3_LOC(@1, @2, @7);
-        auto intro = makeAstRaw<TypeQueryExprAst>();
+        auto intro = newAst<TypeQueryExprAst>();
         intro->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setSpec($3);
         $$ = intro;
     }
@@ -1180,7 +1180,7 @@ TypeQueryExpr:
         IGNORE_FOR_NOW($4);
 
         DECL_3_LOC(@1, @2, @7);
-        auto intro = makeAstRaw<TypeQueryExprAst>();
+        auto intro = newAst<TypeQueryExprAst>();
         intro->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setSpec($3);
         $$ = intro;
     }
@@ -1228,16 +1228,16 @@ Type:
     }
 |   Attrs FullType
     {
-        $$ = makeAstRaw<DecoratedSpecAst>()->setAttrsSR($1)->setSpec($2);
+        $$ = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec($2);
     }
 |   TypeQual '(' Type ')'
     {
-        $$ = makeAstRaw<DecoratedSpecAst>()->addAttr($1)->setSpec($3);
+        $$ = newAst<DecoratedSpecAst>()->addAttr($1)->setSpec($3);
     }
 |   Attrs TypeQual '(' Type ')'
     {
         auto attrs = $1->handleSR($2);
-        $$ = makeAstRaw<DecoratedSpecAst>()->setAttrsSR(attrs)->setSpec($4);
+        $$ = newAst<DecoratedSpecAst>()->setAttrsSR(attrs)->setSpec($4);
     }
 |   Type Composer
     {
@@ -1264,7 +1264,7 @@ NonExprType:
     UnnamedType
 |   TypeQuals FullType
     {
-        $$ = makeAstRaw<DecoratedSpecAst>()->setAttrsSR($1)->setSpec($2);
+        $$ = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec($2);
     }
 |   NonExprType Composer
     {
@@ -1276,7 +1276,7 @@ Composer:
     '[' ']'
     {
         DECL_2_LOC(@1, @2);
-        auto array = makeAstRaw<ArraySpecAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        auto array = newAst<ArraySpecAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
         array->setVariety(ArrayVariety::Plain);
         $$ = array;
     }
@@ -1285,14 +1285,14 @@ Composer:
         /* Associative arrays of unnamed types are matched
            here. The others are matched as an `AssignExpr`. */
         DECL_2_LOC(@1, @3);
-        auto array = makeAstRaw<ArraySpecAst>()->setLDelimLoc(locA)->setSpec($2)->setRDelimLoc(locB);
+        auto array = newAst<ArraySpecAst>()->setLDelimLoc(locA)->setSpec($2)->setRDelimLoc(locB);
         array->setVariety(ArrayVariety::Associative);
         $$ = array;
     }
 |   '[' AssignExpr ']'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<ArraySpecAst>()->setLDelimLoc(locA)->setExpr($2)->setRDelimLoc(locB);
+        $$ = newAst<ArraySpecAst>()->setLDelimLoc(locA)->setExpr($2)->setRDelimLoc(locB);
     }
 |   '[' AssignExpr ".." AssignExpr ']'
     {
@@ -1300,12 +1300,12 @@ Composer:
         IGNORE_FOR_NOW($4);
 
         DECL_3_LOC(@1, @3, @5);
-        $$ = makeAstRaw<ArraySpecAst>()->setLDelimLoc(locA)->setExpr($2)->setRDelimLoc(locC);
+        $$ = newAst<ArraySpecAst>()->setLDelimLoc(locA)->setExpr($2)->setRDelimLoc(locC);
     }
 |   '*'
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<PtrSpecAst>()->setOprLoc(locA);
+        $$ = newAst<PtrSpecAst>()->setOprLoc(locA);
     }
 ;
 
@@ -1313,24 +1313,24 @@ Signature:
     FUNCTION ParamClauseDecl
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
+        $$ = newAst<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
     }
 |   FUNCTION ParamClauseDecl FuncAttrs
     {
         DECL_1_LOC(@1);
-        auto spec = makeAstRaw<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
-        $$ = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
+        auto spec = newAst<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
+        $$ = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
     }
 |   DELEGATE ParamClauseDecl
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
+        $$ = newAst<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
     }
 |   DELEGATE ParamClauseDecl FuncAttrs
     {
         DECL_1_LOC(@1);
-        auto spec = makeAstRaw<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
-        $$ = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
+        auto spec = newAst<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
+        $$ = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
     }
 ;
 
@@ -1338,8 +1338,8 @@ FullType:
     UnnamedType
 |   NestedIdentOrTemplateInst %prec PREFER_SHIFT
     {
-        auto name = makeAstRaw<NestedNameAst>()->setNamesSR($1);
-        $$ = makeAstRaw<NamedSpecAst>()->setName(name);
+        auto name = newAst<NestedNameAst>()->setNamesSR($1);
+        $$ = newAst<NamedSpecAst>()->setName(name);
     }
 |   '.' NestedIdentOrTemplateInst
     {
@@ -1347,8 +1347,8 @@ FullType:
         auto global = (new GenNameAst("<global>"))->setGenLoc(locA);
         auto names = NameAstList::createSR(global);
         names = names->mergeSR($2);
-        auto name = makeAstRaw<NestedNameAst>()->setNamesSR(names);
-        $$ = makeAstRaw<NamedSpecAst>()->setName(name);
+        auto name = newAst<NestedNameAst>()->setNamesSR(names);
+        $$ = newAst<NamedSpecAst>()->setName(name);
     }
 ;
 
@@ -1368,13 +1368,13 @@ TypeofExprType:
     TYPEOF '(' Expr ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<TypeofSpecAst>()->setOprLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setRDelimLoc(locC);
+        $$ = newAst<TypeofSpecAst>()->setOprLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setRDelimLoc(locC);
     }
 |   TYPEOF '(' RETURN ')'  %prec PREFER_SHIFT
     {
         // TODO: Deal with `return`.
         DECL_4_LOC(@1, @2, @3, @4);
-        $$ = makeAstRaw<TypeofSpecAst>()->setOprLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC);
+        $$ = newAst<TypeofSpecAst>()->setOprLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC);
     }
 ;
 
@@ -1382,112 +1382,112 @@ BuiltinType:
     BOOL
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   BYTE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   UBYTE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   INT16
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   UINT16
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   INT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   UINT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   INT64
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   UINT64
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   CHAR
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   CHAR_UTF16
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   CHAR_UTF32
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   FLOAT32
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   FLOAT64
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   REAL
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   IMAG_FLOAT32
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   IMAG_FLOAT64
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   IMAG_REAL
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   COMPLEX_FLOAT32
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   COMPLEX_FLOAT64
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   COMPLEX_REAL
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BuiltinSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<BuiltinSpecAst>()->setKeyLoc(locA);
     }
 |   VOID
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VoidSpecAst>()->setKeyLoc(locA);
+        $$ = newAst<VoidSpecAst>()->setKeyLoc(locA);
     }
 ;
 
@@ -1512,12 +1512,12 @@ Decl:
 |  '{' Decls '}'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<BlockDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<BlockDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 |   Attrs '{' Decls '}'
     {
         DECL_2_LOC(@2, @4);
-        $$ = makeAstRaw<BlockDeclAst>()->setAttrsSR($1)->setLDelimLoc(locA)->setDeclsSR($3)->setRDelimLoc(locB);
+        $$ = newAst<BlockDeclAst>()->setAttrsSR($1)->setLDelimLoc(locA)->setDeclsSR($3)->setRDelimLoc(locB);
     }
 |   Attrs ':' Decl
     {
@@ -1546,7 +1546,7 @@ VarGroupDecl:
     }
 |   Type error
     {
-        $$ = makeAstRaw<VarGroupDeclAst>()->setSpec($1);
+        $$ = newAst<VarGroupDeclAst>()->setSpec($1);
     }
 |   Type VarDeclList EOP
     {
@@ -1597,19 +1597,19 @@ VarDeclList:
 VarDecl:
     Ident
     {
-        $$ = makeAstRaw<VarDeclAst>()->setName($1);
+        $$ = newAst<VarDeclAst>()->setName($1);
     }
 |   Ident '=' Init
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<VarDeclAst__<VarInit__>>()->setName($1)->setAssignLoc(locA)->setInit($3);
+        $$ = newAst<VarDeclAst__<VarInit__>>()->setName($1)->setAssignLoc(locA)->setInit($3);
     }
 |   Ident RestrictTemplateParamClause '=' Init
     {
         IGNORE_FOR_NOW($2);
 
         DECL_1_LOC(@3);
-        $$ = makeAstRaw<VarDeclAst__<VarInit__>>()->setName($1)->setAssignLoc(locA)->setInit($4);
+        $$ = newAst<VarDeclAst__<VarInit__>>()->setName($1)->setAssignLoc(locA)->setInit($4);
     }
 ;
 
@@ -1618,9 +1618,9 @@ FuncDecl:
     {
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())->setResult($1);
-        $$ = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($4);
+        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($4);
     }
 |   Type Ident UnifiedParamClauseDecl Constraint FuncEnd
     {
@@ -1628,18 +1628,18 @@ FuncDecl:
 
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())->setResult($1);
-        $$ = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($5);
+        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($5);
     }
 |   Type Ident UnifiedParamClauseDecl FuncAttrs FuncEnd
     {
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())->setResult($1);
-        auto attrSpec = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
-        $$ = makeAstRaw<FuncDeclAst>()->setSpec(attrSpec)->setName($2)->setStmt($5);
+        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
+        $$ = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName($2)->setStmt($5);
     }
 |   Type Ident UnifiedParamClauseDecl FuncAttrs Constraint FuncEnd
     {
@@ -1647,22 +1647,22 @@ FuncDecl:
 
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())->setResult($1);
-        auto attrSpec = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
-        $$ = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($6);
+        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
+        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($6);
     }
 |   Attrs Ident UnifiedParamClauseDecl FuncEnd
     {
         DECL_1_LOC(@1);
 
         using namespace detail;
-        auto inferred = makeAstRaw<InferredSpecAst>()->setKeyLoc(locA);
-        auto result = makeAstRaw<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
+        auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
+        auto result = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())->setResult(result);
-        $$ = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($4);
+        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($4);
     }
 |   Attrs Ident UnifiedParamClauseDecl Constraint FuncEnd
     {
@@ -1670,24 +1670,24 @@ FuncDecl:
 
         DECL_1_LOC(@1);
         using namespace detail;
-        auto inferred = makeAstRaw<InferredSpecAst>()->setKeyLoc(locA);
-        auto result = makeAstRaw<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
+        auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
+        auto result = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())->setResult(result);
-        $$ = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($5);
+        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($5);
     }
 |   Attrs Ident UnifiedParamClauseDecl FuncAttrs FuncEnd
     {
         DECL_1_LOC(@1);
         using namespace detail;
-        auto inferred = makeAstRaw<InferredSpecAst>()->setKeyLoc(locA);
-        auto result = makeAstRaw<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
+        auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
+        auto result = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())->setResult(result);
-        auto attrSpec = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
-        $$ = makeAstRaw<FuncDeclAst>()->setSpec(attrSpec)->setName($2)->setStmt($5);
+        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
+        $$ = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName($2)->setStmt($5);
     }
 |   Attrs Ident UnifiedParamClauseDecl FuncAttrs Constraint FuncEnd
     {
@@ -1695,13 +1695,13 @@ FuncDecl:
 
         DECL_1_LOC(@1);
         using namespace detail;
-        auto inferred = makeAstRaw<InferredSpecAst>()->setKeyLoc(locA);
-        auto result = makeAstRaw<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
+        auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
+        auto result = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())->setResult(result);
-        auto attrSpec = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
-        $$ = makeAstRaw<FuncDeclAst>()->setSpec(attrSpec)->setName($2)->setStmt($6);
+        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
+        $$ = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName($2)->setStmt($6);
     }
 ;
 
@@ -1711,11 +1711,11 @@ CtorDecl:
         DECL_1_LOC(@1);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($2));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locA);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($3);
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
+        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($3);
         func->setVariety(FuncVariety::Constructor);
         $$ = func;
     }
@@ -1724,12 +1724,12 @@ CtorDecl:
         DECL_1_LOC(@1);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($2));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locA);
-        auto attrSpec = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($4);
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
+        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
+        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($4);
         func->setVariety(FuncVariety::Constructor);
         $$ = func;
     }
@@ -1740,12 +1740,12 @@ CtorDecl:
         DECL_1_LOC(@1);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($2));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locA);
-        auto attrSpec = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($5);
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
+        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
+        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($5);
         func->setVariety(FuncVariety::Constructor);
         $$ = func;
     }
@@ -1754,12 +1754,12 @@ CtorDecl:
         DECL_1_LOC(@2);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locA);
-        auto attrSpec = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($1);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($4);
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
+        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($1);
+        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($4);
         func->setVariety(FuncVariety::Constructor);
         $$ = func;
     }
@@ -1768,13 +1768,13 @@ CtorDecl:
         DECL_1_LOC(@2);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locA);
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
         auto attrs = $1->mergeSR($4);
-        auto attrSpec = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR(attrs);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($5);
+        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR(attrs);
+        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($5);
         func->setVariety(FuncVariety::Constructor);
         $$ = func;
     }
@@ -1785,13 +1785,13 @@ CtorDecl:
         DECL_1_LOC(@2);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = makeAstRaw<FuncSpecAst>();
+        auto spec = newAst<FuncSpecAst>();
         spec->setParam(fullParam->param_.release())
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locA);
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
         auto attrs = $1->mergeSR($4);
-        auto attrSpec = makeAstRaw<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR(attrs);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($6);
+        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR(attrs);
+        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($6);
         func->setVariety(FuncVariety::Constructor);
         $$ = func;
     }
@@ -1802,11 +1802,11 @@ DtorDecl:
     {
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
-        auto param = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto spec = makeAstRaw<FuncSpecAst>()->setParam(param)
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locB);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($5);
+        auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
+        auto spec = newAst<FuncSpecAst>()->setParam(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
+        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($5);
         func->setVariety(FuncVariety::Destructor);
         $$ = func;
     }
@@ -1814,12 +1814,12 @@ DtorDecl:
     {
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
-        auto param = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto baseSpec = makeAstRaw<FuncSpecAst>()->setParam(param)
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto spec = makeAstRaw<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($5);
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locB);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
+        auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
+        auto baseSpec = newAst<FuncSpecAst>()->setParam(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($5);
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
+        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
         func->setVariety(FuncVariety::Destructor);
         $$ = func;
     }
@@ -1827,12 +1827,12 @@ DtorDecl:
     {
         /* TODO: Join ~ and this */
         DECL_4_LOC(@2, @3, @4, @5);
-        auto param = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto baseSpec = makeAstRaw<FuncSpecAst>()->setParam(param)
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto spec = makeAstRaw<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($1);
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locB);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
+        auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
+        auto baseSpec = newAst<FuncSpecAst>()->setParam(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($1);
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
+        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
         func->setVariety(FuncVariety::Destructor);
         $$ = func;
     }
@@ -1841,12 +1841,12 @@ DtorDecl:
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
         auto attrs = $1->mergeSR($6);
-        auto param = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto baseSpec = makeAstRaw<FuncSpecAst>()->setParam(param)
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto spec = makeAstRaw<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR(attrs);
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locB);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($7);
+        auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
+        auto baseSpec = newAst<FuncSpecAst>()->setParam(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR(attrs);
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
+        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($7);
         func->setVariety(FuncVariety::Destructor);
         $$ = func;
     }
@@ -1857,11 +1857,11 @@ Postblit:
     {
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
-        auto param = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locB)->setRDelimLoc(locC);
-        auto spec = makeAstRaw<FuncSpecAst>()->setParam(param)
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locA);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($5);
+        auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locB)->setRDelimLoc(locC);
+        auto spec = newAst<FuncSpecAst>()->setParam(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
+        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($5);
         func->setVariety(FuncVariety::Constructor);
         $$ = func;
     }
@@ -1869,12 +1869,12 @@ Postblit:
     {
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
-        auto param = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locB)->setRDelimLoc(locC);
-        auto baseSpec = makeAstRaw<FuncSpecAst>()->setParam(param)
-            ->setResult(makeAstRaw<VoidSpecAst>()->setKeyLoc(locA));
-        auto spec = makeAstRaw<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($5);
-        auto name = makeAstRaw<SimpleNameAst>()->setNameLoc(locA);
-        auto func = makeAstRaw<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
+        auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locB)->setRDelimLoc(locC);
+        auto baseSpec = newAst<FuncSpecAst>()->setParam(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($5);
+        auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
+        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
         func->setVariety(FuncVariety::Constructor);
         $$ = func;
     }
@@ -1884,62 +1884,62 @@ UnifiedParamClauseDecl:
     '(' ')'
     {
         DECL_2_LOC(@1, @2);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locA)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param);
     }
 |   '(' ParamGroupDeclList ')'
     {
         DECL_2_LOC(@1, @3);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param);
     }
 |   '(' ParamGroupDeclList ',' ')'
     {
         DECL_2_LOC(@1, @4);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param);
     }
 |   '(' ParamGroupDeclList ',' "..." ')'
     {
         DECL_4_LOC(@1, @3, @4, @5);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locA)->setDeclsSR($2)->setVariadicLoc(locC)->setRDelimLoc(locD);
         $$ = new detail::FullParam(param);
     }
 |   '(' "..." ')'
     {
         DECL_3_LOC(@1, @2, @3);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locA)->setVariadicLoc(locB)->setRDelimLoc(locC);
         $$ = new detail::FullParam(param);
     }
 |   '(' RestrictTemplateParamList ')' '(' ')'
     {
         DECL_4_LOC(@1, @3, @4, @5);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     }
 |   '(' RestrictTemplateParamList ')' '(' ParamGroupDeclList ')'
     {
         DECL_4_LOC(@1, @3, @4, @6);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locA)->setDeclsSR($5)->setRDelimLoc(locB);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     }
 |   '(' RestrictTemplateParamList ')' '(' ParamGroupDeclList ',' ')'
     {
         DECL_4_LOC(@1, @3, @4, @7);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locA)->setDeclsSR($5)->setRDelimLoc(locB);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     }
@@ -1947,45 +1947,45 @@ UnifiedParamClauseDecl:
     {
         DECL_6_LOC(@1, @3, @4, @6, @7, @8);
         $5->delim_ = locD;
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locC)->setDeclsSR($5)->setVariadicLoc(locE)->setRDelimLoc(locF);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     }
 |   '(' RestrictTemplateParamList ')' '(' "..." ')'
     {
         DECL_5_LOC(@1, @3, @4, @5, @6);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locC)->setVariadicLoc(locD)->setRDelimLoc(locE);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     }
 |   '(' RestrictTemplateParamList ',' ')' '(' ')'
     {
         DECL_4_LOC(@1, @4, @5, @6);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     }
 |   '(' RestrictTemplateParamList ',' ')' '(' ParamGroupDeclList ')'
     {
         DECL_4_LOC(@1, @4, @5, @7);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locC)->setDeclsSR($6)->setRDelimLoc(locD);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     }
 |   '(' RestrictTemplateParamList ',' ')' '(' ParamGroupDeclList ',' ')'
     {
         DECL_4_LOC(@1, @4, @5, @8);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locC)->setDeclsSR($6)->setRDelimLoc(locD);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     }
@@ -1993,18 +1993,18 @@ UnifiedParamClauseDecl:
     {
         DECL_6_LOC(@1, @4, @5, @7, @8, @9);
         $6->delim_ = locD;
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locC)->setDeclsSR($6)->setVariadicLoc(locE)->setRDelimLoc(locF);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     }
 |   '(' RestrictTemplateParamList ',' ')' '(' "..." ')'
     {
         DECL_5_LOC(@1, @4, @5, @6, @7);
-        auto param = makeAstRaw<ParamClauseDeclAst>();
+        auto param = newAst<ParamClauseDeclAst>();
         param->setLDelimLoc(locC)->setVariadicLoc(locD)->setRDelimLoc(locE);
-        auto templParam = makeAstRaw<TemplateParamClauseDeclAst>();
+        auto templParam = newAst<TemplateParamClauseDeclAst>();
         templParam->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         $$ = new detail::FullParam(param, templParam);
     };
@@ -2013,29 +2013,29 @@ ParamClauseDecl:
     '(' ')'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        $$ = newAst<ParamClauseDeclAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
     }
 |   '(' ParamGroupDeclList ')'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<ParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 |   '(' ParamGroupDeclList ',' ')'
     {
         DECL_2_LOC(@1, @4);
-        $$ = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<ParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 |   '(' ParamGroupDeclList ',' "..." ')'
     {
         DECL_4_LOC(@1, @3, @4, @5);
         $2->delim_ = locB;
-        $$ = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setVariadicLoc(locC)
+        $$ = newAst<ParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setVariadicLoc(locC)
                 ->setRDelimLoc(locD);
     }
 |   '(' "..." ')'
     {
         DECL_3_LOC(@1, @2, @3);
-        $$ = makeAstRaw<ParamClauseDeclAst>()->setLDelimLoc(locA)->setVariadicLoc(locB)->setRDelimLoc(locC);
+        $$ = newAst<ParamClauseDeclAst>()->setLDelimLoc(locA)->setVariadicLoc(locB)->setRDelimLoc(locC);
     }
 ;
 
@@ -2055,42 +2055,42 @@ ParamGroupDeclList:
 ParamGroupDecl:
     Type
     {
-        auto group = makeAstRaw<ParamGroupDeclAst>();
+        auto group = newAst<ParamGroupDeclAst>();
         group->setSpec($1);
         $$ = group;
     }
 |   Type "..."
     {
         DECL_1_LOC(@2);
-        auto param = makeAstRaw<ParamDeclAst__<ParamVariadic__>>();
-        auto group = makeAstRaw<ParamGroupDeclAst>();
+        auto param = newAst<ParamDeclAst__<ParamVariadic__>>();
+        auto group = newAst<ParamGroupDeclAst>();
         group->addDecl(param)->setSpec($1);
         $$ = param;
     }
 |   Type Ident
     {
-        auto param = makeAstRaw<ParamDeclAst>();
+        auto param = newAst<ParamDeclAst>();
         param->setName($2);
-        auto group = makeAstRaw<ParamGroupDeclAst>();
+        auto group = newAst<ParamGroupDeclAst>();
         group->addDecl(param)->setSpec($1);
         $$ = group;
     }
 |   Type Ident "..."
     {
         DECL_1_LOC(@3);
-        auto param = makeAstRaw<ParamDeclAst__<ParamVariadic__>>();
+        auto param = newAst<ParamDeclAst__<ParamVariadic__>>();
         param->setName($2);
-        auto group = makeAstRaw<ParamGroupDeclAst>();
+        auto group = newAst<ParamGroupDeclAst>();
         group->addDecl(param)->setSpec($1);
         $$ = group;
     }
 |   Type Ident '=' AssignExpr
     {
         DECL_1_LOC(@3);
-        auto param = makeAstRaw<ParamDeclAst__<ParamVariadic__Empty__,
+        auto param = newAst<ParamDeclAst__<ParamVariadic__Empty__,
                                          ParamDefaultArg__>>();
         param->setName($2)->setAssignLoc(locA)->setDefaultArg($4);
-        auto group = makeAstRaw<ParamGroupDeclAst>();
+        auto group = newAst<ParamGroupDeclAst>();
         group->addDecl(param)->setSpec($1);
         $$ = group;
     }
@@ -2118,12 +2118,12 @@ RestrictTemplateParamClause:
     '(' RestrictTemplateParamList ')'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 |   '(' RestrictTemplateParamList ',' ')'
     {
         DECL_2_LOC(@1, @4);
-        $$ = makeAstRaw<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 ;
 
@@ -2150,17 +2150,17 @@ TemplateParamClause:
     '(' ')'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        $$ = newAst<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
     }
 |   '(' TemplateParamList ')'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 |   '(' TemplateParamList ',' ')'
     {
         DECL_2_LOC(@1, @4);
-        $$ = makeAstRaw<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<TemplateParamClauseDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 ;
 
@@ -2188,19 +2188,19 @@ TemplateParam:
 TemplateTypeParam:
     Ident
     {
-        $$ = makeAstRaw<TemplateParamDeclAst>()->setName($1);
+        $$ = newAst<TemplateParamDeclAst>()->setName($1);
     }
 |   Ident ':' Type
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<TemplateParamDeclAst__<TemplateParamDefaultArg__Empty__,
+        $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__Empty__,
                                          TemplateParamSpecialization__>>()->setName($1)
             ->setBindLoc(locA)->setSpecialization($3);
     }
 |   Ident ':' Type '=' Type
     {
         DECL_2_LOC(@2, @4);
-        $$ = makeAstRaw<TemplateParamDeclAst__<TemplateParamDefaultArg__,
+        $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__,
                                          TemplateParamSpecialization__>>()->setName($1)
                 ->setAssignLoc(locA)->setDefaultArg($3)
                 ->setBindLoc(locB)->setSpecialization($5);
@@ -2208,7 +2208,7 @@ TemplateTypeParam:
 |   Ident '=' Type
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<TemplateParamDeclAst__<TemplateParamDefaultArg__>>()->setName($1)
+        $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__>>()->setName($1)
                 ->setAssignLoc(locA)->setDefaultArg($3);
     }
 ;
@@ -2217,38 +2217,38 @@ TemplateTupleParam:
     Ident "..."
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<TemplateParamDeclAst>()->setName($1)->setPackLoc(locA);
+        $$ = newAst<TemplateParamDeclAst>()->setName($1)->setPackLoc(locA);
     }
 ;
 
 TemplateValueParam:
     UnqualType Ident
     {
-        $$ = makeAstRaw<TemplateParamDeclAst>()->setSpec($1)->setName($2);
+        $$ = newAst<TemplateParamDeclAst>()->setSpec($1)->setName($2);
     }
 |   UnqualType Ident '=' AssignExpr
     {
         DECL_1_LOC(@3);
-        $$ = makeAstRaw<TemplateParamDeclAst__<TemplateParamDefaultArg__>>()->setName($2)
+        $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__>>()->setName($2)
                 ->setAssignLoc(locA)->setDefaultArg($4)->setSpec($1);
     }
 |   UnqualType Ident '=' SpecialKeyword
     {
         DECL_1_LOC(@3);
-        $$ = makeAstRaw<TemplateParamDeclAst__<TemplateParamDefaultArg__>>()->setName($2)
+        $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__>>()->setName($2)
                 ->setAssignLoc(locA)->setDefaultArg($4)->setSpec($1);
     }
 |   UnqualType Ident ':' CondExpr
     {
         DECL_1_LOC(@3);
-        $$ = makeAstRaw<TemplateParamDeclAst__<TemplateParamDefaultArg__Empty__,
+        $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__Empty__,
                                          TemplateParamSpecialization__>>()->setName($2)
             ->setBindLoc(locA)->setSpecialization($4)->setSpec($1);
     }
 |   UnqualType Ident ':' CondExpr '=' AssignExpr
     {
         DECL_2_LOC(@3, @5);
-        $$ = makeAstRaw<TemplateParamDeclAst__<TemplateParamDefaultArg__,
+        $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__,
                                          TemplateParamSpecialization__>>()->setName($2)
                 ->setAssignLoc(locA)->setDefaultArg($4)
                 ->setBindLoc(locB)->setSpecialization($6)->setSpec($1);
@@ -2256,7 +2256,7 @@ TemplateValueParam:
 |   UnqualType Ident ':' CondExpr '=' SpecialKeyword
     {
         DECL_2_LOC(@3, @5);
-        $$ = makeAstRaw<TemplateParamDeclAst__<TemplateParamDefaultArg__,
+        $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__,
                                          TemplateParamSpecialization__>>()->setName($2)
                 ->setAssignLoc(locA)->setDefaultArg($4)
                 ->setBindLoc(locB)->setSpecialization($6)->setSpec($1);
@@ -2267,12 +2267,12 @@ TemplateAliasParam:
     ALIAS Ident
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TemplateParamAliasDeclAst>()->setAliasLoc(locA)->setName($2);
+        $$ = newAst<TemplateParamAliasDeclAst>()->setAliasLoc(locA)->setName($2);
     }
 |   ALIAS Type Ident
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TemplateParamAliasDeclAst>()->setAliasLoc(locA)->setSpec($2)->setName($3);
+        $$ = newAst<TemplateParamAliasDeclAst>()->setAliasLoc(locA)->setSpec($2)->setName($3);
     }
     /* TODO: Regras faltando... */
 ;
@@ -2284,7 +2284,7 @@ TemplateThisParam:
 
         DECL_1_LOC(@1);
         auto name = (new GenNameAst("<TODO:TemplateThisParam>"))->setGenLoc(locA);
-        $$ = makeAstRaw<TemplateParamThisDeclAst>()->setThissLoc(locA)->setName(name);
+        $$ = newAst<TemplateParamThisDeclAst>()->setThissLoc(locA)->setName(name);
     }
 ;
 
@@ -2308,12 +2308,12 @@ FuncQual:
     NOTHROW
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<DeclAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<DeclAttrAst>()->setKeyLoc(locA);
     }
 |   PURE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<DeclAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<DeclAttrAst>()->setKeyLoc(locA);
     }
 |   Annot
 ;
@@ -2322,7 +2322,7 @@ Constraint:
     IF '(' Expr ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<ConstraintDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
+        $$ = newAst<ConstraintDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
                 ->setRDelimLoc(locC);
     }
 ;
@@ -2331,7 +2331,7 @@ Init:
     VOID
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
     }
 |   NonVoidInit
 ;
@@ -2347,17 +2347,17 @@ ArrayInit:
     '[' ']'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<ArrayInitExprAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        $$ = newAst<ArrayInitExprAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
     }
 |   '[' ArrayMemberInits ']'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<ArrayInitExprAst>()->setLDelimLoc(locA)->setInitsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<ArrayInitExprAst>()->setLDelimLoc(locA)->setInitsSR($2)->setRDelimLoc(locB);
     }
 |   '[' ArrayMemberInits ',' ']'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<ArrayInitExprAst>()->setLDelimLoc(locA)->setInitsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<ArrayInitExprAst>()->setLDelimLoc(locA)->setInitsSR($2)->setRDelimLoc(locB);
     }
 ;
 
@@ -2379,7 +2379,7 @@ ArrayMemberInit:
 |   AssignExpr ':' NonVoidInit
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<DesignateExprAst>()->setId($1)->setDelimLoc(locA)->setValue($3);
+        $$ = newAst<DesignateExprAst>()->setId($1)->setDelimLoc(locA)->setValue($3);
     }
 ;
 
@@ -2387,17 +2387,17 @@ StructInit:
     '{' '}'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<RecordInitExprAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        $$ = newAst<RecordInitExprAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
     }
 |   '{' StructMemberInits '}'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<RecordInitExprAst>()->setLDelimLoc(locA)->setInitsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<RecordInitExprAst>()->setLDelimLoc(locA)->setInitsSR($2)->setRDelimLoc(locB);
     }
 |   '{' StructMemberInits ',' '}'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<RecordInitExprAst>()->setLDelimLoc(locA)->setInitsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<RecordInitExprAst>()->setLDelimLoc(locA)->setInitsSR($2)->setRDelimLoc(locB);
     }
 ;
 
@@ -2419,8 +2419,8 @@ StructMemberInit:
 |   Ident ':' NonVoidInit
     {
         DECL_1_LOC(@1);
-        auto id = makeAstRaw<IdentExprAst>()->setName($1);
-        $$ = makeAstRaw<DesignateExprAst>()->setId(id)->setDelimLoc(locA)->setValue($3);
+        auto id = newAst<IdentExprAst>()->setName($1);
+        $$ = newAst<DesignateExprAst>()->setId(id)->setDelimLoc(locA)->setValue($3);
     }
 ;
 
@@ -2445,42 +2445,42 @@ Attr:
 |   ABSTRACT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<DeclAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<DeclAttrAst>()->setKeyLoc(locA);
     }
 |   FINAL
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<DeclAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<DeclAttrAst>()->setKeyLoc(locA);
     }
 |   OVERRIDE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<DeclAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<DeclAttrAst>()->setKeyLoc(locA);
     }
 |   AUTO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<AutoAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<AutoAttrAst>()->setKeyLoc(locA);
     }
 |   __GSHARED
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TypeQualAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<TypeQualAttrAst>()->setKeyLoc(locA);
     }
 |   IN
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ParamDirAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<ParamDirAttrAst>()->setKeyLoc(locA);
     }
 |   OUT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ParamDirAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<ParamDirAttrAst>()->setKeyLoc(locA);
     }
 |   LAZY
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<EvalStrategyAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<EvalStrategyAttrAst>()->setKeyLoc(locA);
     }
 ;
 
@@ -2489,27 +2489,27 @@ StorageClass:
     DEPRECATED
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<DeclAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<DeclAttrAst>()->setKeyLoc(locA);
     }
 |   STATIC
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StorageClassAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<StorageClassAttrAst>()->setKeyLoc(locA);
     }
 |   EXTERN
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<LinkageAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<LinkageAttrAst>()->setKeyLoc(locA);
     }
 |   REF
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StorageClassAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<StorageClassAttrAst>()->setKeyLoc(locA);
     }
 |   SCOPE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StorageClassAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<StorageClassAttrAst>()->setKeyLoc(locA);
     }
     /* TODO: Handle SYNCHRONIZED for this situation. */
 ;
@@ -2518,27 +2518,27 @@ AccessSpec:
     PRIVATE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VisibilityAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<VisibilityAttrAst>()->setKeyLoc(locA);
     }
 |   PACKAGE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VisibilityAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<VisibilityAttrAst>()->setKeyLoc(locA);
     }
 |   PROTECTED
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VisibilityAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<VisibilityAttrAst>()->setKeyLoc(locA);
     }
 |   PUBLIC
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VisibilityAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<VisibilityAttrAst>()->setKeyLoc(locA);
     }
 |   EXPORT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VisibilityAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<VisibilityAttrAst>()->setKeyLoc(locA);
     }
 ;
 
@@ -2546,32 +2546,32 @@ Annot:
     '@' PROPERTY
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
+        $$ = newAst<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
     }
 |   '@' SAFE
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
+        $$ = newAst<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
     }
 |   '@' TRUSTED
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
+        $$ = newAst<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
     }
 |   '@' SYSTEM
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
+        $$ = newAst<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
     }
 |   '@' DISABLE
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
+        $$ = newAst<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
     }
 |   '@' NOGC
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
+        $$ = newAst<AnnotAttrAst>()->setAtLoc(locA)->setTextLoc(locB);
     }
 ;
 
@@ -2579,16 +2579,16 @@ LinkageAttr:
     EXTERN '(' IdentList ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto expr = makeAstRaw<IdentExprAst>()->setName($3);
-        $$ = makeAstRaw<CodegenAttrAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr(expr)->setRDelimLoc(locC);
+        auto expr = newAst<IdentExprAst>()->setName($3);
+        $$ = newAst<CodegenAttrAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr(expr)->setRDelimLoc(locC);
     }
 |   EXTERN '(' Ident "++" ',' IdentList ')' /* For C++ */
     {
         IGNORE_FOR_NOW($3); // Handle C++
 
         DECL_3_LOC(@1, @2, @7);
-        auto expr = makeAstRaw<IdentExprAst>()->setName($6);
-        $$ = makeAstRaw<CodegenAttrAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr(expr)->setRDelimLoc(locC);
+        auto expr = newAst<IdentExprAst>()->setName($6);
+        $$ = newAst<CodegenAttrAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr(expr)->setRDelimLoc(locC);
     }
 ;
 
@@ -2607,24 +2607,24 @@ TypeQual:
     CONST
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TypeQualAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<TypeQualAttrAst>()->setKeyLoc(locA);
     }
 |   IMMUTABLE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TypeQualAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<TypeQualAttrAst>()->setKeyLoc(locA);
     }
 |   INOUT
     {
         /* From D docs: "The inout forms a wildcard that stands in for
            any of mutable, const, immutable, inout, or inout const". */
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TypeQualAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<TypeQualAttrAst>()->setKeyLoc(locA);
     }
 |   SHARED
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TypeQualAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<TypeQualAttrAst>()->setKeyLoc(locA);
     }
 ;
 
@@ -2632,13 +2632,13 @@ AlignAttr:
     ALIGN
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<CodegenAttrAst>()->setKeyLoc(locA);
+        $$ = newAst<CodegenAttrAst>()->setKeyLoc(locA);
     }
 |   ALIGN '(' NumLit ')'
     {
         /* TODO: Report error if not integer literal */
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<CodegenAttrAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setRDelimLoc(locC);
+        $$ = newAst<CodegenAttrAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)->setRDelimLoc(locC);
     }
 ;
 
@@ -2647,14 +2647,14 @@ StaticAssert:
     {
         DECL_5_LOC(@1, @2, @3, @5, @6);
         /* TODO: Join static and assert */
-        $$ = makeAstRaw<StaticAssertDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locC)->setExpr($4)
+        $$ = newAst<StaticAssertDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locC)->setExpr($4)
                 ->setRDelimLoc(locD)->setTerminLoc(locE);
     }
 |   STATIC ASSERT '(' AssignExpr ',' AssignExpr ')' ';'
     {
         DECL_6_LOC(@1, @2, @3, @5, @7, @8);
         /* TODO: Join static and assert */
-        $$ = makeAstRaw<StaticAssertDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locC)->setExpr($4)
+        $$ = newAst<StaticAssertDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locC)->setExpr($4)
                 ->setMDelimLoc(locD)->setMessage($6)->setRDelimLoc(locE)->setTerminLoc(locF);
     }
 ;
@@ -2663,14 +2663,14 @@ VersionDecl:
     VERSION '=' Ident ';'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto expr = makeAstRaw<IdentExprAst>()->setName($3);
-        $$ = makeAstRaw<VersionDeclAst>()->setKeyLoc(locA)->setDelimLoc(locB)->setExpr(expr)->setTerminLoc(locC);
+        auto expr = newAst<IdentExprAst>()->setName($3);
+        $$ = newAst<VersionDeclAst>()->setKeyLoc(locA)->setDelimLoc(locB)->setExpr(expr)->setTerminLoc(locC);
     }
 |   VERSION '=' NumLit ';'
     {
         /* TODO: Report error if not integer literal */
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<VersionDeclAst>()->setKeyLoc(locA)->setDelimLoc(locB)->setExpr($3)->setTerminLoc(locC);
+        $$ = newAst<VersionDeclAst>()->setKeyLoc(locA)->setDelimLoc(locB)->setExpr($3)->setTerminLoc(locC);
     }
 ;
 
@@ -2678,14 +2678,14 @@ DebugDecl:
     DEBUG '=' Ident ';'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto expr = makeAstRaw<IdentExprAst>()->setName($3);
-        $$ = makeAstRaw<DebugDeclAst>()->setKeyLoc(locA)->setDelimLoc(locB)->setExpr(expr)->setTerminLoc(locC);
+        auto expr = newAst<IdentExprAst>()->setName($3);
+        $$ = newAst<DebugDeclAst>()->setKeyLoc(locA)->setDelimLoc(locB)->setExpr(expr)->setTerminLoc(locC);
     }
 |   DEBUG '=' NumLit ';'
     {
         /* TODO: Report error if not integer literal */
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<DebugDeclAst>()->setKeyLoc(locA)->setDelimLoc(locB)->setExpr($3)->setTerminLoc(locC);
+        $$ = newAst<DebugDeclAst>()->setKeyLoc(locA)->setDelimLoc(locB)->setExpr($3)->setTerminLoc(locC);
     }
 ;
 
@@ -2693,7 +2693,7 @@ UnitTestDecl:
     UNITTEST BlockStmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<UnitTestDeclAst>()->setKeyLoc(locA)->setStmt($2);
+        $$ = newAst<UnitTestDeclAst>()->setKeyLoc(locA)->setStmt($2);
     }
 ;
 
@@ -2701,12 +2701,12 @@ InvariantDecl:
     INVARIANT BlockStmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<InvariantDeclAst>()->setKeyLoc(locA)->setStmt($2);
+        $$ = newAst<InvariantDeclAst>()->setKeyLoc(locA)->setStmt($2);
     }
 |   INVARIANT '(' ')' BlockStmt
     {
         DECL_3_LOC(@1, @2, @3);
-        $$ = makeAstRaw<InvariantDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setStmt($4);
+        $$ = newAst<InvariantDeclAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setRDelimLoc(locC)->setStmt($4);
     }
 ;
 
@@ -2715,7 +2715,7 @@ SelectiveDecl:
     {
         using namespace detail;
         std::unique_ptr<Condition> cond(static_cast<Condition*>($1));
-        $$ = makeAstRaw<SelectiveDeclAst>()->setKeyLoc(cond->keyLoc_)
+        $$ = newAst<SelectiveDeclAst>()->setKeyLoc(cond->keyLoc_)
             ->setLDelimLoc(cond->lDelimLoc_)->setExpr(cond->expr_.release())
             ->setRDelimLoc(cond->rDelimLoc_)->setIfDecl($2);
     }
@@ -2724,7 +2724,7 @@ SelectiveDecl:
         DECL_1_LOC(@3);
         using namespace detail;
         std::unique_ptr<Condition> cond(static_cast<Condition*>($1));
-        $$ = makeAstRaw<SelectiveDeclAst>()->setKeyLoc(cond->keyLoc_)
+        $$ = newAst<SelectiveDeclAst>()->setKeyLoc(cond->keyLoc_)
             ->setLDelimLoc(cond->lDelimLoc_)->setExpr(cond->expr_.release())
             ->setRDelimLoc(cond->rDelimLoc_)->setIfDecl($2)->setOtherKeyLoc(locA)
             ->setElseDecl($4);
@@ -2746,7 +2746,7 @@ VersionCond:
 |   VERSION '(' Ident ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto name = makeAstRaw<IdentExprAst>()->setName($3);
+        auto name = newAst<IdentExprAst>()->setName($3);
         $$ = new detail::Condition(locA, locB, name, locC);
     }
 |   VERSION '(' UNITTEST ')'
@@ -2775,7 +2775,7 @@ DebugCond:
 |   DEBUG '(' Ident ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto name = makeAstRaw<IdentExprAst>()->setName($3);
+        auto name = newAst<IdentExprAst>()->setName($3);
         $$ = new detail::Condition(locA, locB, name, locC);
     }
 ;
@@ -2794,8 +2794,8 @@ AliasThis:
     {
         /* TODO: Handle `this` alias */
         DECL_3_LOC(@1, @3, @4);
-        auto inferred = makeAstRaw<InferredSpecAst>()->setKeyLoc(locC);
-        $$ = makeAstRaw<AliasDeclAst>()->setKeyLoc(locA)->setName($2)->setSpec(inferred)->setTerminLoc(locC);
+        auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locC);
+        $$ = newAst<AliasDeclAst>()->setKeyLoc(locA)->setName($2)->setSpec(inferred)->setTerminLoc(locC);
     }
 ;
 
@@ -2803,14 +2803,14 @@ AliasDecl:
     ALIAS AliasBindDeclList ';'
     {
         DECL_2_LOC(@1, @3);
-        auto sect = makeAstRaw<SectionDeclAst>()->setKeyLoc(locA)->setDeclsSR($2)->setTerminLoc(locB);
+        auto sect = newAst<SectionDeclAst>()->setKeyLoc(locA)->setDeclsSR($2)->setTerminLoc(locB);
         sect->setVariety(SectionVariety::Types);
         $$ = sect;
     }
 |   ALIAS Type Ident ';'
     {
         DECL_2_LOC(@1, @4);
-        $$ = makeAstRaw<AliasDeclAst>()->setKeyLoc(locA)->setName($3)->setSpec($2)->setTerminLoc(locB);
+        $$ = newAst<AliasDeclAst>()->setKeyLoc(locA)->setName($3)->setSpec($2)->setTerminLoc(locB);
     }
     /* TODO: More rules */
 ;
@@ -2832,7 +2832,7 @@ AliasBindDecl:
     Ident '=' Type
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<AliasDeclAst>()->setName($1)->setEqLoc(locA)->setSpec($3);
+        $$ = newAst<AliasDeclAst>()->setName($1)->setEqLoc(locA)->setSpec($3);
     }
 ;
 
@@ -2855,16 +2855,16 @@ EnumDecl:
 |   ENUM ':' Type EnumEnd
     {
         DECL_2_LOC(@1, @2);
-        auto inferred = makeAstRaw<InferredSpecAst>()->setKeyLoc(locA);
+        auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
         $$ = EnumDecl_Cast($4)->setKeyLoc(locA)->setSepLoc(locB)->setSpec($3);
     }
 |   ENUM Ident '=' AssignExpr ';'
     {
         DECL_3_LOC(@1, @3, @5);
-        auto inferred = makeAstRaw<InferredSpecAst>()->setKeyLoc(locA);
-        auto var = makeAstRaw<VarDeclAst__<VarInit__>>();
+        auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
+        auto var = newAst<VarDeclAst__<VarInit__>>();
         var->setName($2)->setAssignLoc(locB)->setInit($4);
-        auto group = makeAstRaw<VarGroupDeclAst>();
+        auto group = newAst<VarGroupDeclAst>();
         group->setKeyLoc(locA)->addDecl(var)->setSpec(inferred)->setTerminLoc(locC);
         group->setAllocScheme(AllocScheme::CompileTime);
         $$ = group;
@@ -2872,9 +2872,9 @@ EnumDecl:
 |   ENUM Type Ident '=' AssignExpr ';'
     {
         DECL_3_LOC(@1, @4, @6);
-        auto var = makeAstRaw<VarDeclAst__<VarInit__>>();
+        auto var = newAst<VarDeclAst__<VarInit__>>();
         var->setName($3)->setAssignLoc(locB)->setInit($5);
-        auto group = makeAstRaw<VarGroupDeclAst>();
+        auto group = newAst<VarGroupDeclAst>();
         group->setKeyLoc(locA)->setSpec($2)->addDecl(var)->setTerminLoc(locC);
         group->setAllocScheme(AllocScheme::CompileTime);
         $$ = group;
@@ -2884,9 +2884,9 @@ EnumDecl:
         IGNORE_FOR_NOW($4);
 
         DECL_3_LOC(@1, @5, @7);
-        auto var = makeAstRaw<VarDeclAst__<VarInit__>>();
+        auto var = newAst<VarDeclAst__<VarInit__>>();
         var->setName($3)->setAssignLoc(locB)->setInit($6);
-        auto group = makeAstRaw<VarGroupDeclAst>();
+        auto group = newAst<VarGroupDeclAst>();
         group->setKeyLoc(locA)->setSpec($2)->addDecl(var)->setTerminLoc(locC);
         group->setAllocScheme(AllocScheme::CompileTime);
         $$ = group;
@@ -2897,7 +2897,7 @@ EnumEnd:
     ';'
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<EnumDeclAst>()->setTerminLoc(locA);
+        $$ = newAst<EnumDeclAst>()->setTerminLoc(locA);
     }
 |   EnumBody
 ;
@@ -2906,12 +2906,12 @@ EnumBody:
     '{' EnumMemberDeclList '}'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<EnumDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<EnumDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 |   '{' EnumMemberDeclList ',' '}'
     {
         DECL_2_LOC(@1, @4);
-        $$ = makeAstRaw<EnumDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<EnumDeclAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 ;
 
@@ -2931,19 +2931,19 @@ EnumMemberDeclList:
 EnumMemberDecl:
     Ident
     {
-        $$ = makeAstRaw<EnumMemberDeclAst>()->setName($1);
+        $$ = newAst<EnumMemberDeclAst>()->setName($1);
     }
 |   Ident '=' AssignExpr
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<EnumMemberDeclAst>()->setName($1)->setAssignLoc(locA)->setInit($3);
+        $$ = newAst<EnumMemberDeclAst>()->setName($1)->setAssignLoc(locA)->setInit($3);
     }
 |   Type Ident '=' AssignExpr
     {
         IGNORE_FOR_NOW($1);
 
         DECL_1_LOC(@3);
-        $$ = makeAstRaw<EnumMemberDeclAst>()->setName($2)->setAssignLoc(locA)->setInit($4);
+        $$ = newAst<EnumMemberDeclAst>()->setName($2)->setAssignLoc(locA)->setInit($4);
     }
 ;
 
@@ -2967,7 +2967,7 @@ RecordDecl:
         DECL_1_LOC(@3);
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto fwd = makeAstRaw<ForwardDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setTerminLoc(locA);
+        auto fwd = newAst<ForwardDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setTerminLoc(locA);
         fwd->setVariety(RecordVariety(data->variety_));
         $$ = fwd;
     }
@@ -2975,7 +2975,7 @@ RecordDecl:
     {
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = makeAstRaw<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($3);
+        auto record = newAst<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($3);
         RecordSpec_Cast($3)->setVariety(RecordVariety(data->variety_));
         $$ = record;
     }
@@ -2985,7 +2985,7 @@ RecordDecl:
         DECL_1_LOC(@3);
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = makeAstRaw<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($5);
+        auto record = newAst<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($5);
         RecordSpec_Cast($5)->setVariety(RecordVariety(data->variety_))->setDelimLoc(locA)->setBasesSR($4);
         $$ = record;
     }
@@ -2994,7 +2994,7 @@ RecordDecl:
         /* TODO: Report error if not union or struct */
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = makeAstRaw<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setSpec($2);
+        auto record = newAst<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setSpec($2);
         RecordSpec_Cast($2)->setVariety(RecordVariety(data->variety_));
         $$ = record;
     }
@@ -3008,7 +3008,7 @@ RecordTemplateDecl:
 
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = makeAstRaw<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($4);
+        auto record = newAst<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($4);
         RecordSpec_Cast($4)->setVariety(RecordVariety(data->variety_));
         $$ = record;
     }
@@ -3018,7 +3018,7 @@ RecordTemplateDecl:
 
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = makeAstRaw<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($5);
+        auto record = newAst<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($5);
         RecordSpec_Cast($5)->setVariety(RecordVariety(data->variety_));
         $$ = record;
     }
@@ -3030,7 +3030,7 @@ RecordTemplateDecl:
         DECL_1_LOC(@5);
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = makeAstRaw<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($7);
+        auto record = newAst<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($7);
         RecordSpec_Cast($7)->setVariety(RecordVariety(data->variety_))->setDelimLoc(locA)->setBasesSR($6);
         $$ = record;
     }
@@ -3041,7 +3041,7 @@ RecordTemplateDecl:
         DECL_1_LOC(@4);
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = makeAstRaw<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($6);
+        auto record = newAst<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($6);
         RecordSpec_Cast($6)->setVariety(RecordVariety(data->variety_))->setDelimLoc(locA)->setBasesSR($5);
         $$ = record;
     }
@@ -3052,7 +3052,7 @@ RecordTemplateDecl:
         DECL_1_LOC(@4);
         using namespace detail;
         std::unique_ptr<RecordKeyVariety> data(static_cast<RecordKeyVariety*>($1));
-        auto record = makeAstRaw<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($7);
+        auto record = newAst<RecordDeclAst>()->setKeyLoc(data->keyLoc_)->setName($2)->setSpec($7);
         RecordSpec_Cast($7)->setVariety(RecordVariety(data->variety_))->setDelimLoc(locA)->setBasesSR($5);
         $$ = record;
     }
@@ -3064,21 +3064,21 @@ TemplateDecl:
         IGNORE_FOR_NOW($3);
 
         DECL_3_LOC(@1, @4, @5);
-        $$ = makeAstRaw<TemplateDeclAst>()->setKeyLoc(locA)->setName($2);
+        $$ = newAst<TemplateDeclAst>()->setKeyLoc(locA)->setName($2);
     }
 |   TEMPLATE Ident TemplateParamClause '{' Decls '}'
     {
         IGNORE_FOR_NOW($3); IGNORE_LIST_FOR_NOW($5);
 
         DECL_3_LOC(@1, @4, @6);
-        $$ = makeAstRaw<TemplateDeclAst>()->setKeyLoc(locA)->setName($2);
+        $$ = newAst<TemplateDeclAst>()->setKeyLoc(locA)->setName($2);
     }
 |   TEMPLATE Ident TemplateParamClause Constraint '{' Decls '}'
     {
         IGNORE_FOR_NOW($3); IGNORE_FOR_NOW($4); IGNORE_LIST_FOR_NOW($6);
 
         DECL_3_LOC(@1, @5, @7);
-        $$ = makeAstRaw<TemplateDeclAst>()->setKeyLoc(locA)->setName($2);
+        $$ = newAst<TemplateDeclAst>()->setKeyLoc(locA)->setName($2);
     }
 ;
 
@@ -3121,8 +3121,8 @@ BaseRecordList:
 BaseRecordDecl:
     NestedIdentOrTemplateInst
     {
-        auto name = makeAstRaw<NestedNameAst>()->setNamesSR($1);
-        $$ = makeAstRaw<BaseDeclAst>()->setName(name);
+        auto name = newAst<NestedNameAst>()->setNamesSR($1);
+        $$ = newAst<BaseDeclAst>()->setName(name);
     }
 ;
 
@@ -3130,23 +3130,23 @@ RecordType:
     '{' '}'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<RecordSpecAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        $$ = newAst<RecordSpecAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
     }
 |   '{' Decls '}'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<RecordSpecAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<RecordSpecAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 |   '{' Decls EOP
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<RecordSpecAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<RecordSpecAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
         yyerror(&yylloc, scanner, context, "unexpected <end_of_program>");
     }
 |   '{' Decls error BlockStmtSync
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<RecordSpecAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<RecordSpecAst>()->setLDelimLoc(locA)->setDeclsSR($2)->setRDelimLoc(locB);
     }
 ;
 
@@ -3154,21 +3154,21 @@ ImportClauseDecl:
     IMPORT ImportList ';'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<ImportClauseDeclAst>()->setKeyLoc(locA)
+        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)
             ->setModulesSR($2)->setTerminLoc(locB);
     }
 |   STATIC IMPORT ImportList ';'
     {
         /* TODO: Take care of static */
         DECL_2_LOC(@2, @4);
-        $$ = makeAstRaw<ImportClauseDeclAst>()->setKeyLoc(locA)
+        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)
             ->setModulesSR($3)->setTerminLoc(locB);
     }
 |   PUBLIC IMPORT ImportList ';'
     {
         /* TODO: Take care of public */
         DECL_2_LOC(@2, @4);
-        $$ = makeAstRaw<ImportClauseDeclAst>()->setKeyLoc(locA)
+        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)
             ->setModulesSR($3)->setTerminLoc(locB);
     }
 ;
@@ -3176,14 +3176,14 @@ ImportClauseDecl:
 ImportModuleDecl:
     NestedIdent
     {
-        auto name = makeAstRaw<IdentExprAst>()->setName($1);
-        $$ = makeAstRaw<ImportModuleDeclAst>()->setExpr(name);
+        auto name = newAst<IdentExprAst>()->setName($1);
+        $$ = newAst<ImportModuleDeclAst>()->setExpr(name);
     }
 |   Ident '=' NestedIdent
     {
         DECL_1_LOC(@2);
-        auto name = makeAstRaw<IdentExprAst>()->setName($3);
-        $$ = makeAstRaw<ImportModuleDeclAst>()->setLocalName($1)->setAsLoc(locA)
+        auto name = newAst<IdentExprAst>()->setName($3);
+        $$ = newAst<ImportModuleDeclAst>()->setLocalName($1)->setAsLoc(locA)
             ->setExpr(name);
     }
 |   Ident '=' NestedIdent ':' ImportItemDeclList %prec PREFER_SHIFT
@@ -3191,15 +3191,15 @@ ImportModuleDecl:
         /* Once inside a selective import, append to its binding list,
            not to the import list itself. */
         DECL_2_LOC(@2, @4);
-        auto name = makeAstRaw<IdentExprAst>()->setName($3);
-        $$ = makeAstRaw<ImportModuleDeclAst>()->setLocalName($1)->setAsLoc(locA)
+        auto name = newAst<IdentExprAst>()->setName($3);
+        $$ = newAst<ImportModuleDeclAst>()->setLocalName($1)->setAsLoc(locA)
             ->setExpr(name)->setSelectLoc(locB)->setItemsSR($5);
     }
 |   NestedIdent ':' ImportItemDeclList %prec PREFER_SHIFT /* See comment above */
     {
         DECL_1_LOC(@2);
-        auto name = makeAstRaw<IdentExprAst>()->setName($1);
-        $$ = makeAstRaw<ImportModuleDeclAst>()->setExpr(name)->setSelectLoc(locA)
+        auto name = newAst<IdentExprAst>()->setName($1);
+        $$ = newAst<ImportModuleDeclAst>()->setExpr(name)->setSelectLoc(locA)
             ->setItemsSR($3);
     }
 ;
@@ -3208,14 +3208,14 @@ ImportItemDecl:
     NestedIdent
     {
         // TODO: Report error if not Ident (cannot be nested).
-        $$ = makeAstRaw<ImportItemDeclAst>()
-            ->setActualName(makeAstRaw<NestedNameAst>()->setNamesSR($1));
+        $$ = newAst<ImportItemDeclAst>()
+            ->setActualName(newAst<NestedNameAst>()->setNamesSR($1));
     }
 |   Ident '=' NestedIdent
     {
         DECL_1_LOC(@2);
-        $$ = makeAstRaw<ImportItemDeclAst>()->setAlternateName($1)->setAsLoc(locA)
-            ->setActualName(makeAstRaw<NestedNameAst>()->setNamesSR($3));
+        $$ = newAst<ImportItemDeclAst>()->setAlternateName($1)->setAsLoc(locA)
+            ->setActualName(newAst<NestedNameAst>()->setNamesSR($3));
     }
 ;
 
@@ -3256,7 +3256,7 @@ Stmt:
 |   ExprStmt %dprec 1
 |   BasicDecl %dprec 2 /* Prefer declarations to expressions. */
     {
-        $$ = makeAstRaw<DeclStmtAst>()->setDecl($1);
+        $$ = newAst<DeclStmtAst>()->setDecl($1);
     }
 |   PlainStmt
 |   CaseClauseStmt
@@ -3280,7 +3280,7 @@ PlainStmt:
 |   DeferredStmt
 |   StaticAssert
     {
-        $$ = makeAstRaw<DeclStmtAst>()->setDecl($1);
+        $$ = newAst<DeclStmtAst>()->setDecl($1);
     }
 |   CondStmt
 |   SwitchStmt
@@ -3301,29 +3301,29 @@ BlockStmt:
     '{' '}'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        $$ = newAst<BlockStmtAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
     }
 |   '{' error BlockStmtSync
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        $$ = newAst<BlockStmtAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
         yyerrok;
     }
 |   '{' StmtList '}'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
     }
 |   '{' StmtList EOP
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
         yyerror(&yylloc, scanner, context, "unexpected <end_of_program>");
     }
 |   '{' StmtList error BlockStmtSync
     {
         DECL_2_LOC(@1, @4);
-        $$ = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
+        $$ = newAst<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
         yyerrok;
     }
 ;
@@ -3334,7 +3334,7 @@ FuncEnd:
     ';'
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<EmptyStmtAst>()->setKeyLoc(locA);
+        $$ = newAst<EmptyStmtAst>()->setKeyLoc(locA);
     }
 |   FuncBody
 ;
@@ -3346,40 +3346,40 @@ FuncBody:
 |   IN_LBRACE_HACK '}' BODY BlockStmt
     {
         DECL_3_LOC(@1, @2, @3);
-        auto block = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
-        auto in = makeAstRaw<InStmtAst>()->setInLoc(locA)->setBlock(block);
-        auto body = makeAstRaw<BodyStmtAst>()->setBodyLoc(locC)->setBlock($4);
-        $$ = makeAstRaw<ContractStmtAst>()->setStmt1(in)->setStmt2(body);
+        auto block = newAst<BlockStmtAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        auto in = newAst<InStmtAst>()->setInLoc(locA)->setBlock(block);
+        auto body = newAst<BodyStmtAst>()->setBodyLoc(locC)->setBlock($4);
+        $$ = newAst<ContractStmtAst>()->setStmt1(in)->setStmt2(body);
     }
 |   IN_LBRACE_HACK StmtList '}' BODY BlockStmt
     {
         DECL_3_LOC(@1, @3, @4);
-        auto block = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
-        auto in = makeAstRaw<InStmtAst>()->setInLoc(locA)->setBlock(block);
-        auto body = makeAstRaw<BodyStmtAst>()->setBodyLoc(locC)->setBlock($5);
-        $$ = makeAstRaw<ContractStmtAst>()->setStmt1(in)->setStmt2(body);
+        auto block = newAst<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
+        auto in = newAst<InStmtAst>()->setInLoc(locA)->setBlock(block);
+        auto body = newAst<BodyStmtAst>()->setBodyLoc(locC)->setBlock($5);
+        $$ = newAst<ContractStmtAst>()->setStmt1(in)->setStmt2(body);
     }
 |   IN_LBRACE_HACK '}' FuncOutStmt BODY BlockStmt
     {
         DECL_3_LOC(@1, @2, @4);
-        auto block = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
-        auto in = makeAstRaw<InStmtAst>()->setInLoc(locA)->setBlock(block);
-        auto body = makeAstRaw<BodyStmtAst>()->setBodyLoc(locC)->setBlock($5);
-        $$ = makeAstRaw<ContractStmtAst>()->setStmt1(in)->setStmt2(body)->setStmt3($3);
+        auto block = newAst<BlockStmtAst>()->setLDelimLoc(locA)->setRDelimLoc(locB);
+        auto in = newAst<InStmtAst>()->setInLoc(locA)->setBlock(block);
+        auto body = newAst<BodyStmtAst>()->setBodyLoc(locC)->setBlock($5);
+        $$ = newAst<ContractStmtAst>()->setStmt1(in)->setStmt2(body)->setStmt3($3);
     }
 |   IN_LBRACE_HACK StmtList '}' FuncOutStmt BODY BlockStmt
     {
         DECL_3_LOC(@1, @3, @5);
-        auto block = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
-        auto in = makeAstRaw<InStmtAst>()->setInLoc(locA)->setBlock(block);
-        auto body = makeAstRaw<BodyStmtAst>()->setBodyLoc(locC)->setBlock($6);
-        $$ = makeAstRaw<ContractStmtAst>()->setStmt1(in)->setStmt2(body)->setStmt3($4);
+        auto block = newAst<BlockStmtAst>()->setLDelimLoc(locA)->setStmtsSR($2)->setRDelimLoc(locB);
+        auto in = newAst<InStmtAst>()->setInLoc(locA)->setBlock(block);
+        auto body = newAst<BodyStmtAst>()->setBodyLoc(locC)->setBlock($6);
+        $$ = newAst<ContractStmtAst>()->setStmt1(in)->setStmt2(body)->setStmt3($4);
     }
 |   FuncOutStmt BODY BlockStmt
     {
         DECL_1_LOC(@2);
-        auto body = makeAstRaw<BodyStmtAst>()->setBodyLoc(locA)->setBlock($3);
-        $$ = makeAstRaw<ContractStmtAst>()->setStmt1($1)->setStmt2(body);
+        auto body = newAst<BodyStmtAst>()->setBodyLoc(locA)->setBlock($3);
+        $$ = newAst<ContractStmtAst>()->setStmt1($1)->setStmt2(body);
     }
 ;
 
@@ -3387,12 +3387,12 @@ FuncOutStmt:
     OUT BlockStmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<OutStmtAst>()->setOutLoc(locA)->setBlock($2);
+        $$ = newAst<OutStmtAst>()->setOutLoc(locA)->setBlock($2);
     }
 |   OUT '(' Ident ')' BlockStmt
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<OutStmtAst>()->setOutLoc(locA)->setLDelimLoc(locB)->setName($3)
+        $$ = newAst<OutStmtAst>()->setOutLoc(locA)->setLDelimLoc(locB)->setName($3)
                 ->setRDelimLoc(locC)->setBlock($5);
     }
 ;
@@ -3401,7 +3401,7 @@ LabeledStmt:
     Ident ':' Stmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<LabeledStmtAst>()->setLabel($1)->setDelimLoc(locA)->setStmt($3);
+        $$ = newAst<LabeledStmtAst>()->setLabel($1)->setDelimLoc(locA)->setStmt($3);
     }
 ;
 
@@ -3409,18 +3409,18 @@ ExprStmt:
     Expr ';'
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ExprStmtAst>()->addExpr($1)->setTerminLoc(locA);
+        $$ = newAst<ExprStmtAst>()->addExpr($1)->setTerminLoc(locA);
     }
 |   Expr EOP
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ExprStmtAst>()->addExpr($1)->setTerminLoc(locA);
+        $$ = newAst<ExprStmtAst>()->addExpr($1)->setTerminLoc(locA);
         yyerror(&yylloc, scanner, context, "unexpected <end_of_program>");
     }
 |   Expr error ExprStmtSync
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<ExprStmtAst>()->addExpr($1)->setTerminLoc(locA);
+        $$ = newAst<ExprStmtAst>()->addExpr($1)->setTerminLoc(locA);
         yyerror(&yylloc, scanner, context, "unexpected token");
         yyerrok;
     }
@@ -3432,13 +3432,13 @@ IfStmt:
     IF '(' Expr ')' Stmt %prec PREFER_SHIFT /* For the dangling else */
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<IfStmtAst>()->setIfLoc(locA)->setLDelimLoc(locB)->setExpr($3)
+        $$ = newAst<IfStmtAst>()->setIfLoc(locA)->setLDelimLoc(locB)->setExpr($3)
                 ->setRDelimLoc(locC)->setThen($5);
     }
 |   IF '(' Expr ')' Stmt ELSE Stmt
     {
         DECL_4_LOC(@1, @2, @4, @6);
-        $$ = makeAstRaw<IfStmtAst>()->setIfLoc(locA)->setLDelimLoc(locB)->setExpr($3)
+        $$ = newAst<IfStmtAst>()->setIfLoc(locA)->setLDelimLoc(locB)->setExpr($3)
                 ->setRDelimLoc(locC)->setThen($5)->setElseLoc(locD)->setNotThen($7);
     }
 ;
@@ -3447,7 +3447,7 @@ WhileStmt:
     WHILE '(' Expr ')' Stmt
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<WhileStmtAst>()->setWhileLoc(locA)->setLDelimLoc(locB)->setExpr($3)
+        $$ = newAst<WhileStmtAst>()->setWhileLoc(locA)->setLDelimLoc(locB)->setExpr($3)
                 ->setRDelimLoc(locC)->setStmt($5);
     }
 ;
@@ -3456,7 +3456,7 @@ DoStmt:
     DO Stmt WHILE '(' Expr ')'
     {
         DECL_4_LOC(@1, @3, @4, @6);
-        $$ = makeAstRaw<DoWhileStmtAst>()->setDoLoc(locA)->setStmt($2)->setWhileLoc(locB)
+        $$ = newAst<DoWhileStmtAst>()->setDoLoc(locA)->setStmt($2)->setWhileLoc(locB)
                 ->setLDelimLoc(locC)->setExpr($5)->setRDelimLoc(locD);
     }
 ;
@@ -3465,55 +3465,55 @@ ForStmt:
     FOR '(' Stmt ';' ')' Stmt
     {
         DECL_4_LOC(@1, @2, @3, @4);
-        $$ = makeAstRaw<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble($3)
+        $$ = newAst<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble($3)
                 ->setDelimLoc(locC)->setRDelimLoc(locD)->setStmt($6);
     }
 |   FOR '(' Stmt Expr ';' ')' Stmt
     {
         DECL_4_LOC(@1, @2, @5, @6);
-        $$ = makeAstRaw<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble($3)
+        $$ = newAst<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble($3)
                 ->setCond($4)->setDelimLoc(locC)->setRDelimLoc(locD)->setStmt($7);
     }
 |   FOR '(' Stmt Expr ';' Expr ')' Stmt
     {
         DECL_4_LOC(@1, @2, @5, @7);
-        $$ = makeAstRaw<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble($3)
+        $$ = newAst<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble($3)
                 ->setCond($4)->setDelimLoc(locC)->setPost($6)->setRDelimLoc(locD)
                 ->setStmt($8);
     }
 |   FOR '(' Stmt ';' Expr ')' Stmt
     {
         DECL_4_LOC(@1, @2, @4, @6);
-        $$ = makeAstRaw<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble($3)
+        $$ = newAst<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble($3)
                 ->setDelimLoc(locC)->setPost($5)->setRDelimLoc(locD)->setStmt($7);
     }
 |   FOR '(' ';' ';' ')' Stmt
     {
         DECL_5_LOC(@1, @2, @3, @4, @5);
-        auto stmt = makeAstRaw<EmptyStmtAst>()->setKeyLoc(locC);
-        $$ = makeAstRaw<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble(stmt)
+        auto stmt = newAst<EmptyStmtAst>()->setKeyLoc(locC);
+        $$ = newAst<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble(stmt)
                 ->setDelimLoc(locD)->setRDelimLoc(locE)->setStmt($6);
     }
 |   FOR '(' ';' Expr ';' ')' Stmt
     {
         DECL_5_LOC(@1, @2, @3, @5, @6);
-        auto stmt = makeAstRaw<EmptyStmtAst>()->setKeyLoc(locC);
-        $$ = makeAstRaw<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble(stmt)
+        auto stmt = newAst<EmptyStmtAst>()->setKeyLoc(locC);
+        $$ = newAst<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble(stmt)
                 ->setCond($4)->setDelimLoc(locC)->setRDelimLoc(locD)->setStmt($7);
     }
 |   FOR '(' ';' Expr ';' Expr ')' Stmt
     {
         DECL_5_LOC(@1, @2, @3, @5, @7);
-        auto stmt = makeAstRaw<EmptyStmtAst>()->setKeyLoc(locC);
-        $$ = makeAstRaw<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble(stmt)
+        auto stmt = newAst<EmptyStmtAst>()->setKeyLoc(locC);
+        $$ = newAst<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble(stmt)
                 ->setCond($4)->setDelimLoc(locC)->setPost($6)->setRDelimLoc(locD)
                 ->setStmt($8);
     }
 |   FOR '(' ';' ';' Expr ')' Stmt
     {
         DECL_5_LOC(@1, @2, @3, @4, @6);
-        auto stmt = makeAstRaw<EmptyStmtAst>()->setKeyLoc(locC);
-        $$ = makeAstRaw<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble(stmt)
+        auto stmt = newAst<EmptyStmtAst>()->setKeyLoc(locC);
+        $$ = newAst<ForStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setPreamble(stmt)
                 ->setDelimLoc(locC)->setPost($5)->setRDelimLoc(locD)->setStmt($7);
     }
 ;
@@ -3522,29 +3522,29 @@ ForeachStmt:
     FOREACH '(' ForeachDecl Expr ')' Stmt
     {
         DECL_3_LOC(@1, @2, @5);
-        auto range = makeAstRaw<SubrangeExprAst>()->setLow($4);
-        $$ = makeAstRaw<ForeachStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecl($3)
+        auto range = newAst<SubrangeExprAst>()->setLow($4);
+        $$ = newAst<ForeachStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecl($3)
                 ->setExpr(range)->setRDelimLoc(locC)->setStmt($6);
     }
 |   FOREACH '(' ForeachDecl Expr ".." Expr ')' Stmt
     {
         DECL_4_LOC(@1, @2, @5, @7);
-        auto range = makeAstRaw<SubrangeExprAst>()->setLow($4)->setDelim1Loc(locC)->setHi($6);
-        $$ = makeAstRaw<ForeachStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecl($3)
+        auto range = newAst<SubrangeExprAst>()->setLow($4)->setDelim1Loc(locC)->setHi($6);
+        $$ = newAst<ForeachStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecl($3)
                 ->setExpr(range)->setRDelimLoc(locC)->setStmt($8);
     }
 |   FOREACH_REVERSE '(' ForeachDecl Expr ')' Stmt
     {
         DECL_3_LOC(@1, @2, @5);
-        auto range = makeAstRaw<SubrangeExprAst>()->setLow($4);
-        $$ = makeAstRaw<ForeachStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecl($3)
+        auto range = newAst<SubrangeExprAst>()->setLow($4);
+        $$ = newAst<ForeachStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecl($3)
                 ->setExpr(range)->setRDelimLoc(locC)->setStmt($6);
     }
 |   FOREACH_REVERSE '(' ForeachDecl Expr ".." Expr ')' Stmt
     {
         DECL_4_LOC(@1, @2, @5, @7);
-        auto range = makeAstRaw<SubrangeExprAst>()->setLow($4)->setDelim1Loc(locC)->setHi($6);
-        $$ = makeAstRaw<ForeachStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecl($3)
+        auto range = newAst<SubrangeExprAst>()->setLow($4)->setDelim1Loc(locC)->setHi($6);
+        $$ = newAst<ForeachStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setDecl($3)
                 ->setExpr(range)->setRDelimLoc(locD)->setStmt($8);
     }
 ;
@@ -3556,10 +3556,10 @@ ForeachDecl:
         DECL_1_LOC(@2);
         std::unique_ptr<NameAstList> l($1->finishSR());
         auto names = l.get();
-        auto decls = DeclAstList::create(makeAstRaw<VarDeclAst>()->setName(names->releaseHead().release()));
+        auto decls = DeclAstList::create(newAst<VarDeclAst>()->setName(names->releaseHead().release()));
         while ((names = names->subList()))
-            decls->pushBack(makeAstRaw<VarDeclAst>()->setName(names->releaseHead().release()));
-        auto group = makeAstRaw<VarGroupDeclAst>()->setSpec(makeAstRaw<InferredSpecAst>());
+            decls->pushBack(newAst<VarDeclAst>()->setName(names->releaseHead().release()));
+        auto group = newAst<VarGroupDeclAst>()->setSpec(newAst<InferredSpecAst>());
         group->decls_.reset(decls);
         $$ = group;
     }
@@ -3569,12 +3569,12 @@ ContinueStmt:
     CONTINUE ';'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<ContinueStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
+        $$ = newAst<ContinueStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
     }
 |   CONTINUE Ident ';'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<ContinueStmtAst>()->setKeyLoc(locA)->setName($2)->setTerminLoc(locB);
+        $$ = newAst<ContinueStmtAst>()->setKeyLoc(locA)->setName($2)->setTerminLoc(locB);
     }
 ;
 
@@ -3582,12 +3582,12 @@ BreakStmt:
     BREAK ';'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<BreakStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
+        $$ = newAst<BreakStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
     }
 |   BREAK Ident ';'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<BreakStmtAst>()->setKeyLoc(locA)->setName($2)->setTerminLoc(locB);
+        $$ = newAst<BreakStmtAst>()->setKeyLoc(locA)->setName($2)->setTerminLoc(locB);
     }
 ;
 
@@ -3595,12 +3595,12 @@ ReturnStmt:
     RETURN ';'
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<ReturnStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
+        $$ = newAst<ReturnStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
     }
 |   RETURN Expr ';'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<ReturnStmtAst>()->setKeyLoc(locA)->setExprsSR(ExprAstList::createSR($2))
+        $$ = newAst<ReturnStmtAst>()->setKeyLoc(locA)->setExprsSR(ExprAstList::createSR($2))
                 ->setTerminLoc(locB);
     }
 ;
@@ -3609,24 +3609,24 @@ GotoStmt:
     GOTO Ident ';'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<GotoStmtAst>()->setKeyLoc(locA)->setName($2)->setTerminLoc(locB);
+        $$ = newAst<GotoStmtAst>()->setKeyLoc(locA)->setName($2)->setTerminLoc(locB);
     }
 |   GOTO DEFAULT ';'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<GotoStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
+        $$ = newAst<GotoStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
     }
 |   GOTO CASE ';'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<GotoStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
+        $$ = newAst<GotoStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
     }
 |   GOTO CASE Expr ';'
     {
         IGNORE_FOR_NOW($3);
 
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<GotoStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
+        $$ = newAst<GotoStmtAst>()->setKeyLoc(locA)->setTerminLoc(locB);
     }
 ;
 
@@ -3636,7 +3636,7 @@ WithStmt:
     WITH '(' Expr ')' Stmt
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<WithStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)
+        $$ = newAst<WithStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)
                 ->addExpr($3)->setRDelimLoc(locC)->setStmt($5);
     }
 ;
@@ -3647,25 +3647,25 @@ SynchronizedStmt:
     SYNCHRONIZED '{' StmtList '}'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto block = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locB)->setStmtsSR($3)->setRDelimLoc(locC);
-        $$ = makeAstRaw<SyncedStmtAst>()->setKeyLoc(locA)->setStmt(block);
+        auto block = newAst<BlockStmtAst>()->setLDelimLoc(locB)->setStmtsSR($3)->setRDelimLoc(locC);
+        $$ = newAst<SyncedStmtAst>()->setKeyLoc(locA)->setStmt(block);
     }
 |   SYNCHRONIZED PlainStmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<SyncedStmtAst>()->setKeyLoc(locA)->setStmt($2);
+        $$ = newAst<SyncedStmtAst>()->setKeyLoc(locA)->setStmt($2);
     }
 |   SYNCHRONIZED '(' Expr ')' '{' StmtList '}'
     {
         DECL_3_LOC(@1, @2, @4);
-        auto block = makeAstRaw<BlockStmtAst>()->setLDelimLoc(locB)->setStmtsSR($6)->setRDelimLoc(locC);
-        $$ = makeAstRaw<SyncedStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
+        auto block = newAst<BlockStmtAst>()->setLDelimLoc(locB)->setStmtsSR($6)->setRDelimLoc(locC);
+        $$ = newAst<SyncedStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
                 ->setRDelimLoc(locC)->setStmt(block);
     }
 |   SYNCHRONIZED '(' Expr ')' PlainStmt
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<SyncedStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
+        $$ = newAst<SyncedStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
                 ->setRDelimLoc(locC)->setStmt($5);
     }
 ;
@@ -3674,34 +3674,34 @@ TryStmt:
     TRY BlockStmt CatchClauseStmts
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->setCatchsSR($3);
+        $$ = newAst<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->setCatchsSR($3);
     }
 |   TRY BlockStmt LastCatchClauseStmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->addCatch($3);
+        $$ = newAst<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->addCatch($3);
     }
 |   TRY BlockStmt CatchClauseStmts LastCatchClauseStmt
     {
         DECL_1_LOC(@1);
         auto catchs = $3->handleSR($4);
-        $$ = makeAstRaw<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->setCatchsSR(catchs);
+        $$ = newAst<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->setCatchsSR(catchs);
     }
 |   TRY BlockStmt CatchClauseStmts LastCatchClauseStmt FinallyClauseStmt
     {
         DECL_1_LOC(@1);
         auto catchs = $3->handleSR($4);
-        $$ = makeAstRaw<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->setCatchsSR(catchs)->setFinal($5);
+        $$ = newAst<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->setCatchsSR(catchs)->setFinal($5);
     }
 |   TRY BlockStmt LastCatchClauseStmt FinallyClauseStmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->addCatch($3)->setFinal($4);
+        $$ = newAst<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->addCatch($3)->setFinal($4);
     }
 |   TRY BlockStmt FinallyClauseStmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->setFinal($3);
+        $$ = newAst<TryStmtAst>()->setKeyLoc(locA)->setStmt($2)->setFinal($3);
     }
 ;
 
@@ -3720,7 +3720,7 @@ CatchClauseStmt:
     CATCH '(' ParamGroupDecl ')' BlockStmt
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<CatchClauseStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)
+        $$ = newAst<CatchClauseStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)
             ->setDecl($3)->setRDelimLoc(locC)->setStmt($5);
     }
 ;
@@ -3729,7 +3729,7 @@ LastCatchClauseStmt:
     CATCH BlockStmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<CatchClauseStmtAst>()->setKeyLoc(locA)->setStmt($2);
+        $$ = newAst<CatchClauseStmtAst>()->setKeyLoc(locA)->setStmt($2);
     }
 ;
 
@@ -3737,7 +3737,7 @@ FinallyClauseStmt:
     FINALLY BlockStmt
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<FinallyClauseStmtAst>()->setKeyLoc(locA)->setStmt($2);
+        $$ = newAst<FinallyClauseStmtAst>()->setKeyLoc(locA)->setStmt($2);
     }
 ;
 
@@ -3745,7 +3745,7 @@ ThrowStmt:
     THROW Expr ';'
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<ThrowStmtAst>()->setKeyLoc(locA)->setExpr($2)->setTerminLoc(locB);
+        $$ = newAst<ThrowStmtAst>()->setKeyLoc(locA)->setExpr($2)->setTerminLoc(locB);
     }
 ;
 
@@ -3753,7 +3753,7 @@ DeferredStmt:
     SCOPE '(' Ident ')' Stmt
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<DeferredStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)
+        $$ = newAst<DeferredStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)
                 ->setName($3)->setRDelimLoc(locC)->setStmt($5);
     }
 ;
@@ -3763,7 +3763,7 @@ CondStmt:
     {
         using namespace detail;
         std::unique_ptr<Condition> cond(static_cast<Condition*>($1));
-        $$ = makeAstRaw<SelectiveStmtAst>()->setKeyLoc(cond->keyLoc_)
+        $$ = newAst<SelectiveStmtAst>()->setKeyLoc(cond->keyLoc_)
             ->setLDelimLoc(cond->lDelimLoc_)->setExpr(cond->expr_.release())
             ->setRDelimLoc(cond->rDelimLoc_)->setIfStmt($2);
     }
@@ -3772,7 +3772,7 @@ CondStmt:
         DECL_1_LOC(@3);
         using namespace detail;
         std::unique_ptr<Condition> cond(static_cast<Condition*>($1));
-        $$ = makeAstRaw<SelectiveStmtAst>()->setKeyLoc(cond->keyLoc_)
+        $$ = newAst<SelectiveStmtAst>()->setKeyLoc(cond->keyLoc_)
             ->setLDelimLoc(cond->lDelimLoc_)->setExpr(cond->expr_.release())
             ->setRDelimLoc(cond->rDelimLoc_)->setIfStmt($2)->setOtherKeyLoc(locA)
             ->setElseStmt($4);
@@ -3783,7 +3783,7 @@ SwitchStmt:
     SWITCH '(' Expr ')' BlockStmt
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = makeAstRaw<SwitchStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
+        $$ = newAst<SwitchStmtAst>()->setKeyLoc(locA)->setLDelimLoc(locB)->setExpr($3)
                 ->setRDelimLoc(locC)->setStmt($5);
     }
 ;
@@ -3792,13 +3792,13 @@ CaseClauseStmt:
     CASE ExprList ':' Stmt
     {
         DECL_2_LOC(@1, @3);
-        $$ = makeAstRaw<CaseClauseStmtAst>()->setKeyLoc(locA)->setExprsSR($2)->setDelimLoc(locB)
+        $$ = newAst<CaseClauseStmtAst>()->setKeyLoc(locA)->setExprsSR($2)->setDelimLoc(locB)
                 ->addStmt($4);
     }
 |   DEFAULT ':' Stmt
     {
         DECL_2_LOC(@1, @2);
-        $$ = makeAstRaw<DefaultClauseStmtAst>()->setKeyLoc(locA)->setDelimLoc(locB)->addStmt($3);
+        $$ = newAst<DefaultClauseStmtAst>()->setKeyLoc(locA)->setDelimLoc(locB)->addStmt($3);
     }
 ;
 
@@ -3811,12 +3811,12 @@ Ident:
     IDENT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<SimpleNameAst>()->setNameLoc(locA);
+        $$ = newAst<SimpleNameAst>()->setNameLoc(locA);
     }
 |   COMPLETION
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<CompletionNameAst>()->setNameLoc(locA);
+        $$ = newAst<CompletionNameAst>()->setNameLoc(locA);
     }
 ;
 
@@ -3898,7 +3898,7 @@ CharLit:
     CHAR_LIT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<CharLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<CharLitExprAst>()->setLitLoc(locA);
     }
 ;
 
@@ -3906,7 +3906,7 @@ StringLit:
     STR_LIT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 ;
 
@@ -3914,12 +3914,12 @@ NumLit:
     INT_LIT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<NumLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<NumLitExprAst>()->setLitLoc(locA);
     }
 |   FLOAT_LIT
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<NumLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<NumLitExprAst>()->setLitLoc(locA);
     }
 ;
 
@@ -3927,12 +3927,12 @@ BoolLit:
     TRUE_VALUE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BoolLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<BoolLitExprAst>()->setLitLoc(locA);
     }
 |   FALSE_VALUE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<BoolLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<BoolLitExprAst>()->setLitLoc(locA);
     }
 ;
 
@@ -3940,7 +3940,7 @@ PointerLit:
     NULL_VALUE
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<NullLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<NullLitExprAst>()->setLitLoc(locA);
     }
 ;
 
@@ -3954,14 +3954,14 @@ FuncLit:
         /* TODO */ IGNORE_FOR_NOW($2);
 
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
     }
 |   FuncKey Type FuncBody
     {
         /* TODO */ IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($3);
 
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
     }
 |   FuncKey Type ParamClauseDecl FuncBody
     {
@@ -3969,21 +3969,21 @@ FuncLit:
         IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($3); IGNORE_FOR_NOW($4);
 
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
     }
 |   FuncKey ParamClauseDecl FuncBody
     {
         /* TODO */ IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($3);
 
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
     }
 |   ParamClauseDecl FuncBody
     {
         /* TODO */ IGNORE_FOR_NOW($1); IGNORE_FOR_NOW($2);
 
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
     }
 ;
 
@@ -3996,52 +3996,52 @@ SpecialKeyword:
     __FILE__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 |   __MODULE__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 |   __LINE__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 |   __FUNCTION__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 |   __PRETTY_FUNCTION__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 |   __TIME__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 |   __DATE__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 |   __TIMESTAMP__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 |   __VERSION__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 |   __VENDOR__MACRO
     {
         DECL_1_LOC(@1);
-        $$ = makeAstRaw<StrLitExprAst>()->setLitLoc(locA);
+        $$ = newAst<StrLitExprAst>()->setLitLoc(locA);
     }
 ;
 
@@ -4066,13 +4066,13 @@ TemplateArgList:
 TemplateArg:
     NonExprType
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Type);
         $$ = arg;
     }
 |   AssignExpr
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Expr);
         $$ = arg;
     }
@@ -4081,55 +4081,55 @@ TemplateArg:
 TemplateSingleArg:
     Ident
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::NameToLookup);
         $$ = arg;
     }
 |   BuiltinType
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Type);
         $$ = arg;
     }
 |   CharLit
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Expr);
         $$ = arg;
     }
 |   StringLit
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Expr);
         $$ = arg;
     }
 |   NumLit
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Expr);
         $$ = arg;
     }
 |   BoolLit
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Expr);
         $$ = arg;
     }
 |   PointerLit
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Expr);
         $$ = arg;
     }
 |   ThisExpr
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Expr);
         $$ = arg;
     }
 |   SpecialKeyword
     {
-        auto arg = makeAstRaw<TemplateArgAst>()->setArg($1);
+        auto arg = newAst<TemplateArgAst>()->setArg($1);
         arg->setVariety(TemplateArgVariety::Expr);
         $$ = arg;
     }

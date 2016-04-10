@@ -40,7 +40,7 @@ public:
 class UAISO_API EmptyStmtAst final : public StmtAst
 {
 public:
-    using Self = EmptyStmtAst;
+    AST_CLASS(Empty, Stmt)
 
     EmptyStmtAst()
         : StmtAst(Kind::EmptyStmt)
@@ -54,7 +54,7 @@ public:
 class UAISO_API ExprStmtAst final : public StmtAst
 {
 public:
-    using Self = ExprStmtAst;
+    AST_CLASS(Expr, Stmt)
 
     ExprStmtAst()
         : StmtAst(Kind::ExprStmt)
@@ -70,7 +70,7 @@ public:
 class UAISO_API DeclStmtAst final : public StmtAst
 {
 public:
-    using Self = DeclStmtAst;
+    AST_CLASS(Decl, Stmt)
 
     DeclStmtAst()
         : StmtAst(Kind::DeclStmt)
@@ -84,7 +84,7 @@ public:
 class UAISO_API BlockStmtAst final : public StmtAst
 {
 public:
-    using Self = BlockStmtAst;
+    AST_CLASS(Block, Stmt)
 
     BlockStmtAst()
         : StmtAst(Kind::BlockStmt)
@@ -104,7 +104,7 @@ public:
 class UAISO_API InStmtAst final : public StmtAst
 {
 public:
-    using Self = InStmtAst;
+    AST_CLASS(In, Stmt)
 
     InStmtAst()
         : StmtAst(Kind::InStmt)
@@ -120,7 +120,7 @@ public:
 class UAISO_API OutStmtAst final : public StmtAst
 {
 public:
-    using Self = OutStmtAst;
+    AST_CLASS(Out, Stmt)
 
     OutStmtAst()
         : StmtAst(Kind::OutStmt)
@@ -142,7 +142,7 @@ public:
 class UAISO_API BodyStmtAst final : public StmtAst
 {
 public:
-    using Self = BodyStmtAst;
+    AST_CLASS(Body, Stmt)
 
     BodyStmtAst()
         : StmtAst(Kind::BodyStmt)
@@ -158,7 +158,7 @@ public:
 class UAISO_API ContractStmtAst final : public StmtAst
 {
 public:
-    using Self = ContractStmtAst;
+    AST_CLASS(Contract, Stmt)
 
     ContractStmtAst()
         : StmtAst(Kind::ContractStmt)
@@ -176,7 +176,7 @@ public:
 class UAISO_API LabeledStmtAst final : public StmtAst
 {
 public:
-    using Self = LabeledStmtAst;
+    AST_CLASS(Labeled, Stmt)
 
     LabeledStmtAst()
         : StmtAst(Kind::LabeledStmt)
@@ -194,7 +194,7 @@ public:
 class UAISO_API IfStmtAst final : public StmtAst
 {
 public:
-    using Self = IfStmtAst;
+    AST_CLASS(If, Stmt)
 
     IfStmtAst()
         : StmtAst(Kind::IfStmt)
@@ -222,7 +222,7 @@ public:
 class UAISO_API WhileStmtAst final : public StmtAst
 {
 public:
-    using Self = WhileStmtAst;
+    AST_CLASS(While, Stmt)
 
     WhileStmtAst()
         : StmtAst(Kind::WhileStmt)
@@ -244,7 +244,7 @@ public:
 class UAISO_API DoWhileStmtAst final : public StmtAst
 {
 public:
-    using Self = DoWhileStmtAst;
+    AST_CLASS(DoWhile, Stmt)
 
     DoWhileStmtAst()
         : StmtAst(Kind::DoWhileStmt)
@@ -270,7 +270,7 @@ public:
 class UAISO_API ForStmtAst final : public StmtAst
 {
 public:
-    using Self = ForStmtAst;
+    AST_CLASS(For, Stmt)
 
     ForStmtAst()
         : StmtAst(Kind::ForStmt)
@@ -298,7 +298,7 @@ public:
 class UAISO_API ForeachStmtAst final : public StmtAst
 {
 public:
-    using Self = ForeachStmtAst;
+    AST_CLASS(Foreach, Stmt)
 
     ForeachStmtAst()
         : StmtAst(Kind::ForeachStmt)
@@ -324,7 +324,7 @@ public:
 class UAISO_API ContinueStmtAst final : public StmtAst
 {
 public:
-    using Self = ContinueStmtAst;
+    AST_CLASS(Continue, Stmt)
 
     ContinueStmtAst()
         : StmtAst(Kind::ContinueStmt)
@@ -342,7 +342,7 @@ public:
 class UAISO_API BreakStmtAst final : public StmtAst
 {
 public:
-    using Self = BreakStmtAst;
+    AST_CLASS(Break, Stmt)
 
     BreakStmtAst()
         : StmtAst(Kind::BreakStmt)
@@ -360,7 +360,7 @@ public:
 class UAISO_API ReturnStmtAst final : public StmtAst
 {
 public:
-    using Self = ReturnStmtAst;
+    AST_CLASS(Return, Stmt)
 
     ReturnStmtAst()
         : StmtAst(Kind::ReturnStmt)
@@ -378,7 +378,7 @@ public:
 class UAISO_API GotoStmtAst final : public StmtAst
 {
 public:
-    using Self = GotoStmtAst;
+    AST_CLASS(Goto, Stmt)
 
     GotoStmtAst()
         : StmtAst(Kind::GotoStmt)
@@ -396,7 +396,7 @@ public:
 class UAISO_API ThrowStmtAst final : public StmtAst
 {
 public:
-    using Self = ThrowStmtAst;
+    AST_CLASS(Throw, Stmt)
 
     ThrowStmtAst()
         : StmtAst(Kind::ThrowStmt)
@@ -419,7 +419,7 @@ public:
 class UAISO_API SwitchStmtAst final : public StmtAst
 {
 public:
-    using Self = SwitchStmtAst;
+    AST_CLASS(Switch, Stmt)
 
     SwitchStmtAst()
         : StmtAst(Kind::SwitchStmt)
@@ -448,7 +448,7 @@ public:
 class UAISO_API TypeSwitchStmtAst final : public StmtAst
 {
 public:
-    using Self = TypeSwitchStmtAst;
+    AST_CLASS(TypeSwitch, Stmt)
 
     TypeSwitchStmtAst()
         : StmtAst(Kind::TypeSwitchStmt)
@@ -470,7 +470,7 @@ public:
 class UAISO_API CaseClauseStmtAst final : public StmtAst
 {
 public:
-    using Self = CaseClauseStmtAst;
+    AST_CLASS(CaseClause, Stmt)
 
     CaseClauseStmtAst()
         : StmtAst(Kind::CaseClauseStmt)
@@ -490,7 +490,7 @@ public:
 class UAISO_API DefaultClauseStmtAst final : public StmtAst
 {
 public:
-    using Self = DefaultClauseStmtAst;
+    AST_CLASS(DefaultClause, Stmt)
 
     DefaultClauseStmtAst()
         : StmtAst(Kind::DefaultClauseStmt)
@@ -513,7 +513,7 @@ public:
 class UAISO_API SyncedStmtAst final : public StmtAst
 {
 public:
-    using Self = SyncedStmtAst;
+    AST_CLASS(Synced, Stmt)
 
     SyncedStmtAst()
         : StmtAst(Kind::SyncedStmt)
@@ -535,7 +535,7 @@ public:
 class UAISO_API WithStmtAst final : public StmtAst
 {
 public:
-    using Self = WithStmtAst;
+    AST_CLASS(With, Stmt)
 
     WithStmtAst()
         : StmtAst(Kind::WithStmt)
@@ -557,7 +557,7 @@ public:
 class UAISO_API TryStmtAst final : public StmtAst
 {
 public:
-    using Self = TryStmtAst;
+    AST_CLASS(Try, Stmt)
 
     TryStmtAst()
         : StmtAst(Kind::TryStmt)
@@ -577,7 +577,7 @@ public:
 class UAISO_API CatchClauseStmtAst final : public StmtAst
 {
 public:
-    using Self = CatchClauseStmtAst;
+    AST_CLASS(CatchClause, Stmt)
 
     CatchClauseStmtAst()
         : StmtAst(Kind::CatchClauseStmt)
@@ -599,7 +599,7 @@ public:
 class UAISO_API FinallyClauseStmtAst final : public StmtAst
 {
 public:
-    using Self = FinallyClauseStmtAst;
+    AST_CLASS(FinallyClause, Stmt)
 
     FinallyClauseStmtAst()
         : StmtAst(Kind::FinallyClauseStmt)
@@ -618,7 +618,7 @@ public:
 class UAISO_API SelectiveStmtAst final : public StmtAst
 {
 public:
-    using Self = SelectiveStmtAst;
+    AST_CLASS(Selective, Stmt)
 
     SelectiveStmtAst()
         : StmtAst(Kind::SelectiveStmt)
@@ -648,7 +648,7 @@ public:
 class UAISO_API ErrorStmtAst final : public StmtAst
 {
 public:
-    using Self = ErrorStmtAst;
+    AST_CLASS(Error, Stmt)
 
     ErrorStmtAst()
         : StmtAst(Kind::ErrorStmt)
@@ -662,7 +662,7 @@ public:
 class UAISO_API AsyncStmtAst final : public StmtAst
 {
 public:
-    using Self = AsyncStmtAst;
+    AST_CLASS(Async, Stmt)
 
     AsyncStmtAst()
         : StmtAst(Kind::AsyncStmt)
@@ -680,7 +680,7 @@ public:
 class UAISO_API DeferredStmtAst final : public StmtAst
 {
 public:
-    using Self = DeferredStmtAst;
+    AST_CLASS(Deferred, Stmt)
 
     DeferredStmtAst()
         : StmtAst(Kind::DeferredStmt)
@@ -702,7 +702,7 @@ public:
 class UAISO_API FallthroughStmtAst final : public StmtAst
 {
 public:
-    using Self = FallthroughStmtAst;
+    AST_CLASS(Fallthrough, Stmt)
 
     FallthroughStmtAst()
         : StmtAst(Kind::FallthroughStmt)
@@ -716,7 +716,7 @@ public:
 class UAISO_API YieldStmtAst final : public StmtAst
 {
 public:
-    using Self = YieldStmtAst;
+    AST_CLASS(Yield, Stmt)
 
     YieldStmtAst()
         : StmtAst(Kind::YieldStmt)
@@ -734,7 +734,7 @@ public:
 class UAISO_API EvalStmtAst final : public StmtAst
 {
 public:
-    using Self = EvalStmtAst;
+    AST_CLASS(Eval, Stmt)
 
     EvalStmtAst()
         : StmtAst(Kind::EvalStmt)

@@ -41,7 +41,7 @@ public:
 class UAISO_API ErrorDeclAst final : public DeclAst
 {
 public:
-    using Self = ErrorDeclAst;
+    AST_CLASS(Error, Decl)
 
     ErrorDeclAst()
         : DeclAst(Kind::ErrorDecl)
@@ -55,7 +55,7 @@ public:
 class UAISO_API VarDeclAst : public DeclAst
 {
 public:
-    using Self = VarDeclAst;
+    AST_CLASS(Var, Decl)
 
     VarDeclAst()
         : DeclAst(Kind::VarDecl)
@@ -131,7 +131,7 @@ public:
 class UAISO_API VarGroupDeclAst : public DeclAst
 {
 public:
-    using Self = VarGroupDeclAst;
+    AST_CLASS(VarGroup, Decl)
 
     VarGroupDeclAst()
         : DeclAst(Kind::VarGroupDecl)
@@ -217,7 +217,7 @@ public:
 class UAISO_API VarTagDeclAst final : public VarGroupDeclAst
 {
 public:
-    using Self = VarTagDeclAst;
+    AST_CLASS(VarTag, Decl)
     using VarGroupDeclAst::VarGroupDeclAst;
 
     NAMED_LOC_PARAM(Key, key)
@@ -232,7 +232,7 @@ public:
 class UAISO_API ParamClauseDeclAst final : public DeclAst
 {
 public:
-    using Self = ParamClauseDeclAst;
+    AST_CLASS(ParamClause, Decl)
 
     ParamClauseDeclAst()
         : DeclAst(Kind::ParamClauseDecl)
@@ -260,7 +260,7 @@ public:
 class UAISO_API ParamGroupDeclAst final : public DeclAst
 {
 public:
-    using Self = ParamGroupDeclAst;
+    AST_CLASS(ParamGroup, Decl)
 
     ParamGroupDeclAst()
         : DeclAst(Kind::ParamGroupDecl)
@@ -276,7 +276,7 @@ public:
 class UAISO_API ParamDeclAst : public DeclAst
 {
 public:
-    using Self = ParamDeclAst;
+    AST_CLASS(Param, Decl)
 
     ParamDeclAst()
         : DeclAst(Kind::ParamDecl)
@@ -369,7 +369,7 @@ public:
 class UAISO_API TemplateParamClauseDeclAst final : public DeclAst
 {
 public:
-    using Self = TemplateParamClauseDeclAst;
+    AST_CLASS(TemplateParamClause, Decl)
 
     TemplateParamClauseDeclAst()
         : DeclAst(Kind::TemplateParamClauseDecl)
@@ -387,7 +387,7 @@ public:
 class UAISO_API TemplateParamDeclAst : public DeclAst
 {
 public:
-    using Self = TemplateParamDeclAst;
+    AST_CLASS(TemplateParam, Decl)
 
     TemplateParamDeclAst()
         : DeclAst(Kind::TemplateParamDecl)
@@ -495,7 +495,7 @@ public:
 class UAISO_API TemplateParamAliasDeclAst final : public TemplateParamDeclAst
 {
 public:
-    using Self = TemplateParamAliasDeclAst;
+    AST_CLASS(TemplateParamAlias, Decl)
     using TemplateParamDeclAst::TemplateParamDeclAst;
 
     NAMED_AST_PARAM(Spec, spec, SpecAst)
@@ -508,7 +508,7 @@ public:
 class UAISO_API TemplateParamThisDeclAst final : public TemplateParamDeclAst
 {
 public:
-    using Self = TemplateParamThisDeclAst;
+    AST_CLASS(TemplateParamThis, Decl)
     using TemplateParamDeclAst::TemplateParamDeclAst;
 
     NAMED_AST_PARAM(Spec, spec, SpecAst)
@@ -521,7 +521,7 @@ public:
 class UAISO_API FuncDeclAst : public DeclAst
 {
 public:
-    using Self = FuncDeclAst;
+    AST_CLASS(Func, Decl)
 
     FuncDeclAst()
         : DeclAst(Kind::FuncDecl)
@@ -551,7 +551,7 @@ public:
 class UAISO_API FuncRecvDeclAst final : public FuncDeclAst
 {
 public:
-    using Self = FuncRecvDeclAst;
+    AST_CLASS(FuncRecv, Decl)
     using FuncDeclAst::FuncDeclAst;
 
     NAMED_AST_PARAM(Name, name, NameAst)
@@ -571,7 +571,7 @@ public:
 class UAISO_API TemplateDeclAst final : public DeclAst
 {
 public:
-    using Self = TemplateDeclAst;
+    AST_CLASS(Template, Decl)
 
     TemplateDeclAst()
         : DeclAst(Kind::TemplateDecl)
@@ -593,7 +593,7 @@ public:
 class UAISO_API BlockDeclAst final : public DeclAst
 {
 public:
-    using Self = BlockDeclAst;
+    AST_CLASS(Block, Decl)
 
     BlockDeclAst()
         : DeclAst(Kind::BlockDecl)
@@ -613,7 +613,7 @@ public:
 class UAISO_API ConstraintDeclAst final : public DeclAst
 {
 public:
-    using Self = ConstraintDeclAst;
+    AST_CLASS(Constraint, Decl)
 
     ConstraintDeclAst()
         : DeclAst(Kind::ConstraintDecl)
@@ -633,7 +633,7 @@ public:
 class UAISO_API AliasDeclAst final : public DeclAst
 {
 public:
-    using Self = AliasDeclAst;
+    AST_CLASS(Alias, Decl)
 
     AliasDeclAst()
         : DeclAst(Kind::AliasDecl)
@@ -662,7 +662,7 @@ public:
 class UAISO_API PackageDeclAst final : public DeclAst
 {
 public:
-    using Self = PackageDeclAst;
+    AST_CLASS(Package, Decl)
 
     PackageDeclAst()
         : DeclAst(Kind::PackageDecl)
@@ -688,7 +688,7 @@ public:
 class UAISO_API ModuleDeclAst final : public DeclAst
 {
 public:
-    using Self = ModuleDeclAst;
+    AST_CLASS(Module, Decl)
 
     ModuleDeclAst()
         : DeclAst(Kind::ModuleDecl)
@@ -706,7 +706,7 @@ public:
 class UAISO_API ImportClauseDeclAst : public DeclAst
 {
 public:
-    using Self = ImportClauseDeclAst;
+    AST_CLASS(ImportClause, Decl)
 
     ImportClauseDeclAst()
         : DeclAst(Kind::ImportClauseDecl)
@@ -730,7 +730,7 @@ public:
 class UAISO_API ImportModuleDeclAst : public DeclAst
 {
 public:
-    using Self = ImportModuleDeclAst;
+    AST_CLASS(ImportModule, Decl)
 
     ImportModuleDeclAst()
         : DeclAst(Kind::ImportModuleDecl)
@@ -752,7 +752,7 @@ public:
 class UAISO_API ImportItemDeclAst : public DeclAst
 {
 public:
-    using Self = ImportItemDeclAst;
+    AST_CLASS(ImportItem, Decl)
 
     ImportItemDeclAst()
         : DeclAst(Kind::ImportItemDecl)
@@ -775,7 +775,7 @@ public:
 class UAISO_API SectionDeclAst final : public DeclAst
 {
 public:
-    using Self = SectionDeclAst;
+    AST_CLASS(Section, Decl)
 
     SectionDeclAst()
         : DeclAst(Kind::SectionDecl)
@@ -803,7 +803,7 @@ public:
 class UAISO_API StaticAssertDeclAst final : public DeclAst
 {
 public:
-    using Self = StaticAssertDeclAst;
+    AST_CLASS(StaticAssert, Decl)
 
     StaticAssertDeclAst()
         : DeclAst(Kind::StaticAssertDecl)
@@ -832,7 +832,7 @@ public:
 class UAISO_API VersionDeclAst final : public DeclAst
 {
 public:
-    using Self = VersionDeclAst;
+    AST_CLASS(Version, Decl)
 
     VersionDeclAst()
         : DeclAst(Kind::VersionDecl)
@@ -855,7 +855,7 @@ public:
 class UAISO_API DebugDeclAst final : public DeclAst
 {
 public:
-    using Self = DebugDeclAst;
+    AST_CLASS(Debug, Decl)
 
     DebugDeclAst()
         : DeclAst(Kind::DebugDecl)
@@ -875,7 +875,7 @@ public:
 class UAISO_API InvariantDeclAst final : public DeclAst
 {
 public:
-    using Self = InvariantDeclAst;
+    AST_CLASS(Invariant, Decl)
 
     InvariantDeclAst()
         : DeclAst(Kind::InvariantDecl)
@@ -895,7 +895,7 @@ public:
 class UAISO_API UnitTestDeclAst final : public DeclAst
 {
 public:
-    using Self = UnitTestDeclAst;
+    AST_CLASS(UnitTest, Decl)
 
     UnitTestDeclAst()
         : DeclAst(Kind::UnitTestDecl)
@@ -916,7 +916,7 @@ public:
 class UAISO_API SelectiveDeclAst final : public DeclAst
 {
 public:
-    using Self = SelectiveDeclAst;
+    AST_CLASS(Selective, Decl)
 
     SelectiveDeclAst()
         : DeclAst(Kind::SelectiveDecl)
@@ -946,7 +946,7 @@ public:
 class UAISO_API EnumDeclAst final : public DeclAst
 {
 public:
-    using Self = EnumDeclAst;
+    AST_CLASS(Enum, Decl)
 
     EnumDeclAst()
         : DeclAst(Kind::EnumDecl)
@@ -977,7 +977,7 @@ public:
 class UAISO_API EnumMemberDeclAst final : public DeclAst
 {
 public:
-    using Self = EnumMemberDeclAst;
+    AST_CLASS(EnumMember, Decl)
 
     EnumMemberDeclAst()
         : DeclAst(Kind::EnumMemberDecl)
@@ -1000,7 +1000,7 @@ public:
 class UAISO_API RecordDeclAst final : public DeclAst
 {
 public:
-    using Self = RecordDeclAst;
+    AST_CLASS(Record, Decl)
 
     RecordDeclAst()
         : DeclAst(Kind::RecordDecl)
@@ -1028,7 +1028,7 @@ public:
 class UAISO_API BaseDeclAst final : public DeclAst
 {
 public:
-    using Self = BaseDeclAst;
+    AST_CLASS(Base, Decl)
 
     BaseDeclAst()
         : DeclAst(Kind::BaseDecl)
@@ -1042,7 +1042,7 @@ public:
 class UAISO_API ForwardDeclAst final : public DeclAst
 {
 public:
-    using Self = ForwardDeclAst;
+    AST_CLASS(Forward, Decl)
 
     ForwardDeclAst()
         : DeclAst(Kind::ForwardDecl)

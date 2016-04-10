@@ -40,7 +40,7 @@ public:
 class UAISO_API ErrorNameAst final : public NameAst
 {
 public:
-    using Self = ErrorNameAst;
+    AST_CLASS(Error, Name)
 
     ErrorNameAst()
         : NameAst(Kind::ErrorName)
@@ -54,7 +54,7 @@ public:
 class UAISO_API SimpleNameAst final : public NameAst
 {
 public:
-    using Self = SimpleNameAst;
+    AST_CLASS(Simple, Name)
 
     SimpleNameAst()
         : NameAst(Kind::SimpleName)
@@ -68,7 +68,7 @@ public:
 class UAISO_API NestedNameAst final : public NameAst
 {
 public:
-    using Self = NestedNameAst;
+    AST_CLASS(Nested, Name)
 
     NestedNameAst()
         : NameAst(Kind::NestedName)
@@ -82,7 +82,7 @@ public:
 class UAISO_API TemplateInstNameAst final : public NameAst
 {
 public:
-    using Self = TemplateInstNameAst;
+    AST_CLASS(TemplateInst, Name)
 
     TemplateInstNameAst()
         : NameAst(Kind::TemplateInstName)
@@ -109,7 +109,7 @@ public:
 class UAISO_API GenNameAst final : public NameAst
 {
 public:
-    using Self = GenNameAst;
+    AST_CLASS(Gen, Name)
 
     GenNameAst()
         : NameAst(Kind::GenName)
@@ -129,7 +129,7 @@ public:
 class UAISO_API CompletionNameAst final : public NameAst
 {
 public:
-    using Self = CompletionNameAst;
+    AST_CLASS(Completion, Name)
 
     CompletionNameAst()
         : NameAst(Kind::CompletionName)
