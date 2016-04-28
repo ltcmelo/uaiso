@@ -27,7 +27,7 @@
 #include "Common/Assert.h"
 #include "Common/Trace__.h"
 #include "Parsing/ParsingContext.h"
-#include "parsing/Lexeme.h"
+#include "Parsing/Lexeme.h"
 #include <cctype>
 
 #define TRACE_NAME "HsLexer"
