@@ -546,7 +546,7 @@ namespace {
 
 std::vector<const char*>& addRootObjectNames(std::vector<const char*>& v)
 {
-    auto names { "__gt__", "__new__", "__getattribute__", "__str__",
+    std::vector<const char*> names { "__gt__", "__new__", "__getattribute__", "__str__",
                  "__format__", "__ge__", "__lt__", "__repr__", "__setattr__",
                  "__delattr__", "__ne__", "__getattr__", "__init__",
                  "__del__", "__le__", "__bool__", "__eq__", "__hash__" };
@@ -556,14 +556,14 @@ std::vector<const char*>& addRootObjectNames(std::vector<const char*>& v)
 
 std::vector<const char*>& addConstructorNames(std::vector<const char*>& v)
 {
-    auto names { "float", "bool", "int", "complex" };
+    std::vector<const char*> names { "float", "bool", "int", "complex" };
     v.insert(v.begin(), names.begin(), names.end());
     return v;
 }
 
 std::vector<const char*>& addGlobalFuncNames(std::vector<const char*>& v)
 {
-    auto names {
+    std::vector<const char*> names {
         "abs",
         "all",
         "any",
@@ -625,7 +625,7 @@ std::vector<const char*>& addGlobalFuncNames(std::vector<const char*>& v)
 
 std::vector<const char*>& addIntObjectNames(std::vector<const char*>& v)
 {
-    auto names {
+    std::vector<const char*> names {
         // Unary
         "__pos__",
         "__neg__",

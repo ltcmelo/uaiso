@@ -90,6 +90,11 @@ LexemeMap::LexemeMap()
 LexemeMap::~LexemeMap()
 {}
 
+const Ident *LexemeMap::findAnyOfIdent(const std::string &spell) const
+{
+    return findAnyOf<Ident>(spell);
+}
+
 const Ident* LexemeMap::self() const
 {
     return P->self_;

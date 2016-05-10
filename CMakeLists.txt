@@ -3,8 +3,12 @@ cmake_minimum_required(VERSION 2.8)
 project(uaiso)
 
 set(UAISO_CXX_FLAGS)
+IF (WIN32)
+set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -std=c++1y -g")
+ELSE()
 set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -std=c++1y -g -Wno-deprecated-register")
-set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -fvisibility=hidden -DEXPORT_API")
+ENDIF()
+set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -fvisibility=hidden")
 
 set(SCRIPTS_PATH Scripts)
 set(PARSING_PATH Parsing)
@@ -293,3 +297,4 @@ set(UAISO_TEST UaiSoEngineTest)
 add_executable(${UAISO_TEST} ${UAISO_TEST_SOURCES})
 
 target_link_libraries(${UAISO_TEST} ${UAISO_LIB})
+target_compile_definitions(${UAISO_LIB} PRIVATE -DEXPORT_API)
