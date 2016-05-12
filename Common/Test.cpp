@@ -31,6 +31,10 @@ size_t Test::skipped_ = 0;
 size_t Test::failed_ = 0;
 std::vector<std::string> Test::failedNames_;
 
+Test::~Test() {}
+
+void Test::reset() {}
+
 void Test::printStats()
 {
     std::cout << "[uaiso] Test stats" <<  "\n"

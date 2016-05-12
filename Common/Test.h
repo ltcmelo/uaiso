@@ -37,11 +37,11 @@ namespace uaiso {
 class UAISO_API Test
 {
 public:
-    virtual ~Test() {}
+    virtual ~Test();
 
     virtual void run() = 0;
 
-    virtual void reset() {}
+    virtual void reset();
 
     static void printStats();
 

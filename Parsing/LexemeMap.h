@@ -87,6 +87,8 @@ public:
     template <class ValueT>
     const ValueT* findAnyOf(const std::string& spell) const;
 
+    const Ident *findAnyOfIdent(const std::string& spell) const;
+
     /*!
      * \brief list
      * \warning This method creates copies of the map's underlying storage.

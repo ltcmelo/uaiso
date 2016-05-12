@@ -21,23 +21,33 @@
 # --- The UaiSo! Project --- #
 # -------------------------- #
 
+import os
+import platform
 import GenTokens
 from subprocess import call
 
 
 def gen_lexer(lang):
-    print "Calling flex on %s" % lang
-    call(["flex", "%s/%s.l" % (lang, lang)])
-    call(["mv", "%sLexer.h" % lang, "%s/%sLexer.h" % (lang, lang)])
-    call(["mv", "%sLexer.cpp" % lang, "%s/%sLexer.cpp" % (lang, lang)])
+    if platform.system() == 'Windows':
+        print "Calling win_flex on %s" % lang
+        call(["win_flex", "--wincompat", "%s/%s.l" % (lang, lang)])
+    else:
+        print "Calling flex on %s" % lang
+        call(["flex", "%s/%s.l" % (lang, lang)])
+    os.rename("%sLexer.h" % lang, "%s/%sLexer.h" % (lang, lang))
+    os.rename("%sLexer.cpp" % lang, "%s/%sLexer.cpp" % (lang, lang))
 
 
 def gen_parser(lang):
-    print "Calling bison on %s" % lang
-    call(["bison", "-d", "-v", "%s/%s.y" % (lang, lang)])
-    call(["mv", "%sParser.h" % lang, "%s/%sParser.h" % (lang, lang)])
-    call(["mv", "%sParser.cpp" % lang, "%s/%sParser.cpp" % (lang, lang)])
-    call(["mv", "%sParser.output" % lang, "%s/%sParser.output" % (lang, lang)])
+    if platform.system() == 'Windows':
+        print "Calling win_bison on %s" % lang
+        call(["win_bison", "-d", "-v", "%s/%s.y" % (lang, lang)])
+    else:
+        print "Calling bison on %s" % lang
+        call(["bison", "-d", "-v", "%s/%s.y" % (lang, lang)])
+    os.rename("%sParser.h" % lang, "%s/%sParser.h" % (lang, lang))
+    os.rename("%sParser.cpp" % lang, "%s/%sParser.cpp" % (lang, lang))
+    os.rename("%sParser.output" % lang, "%s/%sParser.output" % (lang, lang))
 
 
 def run():

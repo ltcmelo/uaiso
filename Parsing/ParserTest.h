@@ -33,7 +33,7 @@
 
 namespace uaiso {
 
-class UAISO_API ParserTest : public Test
+class ParserTest : public Test
 {
 protected:
     ParserTest(LangId langId)
