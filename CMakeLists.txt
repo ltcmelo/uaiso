@@ -2,14 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 project(uaiso)
 
-set(UAISO_CXX_FLAGS)
-IF (WIN32)
-set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -std=c++1y -g")
-ELSE()
-set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -std=c++1y -g -Wno-deprecated-register")
-ENDIF()
-set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -fvisibility=hidden")
-
 set(SCRIPTS_PATH Scripts)
 set(PARSING_PATH Parsing)
 set(AST_PATH Ast)
@@ -20,6 +12,18 @@ set(D_PARSER_PATH D)
 set(GO_PARSER_PATH Go)
 set(HS_PARSER_PATH Haskell)
 set(PY_PARSER_PATH Python)
+
+# Compilation flags
+set(UAISO_CXX_FLAGS)
+if (WIN32)
+    set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -std=c++1y -g")
+else()
+    set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -std=c++1y -g -Wno-deprecated-register")
+    if(APPLE)
+        set(CMAKE_MACOSX_RPATH ON)
+    endif()
+endif()
+set(UAISO_CXX_FLAGS "${UAISO_CXX_FLAGS} -fvisibility=hidden")
 
 # File generation.
 add_custom_command(
