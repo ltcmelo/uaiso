@@ -66,7 +66,7 @@ Parser::Decl HsParser::parseModuleDecl()
     match(TK_WHERE);
     module->setTerminLoc(lastLoc_);
 
-    return Decl();
+    return Decl(module.release());
 }
 
 Parser::Name HsParser::parseModidName()
