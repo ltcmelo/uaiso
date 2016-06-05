@@ -356,33 +356,6 @@ public:
     void testcase157();
     void testcase158();
     void testcase159();
-
-    void core(const std::string& code, bool expectError = false)
-    {
-        DiagnosticReports reports;
-        ParsingContext context;
-        context.setFileName("/test.py");
-        context.collectReports(&reports);
-
-        PyLexer lexer;
-        lexer.setContext(&context);
-        lexer.setBuffer(code.c_str(), code.length());
-        PyParser parser;
-        bool ok = parser.parse(&lexer, &context);
-        UAISO_EXPECT_TRUE(ok);
-
-        if (expectError)
-            UAISO_EXPECT_TRUE(reports.size() > 0);
-        else
-            UAISO_EXPECT_INT_EQ(0, reports.size());
-
-        if (dumpAst_) {
-            std::ostringstream oss;
-            oss << "AST dump\n";
-            AstDumper().dumpProgram(Program_Cast(context.releaseAst()), oss);
-            std::cout << oss.str();
-        }
-    }
 };
 
 MAKE_CLASS_TEST(PyParser)

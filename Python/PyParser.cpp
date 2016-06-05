@@ -2000,7 +2000,7 @@ std::unique_ptr<NameAst> PyParser::parseName()
     // match doesn't succeed in this case we can't ignore and create a
     // simple name AST. Otherwise we end up with name without a
     // corresponding identifier in the lexeme map. An error name is then
-    // create for consistency throughout the pipeline.
+    // created for consistency throughout the pipeline.
     if (match(TK_IDENT)) {
         auto name = SimpleNameAst::create();
         name->setNameLoc(lastLoc_);

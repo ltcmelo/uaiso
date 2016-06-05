@@ -45,7 +45,7 @@ protected:
     {
         DiagnosticReports reports;
         ParsingContext context;
-        context.setFileName("/test.py");
+        context.setFileName("/testfile");
         context.collectReports(&reports);
 
         lexer_->setContext(&context);

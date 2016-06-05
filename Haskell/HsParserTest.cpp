@@ -62,25 +62,29 @@ MAKE_CLASS_TEST(HsParser)
 
 void HsParser::HsParserTest::testCase1()
 {
-    core("True\n");
+    core("module Main where\n");
 }
 
 void HsParser::HsParserTest::testCase2()
 {
-    core("False\n");
+    core("module A.B where\n");
 }
 
 void HsParser::HsParserTest::testCase3()
 {
-    core("1\n");
+    core("module A .B where\n", true);
 }
 
 void HsParser::HsParserTest::testCase4()
 {
-    core("0.123\n");
+    core("module A. B where\n", true);
 }
 
-void HsParser::HsParserTest::testCase5(){}
+void HsParser::HsParserTest::testCase5()
+{
+    core("module \"abc\" where\n", true);
+}
+
 void HsParser::HsParserTest::testCase6(){}
 void HsParser::HsParserTest::testCase7(){}
 void HsParser::HsParserTest::testCase8(){}

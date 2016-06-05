@@ -48,6 +48,15 @@ private:
 
     Expr parseExpr();
     Expr parseAExpr();
+
+    //--- Declarations ---//
+
+    Decl parseModuleDecl();
+    DeclList parseBody();
+
+    //--- Names ---//
+
+    Name parseModidName();
 };
 
 } // namespace uaiso

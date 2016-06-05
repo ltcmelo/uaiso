@@ -62,6 +62,10 @@ private:
         uint32_t atLineStart_    : 1;
         uint32_t wantBrace_      : 1;
         uint32_t waitOffsetMark_ : 1;
+        uint32_t pendingQual_    : 4;
+        uint32_t pendingName_    : 1;
+        uint32_t pendingOprtr_   : 16; // In sync with Token.h.
+        uint32_t delimCount_     : 4;
     };
     union
     {

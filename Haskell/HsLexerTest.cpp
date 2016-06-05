@@ -75,6 +75,7 @@ public:
              , &HsLexerTest::testCase38
              , &HsLexerTest::testCase39
              , &HsLexerTest::testCase40
+             , &HsLexerTest::testCase41
              )
 
     void testCase1();
@@ -117,6 +118,7 @@ public:
     void testCase38();
     void testCase39();
     void testCase40();
+    void testCase41();
 
     std::vector<Token> core(const std::string& code)
     {
@@ -222,8 +224,8 @@ void HsLexer::HsLexerTest::testCase5()
     auto tks = core("data Color = Red | Green");
 
     std::vector<Token> expected {
-        TK_DATA, TK_CAPITAL_IDENT, TK_EQ, TK_CAPITAL_IDENT,
-        TK_PIPE, TK_CAPITAL_IDENT, TK_EOP
+        TK_DATA, TK_PROPER_IDENT, TK_EQ, TK_PROPER_IDENT,
+        TK_PIPE, TK_PROPER_IDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -234,8 +236,8 @@ void HsLexer::HsLexerTest::testCase6()
     auto tks = core("cool :: Int -> Bool");
 
     std::vector<Token> expected {
-        TK_IDENT, TK_COLON_COLON, TK_CAPITAL_IDENT, TK_DASH_ARROW,
-        TK_CAPITAL_IDENT, TK_EOP
+        TK_IDENT, TK_COLON_COLON, TK_PROPER_IDENT, TK_DASH_ARROW,
+        TK_PROPER_IDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -246,7 +248,7 @@ void HsLexer::HsLexerTest::testCase7()
     auto tks = core("import A.B");
 
     std::vector<Token> expected {
-        TK_IMPORT, TK_CAPITAL_IDENT_LIST, TK_EOP
+        TK_IMPORT, TK_PROPER_IDENT, TK_JOKER, TK_PROPER_IDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -258,8 +260,8 @@ void HsLexer::HsLexerTest::testCase8()
 
     std::vector<Token> expected {
         TK_LPAREN, TK_CUSTOM_OPRTR, TK_RPAREN, TK_COLON_COLON,
-        TK_CAPITAL_IDENT, TK_DASH_ARROW, TK_CAPITAL_IDENT,
-        TK_DASH_ARROW, TK_CAPITAL_IDENT, TK_EOP
+        TK_PROPER_IDENT, TK_DASH_ARROW, TK_PROPER_IDENT,
+        TK_DASH_ARROW, TK_PROPER_IDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -284,8 +286,8 @@ void HsLexer::HsLexerTest::testCase10()
 
     std::vector<Token> expected {
         TK_LPAREN, TK_CUSTOM_OPRTR, TK_RPAREN, TK_COLON_COLON,
-        TK_CAPITAL_IDENT, TK_DASH_ARROW, TK_CAPITAL_IDENT,
-        TK_DASH_ARROW, TK_CAPITAL_IDENT, TK_EOP
+        TK_PROPER_IDENT, TK_DASH_ARROW, TK_PROPER_IDENT,
+        TK_DASH_ARROW, TK_PROPER_IDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -307,7 +309,7 @@ void HsLexer::HsLexerTest::testCase12()
     auto tks = core("F.g");
 
     std::vector<Token> expected {
-        TK_CAPITAL_IDENT_LIST, TK_EOP
+        TK_PROPER_IDENT, TK_JOKER, TK_IDENT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -329,7 +331,7 @@ void HsLexer::HsLexerTest::testCase14()
     auto tks = core("F..");
 
     std::vector<Token> expected {
-        TK_QUALIFIED_OPRTR, TK_EOP
+        TK_PROPER_IDENT, TK_JOKER, TK_DOT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -340,7 +342,7 @@ void HsLexer::HsLexerTest::testCase15()
     auto tks = core("F.");
 
     std::vector<Token> expected {
-        TK_CAPITAL_IDENT, TK_DOT, TK_EOP
+        TK_PROPER_IDENT, TK_DOT, TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
     UAISO_EXPECT_CONTAINER_EQ(expected, tks);
@@ -537,8 +539,8 @@ data Bar a = Empty
 )raw");
 
     std::vector<Token> expected {
-        TK_MODULE, TK_CAPITAL_IDENT, TK_WHERE, TK_LBRACE, TK_DATA,
-        TK_CAPITAL_IDENT, TK_IDENT, TK_EQ, TK_CAPITAL_IDENT, TK_SEMICOLON,
+        TK_MODULE, TK_PROPER_IDENT, TK_WHERE, TK_LBRACE, TK_DATA,
+        TK_PROPER_IDENT, TK_IDENT, TK_EQ, TK_PROPER_IDENT, TK_SEMICOLON,
         TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
@@ -660,7 +662,34 @@ f x = let { a = 1; b = 2; g y = exp2 }
 }
 
 void HsLexer::HsLexerTest::testCase39()
-{}
+{
+    auto tks = core("Aa.Bb");
+
+    std::vector<Token> expected {
+        TK_PROPER_IDENT, TK_JOKER, TK_PROPER_IDENT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
 
 void HsLexer::HsLexerTest::testCase40()
-{}
+{
+    auto tks = core("Aa.Bb.+");
+
+    std::vector<Token> expected {
+        TK_PROPER_IDENT, TK_JOKER, TK_PROPER_IDENT, TK_JOKER, TK_PLUS, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}
+
+void HsLexer::HsLexerTest::testCase41()
+{
+    auto tks = core("Aa.Bb.<=>");
+
+    std::vector<Token> expected {
+        TK_PROPER_IDENT, TK_JOKER, TK_PROPER_IDENT, TK_JOKER, TK_CUSTOM_OPRTR, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}

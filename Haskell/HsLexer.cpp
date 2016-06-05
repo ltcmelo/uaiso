@@ -51,6 +51,32 @@ HsLexer::~HsLexer()
 
 Token HsLexer::lex()
 {
+    // Check for pending lexemes from a qualified name or operator.
+    if (bit_.pendingQual_ || bit_.pendingName_ || bit_.pendingOprtr_) {
+        if (bit_.delimCount_
+                && bit_.delimCount_ == (bit_.pendingQual_
+                                        + bit_.pendingName_
+                                        + (bit_.pendingOprtr_ > 0 ? 1 : 0))) {
+            --bit_.delimCount_;
+            return TK_JOKER;
+        }
+
+        if (bit_.pendingQual_) {
+            --bit_.pendingQual_;
+            return TK_PROPER_IDENT;
+        }
+
+        if (bit_.pendingName_) {
+            --bit_.pendingName_;
+            return TK_IDENT;
+        }
+
+        UAISO_ASSERT(bit_.pendingOprtr_, return TK_INVALID);
+        auto oprtr = static_cast<Token>(bit_.pendingOprtr_);
+        bit_.pendingOprtr_ = 0;
+        return oprtr;
+    }
+
     Token tk = TK_INVALID;
     updatePos();
 
@@ -376,10 +402,15 @@ Token HsLexer::classifyIdent(char& ch)
         return TK_IDENT;
     }
 
-    // We have a capitalized identifier. However, we must check what comes
-    // after it because it can actually be a qualified name or a qualified
-    // operator, which are lexed entirely as a single lexeme.
-    Token tk = TK_CAPITAL_IDENT;
+    // We have a capitalized identifier. It could be a lexeme on its own or it
+    // could be the qualification of something like `A.B`, `A.b`, or `A.+`,
+    // which also must be lexed as a single lexeme. However, we deviate slightly
+    // from the Haskell report here: our design cannot handled nested names
+    // within a single lexeme, we need the independent parts of the name. So
+    // we lex as according to the rules but we keep the individual identifier
+    // and delimiter tokens pending, which are fed to the parser separately.
+    // To avoid ambiguities with `.` we use a "joker" token as delimiter.
+    Token tk = TK_PROPER_IDENT;
 
     std::function<void ()> classifyRecursively = [&]() {
         if (ch != '.') {
@@ -387,24 +418,28 @@ Token HsLexer::classifyIdent(char& ch)
             return;
         }
 
-        // The presence of the `.` is not sufficient condition to characterize
-        // a qualification. It must be followed by an identifier or operator.
+        // The presence of the `.` is not sufficient to characterize the
+        // qualification, it must be followed by an identifier or operator.
         char next = peekChar(1);
-
-        if (hsLang.isIdentChar(next)) {
-            ch = consumeCharPeekNext(1);
+        if (hsLang.isIdentChar(next) && !bit_.pendingName_) {
+            ++bit_.delimCount_;
+            ch = consumeCharPeekNext();
+            mark_ = curr_;
             while (hsLang.isIdentChar(ch))
                 ch = consumeCharPeekNext();
-            tk = TK_CAPITAL_IDENT_LIST;
-            classifyRecursively();
+            context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+            if (next >= 97) {
+                ++bit_.pendingName_;
+            } else {
+                ++bit_.pendingQual_;
+                classifyRecursively();
+            }
         }
 
         if (isAscSymbol(next)) {
-            ch = consumeCharPeekNext(1);
-            while (isAscSymbol(ch))
-                ch = consumeCharPeekNext();
-            context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
-            tk = TK_QUALIFIED_OPRTR;
+            ++bit_.delimCount_;
+            ch = consumeCharPeekNext();
+            bit_.pendingOprtr_ = lexAscSymbol(ch);
         }
     };
     classifyRecursively();

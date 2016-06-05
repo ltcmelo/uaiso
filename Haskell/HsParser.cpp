@@ -42,12 +42,55 @@ bool HsParser::parse(Lexer* lexer, ParsingContext* context)
     context_ = context;
 
     consumeToken();
+    if (ahead_ == TK_EOP)
+        return false;
 
-    // Temp: Under development.
-    if (parseExpr())
-        return true;
+    auto prog = std::unique_ptr<ProgramAst>(newAst<ProgramAst>());
+    if (ahead_ == TK_MODULE)
+        prog->setModule(parseModuleDecl().release());
+    prog->setDecls(parseBody().release());
+    context->takeAst(std::unique_ptr<Ast>(prog.release()));
 
-    return false;
+    return true;
+}
+
+Parser::Decl HsParser::parseModuleDecl()
+{
+    UAISO_ASSERT(ahead_ == TK_MODULE, return Decl());
+
+    match(TK_MODULE);
+    auto module = ModuleDeclAst::create();
+    module->setKeyLoc(lastLoc_);
+    module->setName(parseModidName().release());
+    // TODO: Exports
+    match(TK_WHERE);
+    module->setTerminLoc(lastLoc_);
+
+    return Decl();
+}
+
+Parser::Name HsParser::parseModidName()
+{
+    auto fullName = NestedNameAst::create();
+    do {
+        match(TK_PROPER_IDENT);
+        auto name = SimpleNameAst::create();
+        name->setNameLoc(lastLoc_);
+        fullName->addName(name.release());
+    } while (maybeConsume(TK_JOKER));
+
+    // For names we don't have the luxury of simply failing a match because we
+    // would end up with a identifier without a corresponding location in the
+    // lexeme map (which is not allowed in our design).
+    if (!fullName->names())
+        return Name(newAst<ErrorNameAst>()->setErrorLoc(lastLoc_));
+
+    return Name(fullName.release());
+}
+
+Parser::DeclList HsParser::parseBody()
+{
+    return DeclList();
 }
 
 Parser::Expr HsParser::parseExpr()
