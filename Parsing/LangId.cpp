@@ -30,7 +30,7 @@ std::vector<LangId> availableLangs()
     static std::vector<LangId> all = {
         LangId::D,
         LangId::Go,
-        // LangId::Hs,
+        LangId::Hs,
         LangId::Py
     };
     return all;
