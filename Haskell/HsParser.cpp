@@ -78,19 +78,8 @@ Parser::Decl HsParser::parseModuleDecl()
     auto module = ModuleDeclAst::create();
     module->setKeyLoc(lastLoc_);
     module->setName(parseModidName().release());
-
-    // Exports
-    if (maybeConsume(TK_LPAREN)) {
-        do {
-            if (maybeConsume(TK_RPAREN))
-                goto ExportsDone;
-
-            parseExportDecl();
-        } while (maybeConsume(TK_COMMA));
-        matchOrSkipTo(TK_RPAREN, "parseModuleDecl");
-    }
-
-ExportsDone:
+    if (ahead_ == TK_LPAREN)
+        module->setExpot(parseExportDecl().release());
     match(TK_WHERE);
     module->setTerminLoc(lastLoc_);
 
@@ -99,40 +88,57 @@ ExportsDone:
 
 Parser::Decl HsParser::parseExportDecl()
 {
-    switch (ahead_) {
-    case TK_MODULE:
-        consumeToken();
-        parseModidName();
-        break;
+    UAISO_ASSERT(ahead_ == TK_LPAREN, return Decl());
+    consumeToken();
 
-    case TK_LPAREN:
-        parseQVarSymName();
-        break;
+    auto expot = ExportDeclAst::create();
+    expot->setLDelimLoc(lastLoc_);
+    do {
+        switch (ahead_) {
+        case TK_RPAREN:
+            break; // We're done.
 
-    case TK_IDENT: {
-        parseVarIdName();
-        break;
-    }
+        case TK_MODULE:
+            consumeToken();
+            addToList(expot->names_, parseModidName().release());
+            break;
 
-    default:
-        auto qname = parseConIdList();
-        if (maybeConsume(TK_IDENT)) {
-            addToList(qname, parseVarIdName().release());
-        } else if (maybeConsume(TK_LPAREN)) {
-            if (maybeConsume(TK_DOT_DOT)) {
-                // TODO: mark export all
-            } else {
-                do {
-                    parseVarOrConName();
-                } while (maybeConsume(TK_COMMA));
+        case TK_LPAREN:
+            addToList(expot->names_, parseQVarSymName().release());
+            break;
+
+        case TK_IDENT:
+            addToList(expot->names_, parseVarIdName().release());
+            break;
+
+        default:
+            auto qname = NestedNameAst::create();
+            do {
+                addToList(qname->names_, parseConIdName().release());
+            } while (maybeConsume(TK_JOKER) && ahead_ == TK_PROPER_IDENT);
+
+            if (ahead_ == TK_IDENT) {
+                addToList(qname->names_, parseVarIdName().release());
+            } else if (ahead_ == TK_LPAREN) {
+                consumeToken();
+                if (maybeConsume(TK_DOT_DOT)) {
+                    // TODO: Mark export all.
+                } else {
+                    do {
+                        // TODO
+                        parseVarOrConName();
+                    } while (maybeConsume(TK_COMMA));
+                }
+                matchOrSkipTo(TK_RPAREN, "parseExportItemDecl");
             }
-            matchOrSkipTo(TK_RPAREN, "parseExportDecl");
+            addToList(expot->names_, qname.release());
+            break;
         }
-        // TODO: add names to export decl
-        break;
-    }
+    } while (maybeConsume(TK_COMMA));
+    matchOrSkipTo(TK_RPAREN, "parseExportDecl");
+    expot->setRDelimLoc(lastLoc_);
 
-    return Decl();
+    return std::move(expot);
 }
 
 Parser::DeclList HsParser::parseBody()

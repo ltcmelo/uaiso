@@ -70,12 +70,12 @@
     GEN_CODE_FOR(Alias, Decl) \
     GEN_CODE_FOR(Base, Decl) \
     GEN_CODE_FOR(Block, Decl) \
-    GEN_CODE_FOR(Selective, Decl) \
     GEN_CODE_FOR(Constraint, Decl) \
     GEN_CODE_FOR(Debug, Decl) \
     GEN_CODE_FOR(Enum, Decl) \
     GEN_CODE_FOR(EnumMember, Decl) \
     GEN_CODE_FOR(Error, Decl) \
+    GEN_CODE_FOR(Export, Decl) \
     GEN_CODE_FOR(Func, Decl) \
     GEN_CODE_FOR(Forward, Decl) \
     GEN_CODE_FOR(ImportClause, Decl) \
@@ -89,6 +89,7 @@
     GEN_CODE_FOR(ParamClause, Decl) \
     GEN_CODE_FOR(Record, Decl) \
     GEN_CODE_FOR(Section, Decl) \
+    GEN_CODE_FOR(Selective, Decl) \
     GEN_CODE_FOR(StaticAssert, Decl) \
     GEN_CODE_FOR(Template, Decl) \
     GEN_CODE_FOR(TemplateParam, Decl) \

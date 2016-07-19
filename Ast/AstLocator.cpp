@@ -364,6 +364,16 @@ const SourceLoc& AstLocator::lastLoc(VisibilityAttrAst* ast) const
     return ast->keyLoc_;
 }
 
+const SourceLoc& AstLocator::loc(ExportDeclAst* ast) const
+{
+    return ast->lDelimLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(ExportDeclAst* ast) const
+{
+    return ast->rDelimLoc_;
+}
+
 const SourceLoc& AstLocator::loc(AliasDeclAst* ast) const
 {
     return ast->keyLoc_;

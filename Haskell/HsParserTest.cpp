@@ -220,7 +220,11 @@ void HsParser::HsParserTest::testCase24()
     core("module Foo(A.B(X, Y, (:!!))) where");
 }
 
-void HsParser::HsParserTest::testCase25() {}
+void HsParser::HsParserTest::testCase25()
+{
+    core("module Foo(F.f) where");
+}
+
 void HsParser::HsParserTest::testCase26() {}
 void HsParser::HsParserTest::testCase27() {}
 void HsParser::HsParserTest::testCase28() {}

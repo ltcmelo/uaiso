@@ -696,10 +696,12 @@ public:
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_AST_PARAM(Expot, expot, DeclAst) // Exported names.
     NAMED_LOC_PARAM(Termin, termin)
 
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
+    std::unique_ptr<DeclAst> expot_;
     SourceLoc terminLoc_;
 };
 
@@ -1059,6 +1061,24 @@ public:
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
     SourceLoc terminLoc_;
+};
+
+class UAISO_API ExportDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(Export, Decl)
+
+    ExportDeclAst()
+        : DeclAst(Kind::ExportDecl)
+    {}
+
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+    NAMED_AST_LIST_PARAM(Name, names, NameAst)
+
+    SourceLoc lDelimLoc_;
+    SourceLoc rDelimLoc_;
+    std::unique_ptr<NameAstList> names_;
 };
 
 } // namespace uaiso

@@ -79,6 +79,13 @@ class UAISO_API NestedNameAst final : public NameAst
 public:
     AST_CLASS(Nested, Name)
 
+    static std::unique_ptr<Self> create(NameAstList* names)
+    {
+        auto nested = create();
+        nested->setNames(names);
+        return nested;
+    }
+
     NestedNameAst()
         : NameAst(Kind::NestedName)
     {}

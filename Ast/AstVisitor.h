@@ -572,6 +572,13 @@ AstVisitor<DerivedT>::traverseUnitTestDecl(UnitTestDeclAst* decl)
     return Continue;
 }
 
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseExportDecl(ExportDeclAst* decl)
+{
+    EVAL_RESULT_LIST_0(traverseList<NameAst>(decl->names_.get(), &DerivedT::traverseName));
+    return Continue;
+}
+
     /*--- Expressions traversal ---*/
 
 TRIVIAL_VISIT(ArrayLengthExpr)
