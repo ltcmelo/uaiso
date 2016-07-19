@@ -75,7 +75,6 @@ private:
     Name parseConName();
     Name parseConIdName();
     Name parseConSymName();
-    NameList parseConIdList();
 
     // Helpers
 

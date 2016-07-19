@@ -94,7 +94,6 @@ private:
     Stmt parsePrintStmt();
     Stmt parseDelStmt();
     Stmt parsePassStmt();
-    Stmt parseFlowStmt();
     Stmt parseImportStmt();
     Stmt parseGlobalStmt();
     Stmt parseExecStmt();

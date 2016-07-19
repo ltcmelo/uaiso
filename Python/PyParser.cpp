@@ -306,11 +306,19 @@ std::unique_ptr<StmtAst> PyParser::parseSmallStmt()
         return parseAssertStmt();
 
     case TK_BREAK:
+        return parseBreakStmt();
+
     case TK_CONTINUE:
+        return parseContinueStmt();
+
     case TK_RETURN:
+        return parseReturnStmt();
+
     case TK_RAISE:
+        return parseRaiseStmt();
+
     case TK_YIELD:
-        return parseFlowStmt();
+        return parseYieldStmt();
 
     default:
         return parseExprStmt();
@@ -374,8 +382,7 @@ std::unique_ptr<StmtAst> PyParser::parseExprStmt()
 std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
 {
     UAISO_ASSERT(ahead_ == TK_PRINT, return Stmt());
-
-    match(TK_PRINT);
+    consumeToken();
     auto print = PrintExprAst::create();
     print->setKeyLoc(lastLoc_);
 
@@ -410,8 +417,7 @@ std::unique_ptr<StmtAst> PyParser::parsePrintStmt()
 std::unique_ptr<StmtAst> PyParser::parseDelStmt()
 {
     UAISO_ASSERT(ahead_ == TK_DELETE, return Stmt());
-
-    match(TK_DELETE);
+    consumeToken();
     auto del = DelExprAst::create();
     del->setKeyLoc(lastLoc_);
     del->setExprs(parseExprList().release());
@@ -424,42 +430,8 @@ std::unique_ptr<StmtAst> PyParser::parseDelStmt()
 std::unique_ptr<StmtAst> PyParser::parsePassStmt()
 {
     UAISO_ASSERT(ahead_ == TK_PASS, return Stmt());
-
-    match(TK_PASS);
+    consumeToken();
     return Stmt(newAst<EmptyStmtAst>()->setKeyLoc(lastLoc_));
-}
-
-/*
- * flow_stmt: break_stmt | continue_stmt | return_stmt | raise_stmt | yield_stmt
- */
-std::unique_ptr<StmtAst> PyParser::parseFlowStmt()
-{
-    UAISO_ASSERT(ahead_ == TK_BREAK
-                 || ahead_ == TK_CONTINUE
-                 || ahead_ == TK_RETURN
-                 || ahead_ == TK_RAISE
-                 || ahead_ == TK_YIELD, return Stmt());
-
-    switch (ahead_) {
-    case TK_BREAK:
-        return parseBreakStmt();
-
-    case TK_CONTINUE:
-        return parseContinueStmt();
-
-    case TK_RETURN:
-        return parseReturnStmt();
-
-    case TK_RAISE:
-        return parseRaiseStmt();
-
-    case TK_YIELD:
-        return parseYieldStmt();
-
-    default:
-        failMatch(true);
-        return Stmt();
-    }
 }
 
 /*
@@ -488,7 +460,7 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
             import->addModule(module.release());
         } while (maybeConsume(TK_COMMA));
         if (!import->modules_)
-            failMatch(true);
+            failMatch();
 
         return Stmt(newAst<DeclStmtAst>()->setDecl(import.release()));
     }
@@ -557,7 +529,7 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
     }
 
     default:
-        failMatch(true);
+        failMatch();
         return Stmt();
     }
 }
@@ -608,7 +580,7 @@ std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
             skipTo(TK_RPAREN);
         }
         if (!decls)
-            failMatch(true);
+            failMatch();
 
         return decls;
     }
@@ -620,8 +592,7 @@ std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
 std::unique_ptr<StmtAst> PyParser::parseGlobalStmt()
 {
     UAISO_ASSERT(ahead_ == TK_GLOBAL, return Stmt());
-
-    match(TK_GLOBAL);
+    consumeToken();
     auto group = VarGroupDeclAst::create();
     group->setSpec(newAst<InferredSpecAst>());
     group->setKeyLoc(lastLoc_);
@@ -631,7 +602,7 @@ std::unique_ptr<StmtAst> PyParser::parseGlobalStmt()
         group->addDecl(newAst<VarDeclAst>()->setName(parseName().release()));
     } while (maybeConsume(TK_COMMA));
     if (!group->decls())
-        failMatch(true);
+        failMatch();
 
     return Stmt(newAst<DeclStmtAst>()->setDecl(group.release()));
 }
@@ -642,8 +613,7 @@ std::unique_ptr<StmtAst> PyParser::parseGlobalStmt()
 std::unique_ptr<StmtAst> PyParser::parseExecStmt()
 {
     UAISO_ASSERT(ahead_ == TK_EXEC, return Stmt());
-
-    match(TK_EXEC);
+    consumeToken();
     auto eval = EvalStmtAst::create();
     eval->setKeyLoc(lastLoc_);
     eval->setExpr(parseExpr().release());
@@ -664,8 +634,7 @@ std::unique_ptr<StmtAst> PyParser::parseExecStmt()
 std::unique_ptr<StmtAst> PyParser::parseAssertStmt()
 {
     UAISO_ASSERT(ahead_ == TK_ASSERT, return Stmt());
-
-    match(TK_ASSERT);
+    consumeToken();
     auto expr = AssertExprAst::create();
     expr->setKeyLoc(lastLoc_);
     expr->setExpr(parseTest().release());
@@ -683,8 +652,7 @@ std::unique_ptr<StmtAst> PyParser::parseAssertStmt()
 std::unique_ptr<StmtAst> PyParser::parseIfStmt()
 {
     UAISO_ASSERT(ahead_ == TK_IF, return Stmt());
-
-    match(TK_IF);
+    consumeToken();
     return parseIfElseIfStmt();
 }
 
@@ -718,8 +686,7 @@ std::unique_ptr<StmtAst> PyParser::parseIfElseIfStmt()
 std::unique_ptr<StmtAst> PyParser::parseWhileStmt()
 {
     UAISO_ASSERT(ahead_ == TK_WHILE, return Stmt());
-
-    match(TK_WHILE);
+    consumeToken();
     auto whyle = WhileStmtAst::create();
     whyle->setWhileLoc(lastLoc_);
     whyle->setExpr(parseTest().release());
@@ -741,8 +708,7 @@ std::unique_ptr<StmtAst> PyParser::parseWhileStmt()
 std::unique_ptr<StmtAst> PyParser::parseForStmt()
 {
     UAISO_ASSERT(ahead_ == TK_FOR, return Stmt());
-
-    match(TK_FOR);
+    consumeToken();
     auto four = ForeachStmtAst::create();
 
     // Convert the exprs (when plain identifiers) into var decls.
@@ -785,8 +751,7 @@ std::unique_ptr<StmtAst> PyParser::parseForStmt()
 std::unique_ptr<StmtAst> PyParser::parseTryStmt()
 {
     UAISO_ASSERT(ahead_ == TK_TRY, return Stmt());
-
-    match(TK_TRY);
+    consumeToken();
     auto trie = TryStmtAst::create();
     trie->setKeyLoc(lastLoc_);
     match(TK_COLON);
@@ -843,7 +808,7 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
         case TK_ELSE: {
             if (!trie->catchs() || seenElse) {
                 // TODO: Once else is added to stmt, check against it (no seenElse).
-                failMatch(true);
+                failMatch();
             } else {
                 consumeToken();
                 match(TK_COLON);
@@ -857,7 +822,7 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
         default:
             // Check for 'except' only ('finally' always returns).
             if (!trie->catchs())
-                failMatch(true);
+                failMatch();
             return Stmt(trie.release());
         }
     }
@@ -869,8 +834,7 @@ std::unique_ptr<StmtAst> PyParser::parseTryStmt()
 std::unique_ptr<StmtAst> PyParser::parseWithStmt()
 {
     UAISO_ASSERT(ahead_ == TK_WITH, return Stmt());
-
-    match(TK_WITH);
+    consumeToken();
     auto with = WithStmtAst::create();
     with->setKeyLoc(lastLoc_);
     with->setExprs(parseList<ExprAstList>(TK_COMMA,
@@ -878,7 +842,7 @@ std::unique_ptr<StmtAst> PyParser::parseWithStmt()
                                           &PyParser::parseWithItem,
                                           false).first.release());
     if (!with->exprs())
-        failMatch(true);
+        failMatch();
 
     match(TK_COLON);
     with->setStmt(parseSuite().release());
@@ -983,8 +947,7 @@ std::unique_ptr<DeclAst> PyParser::parseVarArgsList(bool wantParen)
 std::unique_ptr<StmtAst> PyParser::parseFuncDef()
 {
     UAISO_ASSERT(ahead_ == TK_DEF, return Stmt());
-
-    match(TK_DEF);
+    consumeToken();
     auto spec = std::unique_ptr<FuncSpecAst__<>>(newAst<FuncSpecAst__<>>());
     spec->setKeyLoc(lastLoc_);
     auto decl = FuncDeclAst::create();
@@ -1005,8 +968,7 @@ std::unique_ptr<StmtAst> PyParser::parseFuncDef()
 std::unique_ptr<StmtAst> PyParser::parseClassDef()
 {
     UAISO_ASSERT(ahead_ == TK_CLASS, return Stmt());
-
-    match(TK_CLASS);
+    consumeToken();
     auto spec = RecordSpecAst::create();
     spec->setKeyLoc(lastLoc_);
     auto decl = RecordDeclAst::create();
@@ -1042,8 +1004,7 @@ std::unique_ptr<StmtAst> PyParser::parseClassDef()
 std::unique_ptr<StmtAst> PyParser::parseDecorated()
 {
     UAISO_ASSERT(ahead_ == TK_AT, return Stmt());
-
-    match(TK_AT);
+    consumeToken();
     do {
         // TODO: Work on decorators.
         parseDottedName();
@@ -1068,7 +1029,7 @@ std::unique_ptr<StmtAst> PyParser::parseDecorated()
         return parseFuncDef();
 
     default:
-        failMatch(true);
+        failMatch();
         return Stmt();
     }
 }
@@ -1079,8 +1040,7 @@ std::unique_ptr<StmtAst> PyParser::parseDecorated()
 std::unique_ptr<StmtAst> PyParser::parseContinueStmt()
 {
     UAISO_ASSERT(ahead_ == TK_CONTINUE, return Stmt());
-
-    match(TK_CONTINUE);
+    consumeToken();
     return Stmt(newAst<ContinueStmtAst>()->setKeyLoc(lastLoc_));
 }
 
@@ -1090,8 +1050,7 @@ std::unique_ptr<StmtAst> PyParser::parseContinueStmt()
 std::unique_ptr<StmtAst> PyParser::parseBreakStmt()
 {
     UAISO_ASSERT(ahead_ == TK_BREAK, return Stmt());
-
-    match(TK_BREAK);
+    consumeToken();
     return Stmt(newAst<BreakStmtAst>()->setKeyLoc(lastLoc_));
 }
 
@@ -1100,8 +1059,6 @@ std::unique_ptr<StmtAst> PyParser::parseBreakStmt()
  */
 std::unique_ptr<StmtAst> PyParser::parseYieldStmt()
 {
-    UAISO_ASSERT(ahead_ == TK_YIELD, return Stmt());
-
     return Stmt(newAst<YieldStmtAst>()->setExpr(parseYieldExpr().release()));
 }
 
@@ -1111,8 +1068,7 @@ std::unique_ptr<StmtAst> PyParser::parseYieldStmt()
 std::unique_ptr<StmtAst> PyParser::parseRaiseStmt()
 {
     UAISO_ASSERT(ahead_ == TK_RAISE, return Stmt());
-
-    match(TK_RAISE);
+    consumeToken();
     auto stmt = ThrowStmtAst::create();
     stmt->setKeyLoc(lastLoc_);
     if (isTestAhead()) {
@@ -1135,8 +1091,7 @@ std::unique_ptr<StmtAst> PyParser::parseRaiseStmt()
 std::unique_ptr<StmtAst> PyParser::parseReturnStmt()
 {
     UAISO_ASSERT(ahead_ == TK_RETURN, return Stmt());
-
-    match(TK_RETURN);
+    consumeToken();
     auto stmt = ReturnStmtAst::create();
     stmt->setKeyLoc(lastLoc_);
     if (isTestAhead())
@@ -1314,7 +1269,7 @@ std::unique_ptr<ExprAstList> PyParser::parseArgList()
         unpack->setExpr(parseTest().release());
         addToList(args, unpack.release());
     } else if (wantStarStar) {
-        failMatch(true);
+        failMatch();
     }
 
     return args;
@@ -1686,7 +1641,7 @@ std::unique_ptr<ExprAst> PyParser::parseAtom()
         return parseStrLit();
 
     default:
-        failMatch(true);
+        failMatch();
         return Expr();
     }
 }
@@ -1734,8 +1689,7 @@ std::unique_ptr<ExprAstList> PyParser::parseSubscriptList()
 std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
 {
     UAISO_ASSERT(ahead_ == TK_LBRACE, return Expr());
-
-    match(TK_LBRACE);
+    consumeToken();
     auto dictOrSet = ArrayInitExprAst::create();
     // DESIGN: Differentiate a set literal, '{1, 2}', from a list literal,
     // '(1, 2)'. Both are parsed as ArrayInitExprAst. Perhaps add a variety
@@ -1828,8 +1782,7 @@ std::unique_ptr<ExprAst> PyParser::parseDictOrSetMaker()
 std::unique_ptr<ExprAst> PyParser::parseListMaker()
 {
     UAISO_ASSERT(ahead_ == TK_LBRACKET, return Expr());
-
-    match(TK_LBRACKET);
+    consumeToken();
     auto list = ArrayInitExprAst::create();
     list->setLDelimLoc(lastLoc_);
     if (maybeConsume(TK_RBRACKET)) {
@@ -1884,8 +1837,7 @@ std::unique_ptr<ExprAst> PyParser::parseListMaker()
 std::unique_ptr<ExprAst> PyParser::parseWrappedOrTuple()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Expr());
-
-    match(TK_LPAREN);
+    consumeToken();
     auto tuple = TupleLitExprAst::create();
     tuple->setLDelimLoc(lastLoc_);
     if (maybeConsume(TK_RPAREN)) {
@@ -1930,8 +1882,7 @@ std::unique_ptr<ExprAst> PyParser::parseWrappedOrTuple()
 std::unique_ptr<ExprAst> PyParser::parseYieldExpr()
 {
     UAISO_ASSERT(ahead_ == TK_YIELD, return Expr());
-
-    match(TK_YIELD);
+    consumeToken();
     auto yield = YieldExprAst::create();
     yield->setKeyLoc(lastLoc_);
     if (isTestAhead())
@@ -1958,8 +1909,7 @@ std::unique_ptr<ExprAst> PyParser::parseOldLambdaDef()
 std::unique_ptr<ExprAst> PyParser::parseLambdaCore(Expr (PyParser::*parseFunc) ())
 {
     UAISO_ASSERT(ahead_ == TK_LAMBDA, return Expr());
-
-    match(TK_LAMBDA);
+    consumeToken();
     auto spec = std::unique_ptr<FuncSpecAst__<>>(newAst<FuncSpecAst__<>>());
     spec->setKeyLoc(lastLoc_);
     spec->setParam(parseVarArgsList(false).release());
@@ -2013,8 +1963,7 @@ std::unique_ptr<NameAst> PyParser::parseName()
 std::unique_ptr<ExprAst> PyParser::parseStrLit()
 {
     UAISO_ASSERT(ahead_ == TK_STR_LIT, return Expr());
-
-    match(TK_STR_LIT);
+    consumeToken();
     auto str = StrLitExprAst::create();
     str->setLitLoc(lastLoc_);
     if (ahead_ == TK_STR_LIT) {

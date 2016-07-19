@@ -58,6 +58,7 @@ protected:
      * \brief consumeToken
      */
     void consumeToken();
+    void consumeTokenCheckEOP();
 
     /*!
      * \brief maybeConsume
@@ -83,7 +84,7 @@ protected:
      * \brief failMatch
      * \param consume
      */
-    void failMatch(bool consume);
+    void failMatch();
 
     Lexer* lexer_ { nullptr };
     ParsingContext* context_ { nullptr };

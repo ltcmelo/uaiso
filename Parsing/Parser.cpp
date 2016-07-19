@@ -24,6 +24,7 @@
 #include "Parsing/Parser.h"
 #include "Parsing/Lexer.h"
 #include "Parsing/ParsingContext.h"
+#include "Common/Assert.h"
 #include "Common/Trace__.h"
 
 #define TRACE_NAME "Parser"
@@ -32,17 +33,23 @@ using namespace uaiso;
 
 void Parser::consumeToken()
 {
-    if (ahead_ == TK_EOP)
-        return;
-
     // Track previous token location.
     lastLoc_ = lexer_->tokenLoc();
     lastLoc_.fileName_ = context_->fileName();
+
     ahead_ = lexer_->lex();
+}
+
+void Parser::consumeTokenCheckEOP()
+{
+    if (ahead_ != TK_EOP)
+        consumeToken();
 }
 
 bool Parser::maybeConsume(Token tk)
 {
+    UAISO_ASSERT(tk != TK_EOP, return false);
+
     if (ahead_ == tk) {
         consumeToken();
         return true;
@@ -58,21 +65,21 @@ void Parser::skipTo(Token tk)
 
 bool Parser::match(Token tk)
 {
-    auto actual = ahead_;
-    consumeToken(); // Move on, regardless of a match.
-    if (actual != tk) {
-        failMatch(false);
+    UAISO_ASSERT(tk != TK_EOP, return false);
+
+    if (ahead_ != tk) {
+        failMatch();
         return false;
     }
+    consumeToken();
     return true;
 }
 
-void Parser::failMatch(bool consume)
+void Parser::failMatch()
 {
-    // Location in the report is always from the previously consumed token.
-    if (consume)
-        consumeToken();
+    consumeTokenCheckEOP(); // Move on...
 
+    // Reported location is from last token.
     DEBUG_TRACE("error at %d:%d unexpected token (%s)\n",
                 lastLoc_.lastLine_, lastLoc_.lastCol_, lastLoc_.fileName_.c_str());
     context_->trackReport(Diagnostic::UnexpectedToken, lastLoc_);

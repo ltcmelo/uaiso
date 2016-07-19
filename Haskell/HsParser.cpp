@@ -32,10 +32,9 @@
 
 using namespace uaiso;
 
-namespace uaiso {
-
+namespace uaiso
+{
 extern std::unordered_map<std::uint16_t, const char*> tokenName;
-
 }
 
 HsParser::HsParser()
@@ -73,8 +72,8 @@ bool HsParser::parse(Lexer* lexer, ParsingContext* context)
 Parser::Decl HsParser::parseModuleDecl()
 {
     UAISO_ASSERT(ahead_ == TK_MODULE, return Decl());
+    consumeToken();
 
-    match(TK_MODULE);
     auto module = ModuleDeclAst::create();
     module->setKeyLoc(lastLoc_);
     module->setName(parseModidName().release());
@@ -125,7 +124,7 @@ Parser::Decl HsParser::parseExportDecl()
                     // TODO: Mark export all.
                 } else {
                     do {
-                        // TODO
+                        // TODO: Selective export.
                         parseVarOrConName();
                     } while (maybeConsume(TK_COMMA));
                 }
@@ -170,7 +169,7 @@ Parser::Expr HsParser::parseAExpr()
         return Expr(newAst<BoolLitExprAst>()->setLitLoc(lastLoc_));
 
     default:
-        failMatch(true);
+        failMatch();
         return Expr();
     }
 }
@@ -275,7 +274,7 @@ Parser::Name HsParser::parseConSymName()
         return SimpleNameAst::create(lastLoc_);
 
     default:
-        failMatch(true);
+        failMatch();
         return ErrorNameAst::create(lastLoc_);
     }
 }
@@ -303,7 +302,7 @@ Parser::Name HsParser::parseVarSymName()
     }
 
     default:
-        failMatch(true);
+        failMatch();
         return ErrorNameAst::create(lastLoc_);
     }
 }
@@ -316,16 +315,6 @@ Parser::Name HsParser::parseConIdName()
 Parser::Name HsParser::parseVarIdName()
 {
     return parseName(TK_IDENT);
-}
-
-Parser::NameList HsParser::parseConIdList()
-{
-    NameList names;
-    do {
-        addToList(names, parseConIdName().release());
-    } while (maybeConsume(TK_JOKER));
-
-    return names;
 }
 
 Parser::Name HsParser::parseQName(Name (HsParser::*parseFunc)())
