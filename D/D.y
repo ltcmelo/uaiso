@@ -974,7 +974,7 @@ PrimaryExpr:
     {
         DECL_1_LOC(@1);
         context->trackLexeme<Ident>(".", locA.lineCol());
-        auto dot = newAst<GenNameAst>()->setGenLoc(locA);
+        auto dot = newAst<GenNameAst>()->setNameLoc(locA);
         auto name = newAst<NestedNameAst>()->setNamesSR(NameAstList::createSR(dot)->handleSR($2));
         $$ = newAst<IdentExprAst>()->setName(name);
     }
@@ -1344,7 +1344,7 @@ FullType:
 |   '.' NestedIdentOrTemplateInst
     {
         DECL_1_LOC(@1);
-        auto global = (new GenNameAst("<global>"))->setGenLoc(locA);
+        auto global = (new GenNameAst("<global>"))->setNameLoc(locA);
         auto names = NameAstList::createSR(global);
         names = names->mergeSR($2);
         auto name = newAst<NestedNameAst>()->setNamesSR(names);
@@ -2283,7 +2283,7 @@ TemplateThisParam:
         IGNORE_FOR_NOW($2);
 
         DECL_1_LOC(@1);
-        auto name = (new GenNameAst("<TODO:TemplateThisParam>"))->setGenLoc(locA);
+        auto name = (new GenNameAst("<TODO:TemplateThisParam>"))->setNameLoc(locA);
         $$ = newAst<TemplateParamThisDeclAst>()->setThissLoc(locA)->setName(name);
     }
 ;

@@ -1513,7 +1513,7 @@ ImportModuleDecl:
 |   '.' StringLit
     {
         DECL_1_LOC(@1);
-        auto dot = newAst<GenNameAst>()->setGenLoc(locA);
+        auto dot = newAst<GenNameAst>()->setNameLoc(locA);
         context->trackLexeme<Ident>(".", locA.lineCol());
         $$ = newAst<ImportModuleDeclAst>()->setLocalName(dot)->setExpr($2);
     }

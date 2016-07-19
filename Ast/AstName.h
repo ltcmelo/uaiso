@@ -49,15 +49,15 @@ public:
 class UAISO_API ErrorNameAst final : public NameAst
 {
 public:
-    AST_CLASS(Error, Name)
+    AST_NAME_CLASS(Error, Name)
 
     ErrorNameAst()
         : NameAst(Kind::ErrorName)
     {}
 
-    NAMED_LOC_PARAM(Error, error)
+    NAMED_LOC_PARAM(Name, name)
 
-    SourceLoc errorLoc_;
+    SourceLoc nameLoc_;
 };
 
 class UAISO_API SimpleNameAst final : public NameAst
@@ -118,7 +118,7 @@ public:
 class UAISO_API GenNameAst final : public NameAst
 {
 public:
-    AST_CLASS(Gen, Name)
+    AST_NAME_CLASS(Gen, Name)
 
     GenNameAst()
         : NameAst(Kind::GenName)
@@ -129,16 +129,16 @@ public:
         , str_(name)
     {}
 
-    NAMED_LOC_PARAM(Gen, gen)
+    NAMED_LOC_PARAM(Name, name)
 
-    SourceLoc genLoc_;
+    SourceLoc nameLoc_;
     std::string str_;
 };
 
 class UAISO_API CompletionNameAst final : public NameAst
 {
 public:
-    AST_CLASS(Completion, Name)
+    AST_NAME_CLASS(Completion, Name)
 
     CompletionNameAst()
         : NameAst(Kind::CompletionName)

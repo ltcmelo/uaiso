@@ -2007,7 +2007,7 @@ std::unique_ptr<NameAst> PyParser::parseName()
         return Name(name.release());
     }
 
-    return Name(newAst<ErrorNameAst>()->setErrorLoc(lastLoc_));
+    return Name(newAst<ErrorNameAst>()->setNameLoc(lastLoc_));
 }
 
 std::unique_ptr<ExprAst> PyParser::parseStrLit()

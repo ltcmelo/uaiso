@@ -92,12 +92,12 @@ const SourceLoc& AstLocator::lastLoc(SimpleNameAst* ast) const
 
 const SourceLoc& AstLocator::loc(ErrorNameAst* ast) const
 {
-    return ast->errorLoc_;
+    return ast->nameLoc_;
 }
 
 const SourceLoc& AstLocator::lastLoc(ErrorNameAst* ast) const
 {
-    return ast->errorLoc_;
+    return ast->nameLoc_;
 }
 
 const SourceLoc& AstLocator::loc(CompletionNameAst* ast) const
@@ -122,12 +122,12 @@ const SourceLoc& AstLocator::lastLoc(TemplateInstNameAst* ast) const
 
 const SourceLoc& AstLocator::loc(GenNameAst* ast) const
 {
-    return ast->genLoc_;
+    return ast->nameLoc_;
 }
 
 const SourceLoc& AstLocator::lastLoc(GenNameAst* ast) const
 {
-    return ast->genLoc_;
+    return ast->nameLoc_;
 }
 
 const SourceLoc& AstLocator::loc(NestedNameAst* ast) const

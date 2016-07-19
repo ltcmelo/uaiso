@@ -270,7 +270,7 @@ Parser::Name HsParser::parseConSymName()
 
     default:
         failMatch(true);
-        return ErrorNameAst::create();
+        return ErrorNameAst::create(lastLoc_);
     }
 }
 
@@ -298,7 +298,7 @@ Parser::Name HsParser::parseVarSymName()
 
     default:
         failMatch(true);
-        return ErrorNameAst::create();
+        return ErrorNameAst::create(lastLoc_);
     }
 }
 
@@ -343,9 +343,5 @@ HsParser::Name HsParser::parseName(Token tk)
      */
     if (match(tk))
         return SimpleNameAst::create(lastLoc_);
-
-//    consumeToken();
-    auto name = ErrorNameAst::create();
-    name->setErrorLoc(lastLoc_);
-    return std::move(name);
+    return ErrorNameAst::create(lastLoc_);
 }

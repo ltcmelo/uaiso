@@ -148,8 +148,8 @@ private:
 
     VisitResult visitGenName(GenNameAst* ast)
     {
-        auto name = lexs_->findAt<Ident>(ast->genLoc_.fileName_,
-                                         ast->genLoc_.lineCol());
+        auto name = lexs_->findAt<Ident>(ast->nameLoc_.fileName_,
+                                         ast->nameLoc_.lineCol());
         return pushName(name);
     }
 
