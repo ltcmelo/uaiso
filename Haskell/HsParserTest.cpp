@@ -44,6 +44,16 @@ public:
              , &HsParserTest::testCase8
              , &HsParserTest::testCase9
              , &HsParserTest::testCase10
+             , &HsParserTest::testCase11
+             , &HsParserTest::testCase12
+             , &HsParserTest::testCase13
+             , &HsParserTest::testCase14
+             , &HsParserTest::testCase15
+             , &HsParserTest::testCase16
+             , &HsParserTest::testCase17
+             , &HsParserTest::testCase18
+             , &HsParserTest::testCase19
+             , &HsParserTest::testCase20
              )
 
      void testCase1();
@@ -56,6 +66,16 @@ public:
      void testCase8();
      void testCase9();
      void testCase10();
+     void testCase11();
+     void testCase12();
+     void testCase13();
+     void testCase14();
+     void testCase15();
+     void testCase16();
+     void testCase17();
+     void testCase18();
+     void testCase19();
+     void testCase20();
 };
 
 MAKE_CLASS_TEST(HsParser)
@@ -85,8 +105,78 @@ void HsParser::HsParserTest::testCase5()
     core("module \"abc\" where\n", true);
 }
 
-void HsParser::HsParserTest::testCase6(){}
-void HsParser::HsParserTest::testCase7(){}
-void HsParser::HsParserTest::testCase8(){}
-void HsParser::HsParserTest::testCase9(){}
-void HsParser::HsParserTest::testCase10(){}
+void HsParser::HsParserTest::testCase6()
+{
+    core("module Control.Monad.ST where\n");
+}
+
+void HsParser::HsParserTest::testCase7()
+{
+    core("module Foo(bar,zem) where");
+}
+
+void HsParser::HsParserTest::testCase8()
+{
+    core("module Foo((!!!)) where");
+}
+
+void HsParser::HsParserTest::testCase9()
+{
+    core("module Foo(!!!) where", true);
+}
+
+void HsParser::HsParserTest::testCase10()
+{
+    core("module Foo((!)) where");
+}
+
+void HsParser::HsParserTest::testCase11()
+{
+    core("module Foo(bar,(Yup.!)) where");
+}
+
+void HsParser::HsParserTest::testCase12()
+{
+    core("module Foo(bar,(Yup.!!!)) where");
+}
+
+void HsParser::HsParserTest::testCase13()
+{
+    // TODO: Fix lexing of `:!`, cannot be custom operator (begins with `:`).
+    core("module Foo(bar,(Yup.:!)) where", true);
+}
+
+void HsParser::HsParserTest::testCase14()
+{
+    core("module Foo(bar,(:!)) where");
+}
+
+void HsParser::HsParserTest::testCase15()
+{
+    core("module Foo(module Yup) where");
+}
+
+void HsParser::HsParserTest::testCase16()
+{
+    core("module Foo() where");
+}
+
+void HsParser::HsParserTest::testCase17()
+{
+    core("module A( Maybe( Nothing, Just ) ) where");
+}
+
+void HsParser::HsParserTest::testCase18()
+{
+    core("module A( Mb.Maybe( Nothing, Just ) ) where");
+}
+
+void HsParser::HsParserTest::testCase19()
+{
+    core("module Foo((Yup.!!!)) where");
+}
+
+void HsParser::HsParserTest::testCase20()
+{
+    core("module Foo(foo,bar,) where");
+}

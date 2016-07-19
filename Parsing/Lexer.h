@@ -68,7 +68,7 @@ public:
      * \brief tokenLoc
      * \return
      *
-     * Return the location of the lastly lexed token.
+     * Return the location of the previously lexed token.
      *
      * \note The location will have no file information associated with it.
      */
@@ -93,7 +93,6 @@ protected:
     Token lexStrLitEnd(char& ch, const char quote, const bool mayBreak, const Lang* lang);
     Token lexNumLit(char& ch, const Lang* lang);
     Token lexFloatLit(char& ch, const Lang* lang);
-
 
     /*!
      * \brief filterKeyword

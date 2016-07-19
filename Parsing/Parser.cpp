@@ -69,7 +69,7 @@ bool Parser::match(Token tk)
 
 void Parser::failMatch(bool consume)
 {
-    // Location in the report is always from the lastly consumed token.
+    // Location in the report is always from the previously consumed token.
     if (consume)
         consumeToken();
 

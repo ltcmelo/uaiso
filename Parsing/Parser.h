@@ -46,12 +46,12 @@ protected:
     Parser() = default;
 
     using Decl = std::unique_ptr<DeclAst>;
-    using Expr = std::unique_ptr<ExprAst>;
-    using Name = std::unique_ptr<NameAst>;
-    using Stmt = std::unique_ptr<StmtAst>;
     using DeclList = std::unique_ptr<DeclAstList>;
+    using Expr = std::unique_ptr<ExprAst>;
     using ExprList = std::unique_ptr<ExprAstList>;
+    using Name = std::unique_ptr<NameAst>;
     using NameList = std::unique_ptr<NameAstList>;
+    using Stmt = std::unique_ptr<StmtAst>;
     using StmtList = std::unique_ptr<StmtAstList>;
 
     /*!

@@ -198,7 +198,7 @@ AstT* newAst()
     using Self = AST_NODE##AST_KIND##Ast; \
     static std::unique_ptr<Self> create() \
     { \
-        return std::unique_ptr<Self>(new Self); \
+        return std::unique_ptr<Self>(newAst<Self>()); \
     }
 
 #define NAMED_AST_PARAM(NAME, MEMBER, PARAM_TYPE) \

@@ -95,6 +95,7 @@ const Diagnostic::Code Diagnostic::InvalidFloatSuffix = 50;
 const Diagnostic::Code Diagnostic::InvalidReferenceToSelf = 51;
 const Diagnostic::Code Diagnostic::UnexpectedName = 52;
 const Diagnostic::Code Diagnostic::UnmatchedStringJoining = 53;
+const Diagnostic::Code Diagnostic::InvalidOperator = 54;
 
 namespace uaiso {
 
@@ -216,6 +217,8 @@ public:
                     "unexpected name", Severity::Error },
         { Diagnostic::UnmatchedStringJoining,
                     "unmatched string joining", Severity::Error },
+        { Diagnostic::InvalidOperator,
+                    "invalid operator", Severity::Error },
     };
 };
 

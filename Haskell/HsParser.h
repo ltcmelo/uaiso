@@ -44,6 +44,10 @@ public:
 private:
     DECL_CLASS_TEST(HsParser)
 
+    using NestedName = std::unique_ptr<NestedNameAst>;
+
+    void matchOrSkipTo(Token tk, const char* rule);
+
     //--- Expressions ---//
 
     Expr parseExpr();
@@ -53,10 +57,32 @@ private:
 
     Decl parseModuleDecl();
     DeclList parseBody();
+    Decl parseExportDecl();
 
     //--- Names ---//
 
     Name parseModidName();
+    Name parseQVarOrQConName();
+    Name parseQVarName();
+    Name parseQVarIdName();
+    Name parseQVarSymName();
+    Name parseQConName();
+    Name parseQConIdName();
+    Name parseQConSymName();
+    Name parseVarName();
+    Name parseVarIdName();
+    Name parseVarSymName();
+    Name parseConName();
+    Name parseConIdName();
+    Name parseConSymName();
+    NameList parseConIdList();
+
+    // Helpers
+
+    Name parseName(Token tk);
+    Name parseQName(Name (HsParser::*parseFunc)());
+
+
 };
 
 } // namespace uaiso

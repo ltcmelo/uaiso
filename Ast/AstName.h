@@ -29,6 +29,15 @@
 #include "Ast/AstBase.h"
 #include <string>
 
+#define AST_NAME_CLASS(AST_NODE, AST_KIND) \
+    AST_CLASS(AST_NODE, AST_KIND) \
+    static std::unique_ptr<Self> create(const SourceLoc& nameLoc) \
+    { \
+        auto ast = std::unique_ptr<Self>(newAst<Self>()); \
+        ast->setNameLoc(nameLoc); \
+        return ast; \
+    }
+
 namespace uaiso {
 
 class UAISO_API NameAst : public Ast
@@ -54,7 +63,7 @@ public:
 class UAISO_API SimpleNameAst final : public NameAst
 {
 public:
-    AST_CLASS(Simple, Name)
+    AST_NAME_CLASS(Simple, Name)
 
     SimpleNameAst()
         : NameAst(Kind::SimpleName)
@@ -142,4 +151,7 @@ public:
 
 } // namespace uaiso
 
+#undef AST_NAME_CLASS
+
 #endif
+
