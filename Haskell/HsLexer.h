@@ -44,11 +44,10 @@ private:
 
     using Base = Lexer;
 
-    Token lexOprtrTable(char& ch);
     Token lexSpecial(char& ch);
     Token lexAscSymbol(char& ch);
-    Token lexAscSymbolMaybe2(char& ch, const char& match, Token reserved);
-    Token lexAscSymbolMaybeMore(char& ch, Token tk);
+    Token lexAscSymbol2(char& ch, const char& ch2, Token tk2, Token tkMore);
+    Token lexAscSymbolMore(char& ch, Token tk);
 
     bool isAscSymbol(const char ch) const;
 

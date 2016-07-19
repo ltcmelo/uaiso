@@ -180,23 +180,23 @@ LexNextToken:
         break;
 
     case '.':
-        tk = lexAscSymbolMaybe2(ch, '.', TK_DOT_DOT);
+        tk = lexAscSymbol2(ch, '.', TK_DOT_DOT, TK_SYMBOL_IDENT);
         break;
 
     case '-':
-        tk = lexAscSymbolMaybe2(ch, '>', TK_DASH_ARROW);
+        tk = lexAscSymbol2(ch, '>', TK_DASH_ARROW, TK_SYMBOL_IDENT);
         break;
 
     case '=':
-        tk = lexAscSymbolMaybe2(ch, '>', TK_EQ_ARROW);
+        tk = lexAscSymbol2(ch, '>', TK_EQ_ARROW, TK_SYMBOL_IDENT);
         break;
 
     case '<':
-        tk = lexAscSymbolMaybe2(ch, '-', TK_ARROW_DASH);
+        tk = lexAscSymbol2(ch, '-', TK_ARROW_DASH, TK_SYMBOL_IDENT);
         break;
 
     case ':':
-        tk = lexAscSymbolMaybe2(ch, ':', TK_COLON_COLON);
+        tk = lexAscSymbol2(ch, ':', TK_COLON_COLON, TK_SPECIAL_IDENT);
         break;
 
     case '"':
@@ -302,7 +302,7 @@ const int oprtrTable[] =
 
 } // anonymous
 
-Token HsLexer::lexOprtrTable(char& ch)
+Token HsLexer::lexSpecial(char& ch)
 {
     UAISO_ASSERT(ch >= 33 && ch <= 126, return TK_INVALID);
 
@@ -312,38 +312,36 @@ Token HsLexer::lexOprtrTable(char& ch)
     return Token(oprtrTable[index]);
 }
 
-Token HsLexer::lexSpecial(char& ch)
-{
-    return lexOprtrTable(ch);
-}
-
 Token HsLexer::lexAscSymbol(char& ch)
 {
-    Token tk = lexOprtrTable(ch);
-    return lexAscSymbolMaybeMore(ch, tk);
-}
-
-Token HsLexer::lexAscSymbolMaybe2(char& ch, const char& match, Token reserved)
-{
-    Token tk = lexOprtrTable(ch);
-    if (ch == match) {
-        ch = consumeCharPeekNext();
-        tk = reserved;
-    }
-
-    return lexAscSymbolMaybeMore(ch, tk);
-}
-
-Token HsLexer::lexAscSymbolMaybeMore(char &ch, Token tk)
-{
+    Token tk = lexSpecial(ch);
     if (!isAscSymbol(ch))
         return tk;
 
+    return lexAscSymbolMore(ch, TK_SYMBOL_IDENT);
+}
+
+Token HsLexer::lexAscSymbol2(char& ch, const char& ch2, Token tk2, Token tkMore)
+{
+    Token tk = lexSpecial(ch);
+    if (ch == ch2) {
+        tk = tk2;
+        ch = consumeCharPeekNext();
+    }
+    if (!isAscSymbol(ch))
+        return tk;
+
+    return lexAscSymbolMore(ch, tkMore);
+}
+
+Token HsLexer::lexAscSymbolMore(char &ch, Token tk)
+{
+    UAISO_ASSERT(isAscSymbol(ch), return TK_INVALID);
     do {
         ch = consumeCharPeekNext();
     } while (isAscSymbol(ch));
 
-    return TK_CUSTOM_OPRTR;
+    return tk;
 }
 
 bool HsLexer::isAscSymbol(const char ch) const
@@ -439,7 +437,18 @@ Token HsLexer::classifyIdent(char& ch)
         if (isAscSymbol(next)) {
             ++bit_.delimCount_;
             ch = consumeCharPeekNext();
-            bit_.pendingOprtr_ = lexAscSymbol(ch);
+            if (next == '.')
+                bit_.pendingOprtr_ = lexAscSymbol2(ch, '.', TK_DOT_DOT, TK_SYMBOL_IDENT);
+            else if (next == '-')
+                bit_.pendingOprtr_ = lexAscSymbol2(ch, '>', TK_DASH_ARROW, TK_SYMBOL_IDENT);
+            else if (next == '=')
+                bit_.pendingOprtr_ = lexAscSymbol2(ch, '>', TK_EQ_ARROW, TK_SYMBOL_IDENT);
+            else if (next == '<')
+                bit_.pendingOprtr_ = lexAscSymbol2(ch, '-', TK_ARROW_DASH, TK_SYMBOL_IDENT);
+            else if (next == ':')
+                bit_.pendingOprtr_ = lexAscSymbol2(ch, ':', TK_COLON_COLON, TK_SPECIAL_IDENT);
+            else
+                bit_.pendingOprtr_ = lexAscSymbol(ch);
         }
     };
     classifyRecursively();

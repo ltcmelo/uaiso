@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2015 Leandro T. C. Melo (ltcmelo@gmail.com)
+ * Copyright (c) 2014-2016 Leandro T. C. Melo (ltcmelo@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU LSer General Public
@@ -82,7 +82,9 @@ TOKEN JOKER "<joker>"
     //--- Identifier ---//
 
 TOKEN IDENT "<ident>"
-TOKEN PROPER_IDENT "<captial_ident>"
+TOKEN PROPER_IDENT "<proper_ident>"
+TOKEN SYMBOL_IDENT "<symbol_ident>"
+TOKEN SPECIAL_IDENT "<special_ident>"
 
     //--- Comments ---//
 
@@ -124,7 +126,6 @@ TOKEN END_LIT "$lit_end_marker$"
     //--- Multi-character operators ---//
 
 TOKEN BEGIN_MULTICHAR_OPRTR "$multichar_oprtr_begin_marker$"
-TOKEN CUSTOM_OPRTR "<custom_oprtr>"
 TOKEN AMPER_AMPER "&&"
 TOKEN AMPER_CARET "&^"
 TOKEN AMPER_CARET_EQ "&^="

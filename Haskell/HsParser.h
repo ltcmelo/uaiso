@@ -62,7 +62,7 @@ private:
     //--- Names ---//
 
     Name parseModidName();
-    Name parseQVarOrQConName();
+    Name parseVarOrConName();
     Name parseQVarName();
     Name parseQVarIdName();
     Name parseQVarSymName();

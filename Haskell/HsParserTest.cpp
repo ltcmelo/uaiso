@@ -54,6 +54,16 @@ public:
              , &HsParserTest::testCase18
              , &HsParserTest::testCase19
              , &HsParserTest::testCase20
+             , &HsParserTest::testCase21
+             , &HsParserTest::testCase22
+             , &HsParserTest::testCase23
+             , &HsParserTest::testCase24
+             , &HsParserTest::testCase25
+             , &HsParserTest::testCase26
+             , &HsParserTest::testCase27
+             , &HsParserTest::testCase28
+             , &HsParserTest::testCase29
+             , &HsParserTest::testCase30
              )
 
      void testCase1();
@@ -76,6 +86,16 @@ public:
      void testCase18();
      void testCase19();
      void testCase20();
+     void testCase21();
+     void testCase22();
+     void testCase23();
+     void testCase24();
+     void testCase25();
+     void testCase26();
+     void testCase27();
+     void testCase28();
+     void testCase29();
+     void testCase30();
 };
 
 MAKE_CLASS_TEST(HsParser)
@@ -142,13 +162,12 @@ void HsParser::HsParserTest::testCase12()
 
 void HsParser::HsParserTest::testCase13()
 {
-    // TODO: Fix lexing of `:!`, cannot be custom operator (begins with `:`).
     core("module Foo(bar,(Yup.:!)) where", true);
 }
 
 void HsParser::HsParserTest::testCase14()
 {
-    core("module Foo(bar,(:!)) where");
+    core("module Foo(bar,(:!)) where", true);
 }
 
 void HsParser::HsParserTest::testCase15()
@@ -180,3 +199,30 @@ void HsParser::HsParserTest::testCase20()
 {
     core("module Foo(foo,bar,) where");
 }
+
+void HsParser::HsParserTest::testCase21()
+{
+    core("module Foo(A.B(x, y, z)) where");
+}
+
+void HsParser::HsParserTest::testCase22()
+{
+    core("module Foo(A.B(x, y, (!!))) where");
+}
+
+void HsParser::HsParserTest::testCase23()
+{
+    core("module Foo(A.B(X, Y, Z)) where");
+}
+
+void HsParser::HsParserTest::testCase24()
+{
+    core("module Foo(A.B(X, Y, (:!!))) where");
+}
+
+void HsParser::HsParserTest::testCase25() {}
+void HsParser::HsParserTest::testCase26() {}
+void HsParser::HsParserTest::testCase27() {}
+void HsParser::HsParserTest::testCase28() {}
+void HsParser::HsParserTest::testCase29() {}
+void HsParser::HsParserTest::testCase30() {}

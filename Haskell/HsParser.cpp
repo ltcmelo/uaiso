@@ -123,7 +123,7 @@ Parser::Decl HsParser::parseExportDecl()
                 // TODO: mark export all
             } else {
                 do {
-                    parseQVarOrQConName();
+                    parseVarOrConName();
                 } while (maybeConsume(TK_COMMA));
             }
             matchOrSkipTo(TK_RPAREN, "parseExportDecl");
@@ -179,32 +179,27 @@ Parser::Name HsParser::parseModidName()
     return std::move(modid);
 }
 
-Parser::Name HsParser::parseQVarOrQConName()
+Parser::Name HsParser::parseVarOrConName()
 {
-    if (ahead_ == TK_LPAREN) {
-        consumeToken();
-        auto qname = parseConIdList();
+    if (maybeConsume(TK_LPAREN)) {
+        Name name;
         switch (ahead_) {
         case TK_COLON:
-        //case TK_CUSTOM_COLON:
-            addToList(qname, parseConSymName().release());
+        case TK_SPECIAL_IDENT:
+            name = parseConSymName();
             break;
 
         default:
-            addToList(qname, parseVarSymName().release());
+            name = parseVarSymName();
             break;
         }
-        matchOrSkipTo(TK_RPAREN, "parseQVarOrQConName");
-        return Name();
+        matchOrSkipTo(TK_RPAREN, "parseVarOrConName");
+        return name;
     }
 
-    auto qname = parseConIdList();
-    if (ahead_ == TK_IDENT) {
-        addToList(qname, parseVarIdName().release());
-        return Name();
-    }
-
-    return Name();
+    if (ahead_ == TK_IDENT)
+        return parseVarIdName();
+    return parseConIdName();
 }
 
 Parser::Name HsParser::parseQConName()
@@ -269,7 +264,7 @@ Parser::Name HsParser::parseConSymName()
 {
     switch (ahead_) {
     case TK_COLON:
-    case TK_CUSTOM_OPRTR: // TODO: Custom that begins with `:`.
+    case TK_SPECIAL_IDENT:
         consumeToken();
         return SimpleNameAst::create(lastLoc_);
 
@@ -296,7 +291,7 @@ Parser::Name HsParser::parseVarSymName()
     case TK_GR:
     case TK_QUESTION:
     case TK_CARET:
-    case TK_CUSTOM_OPRTR: {
+    case TK_SYMBOL_IDENT: {
         consumeToken();
         return SimpleNameAst::create(lastLoc_);
     }
