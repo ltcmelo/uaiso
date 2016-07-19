@@ -80,8 +80,7 @@ private:
 
     Name parseName(Token tk);
     Name parseQName(Name (HsParser::*parseFunc)());
-
-
+    Name parseSymOrId(Name (HsParser::*parseSym)(), Name (HsParser::*parseId)());
 };
 
 } // namespace uaiso

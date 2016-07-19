@@ -207,32 +207,32 @@ Parser::Name HsParser::parseVarOrConName()
     return parseConIdName();
 }
 
-Parser::Name HsParser::parseQConName()
+Parser::Name HsParser::parseSymOrId(Name (HsParser::*parseSym)(),
+                                    Name (HsParser::*parseId)())
 {
     if (ahead_ == TK_LPAREN)
-        return parseQConSymName();
-    return parseQConIdName();
+        return (this->*(parseSym))();
+    return (this->*(parseId))();
+}
+
+Parser::Name HsParser::parseQConName()
+{
+    return parseSymOrId(&HsParser::parseQConSymName, &HsParser::parseQConIdName);
 }
 
 Parser::Name HsParser::parseQVarName()
 {
-    if (ahead_ == TK_LPAREN)
-        return parseQVarSymName();
-    return parseQVarIdName();
+    return parseSymOrId(&HsParser::parseQVarSymName, &HsParser::parseQVarIdName);
 }
 
 Parser::Name HsParser::parseConName()
 {
-    if (ahead_ == TK_LPAREN)
-        return parseConSymName();
-    return parseConIdName();
+    return parseSymOrId(&HsParser::parseConSymName, &HsParser::parseConIdName);
 }
 
 Parser::Name HsParser::parseVarName()
 {
-    if (ahead_ == TK_LPAREN)
-        return parseVarSymName();
-    return parseVarIdName();
+    return parseSymOrId(&HsParser::parseVarSymName, &HsParser::parseVarIdName);
 }
 
 Parser::Name HsParser::parseQConIdName()
