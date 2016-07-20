@@ -85,8 +85,6 @@ LexNextToken:
 
     char ch = peekChar();
 
-    // If an opening brace is found, consume it and continue. Otherwise,
-    // auto-insert one and keep track of the scope.
     if (bit_.wantBrace_) {
         maybeSkipSpaces(ch);
         bit_.wantBrace_ = false;
@@ -94,6 +92,8 @@ LexNextToken:
             consumeChar();
             layoutStack_.push(std::make_pair(false, -1));
         } else {
+            // Left-brace auto-insertion. Column is assigned later, when
+            // indetation of the following token is discovered.
             bit_.waitOffsetMark_ = true;
             layoutStack_.push(std::make_pair(true, -1));
         }
@@ -101,14 +101,13 @@ LexNextToken:
         goto LexDone;
     }
 
-    // At a line start the layout must be checked. Either a semicolon may be
-    // inserted as a separator or a scope delimiting closing brace (in the case
-    // the matching opening brace has been auto-inserted).
+    // At a line start the layout must be checked, a semicolon or a closing
+    // brace might need to be inserted.
     if (bit_.atLineStart_ && !bit_.waitOffsetMark_ && !layoutStack_.empty()) {
         const Layout& layout = layoutStack_.top();
         if (layout.first) {
             maybeSkipSpaces(ch);
-            if (ch != '\n') {
+            if (ch && ch != '\n') {
                 if (col_ == layout.second) {
                     tk = TK_SEMICOLON;
                     goto LexDone;
@@ -124,7 +123,10 @@ LexNextToken:
 
     switch (ch) {
     case 0:
-        // TODO: Clarify braces/semicolon rule on "invalid" lexeme.
+        if (!layoutStack_.empty()) {
+            layoutStack_.pop();
+            return TK_RBRACE;
+        }
         return TK_EOP;
 
     case '\n':

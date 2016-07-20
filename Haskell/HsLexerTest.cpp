@@ -544,7 +544,7 @@ data Bar a = Empty
 
     std::vector<Token> expected {
         TK_MODULE, TK_PROPER_IDENT, TK_WHERE, TK_LBRACE, TK_DATA,
-        TK_PROPER_IDENT, TK_IDENT, TK_EQ, TK_PROPER_IDENT, TK_SEMICOLON,
+        TK_PROPER_IDENT, TK_IDENT, TK_EQ, TK_PROPER_IDENT, TK_RBRACE,
         TK_EOP
     };
     UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
