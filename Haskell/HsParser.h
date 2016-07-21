@@ -55,26 +55,27 @@ private:
 
     //--- Declarations ---//
 
-    Decl parseModuleDecl();
+    Decl parseModule();
+    Decl parseImport();
+    Decl parseVisibleItems(bool allowModid);
     DeclList parseBody();
-    Decl parseExportDecl();
 
     //--- Names ---//
 
-    Name parseModidName();
-    Name parseVarOrConName();
-    Name parseQVarName();
-    Name parseQVarIdName();
-    Name parseQVarSymName();
-    Name parseQConName();
-    Name parseQConIdName();
-    Name parseQConSymName();
-    Name parseVarName();
-    Name parseVarIdName();
-    Name parseVarSymName();
-    Name parseConName();
-    Name parseConIdName();
-    Name parseConSymName();
+    Name parseModid();
+    Name parseVarOrCon();
+    Name parseQVar();
+    Name parseQVarId();
+    Name parseQVarSym();
+    Name parseQCon();
+    Name parseQConId();
+    Name parseQConSym();
+    Name parseVar();
+    Name parseVarId();
+    Name parseVarSym();
+    Name parseCon();
+    Name parseConId();
+    Name parseConSym();
 
     // Helpers
 

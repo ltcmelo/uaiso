@@ -1054,11 +1054,11 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
     // An import is not injected into the environment during binding. But
     // it's still evaluated so the module and given namespace are collected.
 
-    UAISO_ASSERT(ast->expr(), return Abort);
+    UAISO_ASSERT(ast->target(), return Abort);
     AstToLexeme astToLexs(P->lexs_);
-    const auto& lexs = astToLexs.process(ast->expr());
+    const auto& lexs = astToLexs.process(ast->target());
     if (lexs.empty()) {
-        P->report(Diagnostic::UnresolvedModule, ast->expr(), P->locator_);
+        P->report(Diagnostic::UnresolvedModule, ast->target(), P->locator_);
         return Continue;
     }
 
@@ -1068,11 +1068,11 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
 
     const Ident* localName = nullptr;
     if (ast->localName_) {
-        const auto& localLexemes = astToLexs.process(ast->localName());
-        if (localLexemes.empty() || localLexemes.size() > 1) {
+        const auto& localLexs = astToLexs.process(ast->localName());
+        if (localLexs.empty() || localLexs.size() > 1) {
             P->report(Diagnostic::UnresolvedModule, ast->localName(), P->locator_);
         } else {
-            localName = ConstIdent_Cast(localLexemes.back());
+            localName = ConstIdent_Cast(localLexs.back());
             DEBUG_TRACE("local module name %s\n", localName->str().c_str());
         }
     }
@@ -1085,11 +1085,17 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
         DEBUG_TRACE("no explicit local name, assign %s\n", target.c_str());
     }
 
+    const Ident* importMode = nullptr;
+    if (ast->mode()) {
+        const auto& modeLexs = astToLexs.process(ast->mode());
+        importMode = ConstIdent_Cast(modeLexs.back());
+    }
+
     std::unique_ptr<Import> import(
                 new Import(FileInfo(P->fileName_).fullDir(),
                            target,
                            localName,
-                           P->sanitizer_->mayMergeImportEnv(localName)));
+                           !P->sanitizer_->shouldMergeImport(importMode)));
 
     // Specific exact symbols if this is a selective import.
     if (ast->items()) {

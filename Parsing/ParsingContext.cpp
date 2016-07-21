@@ -148,9 +148,15 @@ void ParsingContext::trackLexeme(const char* lex,
                                  const LineCol& lineCol)
 {
     if (lexs_)
-        lexs_->insertOrFind<LexemeT>(std::string(lex, count),
-                                        fileName_,
-                                        lineCol);
+        lexs_->insertOrFind<LexemeT>(std::string(lex, count), fileName_, lineCol);
+}
+
+template <class LexemeT>
+const LexemeT* ParsingContext::fetchLexeme(const LineCol& lineCol) const
+{
+    if (lexs_)
+        return lexs_->findAt<LexemeT>(fileName_, lineCol);
+    return nullptr;
 }
 
 // Explicit instantiations for the known lexemes.
@@ -166,6 +172,12 @@ template void
 ParsingContext::trackLexeme<NumLit>(const char* lex, const LineCol& lineCol);
 template void
 ParsingContext::trackLexeme<NumLit>(const char* lex, int count, const LineCol& lineCol);
+template const Ident*
+ParsingContext::fetchLexeme<Ident>(const LineCol& lineCol) const;
+template const StrLit*
+ParsingContext::fetchLexeme<StrLit>(const LineCol& lineCol) const;
+template const NumLit*
+ParsingContext::fetchLexeme<NumLit>(const LineCol& lineCol) const;
 
 void ParsingContext::takeAst(std::unique_ptr<Ast> ast)
 {

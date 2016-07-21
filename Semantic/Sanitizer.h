@@ -41,7 +41,7 @@ public:
     virtual bool packageMatchesDir(const std::string& fullFileName,
                                    const std::string& packageName) const;
 
-    virtual bool mayMergeImportEnv(const Ident* name) const;
+    virtual bool shouldMergeImport(const Ident* mode) const;
 
     virtual bool allowAnonymous(Symbol::Kind symKind) const;
 

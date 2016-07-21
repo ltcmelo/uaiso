@@ -738,17 +738,19 @@ public:
         : DeclAst(Kind::ImportModuleDecl)
     {}
 
-    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_PARAM(Mode, mode, NameAst)
+    NAMED_AST_PARAM(Target, target, ExprAst)
     NAMED_LOC_PARAM(As, as)
     NAMED_AST_PARAM(LocalName, localName, NameAst)
     NAMED_LOC_PARAM(Select, select)
     NAMED_AST_LIST_PARAM(Item, items, DeclAst)
 
-    std::unique_ptr<ExprAst> expr_;
-    SourceLoc asLoc_;
-    std::unique_ptr<NameAst> localName_;
-    SourceLoc selectLoc_;
-    std::unique_ptr<DeclAstList> items_;
+    std::unique_ptr<NameAst> mode_;        //!< Qualified or unqualified.
+    std::unique_ptr<ExprAst> target_;      //!< What is to be imported.
+    SourceLoc asLoc_;                      //!< Local name indicator.
+    std::unique_ptr<NameAst> localName_;   //!< The local name.
+    SourceLoc selectLoc_;                  //!< Items selector.
+    std::unique_ptr<DeclAstList> items_;   //!< Selected item names.
 };
 
 class UAISO_API ImportItemDeclAst : public DeclAst

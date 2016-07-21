@@ -134,6 +134,12 @@ public:
     void trackLexeme(const char* lex, int count, const LineCol& lineCol);
 
     /*!
+     * \brief fetchLexeme
+     */
+    template <class LexemeT>
+    const LexemeT* fetchLexeme(const LineCol& lineCol) const;
+
+    /*!
      * \brief trackToken
      * \param tk
      * \param lineCol

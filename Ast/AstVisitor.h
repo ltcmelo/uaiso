@@ -429,7 +429,7 @@ template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseImportModuleDecl(ImportModuleDeclAst* decl)
 {
     EVAL_RESULT_0(recursivelyVisitImportModuleDecl(decl));
-    EVAL_RESULT_N(traverseExpr(decl->expr_.get()));
+    EVAL_RESULT_N(traverseExpr(decl->target_.get()));
     EVAL_RESULT_N(traverseName(decl->localName_.get()));
     EVAL_RESULT_LIST_N(traverseList<DeclAst>(decl->items_.get(), &DerivedT::traverseDecl));
     return Continue;

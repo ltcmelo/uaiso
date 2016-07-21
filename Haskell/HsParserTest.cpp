@@ -225,8 +225,29 @@ void HsParser::HsParserTest::testCase25()
     core("module Foo(F.f) where");
 }
 
-void HsParser::HsParserTest::testCase26() {}
-void HsParser::HsParserTest::testCase27() {}
-void HsParser::HsParserTest::testCase28() {}
+void HsParser::HsParserTest::testCase26()
+{
+    core(R"raw(
+module Foo where
+import A
+)raw");
+}
+
+void HsParser::HsParserTest::testCase27()
+{
+    core(R"raw(
+module Foo where
+import qualified A
+)raw");
+}
+
+void HsParser::HsParserTest::testCase28()
+{
+    core(R"raw(
+module Foo where
+import qualified A as ModA
+)raw");
+}
+
 void HsParser::HsParserTest::testCase29() {}
 void HsParser::HsParserTest::testCase30() {}

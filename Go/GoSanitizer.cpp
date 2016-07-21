@@ -41,7 +41,7 @@ bool GoSanitizer::packageMatchesDir(const std::string& fullFileName,
     return false;
 }
 
-bool GoSanitizer::mayMergeImportEnv(const Ident* name) const
+bool GoSanitizer::shouldMergeImport(const Ident* mode) const
 {
-    return name && name->str() == ".";
+    return mode && mode->str() == ".";
 }

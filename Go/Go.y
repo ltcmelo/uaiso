@@ -1504,18 +1504,18 @@ ImportClauseDecl:
 ImportModuleDecl:
     StringLit
     {
-        $$ = newAst<ImportModuleDeclAst>()->setExpr($1);
+        $$ = newAst<ImportModuleDeclAst>()->setTarget($1);
     }
 |   Ident StringLit
     {
-        $$ = newAst<ImportModuleDeclAst>()->setLocalName($1)->setExpr($2);
+        $$ = newAst<ImportModuleDeclAst>()->setLocalName($1)->setTarget($2);
     }
 |   '.' StringLit
     {
         DECL_1_LOC(@1);
         auto dot = newAst<GenNameAst>()->setNameLoc(locA);
         context->trackLexeme<Ident>(".", locA.lineCol());
-        $$ = newAst<ImportModuleDeclAst>()->setLocalName(dot)->setExpr($2);
+        $$ = newAst<ImportModuleDeclAst>()->setMode(dot)->setTarget($2);
     }
 ;
 

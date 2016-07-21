@@ -230,12 +230,13 @@ void Manager::processDeps(const std::string& fullFileName) const
 
                 if (!import->isSelective()) {
                     std::unique_ptr<Namespace> space;
-                    if (import->isEmbedded())
+                    if (!import->isQualified()) {
                         space.reset(new Namespace);
-                    else
+                    } else {
                         space.reset(new Namespace(import->localName()));
+                    }
                     space->setEnv(otherProg->env());
-                    curProgEnv.injectNamespace(std::move(space), import->isEmbedded());
+                    curProgEnv.injectNamespace(std::move(space), !import->isQualified());
                     continue;
                 }
 
@@ -266,7 +267,7 @@ void Manager::processDeps(const std::string& fullFileName) const
 
                         std::unique_ptr<Namespace> space(new Namespace(actualName));
                         space->setEnv(otherProg->env());
-                        curProgEnv.injectNamespace(std::move(space), import->isEmbedded());
+                        curProgEnv.injectNamespace(std::move(space), !import->isQualified());
                         break;
                     }
                 }

@@ -34,7 +34,7 @@ public:
     bool packageMatchesDir(const std::string& fullFileName,
                            const std::string& packageName) const override;
 
-    bool mayMergeImportEnv(const Ident* name) const override;
+    bool shouldMergeImport(const Ident* mode) const override;
 };
 
 } // namespace uaiso

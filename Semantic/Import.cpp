@@ -31,11 +31,11 @@ struct Import::ImportImpl
     ImportImpl(const std::string& fromWhere,
                const std::string& target,
                const Ident* localName,
-               bool isEmbedded)
+               bool isQualified)
         : fromWhere_(fromWhere)
         , target_(target)
         , localName_(localName)
-        , isEmbedded_(isEmbedded)
+        , isQualified_(isQualified)
     {}
 
     const std::string fromWhere_;
@@ -43,15 +43,15 @@ struct Import::ImportImpl
     const Ident* localName_;
     std::vector<const Ident*> items_;
     std::unordered_map<const Ident*, const Ident*> nicks_;
-    bool isEmbedded_;
+    bool isQualified_;
     TargetEntity entity_;
 };
 
 Import::Import(const std::string& fromWhere,
                const std::string& target,
                const Ident* localName,
-               bool isEmbedded)
-    : P(new ImportImpl(fromWhere, target, localName, isEmbedded))
+               bool isQualified)
+    : P(new ImportImpl(fromWhere, target, localName, isQualified))
 {}
 
 Import::~Import()
@@ -72,9 +72,9 @@ const Ident* Import::localName() const
     return P->localName_;
 }
 
-bool Import::isEmbedded() const
+bool Import::isQualified() const
 {
-    return P->isEmbedded_;
+    return P->isQualified_;
 }
 
 bool Import::isSelective() const

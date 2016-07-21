@@ -51,9 +51,9 @@ bool uaiso::Sanitizer::packageMatchesDir(const std::string& fullFileName,
     return true;
 }
 
-bool Sanitizer::mayMergeImportEnv(const Ident* name) const
+bool Sanitizer::shouldMergeImport(const Ident* mode) const
 {
-    return !name;
+    return !mode;
 }
 
 bool Sanitizer::validateVisibility(Symbol::Kind, Token) const

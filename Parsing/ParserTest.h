@@ -26,6 +26,7 @@
 #include "Common/Test.h"
 #include "Parsing/Factory.h"
 #include "Parsing/Lexer.h"
+#include "Parsing/LexemeMap.h"
 #include "Parsing/Parser.h"
 #include "Parsing/ParsingContext.h"
 #include <iostream>
@@ -43,10 +44,12 @@ protected:
 
     void core(const std::string& code, bool expectError = false)
     {
-        DiagnosticReports reports;
         ParsingContext context;
         context.setFileName("/testfile");
+        DiagnosticReports reports;
         context.collectReports(&reports);
+        LexemeMap lexs;
+        context.collectLexemes(&lexs);
 
         lexer_->setContext(&context);
         lexer_->setBuffer(code.c_str(), code.length());

@@ -40,7 +40,7 @@ bool DSanitizer::moduleMatchesFile(const std::string& fullFileName,
     return false;
 }
 
-bool DSanitizer::mayMergeImportEnv(const Ident *name) const
+bool DSanitizer::shouldMergeImport(const Ident *name) const
 {
     UAISO_UNUSED(name);
 

@@ -41,15 +41,16 @@ class UAISO_API Import final
 public:
     /*!
      * \brief Import
+     *
      * \param fromWhere
      * \param targetEntity
      * \param localName
-     * \param isEmbedded
+     * \param isQualified
      */
     Import(const std::string& fromWhere,
            const std::string& target,
            const Ident* localName,
-           bool isEmbedded);
+           bool isQualified);
 
     ~Import();
 
@@ -67,7 +68,7 @@ public:
 
     const Ident* localName() const;
 
-    bool isEmbedded() const;
+    bool isQualified() const;
 
     bool isSelective() const;
 

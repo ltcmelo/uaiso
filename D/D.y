@@ -3177,14 +3177,14 @@ ImportModuleDecl:
     NestedIdent
     {
         auto name = newAst<IdentExprAst>()->setName($1);
-        $$ = newAst<ImportModuleDeclAst>()->setExpr(name);
+        $$ = newAst<ImportModuleDeclAst>()->setTarget(name);
     }
 |   Ident '=' NestedIdent
     {
         DECL_1_LOC(@2);
         auto name = newAst<IdentExprAst>()->setName($3);
         $$ = newAst<ImportModuleDeclAst>()->setLocalName($1)->setAsLoc(locA)
-            ->setExpr(name);
+            ->setTarget(name);
     }
 |   Ident '=' NestedIdent ':' ImportItemDeclList %prec PREFER_SHIFT
     {
@@ -3193,13 +3193,13 @@ ImportModuleDecl:
         DECL_2_LOC(@2, @4);
         auto name = newAst<IdentExprAst>()->setName($3);
         $$ = newAst<ImportModuleDeclAst>()->setLocalName($1)->setAsLoc(locA)
-            ->setExpr(name)->setSelectLoc(locB)->setItemsSR($5);
+            ->setTarget(name)->setSelectLoc(locB)->setItemsSR($5);
     }
 |   NestedIdent ':' ImportItemDeclList %prec PREFER_SHIFT /* See comment above */
     {
         DECL_1_LOC(@2);
         auto name = newAst<IdentExprAst>()->setName($1);
-        $$ = newAst<ImportModuleDeclAst>()->setExpr(name)->setSelectLoc(locA)
+        $$ = newAst<ImportModuleDeclAst>()->setTarget(name)->setSelectLoc(locA)
             ->setItemsSR($3);
     }
 ;

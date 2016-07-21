@@ -452,7 +452,7 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
             if (import->modules_)
                 import->modules_->delim_ = lastLoc_;
             auto module = ImportModuleDeclAst::create();
-            module->setExpr(newAst<IdentExprAst>()->setName(parseDottedName().release()));
+            module->setTarget(newAst<IdentExprAst>()->setName(parseDottedName().release()));
             if (maybeConsume(TK_AS)) {
                 module->setAsLoc(lastLoc_);
                 module->setLocalName(parseName().release());
@@ -504,18 +504,13 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
         if (wantName || isNameAhead()) {
             // A selective import, items specified after 'import'.
             auto module = ImportModuleDeclAst::create();
-            module->setExpr(newAst<IdentExprAst>()->setName(parseDottedName().release()));
+            module->setTarget(newAst<IdentExprAst>()->setName(parseDottedName().release()));
             match(TK_IMPORT);
             module->setSelectLoc(lastLoc_);
-            // Look for a select-all import without going further. If it's
-            // the case, set the asterisk as a local name "marker".
-            if (maybeConsume(TK_STAR)) {
-                auto star = SimpleNameAst::create();
-                star->setNameLoc(lastLoc_);
-                module->setLocalName(star.release());
-            } else {
+            if (maybeConsume(TK_STAR))
+                module->setMode(SimpleNameAst::create(lastLoc_).release());
+            else
                 module->setItems(parseSubImports(true).release());
-            }
             import->addModule(module.release());
         } else {
             // An "ordinary" (non-selective) import, 'from' is just to indicate
@@ -567,7 +562,7 @@ std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
                 if (decls)
                     decls->delim_ = lastLoc_;
                 auto module = ImportModuleDeclAst::create();
-                module->setExpr(newAst<IdentExprAst>()->setName(parseName().release()));
+                module->setTarget(newAst<IdentExprAst>()->setName(parseName().release()));
                 if (maybeConsume(TK_AS)) {
                     module->setAsLoc(lastLoc_);
                     module->setLocalName(parseName().release());
