@@ -56,8 +56,9 @@ private:
     //--- Declarations ---//
 
     Decl parseModule();
+    Decl parseExport();
     Decl parseImport();
-    Decl parseVisibleItems(bool allowModid);
+    DeclList parseSelection(bool allowModid);
     DeclList parseBody();
 
     //--- Names ---//

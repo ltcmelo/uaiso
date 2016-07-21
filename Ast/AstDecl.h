@@ -705,13 +705,13 @@ public:
     SourceLoc terminLoc_;
 };
 
-class UAISO_API ImportClauseDeclAst : public DeclAst
+class UAISO_API ImportGroupDeclAst : public DeclAst
 {
 public:
-    AST_CLASS(ImportClause, Decl)
+    AST_CLASS(ImportGroup, Decl)
 
-    ImportClauseDeclAst()
-        : DeclAst(Kind::ImportClauseDecl)
+    ImportGroupDeclAst()
+        : DeclAst(Kind::ImportGroupDecl)
     {}
 
     NAMED_LOC_PARAM(Key, key)
@@ -729,37 +729,39 @@ public:
     std::unique_ptr<DeclAstList> modules_;
 };
 
-class UAISO_API ImportModuleDeclAst : public DeclAst
+class UAISO_API ImportDeclAst : public DeclAst
 {
 public:
-    AST_CLASS(ImportModule, Decl)
+    AST_CLASS(Import, Decl)
 
-    ImportModuleDeclAst()
-        : DeclAst(Kind::ImportModuleDecl)
+    ImportDeclAst()
+        : DeclAst(Kind::ImportDecl)
     {}
 
     NAMED_AST_PARAM(Mode, mode, NameAst)
     NAMED_AST_PARAM(Target, target, ExprAst)
     NAMED_LOC_PARAM(As, as)
     NAMED_AST_PARAM(LocalName, localName, NameAst)
-    NAMED_LOC_PARAM(Select, select)
-    NAMED_AST_LIST_PARAM(Item, items, DeclAst)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Selection, selections, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
 
-    std::unique_ptr<NameAst> mode_;        //!< Qualified or unqualified.
-    std::unique_ptr<ExprAst> target_;      //!< What is to be imported.
-    SourceLoc asLoc_;                      //!< Local name indicator.
-    std::unique_ptr<NameAst> localName_;   //!< The local name.
-    SourceLoc selectLoc_;                  //!< Items selector.
-    std::unique_ptr<DeclAstList> items_;   //!< Selected item names.
+    std::unique_ptr<NameAst> mode_;             //!< Qualified or unqualified.
+    std::unique_ptr<ExprAst> target_;           //!< What is to be imported.
+    SourceLoc asLoc_;                           //!< Local name indicator.
+    std::unique_ptr<NameAst> localName_;        //!< The local name.
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<DeclAstList> selections_;   //!< Selected item names.
+    SourceLoc rDelimLoc_;
 };
 
-class UAISO_API ImportItemDeclAst : public DeclAst
+class UAISO_API ImportSelectionDeclAst : public DeclAst
 {
 public:
-    AST_CLASS(ImportItem, Decl)
+    AST_CLASS(ImportSelection, Decl)
 
-    ImportItemDeclAst()
-        : DeclAst(Kind::ImportItemDecl)
+    ImportSelectionDeclAst()
+        : DeclAst(Kind::ImportSelectionDecl)
     {}
 
     NAMED_AST_PARAM(ActualName, actualName, NameAst)
@@ -769,6 +771,40 @@ public:
     std::unique_ptr<NameAst> actualName_;
     SourceLoc asLoc_;
     std::unique_ptr<NameAst> alternateName_;
+};
+
+class UAISO_API ExportDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(Export, Decl)
+
+    ExportDeclAst()
+        : DeclAst(Kind::ExportDecl)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Selection, selections, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+
+    SourceLoc keyLoc_;
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<DeclAstList> selections_;
+    SourceLoc rDelimLoc_;
+};
+
+class UAISO_API ExportSelectionDeclAst : public DeclAst
+{
+public:
+    AST_CLASS(ExportSelection, Decl)
+
+    ExportSelectionDeclAst()
+        : DeclAst(Kind::ExportSelectionDecl)
+    {}
+
+    NAMED_AST_PARAM(Name, name, NameAst)
+
+    std::unique_ptr<NameAst> name_;
 };
 
 /*!
@@ -1063,24 +1099,6 @@ public:
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
     SourceLoc terminLoc_;
-};
-
-class UAISO_API ExportDeclAst final : public DeclAst
-{
-public:
-    AST_CLASS(Export, Decl)
-
-    ExportDeclAst()
-        : DeclAst(Kind::ExportDecl)
-    {}
-
-    NAMED_LOC_PARAM(LDelim, lDelim)
-    NAMED_LOC_PARAM(RDelim, rDelim)
-    NAMED_AST_LIST_PARAM(Name, names, NameAst)
-
-    SourceLoc lDelimLoc_;
-    SourceLoc rDelimLoc_;
-    std::unique_ptr<NameAstList> names_;
 };
 
 } // namespace uaiso

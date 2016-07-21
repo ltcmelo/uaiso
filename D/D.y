@@ -153,13 +153,13 @@ void D_yyerror(YYLTYPE* yylloc,
 %type <decl_> BasicDecl VarGroupDecl VarDecl FuncDecl ParamGroupDecl ParamClauseDecl
 %type <decl_> CtorDecl DtorDecl Postblit SelectiveDecl InvariantDecl
 %type <decl_> EnumDecl EnumMemberDecl EnumBody EnumEnd AliasThis AliasDecl AliasBindDecl
-%type <decl_> UnitTestDecl ImportModuleDecl ImportClauseDecl ImportItemDecl VersionDecl
+%type <decl_> UnitTestDecl ImportDecl ImportGroupDecl ImportSelectionDecl VersionDecl
 %type <decl_> StaticAssert DebugDecl RestrictTemplateParamClause
 %type <decl_> TemplateDecl TemplateParamClause RestrictTemplateParam
 %type <decl_> TemplateTypeParam TemplateValueParam TemplateAliasParam TemplateTupleParam
 %type <decl_> TemplateParam Constraint ForeachDecl TemplateThisParam
 %type <decls_> BaseRecordList ParamGroupDeclList TemplateParamList AliasBindDeclList VarDeclList
-%type <decls_> RestrictTemplateParamList Decls EnumMemberDeclList ImportList ImportItemDeclList
+%type <decls_> RestrictTemplateParamList Decls EnumMemberDeclList ImportList ImportSelectionDeclList
 
 %type <expr_> Expr AssignExpr CondExpr BinaryExpr UnaryExpr PrimaryExpr PostfixExpr
 %type <expr_> ThisExpr SuperExpr NewExpr TypeidExpr AssertExpr MixinExpr SpecialKeyword
@@ -1535,7 +1535,7 @@ BasicDecl:
 |   EnumDecl
 |   RecordDecl
 |   AttrRecordDecl
-|   ImportClauseDecl
+|   ImportGroupDecl
 ;
 
 VarGroupDecl:
@@ -3150,81 +3150,81 @@ RecordType:
     }
 ;
 
-ImportClauseDecl:
+ImportGroupDecl:
     IMPORT ImportList ';'
     {
         DECL_2_LOC(@1, @3);
-        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)
+        $$ = newAst<ImportGroupDeclAst>()->setKeyLoc(locA)
             ->setModulesSR($2)->setTerminLoc(locB);
     }
 |   STATIC IMPORT ImportList ';'
     {
         /* TODO: Take care of static */
         DECL_2_LOC(@2, @4);
-        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)
+        $$ = newAst<ImportGroupDeclAst>()->setKeyLoc(locA)
             ->setModulesSR($3)->setTerminLoc(locB);
     }
 |   PUBLIC IMPORT ImportList ';'
     {
         /* TODO: Take care of public */
         DECL_2_LOC(@2, @4);
-        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)
+        $$ = newAst<ImportGroupDeclAst>()->setKeyLoc(locA)
             ->setModulesSR($3)->setTerminLoc(locB);
     }
 ;
 
-ImportModuleDecl:
+ImportDecl:
     NestedIdent
     {
         auto name = newAst<IdentExprAst>()->setName($1);
-        $$ = newAst<ImportModuleDeclAst>()->setTarget(name);
+        $$ = newAst<ImportDeclAst>()->setTarget(name);
     }
 |   Ident '=' NestedIdent
     {
         DECL_1_LOC(@2);
         auto name = newAst<IdentExprAst>()->setName($3);
-        $$ = newAst<ImportModuleDeclAst>()->setLocalName($1)->setAsLoc(locA)
+        $$ = newAst<ImportDeclAst>()->setLocalName($1)->setAsLoc(locA)
             ->setTarget(name);
     }
-|   Ident '=' NestedIdent ':' ImportItemDeclList %prec PREFER_SHIFT
+|   Ident '=' NestedIdent ':' ImportSelectionDeclList %prec PREFER_SHIFT
     {
         /* Once inside a selective import, append to its binding list,
            not to the import list itself. */
         DECL_2_LOC(@2, @4);
         auto name = newAst<IdentExprAst>()->setName($3);
-        $$ = newAst<ImportModuleDeclAst>()->setLocalName($1)->setAsLoc(locA)
-            ->setTarget(name)->setSelectLoc(locB)->setItemsSR($5);
+        $$ = newAst<ImportDeclAst>()->setLocalName($1)->setAsLoc(locA)
+            ->setTarget(name)->setLDelimLoc(locB)->setSelectionsSR($5);
     }
-|   NestedIdent ':' ImportItemDeclList %prec PREFER_SHIFT /* See comment above */
+|   NestedIdent ':' ImportSelectionDeclList %prec PREFER_SHIFT /* See comment above */
     {
         DECL_1_LOC(@2);
         auto name = newAst<IdentExprAst>()->setName($1);
-        $$ = newAst<ImportModuleDeclAst>()->setTarget(name)->setSelectLoc(locA)
-            ->setItemsSR($3);
+        $$ = newAst<ImportDeclAst>()->setTarget(name)->setLDelimLoc(locA)
+            ->setSelectionsSR($3);
     }
 ;
 
-ImportItemDecl:
+ImportSelectionDecl:
     NestedIdent
     {
         // TODO: Report error if not Ident (cannot be nested).
-        $$ = newAst<ImportItemDeclAst>()
+        $$ = newAst<ImportSelectionDeclAst>()
             ->setActualName(newAst<NestedNameAst>()->setNamesSR($1));
     }
 |   Ident '=' NestedIdent
     {
         DECL_1_LOC(@2);
-        $$ = newAst<ImportItemDeclAst>()->setAlternateName($1)->setAsLoc(locA)
+        $$ = newAst<ImportSelectionDeclAst>()->setAlternateName($1)->setAsLoc(locA)
             ->setActualName(newAst<NestedNameAst>()->setNamesSR($3));
     }
 ;
 
-ImportItemDeclList:
-    ImportItemDecl
+ImportSelectionDeclList:
+    ImportSelectionDecl
     {
         $$ = DeclAstList::createSR($1);
     }
-|   ImportItemDeclList ',' ImportItemDecl
+|   ImportSelectionDeclList ',' ImportSelectionDecl
     {
         DECL_1_LOC(@2);
         $1->delim_ = locA;
@@ -3233,11 +3233,11 @@ ImportItemDeclList:
 ;
 
 ImportList:
-    ImportModuleDecl
+    ImportDecl
     {
         $$ = DeclAstList::createSR($1);
     }
-|   ImportList ',' ImportModuleDecl
+|   ImportList ',' ImportDecl
     {
         DECL_1_LOC(@2);
         $1->delim_ = locA;

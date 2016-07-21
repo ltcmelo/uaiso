@@ -83,24 +83,36 @@ Parser::Decl HsParser::parseModule()
 {
     UAISO_ASSERT(ahead_ == TK_MODULE, return Decl());
     consumeToken();
-
     auto module = ModuleDeclAst::create();
     module->setKeyLoc(lastLoc_);
     module->setName(parseModid().release());
     if (ahead_ == TK_LPAREN)
-        module->setExpot(parseVisibleItems(true).release());
+        module->setExpot(parseExport().release());
     match(TK_WHERE);
     module->setTerminLoc(lastLoc_);
 
     return std::move(module);
 }
 
+Parser::Decl HsParser::parseExport()
+{
+    UAISO_ASSERT(ahead_ == TK_LPAREN, return Decl());
+    consumeToken();
+    auto expot = ExportDeclAst::create();
+    expot->setLDelimLoc(lastLoc_);
+    expot->setSelections(parseSelection(true).release());
+    matchOrSkipTo(TK_RPAREN, "parseExport");
+    expot->setRDelimLoc(lastLoc_);
+
+    return std::move(expot);
+}
+
 Parser::Decl HsParser::parseImport()
 {
     UAISO_ASSERT(ahead_ == TK_IMPORT, return Decl());
     consumeToken();
-    auto import = ImportClauseDeclAst::create();
-    import->setKeyLoc(lastLoc_);
+    auto group = ImportGroupDeclAst::create();
+    group->setKeyLoc(lastLoc_);
 
     // Utility lambda to compare contextual keywords.
     auto matchIdent = [this] (const std::string& s) {
@@ -111,34 +123,35 @@ Parser::Decl HsParser::parseImport()
         return false;
     };
 
-    auto module = ImportModuleDeclAst::create();
+    auto import = ImportDeclAst::create();
     if (matchIdent(kQualified))
-        module->setMode(parseName(TK_IDENT).release());
+        import->setMode(parseName(TK_IDENT).release());
     auto target = IdentExprAst::create();
     target->setName(parseModid().release());
-    module->setTarget(target.release());
+    import->setTarget(target.release());
     if (matchIdent(kAs)) {
         consumeToken();
-        module->setAsLoc(lastLoc_);
-        module->setLocalName(parseModid().release());
+        import->setAsLoc(lastLoc_);
+        import->setLocalName(parseModid().release());
     }
     if (matchIdent(kHiding))
         consumeToken(); // TODO: Store hidden names.
-    if (ahead_ == TK_LPAREN)
-        parseVisibleItems(false);
-    import->addModule(module.release());
+    if (maybeConsume(TK_LPAREN)) {
+        import->setLDelimLoc(lastLoc_);
+        import->setSelections(parseSelection(false).release());
+        matchOrSkipTo(TK_RPAREN, "parseImport");
+        import->setRDelimLoc(lastLoc_);
+    }
+    group->addModule(import.release());
 
-    return std::move(import);
+    return std::move(group);
 }
 
-Parser::Decl HsParser::parseVisibleItems(bool allowModid)
+Parser::DeclList HsParser::parseSelection(bool allowModid)
 {
-    UAISO_ASSERT(ahead_ == TK_LPAREN, return Decl());
-    consumeToken();
-
-    auto expot = ExportDeclAst::create();
-    expot->setLDelimLoc(lastLoc_);
+    DeclList selects;
     do {
+        auto select = ExportSelectionDeclAst::create();
         switch (ahead_) {
         case TK_RPAREN:
             break; // We're done.
@@ -146,20 +159,20 @@ Parser::Decl HsParser::parseVisibleItems(bool allowModid)
         case TK_MODULE:
             consumeToken();
             if (allowModid) {
-                addToList(expot->names_, parseModid().release());
+                select->setName(parseModid().release());
             } else {
                 context_->trackReport(Diagnostic::UnexpectedToken, lastLoc_);
                 if (ahead_ == TK_PROPER_IDENT)
-                    parseModid();
+                    parseModid(); // Parse and discard it.
             }
             break;
 
         case TK_LPAREN:
-            addToList(expot->names_, parseQVarSym().release());
+            select->setName(parseQVarSym().release());
             break;
 
         case TK_IDENT:
-            addToList(expot->names_, parseVarId().release());
+            select->setName(parseVarId().release());
             break;
 
         default:
@@ -176,20 +189,18 @@ Parser::Decl HsParser::parseVisibleItems(bool allowModid)
                     // TODO: Mark export all.
                 } else {
                     do {
-                        // TODO: Selective export.
-                        parseVarOrCon();
+                        parseVarOrCon(); // TODO: Store "sub-selections".
                     } while (maybeConsume(TK_COMMA));
                 }
-                matchOrSkipTo(TK_RPAREN, "parseExportItemDecl");
+                matchOrSkipTo(TK_RPAREN, "parseExportItem");
             }
-            addToList(expot->names_, qname.release());
+            select->setName(qname.release());
             break;
         }
+        addToList(selects, select.release());
     } while (maybeConsume(TK_COMMA));
-    matchOrSkipTo(TK_RPAREN, "parseExportDecl");
-    expot->setRDelimLoc(lastLoc_);
 
-    return std::move(expot);
+    return selects;
 }
 
 Parser::DeclList HsParser::parseBody()

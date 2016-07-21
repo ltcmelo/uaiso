@@ -102,7 +102,7 @@ private:
     VisitResult traverseErrorDecl(ErrorDeclAst* ast);
     VisitResult traverseFuncDecl(FuncDeclAst* ast);
     VisitResult traverseForwardDecl(ForwardDeclAst* ast);
-    VisitResult traverseImportModuleDecl(ImportModuleDeclAst* ast);
+    VisitResult traverseImportDecl(ImportDeclAst* ast);
     VisitResult traverseInvariantDecl(InvariantDeclAst* ast);
     VisitResult traverseModuleDecl(ModuleDeclAst* ast);
     VisitResult traversePackageDecl(PackageDeclAst* ast);

@@ -478,7 +478,7 @@ TypeChecker::VisitResult TypeChecker::traverseVarGroupDecl(VarGroupDeclAst* grou
     return Continue;
 }
 
-TypeChecker::VisitResult TypeChecker::traverseImportModuleDecl(ImportModuleDeclAst* ast)
+TypeChecker::VisitResult TypeChecker::traverseImportDecl(ImportDeclAst* ast)
 {
     // Empty
     return Continue;

@@ -290,9 +290,9 @@ AstDumper::VisitResult AstDumper::visitVarDecl(VarDeclAst* ast)
     return Continue;
 }
 
-AstDumper::VisitResult AstDumper::visitImportModuleDecl(ImportModuleDeclAst* ast)
+AstDumper::VisitResult AstDumper::visitImportDecl(ImportDeclAst* ast)
 {
-    *output__ << level << "ImportModuleDeclAst" << std::endl;
+    *output__ << level << "ImportDeclAst" << std::endl;
     return Continue;
 }
 

@@ -446,12 +446,12 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
     switch (ahead_) {
     case TK_IMPORT: {
         consumeToken();
-        auto import = ImportClauseDeclAst::create();
+        auto import = ImportGroupDeclAst::create();
         import->setKeyLoc(lastLoc_);
         do {
             if (import->modules_)
                 import->modules_->delim_ = lastLoc_;
-            auto module = ImportModuleDeclAst::create();
+            auto module = ImportDeclAst::create();
             module->setTarget(newAst<IdentExprAst>()->setName(parseDottedName().release()));
             if (maybeConsume(TK_AS)) {
                 module->setAsLoc(lastLoc_);
@@ -467,7 +467,7 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
 
     case TK_FROM: {
         consumeToken();
-        auto import = ImportClauseDeclAst::create();
+        auto import = ImportGroupDeclAst::create();
         import->setKeyLoc(lastLoc_);
 
         // DESIGN: Store the dots (relative location info).
@@ -503,14 +503,14 @@ std::unique_ptr<StmtAst> PyParser::parseImportStmt()
 
         if (wantName || isNameAhead()) {
             // A selective import, items specified after 'import'.
-            auto module = ImportModuleDeclAst::create();
+            auto module = ImportDeclAst::create();
             module->setTarget(newAst<IdentExprAst>()->setName(parseDottedName().release()));
             match(TK_IMPORT);
-            module->setSelectLoc(lastLoc_);
+            module->setLDelimLoc(lastLoc_);
             if (maybeConsume(TK_STAR))
                 module->setMode(SimpleNameAst::create(lastLoc_).release());
             else
-                module->setItems(parseSubImports(true).release());
+                module->setSelections(parseSubImports(true).release());
             import->addModule(module.release());
         } else {
             // An "ordinary" (non-selective) import, 'from' is just to indicate
@@ -549,7 +549,7 @@ std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
             do {
                 if (decls)
                     decls->delim_ = lastLoc_;
-                auto item = ImportItemDeclAst::create();
+                auto item = ImportSelectionDeclAst::create();
                 item->setActualName(parseName().release());
                 if (maybeConsume(TK_AS)) {
                     item->setAsLoc(lastLoc_);
@@ -561,7 +561,7 @@ std::unique_ptr<DeclAstList> PyParser::parseSubImports(bool selective)
             do {
                 if (decls)
                     decls->delim_ = lastLoc_;
-                auto module = ImportModuleDeclAst::create();
+                auto module = ImportDeclAst::create();
                 module->setTarget(newAst<IdentExprAst>()->setName(parseName().release()));
                 if (maybeConsume(TK_AS)) {
                     module->setAsLoc(lastLoc_);

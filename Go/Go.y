@@ -146,7 +146,7 @@ void GO_yyerror(const YYLTYPE* yylloc,
 %type <decl_> Decl VarGroupDecl VarDecl VarSectionDecl
 %type <decl_> FieldDecl RecordDecl TypeGroupDecl ConstDecl InterfaceMember
 %type <decl_> FuncDecl FuncRecvDecl ParamGroupDecl ParamClauseDecl ParamDecl
-%type <decl_> ImportClauseDecl ImportModuleDecl
+%type <decl_> ImportGroupDecl ImportDecl
 %type <decls_> FieldDecls InterfaceMembers VarGroupDeclList RecordDeclList
 %type <decls_> ParamGroupDeclList ParamDeclList VarDeclList Decls ImportList
 
@@ -1434,7 +1434,7 @@ BuiltinType:
        no closing brace after the statement list). */
 
 Decl:
-    ImportClauseDecl
+    ImportGroupDecl
 |   FuncDecl
 |   FuncRecvDecl
 |   VarSectionDecl
@@ -1475,56 +1475,56 @@ Decls:
 
 DeclsSync: ';' | EOP;
 
-ImportClauseDecl:
-    IMPORT ImportModuleDecl
+ImportGroupDecl:
+    IMPORT ImportDecl
     {
         DECL_1_LOC(@1);
-        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)->addModule($2);
+        $$ = newAst<ImportGroupDeclAst>()->setKeyLoc(locA)->addModule($2);
     }
 |   IMPORT '(' ')'
     {
         DECL_3_LOC(@1, @2, @3);
-        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)
+        $$ = newAst<ImportGroupDeclAst>()->setKeyLoc(locA)
             ->setLDelimLoc(locB)->setRDelimLoc(locC);
     }
 |   IMPORT '(' ImportList ')'
     {
         DECL_3_LOC(@1, @2, @4);
-        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)
+        $$ = newAst<ImportGroupDeclAst>()->setKeyLoc(locA)
             ->setLDelimLoc(locB)->setModulesSR($3)->setRDelimLoc(locC);
     }
 |   IMPORT '(' ImportList ';' ')'
     {
         DECL_3_LOC(@1, @2, @5);
-        $$ = newAst<ImportClauseDeclAst>()->setKeyLoc(locA)
+        $$ = newAst<ImportGroupDeclAst>()->setKeyLoc(locA)
             ->setLDelimLoc(locB)->setModulesSR($3)->setRDelimLoc(locC);
     }
 ;
 
-ImportModuleDecl:
+ImportDecl:
     StringLit
     {
-        $$ = newAst<ImportModuleDeclAst>()->setTarget($1);
+        $$ = newAst<ImportDeclAst>()->setTarget($1);
     }
 |   Ident StringLit
     {
-        $$ = newAst<ImportModuleDeclAst>()->setLocalName($1)->setTarget($2);
+        $$ = newAst<ImportDeclAst>()->setLocalName($1)->setTarget($2);
     }
 |   '.' StringLit
     {
         DECL_1_LOC(@1);
         auto dot = newAst<GenNameAst>()->setNameLoc(locA);
         context->trackLexeme<Ident>(".", locA.lineCol());
-        $$ = newAst<ImportModuleDeclAst>()->setMode(dot)->setTarget($2);
+        $$ = newAst<ImportDeclAst>()->setMode(dot)->setTarget($2);
     }
 ;
 
 ImportList:
-    ImportModuleDecl
+    ImportDecl
     {
         $$ = DeclAstList::createSR($1);
     }
-|   ImportList ';' ImportModuleDecl
+|   ImportList ';' ImportDecl
     {
         DECL_1_LOC(@2);
         $1->delim_ = locA;

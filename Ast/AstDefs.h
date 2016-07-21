@@ -76,11 +76,12 @@
     GEN_CODE_FOR(EnumMember, Decl) \
     GEN_CODE_FOR(Error, Decl) \
     GEN_CODE_FOR(Export, Decl) \
+    GEN_CODE_FOR(ExportSelection, Decl) \
     GEN_CODE_FOR(Func, Decl) \
     GEN_CODE_FOR(Forward, Decl) \
-    GEN_CODE_FOR(ImportClause, Decl) \
-    GEN_CODE_FOR(ImportItem, Decl) \
-    GEN_CODE_FOR(ImportModule, Decl) \
+    GEN_CODE_FOR(Import, Decl) \
+    GEN_CODE_FOR(ImportGroup, Decl) \
+    GEN_CODE_FOR(ImportSelection, Decl) \
     GEN_CODE_FOR(Invariant, Decl) \
     GEN_CODE_FOR(Module, Decl) \
     GEN_CODE_FOR(Package, Decl) \

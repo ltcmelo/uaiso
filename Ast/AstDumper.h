@@ -98,7 +98,7 @@ private:
     VisitResult visitErrorDecl(ErrorDeclAst* ast);
     VisitResult visitFuncDecl(FuncDeclAst* ast);
     VisitResult visitForwardDecl(ForwardDeclAst* ast);
-    VisitResult visitImportModuleDecl(ImportModuleDeclAst* ast);
+    VisitResult visitImportDecl(ImportDeclAst* ast);
     VisitResult visitInvariantDecl(InvariantDeclAst* ast);
     VisitResult visitParamDecl(ParamDeclAst* ast);
     VisitResult visitParamClauseDecl(ParamClauseDeclAst* ast);

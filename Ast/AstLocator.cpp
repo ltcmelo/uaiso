@@ -364,16 +364,6 @@ const SourceLoc& AstLocator::lastLoc(VisibilityAttrAst* ast) const
     return ast->keyLoc_;
 }
 
-const SourceLoc& AstLocator::loc(ExportDeclAst* ast) const
-{
-    return ast->lDelimLoc_;
-}
-
-const SourceLoc& AstLocator::lastLoc(ExportDeclAst* ast) const
-{
-    return ast->rDelimLoc_;
-}
-
 const SourceLoc& AstLocator::loc(AliasDeclAst* ast) const
 {
     return ast->keyLoc_;
@@ -498,40 +488,60 @@ const SourceLoc& AstLocator::lastLoc(ForwardDeclAst* ast) const
     return lastLoc(ast->name_.get());
 }
 
-const SourceLoc& AstLocator::loc(ImportClauseDeclAst* ast) const
+const SourceLoc& AstLocator::loc(ImportGroupDeclAst* ast) const
 {
     return ast->keyLoc_;
 }
 
-const SourceLoc& AstLocator::lastLoc(ImportClauseDeclAst* ast) const
+const SourceLoc& AstLocator::lastLoc(ImportGroupDeclAst* ast) const
 {
     return ast->terminLoc_;
 }
 
-const SourceLoc& AstLocator::loc(ImportModuleDeclAst* ast) const
+const SourceLoc& AstLocator::loc(ImportDeclAst* ast) const
 {
     return loc(ast->target_.get());
 }
 
-const SourceLoc& AstLocator::lastLoc(ImportModuleDeclAst* ast) const
+const SourceLoc& AstLocator::lastLoc(ImportDeclAst* ast) const
 {
-    if (ast->items_)
-        return lastLoc(ast->items_->back());
+    if (ast->selections_)
+        return lastLoc(ast->selections_->back());
     if (ast->localName_)
         return lastLoc(ast->localName_.get());
     return lastLoc(ast->target_.get());
 }
 
-const SourceLoc& AstLocator::loc(ImportItemDeclAst* ast) const
+const SourceLoc& AstLocator::loc(ImportSelectionDeclAst* ast) const
 {
     return loc(ast->actualName_.get());
 }
 
-const SourceLoc& AstLocator::lastLoc(ImportItemDeclAst* ast) const
+const SourceLoc& AstLocator::lastLoc(ImportSelectionDeclAst* ast) const
 {
     if (ast->alternateName_)
         return lastLoc(ast->alternateName_.get());
     return lastLoc(ast->actualName_.get());
+}
+
+const SourceLoc& AstLocator::loc(ExportDeclAst* ast) const
+{
+    return loc(ast->selections_->head());
+}
+
+const SourceLoc& AstLocator::lastLoc(ExportDeclAst* ast) const
+{
+    return lastLoc(ast->selections_->back());
+}
+
+const SourceLoc& AstLocator::loc(ExportSelectionDeclAst* ast) const
+{
+    return loc(ast->name_.get());
+}
+
+const SourceLoc& AstLocator::lastLoc(ExportSelectionDeclAst* ast) const
+{
+    return lastLoc(ast->name_.get());
 }
 
 const SourceLoc& AstLocator::loc(InvariantDeclAst* ast) const

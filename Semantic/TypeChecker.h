@@ -94,7 +94,7 @@ private:
     VisitResult traverseVersionDecl(VersionDeclAst* ast);
     VisitResult traverseEnumDecl(EnumDeclAst* ast);
     VisitResult traverseFuncDecl(FuncDeclAst* ast);
-    VisitResult traverseImportModuleDecl(ImportModuleDeclAst* ast);
+    VisitResult traverseImportDecl(ImportDeclAst* ast);
     VisitResult traversePackageDecl(PackageDeclAst* ast);
     VisitResult traverseParamDecl(ParamDeclAst* ast);
     VisitResult traverseParamGroupDecl(ParamGroupDeclAst* ast);

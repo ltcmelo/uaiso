@@ -1049,7 +1049,7 @@ Binder::VisitResult Binder::traverseForwardDecl(ForwardDeclAst* ast)
     return Continue;
 }
 
-Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
+Binder::VisitResult Binder::traverseImportDecl(ImportDeclAst* ast)
 {
     // An import is not injected into the environment during binding. But
     // it's still evaluated so the module and given namespace are collected.
@@ -1098,15 +1098,14 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
                            !P->sanitizer_->shouldMergeImport(importMode)));
 
     // Specific exact symbols if this is a selective import.
-    if (ast->items()) {
-        for (auto decl : *ast->items()) {
-            UAISO_ASSERT(decl->kind() == Ast::Kind::ImportItemDecl, return Abort);
-            ImportItemDeclAst* item = ImportItemDecl_Cast(decl);
+    if (ast->selections()) {
+        for (auto decl : *ast->selections()) {
+            UAISO_ASSERT(decl->kind() == Ast::Kind::ImportSelectionDecl, return Abort);
+            ImportSelectionDeclAst* item = ImportSelectionDecl_Cast(decl);
 
             const auto& actualNameLexs = astToLexs.process(item->actualName());
             if (actualNameLexs.empty() || actualNameLexs.size() > 1) {
-                P->report(Diagnostic::UnexpectedName, item->actualName(),
-                          P->locator_);
+                P->report(Diagnostic::UnexpectedName, item->actualName(), P->locator_);
                 continue;
             }
 
@@ -1114,12 +1113,10 @@ Binder::VisitResult Binder::traverseImportModuleDecl(ImportModuleDeclAst* ast)
             if (item->alternateName()) {
                 const auto& altNameLexs = astToLexs.process(item->alternateName());
                 if (altNameLexs.empty() || altNameLexs.size() > 1) {
-                    P->report(Diagnostic::UnexpectedName, item->alternateName(),
-                              P->locator_);
+                    P->report(Diagnostic::UnexpectedName, item->alternateName(), P->locator_);
                     continue;
                 }
-                import->addSelectedItem(itemName,
-                                        ConstIdent_Cast(altNameLexs.back()));
+                import->addSelectedItem(itemName, ConstIdent_Cast(altNameLexs.back()));
             } else {
                 import->addSelectedItem(itemName);
             }

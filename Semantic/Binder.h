@@ -152,7 +152,7 @@ private:
     VisitResult traverseBlockDecl(BlockDeclAst* ast);
     VisitResult traverseForwardDecl(ForwardDeclAst* ast);
     VisitResult traverseFuncDecl(FuncDeclAst* ast);
-    VisitResult traverseImportModuleDecl(ImportModuleDeclAst* ast);
+    VisitResult traverseImportDecl(ImportDeclAst* ast);
     VisitResult traverseModuleDecl(ModuleDeclAst* ast);
     VisitResult traversePackageDecl(PackageDeclAst* ast);
     VisitResult traverseParamGroupDecl(ParamGroupDeclAst* ast);
