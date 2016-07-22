@@ -3555,12 +3555,15 @@ ForeachDecl:
     {
         DECL_1_LOC(@2);
         std::unique_ptr<NameAstList> l($1->finishSR());
-        auto names = l.get();
-        auto decls = DeclAstList::create(newAst<VarDeclAst>()->setName(names->releaseHead().release()));
-        while ((names = names->subList()))
-            decls->pushBack(newAst<VarDeclAst>()->setName(names->releaseHead().release()));
         auto group = newAst<VarGroupDeclAst>()->setSpec(newAst<InferredSpecAst>());
-        group->decls_.reset(decls);
+        while (l) {
+            auto p = std::move(l->detachHead());
+            auto var = VarDeclAst::create();
+            var->setName(std::move(p.first));
+            group->decls_ ? group->decls_->pushBack(std::move(var)) :
+                            (void)(group->decls_ = DeclAstList::create(std::move(var)));
+            l = std::move(p.second);
+        }
         $$ = group;
     }
 ;

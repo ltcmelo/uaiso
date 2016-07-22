@@ -623,9 +623,9 @@ Binder::VisitResult Binder::traverseFuncSpec(FuncSpecAst* ast)
 
     // TODO: Currently supports only simple types, only the first parameter
     // group is considered.
-    UAISO_ASSERT(clause->decls()->head()->kind() == Ast::Kind::ParamGroupDecl,
+    UAISO_ASSERT(clause->decls()->front()->kind() == Ast::Kind::ParamGroupDecl,
                  return Abort);
-    ParamGroupDeclAst* group = ParamGroupDecl_Cast(clause->decls()->head());
+    ParamGroupDeclAst* group = ParamGroupDecl_Cast(clause->decls()->front());
 
     // When as a result, a parameter group might contain actual declarations
     // (if the language has named return values) or might simply be a type
@@ -635,9 +635,9 @@ Binder::VisitResult Binder::traverseFuncSpec(FuncSpecAst* ast)
     UAISO_ASSERT(group->decls() || group->spec(), return Abort);
     std::unique_ptr<Type> retTy;
     if (group->decls()) {
-        UAISO_ASSERT(group->decls()->head()->kind() == Ast::Kind::ParamDecl,
+        UAISO_ASSERT(group->decls()->front()->kind() == Ast::Kind::ParamDecl,
                      return Abort);
-        Param* ret = ParamDecl_Cast(group->decls()->head())->sym_;
+        Param* ret = ParamDecl_Cast(group->decls()->front())->sym_;
         if (ret->valueType()
                 && ret->valueType()->kind() != Type::Kind::Inferred) {
             retTy.reset(ret->valueType()->clone());

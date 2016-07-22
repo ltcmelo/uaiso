@@ -29,6 +29,7 @@
 #include "Parsing/SourceLoc.h"
 #include <iostream>
 #include <memory>
+#include <utility>
 
 namespace uaiso {
 
@@ -39,39 +40,20 @@ public:
     using AstType = AstT;
 };
 
+/*!
+ * \brief AstList
+ *
+ * In addition to conventional linked-list methods, this list also provides a
+ * convenient interface that can be used with shift-reduce (SR) parsing
+ * while preserving the original order of items. The methods that operate on
+ * raw pointers originally exist for consistency with the C Bison-based parsers.
+ */
 template <class DerivedListT, class ListTraitsT>
 class UAISO_API AstList
 {
 public:
     using ListType = DerivedListT;
     using AstType = typename ListTraitsT::AstType;
-
-    /*!
-     * \brief createSR
-     * \param ast
-     * \return
-     *
-     * Create a list in such a way that it can be easily used for shift-
-     * reduce (SR) parsing. In this list elements should be "added" by
-     * calling handleSR. After parsing, the list must be put into linear
-     * form by calling finishSR.
-     *
-     * \warning It's a bug not to call finishSR after creating a list this way.
-     * \sa handleSR(), finishSR
-     */
-    static ListType* createSR(AstType* ast)
-    {
-        UAISO_ASSERT(ast, return nullptr, "invalid ast");
-
-        return new ListType(ast);
-    }
-
-    static ListType* create(AstType* ast)
-    {
-        UAISO_ASSERT(ast, return nullptr, "invalid ast");
-
-        return new ListType(ast, nullptr);
-    }
 
     virtual ~AstList()
     {
@@ -87,63 +69,103 @@ public:
     }
 
     /*!
+     * \brief createSR
+     * \param ast
+     * \return
+     * \warning It's a bug not to call finishSR after creating a list this way.
+     * \sa handleSR(), finishSR
+     *
+     * Create a list in such a way that it can be easily used for shift-reduce
+     * (SR) parsing. A list created through this method requires that elements
+     * arebe added by calling handleSR. Once all elements have been "handled",
+     * the list must be put into linear form by calling finishSR.
+     */
+    static ListType* createSR(AstType* ast)
+    {
+        UAISO_ASSERT(ast, return nullptr, "invalid ast");
+        return new ListType(ast);
+    }
+
+    /*!
      * \brief handleSR
-     *
-     * Add an item to a list created for shift-reduce parsing. The returned
-     * pointer is the new head of the list and must be held by the caller.
-     *
      * \param ast
      * \return the new head of the list
-     *
      * \sa finishSR, createSR
+     *
+     * Add an item to a list created for shift-reduce (SR) parsing. The returned
+     * pointer is the new head of the list. It is the caller responsibility to
+     * take ownership over it.
      */
     ListType* handleSR(AstType* ast)
     {
         UAISO_ASSERT(ast, return nullptr, "invalid ast");
         UAISO_ASSERT(next_.get() != nullptr, return nullptr, "list is linear");
-
-        auto node = new ListType(ast, next_.release());
-        next_.reset(node);
-        return node;
+        next_.reset(new ListType(std::unique_ptr<AstType>(ast), std::move(next_)));
+        return next_.get();
     }
 
     /*!
      * \brief finishSR
-     *
-     * Put a list create for shift-reduce back into linear form. The returned
-     * pointer is the new head of the list and must be held by the caller.
-     *
      * \return the new head of the list
+     *
+     * Put a list created for shift-reduce (SR) parsing into linear form. The
+     * returned pointer is the new head of the list. It is the caller responsibility
+     * to take ownership over it.
      */
     ListType* finishSR()
     {
         UAISO_ASSERT(next_.get() != nullptr, return nullptr, "list is linear");
-
         return next_.release();
     }
 
     /*!
      * \brief mergeSR
-     *
-     * Merge two shift-reduce lists.
-     *
      * \param list
      * \return
+     *
+     * Merge two shift-reduce (SR) lists.
      */
     ListType* mergeSR(ListType* list)
     {
         UAISO_ASSERT(list, return nullptr, "invalid list node");
-
         list->next_.release();
         list->next_.reset(next_.release());
         next_.reset(list);
         return list;
     }
 
-    ListType* subList() const
+    /*!
+     * \brief create
+     * \param ast
+     * \return
+     *
+     * Create a list.
+     */
+    static std::unique_ptr<ListType> create(std::unique_ptr<AstType> ast)
     {
-        return next_.get();
+        UAISO_ASSERT(ast, return std::unique_ptr<ListType>(), "invalid ast");
+        return std::unique_ptr<ListType>(new ListType(std::move(ast)));
     }
+
+    void pushBack(std::unique_ptr<AstType> ast)
+    {
+        UAISO_ASSERT(ast, return, "invalid ast");
+        if (next_)
+            next_->pushBack(std::move(ast));
+        else
+            next_.reset(new ListType(std::move(ast)));
+    }
+
+    void merge(std::unique_ptr<ListType> list)
+    {
+        UAISO_ASSERT(list, return, "invalid list node");
+        if (next_)
+            next_->merge(std::move(list));
+        else
+            next_ = std::move(list);
+    }
+
+    ListType* subList() const { return next_.get(); }
 
     ListType* lastSubList() const
     {
@@ -151,42 +173,25 @@ public:
                        const_cast<ListType*>(static_cast<const ListType*>(this));
     }
 
-    AstType* head() const
-    {
-        return ast_.get();
-    }
-
-    /*
-     * TODO: Remove, allows one to break list integrity.
-     */
-    std::unique_ptr<AstType> releaseHead()
-    {
-        return std::move(ast_);
-    }
+    AstType* front() const { return ast_.get(); }
 
     AstType* back() const
     {
         return next_ ? next_->back() : ast_.get();
     }
 
-    void pushBack(AstType* ast)
+    /*!
+     * \brief detachHead
+     * \return
+     *
+     * Detach the list's head, returning the front item and the new head.
+     */
+    std::pair<std::unique_ptr<AstType>, std::unique_ptr<ListType>>
+    detachHead()
     {
-        UAISO_ASSERT(ast, return, "invalid ast");
-
-        if (next_)
-            next_->pushBack(ast);
-        else
-            next_.reset(new ListType(ast, nullptr));
-    }
-
-    void merge(ListType* list)
-    {
-        UAISO_ASSERT(list, return, "invalid list node");
-
-        if (next_)
-            next_->merge(list);
-        else
-            next_.reset(list);
+        std::unique_ptr<ListType> newHead = std::move(next_);
+        next_.reset(nullptr);
+        return std::make_pair(std::move(ast_), std::move(newHead));
     }
 
     class Iterator
@@ -201,7 +206,7 @@ public:
             return *this;
         }
 
-        AstType* operator*() { return list_->head(); }
+        AstType* operator*() { return list_->front(); }
 
         bool operator!=(const Iterator& other) const
         {
@@ -225,9 +230,10 @@ protected:
         , next_(static_cast<ListType*>(this))
     {}
 
-    AstList(AstType* ast, ListType* next)
-        : ast_(ast)
-        , next_(next)
+    AstList(std::unique_ptr<AstType> ast,
+            std::unique_ptr<ListType> next = std::unique_ptr<ListType>())
+        : ast_(std::move(ast))
+        , next_(std::move(next))
     {}
 
     std::unique_ptr<AstType> ast_;
@@ -279,33 +285,20 @@ using FilterAstList = TrivialAstList<FilterAst>;
     //--- Convenience ---//
 
 template <class AstListT>
-void addToList(std::unique_ptr<AstListT>& list, typename AstListT::AstType* ast)
-{
-    if (ast)
-        list ? list->pushBack(ast) : list.reset(AstListT::create(ast));
-}
-
-template <class AstListT>
 void addToList(std::unique_ptr<AstListT>& list,
                std::unique_ptr<typename AstListT::AstType> ast)
 {
     if (ast)
-        list ? list->pushBack(ast.release()) : list.reset(AstListT::create(ast.release()));
-}
-
-
-template <class AstListT>
-void mergeList(std::unique_ptr<AstListT>& list, AstListT* otherList)
-{
-    if (otherList)
-        list ? list->merge(otherList) : list.reset(otherList);
+        list ? list->pushBack(std::move(ast)) :
+               (void)(list = AstListT::create(std::move(ast)));
 }
 
 template <class AstListT>
 void mergeList(std::unique_ptr<AstListT>& list, std::unique_ptr<AstListT> otherList)
 {
     if (otherList)
-        list ? list->merge(otherList.release()) : list.reset(otherList.release());
+        list ? list->merge(std::move(otherList)) :
+               (void)(list = std::move(otherList));
 }
 
 } // namespace uaiso

@@ -183,6 +183,11 @@ private:
     }
 };
 
+/*
+ * This was originally intended for the Bison-generated C parsers. Otherwise,
+ * the AST create methods are to be preferred. I hope to eventually refactor
+ * parts of the code using this "old" style.
+ */
 template <class AstT>
 AstT* newAst()
 {
@@ -191,8 +196,12 @@ AstT* newAst()
 
 } // namespace uaiso
 
-
-// AST macros
+/*
+ * Macros for AST classes. The method's interface are a bit messed up. The ones
+ * using raw pointers were originally created to make it convenient for Bison-
+ * generated C parsers. Otherwise, the smart-pointer versions should be used.
+ * I hope to eventually "normalized" that...
+ */
 
 #define AST_CLASS(AST_NODE, AST_KIND) \
     using Self = AST_NODE##AST_KIND##Ast; \
@@ -229,8 +238,8 @@ AstT* newAst()
     { \
         if (param) { \
             MEMBER##_ ? \
-                MEMBER##_->pushBack(param) : \
-                MEMBER##_.reset(PARAM_TYPE##List::create(param)); \
+                MEMBER##_->pushBack(std::unique_ptr<PARAM_TYPE>(param)) : \
+                (void)(MEMBER##_ = PARAM_TYPE##List::create(std::unique_ptr<PARAM_TYPE>(param))); \
         } \
         return this; \
     } \
@@ -238,8 +247,8 @@ AstT* newAst()
     { \
         if (param) { \
             MEMBER##_ ? \
-                MEMBER##_->merge(param.release()) : \
-                MEMBER##_.reset(param.release()); \
+                MEMBER##_->merge(std::move(param)) : \
+                (void)(MEMBER##_ = std::move(param)); \
         } \
         return this; \
     } \
@@ -252,8 +261,8 @@ AstT* newAst()
     { \
         if (param) { \
             MEMBER##_ ? \
-                MEMBER##_->pushBack(param.release()) : \
-                MEMBER##_.reset(PARAM_TYPE##List::create(param.release())); \
+                MEMBER##_->pushBack(std::move(param)) : \
+                (void)(MEMBER##_ = PARAM_TYPE##List::create(std::move(param))); \
         } \
         return this; \
     } \

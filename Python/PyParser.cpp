@@ -358,10 +358,10 @@ std::unique_ptr<StmtAst> PyParser::parseExprStmt()
             assign->setOprLoc(lastLoc_);
             assign->setExpr1s(std::move(exprs));
             if (ahead_ == TK_YIELD)
-                assign->setExpr2s(ExprList(ExprAstList::create(parseYieldExpr().release())));
+                assign->setExpr2s(ExprAstList::create(parseYieldExpr()));
             else
                 assign->setExpr2s(parseTestList());
-            exprs.reset(ExprAstList::create(assign.release()));
+            exprs = ExprAstList::create(std::move(assign));
 
             if (augmented || ahead_ != TK_EQ)
                 return Stmt(newAst<ExprStmtAst>()->setExprs(std::move(exprs)));
@@ -720,9 +720,10 @@ std::unique_ptr<StmtAst> PyParser::parseForStmt()
 
     match(TK_IN);
     auto test = parseTestList();
-    // DESIGN: Extend ForeachStmtAst to allow exprs? For now, take the first one.
-    if (test)
-        four->setExpr(std::move(test->releaseHead()));
+    if (test) {
+        // DESIGN: Extend ForeachStmtAst to allow exprs? For now, take the first one.
+        four->setExpr(std::move(test->detachHead().first));
+    }
     match(TK_COLON);
     four->setStmt(parseSuite());
 
@@ -1249,7 +1250,7 @@ std::unique_ptr<ExprAstList> PyParser::parseArgList()
             if (isTestAhead()) {
                 auto p = parseList<ExprAstList>(TK_COMMA, &PyParser::isTestAhead,
                                                 &PyParser::parseArg);
-                mergeList(args, p.first.release());
+                mergeList(args, std::move(p.first));
                 if (p.second)
                     wantStarStar = true;
             } else {
@@ -1311,11 +1312,12 @@ PyParser::parseListFor(std::unique_ptr<ListCompreExprAst> listCompre)
     match(TK_IN);
     gen->setOprLoc(lastLoc_);
 
-    // DESIGN: An expr list as the expr of a list comprehension sounds weird.
-    // Perhaps wrap this into a comma expr?
     auto tests = parseTestListSafe();
-    if (tests)
-        gen->setRange(std::move(tests->releaseHead()));
+    if (tests) {
+        // DESIGN: An expr list as the expr of a list comprehension? Wrap as a
+        // comma expr?
+        gen->setRange(std::move(tests->detachHead().first));
+    }
 
     return completeListCompre(std::move(listCompre),
                               &PyParser::parseListFor, &PyParser::parseListIf);
@@ -2023,8 +2025,8 @@ PyParser::completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ())
 {
     auto assign = AssignExprAst::create();
     assign->setOprLoc(lastLoc_);
-    assign->setExpr1s(ExprList(ExprAstList::create(expr.release())));
-    assign->setExpr2s(ExprList(ExprAstList::create((((this)->*(parseFunc))()).release())));
+    assign->setExpr1s(ExprAstList::create(std::move(expr)));
+    assign->setExpr2s(ExprAstList::create((((this)->*(parseFunc))())));
     return Expr(std::move(assign));
 }
 

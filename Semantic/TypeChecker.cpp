@@ -450,7 +450,7 @@ TypeChecker::VisitResult TypeChecker::traverseVarGroupDecl(VarGroupDeclAst* grou
         auto decls = group->decls();
         for (auto init : *group->inits()) {
             // There should be a decl for every initializer.
-            if (!decls->head()) {
+            if (!decls->front()) {
                 P->report(Diagnostic::ExtraInitializer, group, P->locator_);
                 break;
             }
@@ -459,8 +459,8 @@ TypeChecker::VisitResult TypeChecker::traverseVarGroupDecl(VarGroupDeclAst* grou
             ENSURE_NONEMPTY_STACK;
             std::unique_ptr<Type> ty = P->popExprType();
 
-            UAISO_ASSERT(decls->head()->kind() == Ast::Kind::VarDecl, return Skip);
-            VarDeclAst* varDecl = VarDecl_Cast(decls->head());
+            UAISO_ASSERT(decls->front()->kind() == Ast::Kind::VarDecl, return Skip);
+            VarDeclAst* varDecl = VarDecl_Cast(decls->front());
             UAISO_ASSERT(varDecl->sym_, return Skip);
             const Type* declTy = varDecl->sym_->valueType();
 
@@ -732,7 +732,7 @@ TypeChecker::VisitResult TypeChecker::traverseArrayInitExpr(ArrayInitExprAst* as
 {
     // For simplicity (although not really correct), inspect first item only.
     if (ast->inits()) {
-        VIS_CALL(traverseExpr(ast->inits()->head()));
+        VIS_CALL(traverseExpr(ast->inits()->front()));
         ENSURE_NONEMPTY_STACK;
         P->exprTy_.emplace(new ArrayType(P->popExprType()));
         return Continue;

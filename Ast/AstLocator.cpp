@@ -132,7 +132,7 @@ const SourceLoc& AstLocator::lastLoc(GenNameAst* ast) const
 
 const SourceLoc& AstLocator::loc(NestedNameAst* ast) const
 {
-    return loc(ast->names_->head());
+    return loc(ast->names_->front());
 }
 
 const SourceLoc& AstLocator::lastLoc(NestedNameAst* ast) const
@@ -182,7 +182,7 @@ const SourceLoc& AstLocator::lastLoc(ChanSpecAst* ast) const
 
 const SourceLoc& AstLocator::loc(DecoratedSpecAst* ast) const
 {
-    return loc(ast->attrs_->head());
+    return loc(ast->attrs_->front());
 }
 
 const SourceLoc& AstLocator::lastLoc(DecoratedSpecAst* ast) const
@@ -526,7 +526,7 @@ const SourceLoc& AstLocator::lastLoc(ImportSelectionDeclAst* ast) const
 
 const SourceLoc& AstLocator::loc(ExportDeclAst* ast) const
 {
-    return loc(ast->selections_->head());
+    return loc(ast->selections_->front());
 }
 
 const SourceLoc& AstLocator::lastLoc(ExportDeclAst* ast) const
@@ -613,7 +613,7 @@ const SourceLoc& AstLocator::loc(ParamClauseDeclAst* ast) const
     if (!ast->lDelimLoc_.isEmpty())
         return ast->lDelimLoc_;
     if (ast->decls_)
-        return loc(ast->decls_->head());
+        return loc(ast->decls_->front());
     return ast->rDelimLoc_;
 }
 
@@ -830,7 +830,7 @@ const SourceLoc& AstLocator::lastLoc(AssertExprAst* ast) const
 
 const SourceLoc& AstLocator::loc(AssignExprAst* ast) const
 {
-    return loc(ast->exprs1_->head());
+    return loc(ast->exprs1_->front());
 }
 
 const SourceLoc& AstLocator::lastLoc(AssignExprAst* ast) const

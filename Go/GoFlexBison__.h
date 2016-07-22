@@ -76,9 +76,10 @@ private:
             for (auto expr1 : *ast->exprs1_.get()) {
                 if (expr1->kind() == Ast::Kind::IdentExpr) {
                     auto name = IdentExpr_Cast(expr1)->name_.release();
-                    auto var = newAst<VarDeclAst>()->setName(name);
+                    auto var = VarDeclAst::create();
+                    var->setName(name);
                     if (decl_) {
-                        decl_->decls_->pushBack(var);
+                        decl_->decls_->pushBack(std::move(var));
                     } else {
                         VarGroupDeclAst* group = nullptr;
                         if (ast->exprs2_) {
@@ -89,7 +90,7 @@ private:
                             group = newAst<VarGroupDeclAst>();
                         }
                         group->setSpec(newAst<InferredSpecAst>());
-                        group->decls_.reset(DeclAstList::create(var));
+                        group->decls_ = DeclAstList::create(std::move(var));
                         decl_.reset(group);
                     }
                 }
