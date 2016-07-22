@@ -632,6 +632,7 @@ public:
 
     MemberAccessExprAst* setSpec(SpecAst* spec);
     MemberAccessExprAst* setExpr(ExprAst* expr);
+    MemberAccessExprAst* setExpr(std::unique_ptr<ExprAst> expr);
     Ast* exprOrSpec() { return exprOrSpec_.get(); }
 
     NAMED_LOC_PARAM(Opr, opr)

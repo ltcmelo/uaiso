@@ -43,6 +43,12 @@ MemberAccessExprAst* MemberAccessExprAst::setExpr(ExprAst* expr)
     return this;
 }
 
+MemberAccessExprAst* MemberAccessExprAst::setExpr(std::unique_ptr<ExprAst> expr)
+{
+    exprOrSpec_ = std::move(expr);
+    return this;
+}
+
 TypeidExprAst* TypeidExprAst::setSpec(SpecAst* spec)
 {
     exprOrSpec_.reset(spec);

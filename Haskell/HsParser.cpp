@@ -71,9 +71,9 @@ bool HsParser::parse(Lexer* lexer, ParsingContext* context)
 
     auto prog = std::unique_ptr<ProgramAst>(newAst<ProgramAst>());
     if (ahead_ == TK_MODULE)
-        prog->setModule(parseModule().release());
+        prog->setModule(parseModule());
     if (ahead_ == TK_LBRACE)
-        prog->setDecls(parseBody().release());
+        prog->setDecls(parseBody());
     context->takeAst(std::unique_ptr<Ast>(prog.release()));
 
     return true;
@@ -85,9 +85,9 @@ Parser::Decl HsParser::parseModule()
     consumeToken();
     auto module = ModuleDeclAst::create();
     module->setKeyLoc(lastLoc_);
-    module->setName(parseModid().release());
+    module->setName(parseModid());
     if (ahead_ == TK_LPAREN)
-        module->setExpot(parseExport().release());
+        module->setExpot(parseExport());
     match(TK_WHERE);
     module->setTerminLoc(lastLoc_);
 
@@ -100,7 +100,7 @@ Parser::Decl HsParser::parseExport()
     consumeToken();
     auto expot = ExportDeclAst::create();
     expot->setLDelimLoc(lastLoc_);
-    expot->setSelections(parseSelection(true).release());
+    expot->setSelections(parseSelection(true));
     matchOrSkipTo(TK_RPAREN, "parseExport");
     expot->setRDelimLoc(lastLoc_);
 
@@ -125,24 +125,24 @@ Parser::Decl HsParser::parseImport()
 
     auto import = ImportDeclAst::create();
     if (matchIdent(kQualified))
-        import->setMode(parseName(TK_IDENT).release());
+        import->setMode(parseName(TK_IDENT));
     auto target = IdentExprAst::create();
-    target->setName(parseModid().release());
-    import->setTarget(target.release());
+    target->setName(parseModid());
+    import->setTarget(std::move(target));
     if (matchIdent(kAs)) {
         consumeToken();
         import->setAsLoc(lastLoc_);
-        import->setLocalName(parseModid().release());
+        import->setLocalName(parseModid());
     }
     if (matchIdent(kHiding))
         consumeToken(); // TODO: Store hidden names.
     if (maybeConsume(TK_LPAREN)) {
         import->setLDelimLoc(lastLoc_);
-        import->setSelections(parseSelection(false).release());
+        import->setSelections(parseSelection(false));
         matchOrSkipTo(TK_RPAREN, "parseImport");
         import->setRDelimLoc(lastLoc_);
     }
-    group->addModule(import.release());
+    group->addModule(std::move(import));
 
     return std::move(group);
 }
@@ -159,7 +159,7 @@ Parser::DeclList HsParser::parseSelection(bool allowModid)
         case TK_MODULE:
             consumeToken();
             if (allowModid) {
-                select->setName(parseModid().release());
+                select->setName(parseModid());
             } else {
                 context_->trackReport(Diagnostic::UnexpectedToken, lastLoc_);
                 if (ahead_ == TK_PROPER_IDENT)
@@ -168,21 +168,21 @@ Parser::DeclList HsParser::parseSelection(bool allowModid)
             break;
 
         case TK_LPAREN:
-            select->setName(parseQVarSym().release());
+            select->setName(parseQVarSym());
             break;
 
         case TK_IDENT:
-            select->setName(parseVarId().release());
+            select->setName(parseVarId());
             break;
 
         default:
             auto qname = NestedNameAst::create();
             do {
-                addToList(qname->names_, parseConId().release());
+                addToList(qname->names_, parseConId());
             } while (maybeConsume(TK_JOKER) && ahead_ == TK_PROPER_IDENT);
 
             if (ahead_ == TK_IDENT) {
-                addToList(qname->names_, parseVarId().release());
+                addToList(qname->names_, parseVarId());
             } else if (ahead_ == TK_LPAREN) {
                 consumeToken();
                 if (maybeConsume(TK_DOT_DOT)) {
@@ -194,10 +194,10 @@ Parser::DeclList HsParser::parseSelection(bool allowModid)
                 }
                 matchOrSkipTo(TK_RPAREN, "parseExportItem");
             }
-            select->setName(qname.release());
+            select->setName(std::move(qname));
             break;
         }
-        addToList(selects, select.release());
+        addToList(selects, std::move(select));
     } while (maybeConsume(TK_COMMA));
 
     return selects;
@@ -249,7 +249,7 @@ Parser::Name HsParser::parseModid()
 {
     auto modid = NestedNameAst::create();
     do {
-        modid->addName(parseName(TK_PROPER_IDENT).release());
+        modid->addName(parseName(TK_PROPER_IDENT));
     } while (maybeConsume(TK_JOKER));
 
     return std::move(modid);
@@ -392,10 +392,10 @@ Parser::Name HsParser::parseQName(Name (HsParser::*parseFunc)())
 {
     auto qname = NestedNameAst::create();
     while (maybeConsume(TK_PROPER_IDENT)) {
-        addToList(qname->names_, SimpleNameAst::create(lastLoc_).release());
+        addToList(qname->names_, SimpleNameAst::create(lastLoc_));
         match(TK_JOKER);
     }
-    addToList(qname->names_, ((this->*(parseFunc))()).release());
+    addToList(qname->names_, ((this->*(parseFunc))()));
 
     return std::move(qname);
 }

@@ -82,7 +82,7 @@ public:
     static std::unique_ptr<Self> create(NameAstList* names)
     {
         auto nested = create();
-        nested->setNames(names);
+        nested->setNames(std::unique_ptr<NameAstList>(names));
         return nested;
     }
 

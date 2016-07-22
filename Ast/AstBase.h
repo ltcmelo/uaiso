@@ -207,6 +207,11 @@ AstT* newAst()
         MEMBER##_.reset(param); \
         return this; \
     } \
+    Self* set##NAME(std::unique_ptr<PARAM_TYPE> param) \
+    { \
+        MEMBER##_ = std::move(param); \
+        return this; \
+    } \
     PARAM_TYPE* MEMBER() const { return MEMBER##_.get(); }
 
 #define NAMED_AST_PARAM__BASE__(NAME, PARAM_TYPE) \
@@ -229,18 +234,27 @@ AstT* newAst()
         } \
         return this; \
     } \
-    Self* merge##NAME##s(PARAM_TYPE##List* param) \
+    Self* merge##NAME##s(std::unique_ptr<PARAM_TYPE##List> param) \
     { \
         if (param) { \
             MEMBER##_ ? \
-                MEMBER##_->merge(param) : \
-                MEMBER##_.reset(param); \
+                MEMBER##_->merge(param.release()) : \
+                MEMBER##_.reset(param.release()); \
         } \
         return this; \
     } \
-    Self* set##NAME##s(PARAM_TYPE##List* param) \
+    Self* set##NAME##s(std::unique_ptr<PARAM_TYPE##List> param) \
     { \
-        MEMBER##_.reset(param); \
+        MEMBER##_ = std::move(param); \
+        return this; \
+    } \
+    Self* add##NAME(std::unique_ptr<PARAM_TYPE> param) \
+    { \
+        if (param) { \
+            MEMBER##_ ? \
+                MEMBER##_->pushBack(param.release()) : \
+                MEMBER##_.reset(PARAM_TYPE##List::create(param.release())); \
+        } \
         return this; \
     } \
     Self* set##NAME##s##SR(PARAM_TYPE##List* param) \
@@ -252,7 +266,8 @@ AstT* newAst()
 
 #define NAMED_AST_LIST_PARAM__BASE__(NAME, PARAM_TYPE) \
     virtual Self* set##NAME##s(PARAM_TYPE##List*) { return nullptr; } \
-    virtual Self* set##NAME##s##SR(PARAM_TYPE##List*) { return nullptr; }
+    virtual Self* set##NAME##s##SR(PARAM_TYPE##List*) { return nullptr; } \
+    virtual Self* set##NAME##s(std::unique_ptr<PARAM_TYPE##List>) { return nullptr; } \
 
 #define NAMED_AST_LIST_PARAM__(NAME, TEMPLATE, PARAM_TYPE) \
     Self* set##NAME##s(PARAM_TYPE##List* param) override \
@@ -263,6 +278,11 @@ AstT* newAst()
     Self* set##NAME##s##SR(PARAM_TYPE##List* param) override \
     { \
         TEMPLATE::set##NAME##s##__(param->finishSR()); \
+        return this; \
+    } \
+    Self* set##NAME##s(std::unique_ptr<PARAM_TYPE##List> param) override \
+    { \
+        TEMPLATE::set##NAME##s##__(param.release()); \
         return this; \
     }
 

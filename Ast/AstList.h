@@ -286,10 +286,26 @@ void addToList(std::unique_ptr<AstListT>& list, typename AstListT::AstType* ast)
 }
 
 template <class AstListT>
+void addToList(std::unique_ptr<AstListT>& list,
+               std::unique_ptr<typename AstListT::AstType> ast)
+{
+    if (ast)
+        list ? list->pushBack(ast.release()) : list.reset(AstListT::create(ast.release()));
+}
+
+
+template <class AstListT>
 void mergeList(std::unique_ptr<AstListT>& list, AstListT* otherList)
 {
     if (otherList)
         list ? list->merge(otherList) : list.reset(otherList);
+}
+
+template <class AstListT>
+void mergeList(std::unique_ptr<AstListT>& list, std::unique_ptr<AstListT> otherList)
+{
+    if (otherList)
+        list ? list->merge(otherList.release()) : list.reset(otherList.release());
 }
 
 } // namespace uaiso
