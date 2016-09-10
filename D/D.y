@@ -281,7 +281,7 @@ void D_yyerror(YYLTYPE* yylloc,
 %token END_KEYWORD 497 "$keyword_end_marker$"
 %token END_LIT 300 "$lit_end_marker$"
 %token END_MULTICHAR_OPRTR 351 "$multichar_oprtr_end_marker$"
-%token END_NUMERIC_LIT 281 "$num_lit_end_marker$"
+%token END_NUM_LIT 281 "$num_lit_end_marker$"
 %token END_STR_LIT 296 "$str_lit_end_marker$"
 %token ENUM 389 "enum"
 %token EOP 258 "<end_of_program>"
