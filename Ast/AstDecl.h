@@ -52,6 +52,20 @@ public:
     SourceLoc errorLoc_;
 };
 
+class UAISO_API EmptyDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(Empty, Decl)
+
+    EmptyDeclAst()
+        : DeclAst(Kind::EmptyDecl)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+
+    SourceLoc keyLoc_;
+};
+
 class UAISO_API VarDeclAst : public DeclAst
 {
 public:
@@ -522,6 +536,7 @@ class UAISO_API FuncDeclAst : public DeclAst
 {
 public:
     AST_CLASS(Func, Decl)
+    VARIETY_AST(FuncVariety)
 
     FuncDeclAst()
         : DeclAst(Kind::FuncDecl)
@@ -529,8 +544,6 @@ public:
     {
         INIT_VARIETY(FuncVariety::Unknown);
     }
-
-    APPLY_VARIETY(FuncVariety)
 
     NAMED_AST_PARAM(Name, name, NameAst)
     NAMED_AST_PARAM(Spec, spec, SpecAst)
@@ -816,14 +829,13 @@ class UAISO_API SectionDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Section, Decl)
+    VARIETY_AST(SectionVariety)
 
     SectionDeclAst()
         : DeclAst(Kind::SectionDecl)
     {
         INIT_VARIETY(SectionVariety::Unknown);
     }
-
-    APPLY_VARIETY(SectionVariety)
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_LOC_PARAM(LDelim, lDelim)
@@ -957,14 +969,13 @@ class UAISO_API SelectiveDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Selective, Decl)
+    VARIETY_AST(SelectiveVariety)
 
     SelectiveDeclAst()
         : DeclAst(Kind::SelectiveDecl)
     {
         INIT_VARIETY(SelectiveVariety::Unknown);
     }
-
-    APPLY_VARIETY(SelectiveVariety)
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_LOC_PARAM(LDelim, lDelim)
@@ -1083,14 +1094,13 @@ class UAISO_API ForwardDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Forward, Decl)
+    VARIETY_AST(RecordVariety)
 
     ForwardDeclAst()
         : DeclAst(Kind::ForwardDecl)
     {
         INIT_VARIETY(RecordVariety::Struct);
     }
-
-    APPLY_VARIETY(RecordVariety)
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_AST_PARAM(Name, name, NameAst)
@@ -1099,6 +1109,29 @@ public:
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
     SourceLoc terminLoc_;
+};
+
+/*!
+ * \brief The PatBindDeclAst class
+ *
+ * A pattern binding.
+ */
+class UAISO_API PatBindDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(PatBind, Decl)
+
+    PatBindDeclAst()
+        : DeclAst(Kind::PatBindDecl)
+    {}
+
+    NAMED_AST_PARAM(Pat, pat, ExprAst)
+    NAMED_LOC_PARAM(Eq, eq)
+    NAMED_AST_PARAM(Bind, bind, ExprAst)
+
+    std::unique_ptr<ExprAst> pat_;
+    SourceLoc eqLoc_;
+    std::unique_ptr<ExprAst> bind_;
 };
 
 } // namespace uaiso

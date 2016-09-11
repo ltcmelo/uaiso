@@ -204,7 +204,9 @@ DEFINE_KIND_TRAVERSAL(Stmt, STMT_AST_MIXIN(MAKE_STMT_CASE))
 TRIVIAL_VISIT(CompletionName)
 TRIVIAL_VISIT(GenName)
 TRIVIAL_VISIT(ErrorName)
+TRIVIAL_VISIT(PuncName)
 TRIVIAL_VISIT(SimpleName)
+TRIVIAL_VISIT(SpecialName)
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseNestedName(NestedNameAst *ast)
@@ -319,7 +321,9 @@ AstVisitor<DerivedT>::traverseCodegenAttr(CodegenAttrAst* ast)
 
     /*--- Declarations traversal ---*/
 
+TRIVIAL_VISIT(EmptyDecl)
 TRIVIAL_VISIT(ErrorDecl)
+TRIVIAL_VISIT(PatBindDecl)
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseRecordDecl(RecordDeclAst* decl)
@@ -1089,6 +1093,15 @@ AstVisitor<DerivedT>::traverseYieldExpr(YieldExprAst* ast)
 {
     EVAL_RESULT_0(recursivelyVisitYieldExpr(ast));
     EVAL_RESULT_LIST_N(traverseList<ExprAst>(ast->exprs_.get(), &DerivedT::traverseExpr));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traversePatExpr(PatExprAst* ast)
+{
+    EVAL_RESULT_0(recursivelyVisitPatExpr(ast));
+    EVAL_RESULT_N(traverseName(ast->name_.get()));
+    EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
     return Continue;
 }
 

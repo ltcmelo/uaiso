@@ -619,14 +619,13 @@ class UAISO_API SelectiveStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Selective, Stmt)
+    VARIETY_AST(SelectiveVariety)
 
     SelectiveStmtAst()
         : StmtAst(Kind::SelectiveStmt)
     {
         INIT_VARIETY(SelectiveVariety::Unknown);
     }
-
-    APPLY_VARIETY(SelectiveVariety)
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_LOC_PARAM(LDelim, lDelim)

@@ -120,14 +120,13 @@ class UAISO_API RecordSpecAst final : public SpecAst
 {
 public:
     AST_CLASS(Record, Spec)
+    VARIETY_AST(RecordVariety)
 
     RecordSpecAst()
         : SpecAst(Kind::RecordSpec)
     {
         INIT_VARIETY(RecordVariety::Struct);
     }
-
-    APPLY_VARIETY(RecordVariety)
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_LOC_PARAM(Delim, delim)
@@ -302,14 +301,13 @@ class UAISO_API ArraySpecAst final : public OpaqueSpecAst
 {
 public:
     AST_CLASS(Array, Spec)
+    VARIETY_AST(ArrayVariety)
 
     ArraySpecAst()
         : OpaqueSpecAst(Kind::ArraySpec)
     {
         INIT_VARIETY(ArrayVariety::Unknown);
     }
-
-    APPLY_VARIETY(ArrayVariety)
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_LOC_PARAM(LDelim, lDelim)
@@ -333,14 +331,13 @@ class UAISO_API ChanSpecAst final : public OpaqueSpecAst
 {
 public:
     AST_CLASS(Chan, Spec)
+    VARIETY_AST(ChanVariety)
 
     ChanSpecAst()
         : OpaqueSpecAst(Kind::ChanSpec)
     {
         INIT_VARIETY(ChanVariety::Unknown);
     }
-
-    APPLY_VARIETY(ChanVariety)
 
     NAMED_LOC_PARAM(Key, key)
     NAMED_LOC_PARAM(Dir, dir)

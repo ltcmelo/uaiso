@@ -24,7 +24,7 @@
 #ifndef UAISO_ASTVARIETY_H__
 #define UAISO_ASTVARIETY_H__
 
-#define APPLY_VARIETY(VARIETY) \
+#define VARIETY_AST(VARIETY) \
     Self* setVariety(VARIETY v) \
     { \
         bit_.variety = static_cast<char>(v); \

@@ -188,6 +188,7 @@ private:
  * the AST create methods are to be preferred. I hope to eventually refactor
  * parts of the code using this "old" style.
  */
+
 template <class AstT>
 AstT* newAst()
 {
@@ -196,11 +197,9 @@ AstT* newAst()
 
 } // namespace uaiso
 
+
 /*
- * Macros for AST classes. The method's interface are a bit messed up. The ones
- * using raw pointers were originally created to make it convenient for Bison-
- * generated C parsers. Otherwise, the smart-pointer versions should be used.
- * I hope to eventually "normalized" that...
+ * Macros for AST classes.
  */
 
 #define AST_CLASS(AST_NODE, AST_KIND) \
@@ -209,6 +208,21 @@ AstT* newAst()
     { \
         return std::unique_ptr<Self>(newAst<Self>()); \
     }
+
+#define SINGLE_LOC_AST(LOC_MEMBER) \
+    static std::unique_ptr<Self> create(const SourceLoc& loc) \
+    { \
+        auto ast = create(); \
+        ast->set##LOC_MEMBER##Loc(loc); \
+        return ast; \
+    }
+
+
+/*
+ * The AST interface is a bit messed up. The methods using raw pointers were
+ * originally created to make it convenient for Bison parsers. Otherwise, the
+ * smart-pointer versions should be used.
+ */
 
 #define NAMED_AST_PARAM(NAME, MEMBER, PARAM_TYPE) \
     Self* set##NAME(PARAM_TYPE* param) \

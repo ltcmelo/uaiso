@@ -37,7 +37,9 @@
     GEN_CODE_FOR(Error, Name) \
     GEN_CODE_FOR(Gen, Name) \
     GEN_CODE_FOR(Nested, Name) \
+    GEN_CODE_FOR(Punc, Name) \
     GEN_CODE_FOR(Simple, Name) \
+    GEN_CODE_FOR(Special, Name) \
     GEN_CODE_FOR(TemplateInst, Name)
 
 #define SPEC_AST_MIXIN(GEN_CODE_FOR) \
@@ -72,6 +74,7 @@
     GEN_CODE_FOR(Block, Decl) \
     GEN_CODE_FOR(Constraint, Decl) \
     GEN_CODE_FOR(Debug, Decl) \
+    GEN_CODE_FOR(Empty, Decl) \
     GEN_CODE_FOR(Enum, Decl) \
     GEN_CODE_FOR(EnumMember, Decl) \
     GEN_CODE_FOR(Error, Decl) \
@@ -88,6 +91,7 @@
     GEN_CODE_FOR(Param, Decl) \
     GEN_CODE_FOR(ParamGroup, Decl) \
     GEN_CODE_FOR(ParamClause, Decl) \
+    GEN_CODE_FOR(PatBind, Decl) \
     GEN_CODE_FOR(Record, Decl) \
     GEN_CODE_FOR(Section, Decl) \
     GEN_CODE_FOR(Selective, Decl) \
@@ -146,6 +150,7 @@
     GEN_CODE_FOR(NullLit, PrimaryExpr) \
     GEN_CODE_FOR(NumLit, PrimaryExpr) \
     GEN_CODE_FOR(Plus, UnaryExpr) \
+    GEN_CODE_FOR(Pat, Expr) \
     GEN_CODE_FOR(Primary, Expr) \
     GEN_CODE_FOR(Print, Expr) \
     GEN_CODE_FOR(Power, BinaryExpr) \

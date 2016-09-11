@@ -29,15 +29,6 @@
 #include "Ast/AstBase.h"
 #include <string>
 
-#define AST_NAME_CLASS(AST_NODE, AST_KIND) \
-    AST_CLASS(AST_NODE, AST_KIND) \
-    static std::unique_ptr<Self> create(const SourceLoc& nameLoc) \
-    { \
-        auto ast = std::unique_ptr<Self>(newAst<Self>()); \
-        ast->setNameLoc(nameLoc); \
-        return ast; \
-    }
-
 namespace uaiso {
 
 class UAISO_API NameAst : public Ast
@@ -49,7 +40,8 @@ public:
 class UAISO_API ErrorNameAst final : public NameAst
 {
 public:
-    AST_NAME_CLASS(Error, Name)
+    AST_CLASS(Error, Name)
+    SINGLE_LOC_AST(Name)
 
     ErrorNameAst()
         : NameAst(Kind::ErrorName)
@@ -63,7 +55,8 @@ public:
 class UAISO_API SimpleNameAst final : public NameAst
 {
 public:
-    AST_NAME_CLASS(Simple, Name)
+    AST_CLASS(Simple, Name)
+    SINGLE_LOC_AST(Name)
 
     SimpleNameAst()
         : NameAst(Kind::SimpleName)
@@ -93,6 +86,44 @@ public:
     NAMED_AST_LIST_PARAM(Name, names, NameAst)
 
     std::unique_ptr<NameAstList> names_;
+};
+
+/*!
+ * \brief The PuncNameAst class
+ *
+ * A name composed by punctuation characters.
+ */
+class UAISO_API PuncNameAst final : public NameAst
+{
+public:
+    AST_CLASS(Punc, Name)
+    SINGLE_LOC_AST(Name)
+
+    PuncNameAst()
+        : NameAst(Kind::PuncName)
+    {}
+
+    NAMED_LOC_PARAM(Name, name)
+
+    SourceLoc nameLoc_;
+};
+
+/*!
+ * \brief The SpecialNameAst class
+ */
+class UAISO_API SpecialNameAst final : public NameAst
+{
+public:
+    AST_CLASS(Special, Name)
+    SINGLE_LOC_AST(Name)
+
+    SpecialNameAst()
+        : NameAst(Kind::SpecialName)
+    {}
+
+    NAMED_LOC_PARAM(Name, name)
+
+    SourceLoc nameLoc_;
 };
 
 class UAISO_API TemplateInstNameAst final : public NameAst
@@ -125,7 +156,8 @@ public:
 class UAISO_API GenNameAst final : public NameAst
 {
 public:
-    AST_NAME_CLASS(Gen, Name)
+    AST_CLASS(Gen, Name)
+    SINGLE_LOC_AST(Name)
 
     GenNameAst()
         : NameAst(Kind::GenName)
@@ -145,7 +177,8 @@ public:
 class UAISO_API CompletionNameAst final : public NameAst
 {
 public:
-    AST_NAME_CLASS(Completion, Name)
+    AST_CLASS(Completion, Name)
+    SINGLE_LOC_AST(Name)
 
     CompletionNameAst()
         : NameAst(Kind::CompletionName)
@@ -158,7 +191,4 @@ public:
 
 } // namespace uaiso
 
-#undef AST_NAME_CLASS
-
 #endif
-

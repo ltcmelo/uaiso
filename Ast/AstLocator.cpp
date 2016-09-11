@@ -90,6 +90,26 @@ const SourceLoc& AstLocator::lastLoc(SimpleNameAst* ast) const
     return ast->nameLoc_;
 }
 
+const SourceLoc& AstLocator::loc(PuncNameAst* ast) const
+{
+    return ast->nameLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(PuncNameAst* ast) const
+{
+    return ast->nameLoc_;
+}
+
+const SourceLoc& AstLocator::loc(SpecialNameAst* ast) const
+{
+    return ast->nameLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(SpecialNameAst* ast) const
+{
+    return ast->nameLoc_;
+}
+
 const SourceLoc& AstLocator::loc(ErrorNameAst* ast) const
 {
     return ast->nameLoc_;
@@ -364,6 +384,16 @@ const SourceLoc& AstLocator::lastLoc(VisibilityAttrAst* ast) const
     return ast->keyLoc_;
 }
 
+const SourceLoc& AstLocator::loc(EmptyDeclAst* ast) const
+{
+    return ast->keyLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(EmptyDeclAst* ast) const
+{
+    return ast->keyLoc_;
+}
+
 const SourceLoc& AstLocator::loc(AliasDeclAst* ast) const
 {
     return ast->keyLoc_;
@@ -471,6 +501,16 @@ const SourceLoc& AstLocator::loc(FuncDeclAst* ast) const
     if (ast->name())
         return loc(ast->name_.get());
     return loc(ast->spec());
+}
+
+const SourceLoc& AstLocator::lastLoc(PatBindDeclAst* ast) const
+{
+    return kEmptyLoc;
+}
+
+const SourceLoc& AstLocator::loc(PatBindDeclAst* ast) const
+{
+    return kEmptyLoc;
 }
 
 const SourceLoc& AstLocator::lastLoc(FuncDeclAst* ast) const
@@ -1403,6 +1443,18 @@ const SourceLoc& AstLocator::loc(YieldExprAst* ast) const
 const SourceLoc& AstLocator::lastLoc(YieldExprAst* ast) const
 {
     return lastLoc(ast->exprs_->back());
+}
+
+const SourceLoc& AstLocator::loc(PatExprAst* ast) const
+{
+    if (ast->name())
+        return loc(ast->name());
+    return loc(ast->expr());
+}
+
+const SourceLoc& AstLocator::lastLoc(PatExprAst* ast) const
+{
+    return lastLoc(ast->expr());
 }
 
 const SourceLoc& AstLocator::loc(ListCompreExprAst* ast) const
