@@ -62,9 +62,7 @@ bool HsParser::parse(Lexer* lexer, ParsingContext* context)
     UAISO_ASSERT(lexer, return false);
     UAISO_ASSERT(context && context->fileName(), return false);
 
-    lexer_ = lexer;
-    context_ = context;
-
+    prepare(lexer, context);
     consumeToken();
     if (ahead_ == TK_EOP)
         return false;
@@ -84,12 +82,12 @@ Parser::Decl HsParser::parseModule()
     UAISO_ASSERT(ahead_ == TK_MODULE, return Decl());
     consumeToken();
     auto module = ModuleDeclAst::create();
-    module->setKeyLoc(lastLoc_);
+    module->setKeyLoc(prevLoc_);
     module->setName(parseModid());
     if (ahead_ == TK_LPAREN)
         module->setExpot(parseExport());
     match(TK_WHERE);
-    module->setTerminLoc(lastLoc_);
+    module->setTerminLoc(prevLoc_);
 
     return std::move(module);
 }
@@ -99,10 +97,10 @@ Parser::Decl HsParser::parseExport()
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Decl());
     consumeToken();
     auto expot = ExportDeclAst::create();
-    expot->setLDelimLoc(lastLoc_);
+    expot->setLDelimLoc(prevLoc_);
     expot->setSelections(parseSelection(true));
     matchOrSkipTo(TK_RPAREN, "parseExport");
-    expot->setRDelimLoc(lastLoc_);
+    expot->setRDelimLoc(prevLoc_);
 
     return std::move(expot);
 }
@@ -112,12 +110,12 @@ Parser::Decl HsParser::parseImport()
     UAISO_ASSERT(ahead_ == TK_IMPORT, return Decl());
     consumeToken();
     auto group = ImportGroupDeclAst::create();
-    group->setKeyLoc(lastLoc_);
+    group->setKeyLoc(prevLoc_);
 
     // Utility lambda to compare contextual keywords.
     auto matchIdent = [this] (const std::string& s) {
         if (ahead_ == TK_IDENT) {
-            const Ident* ident = context_->fetchLexeme<Ident>(lexer_->tokenLoc().lineCol());
+            const Ident* ident = context_->fetchLexeme<Ident>(currentLoc().lineCol());
             return ident && ident->str() == s;
         }
         return false;
@@ -131,16 +129,16 @@ Parser::Decl HsParser::parseImport()
     import->setTarget(std::move(target));
     if (matchIdent(kAs)) {
         consumeToken();
-        import->setAsLoc(lastLoc_);
+        import->setAsLoc(prevLoc_);
         import->setLocalName(parseModid());
     }
     if (matchIdent(kHiding))
         consumeToken(); // TODO: Store hidden names.
     if (maybeConsume(TK_LPAREN)) {
-        import->setLDelimLoc(lastLoc_);
+        import->setLDelimLoc(prevLoc_);
         import->setSelections(parseSelection(false));
         matchOrSkipTo(TK_RPAREN, "parseImport");
-        import->setRDelimLoc(lastLoc_);
+        import->setRDelimLoc(prevLoc_);
     }
     group->addModule(std::move(import));
 
@@ -161,7 +159,7 @@ Parser::DeclList HsParser::parseSelection(bool allowModid)
             if (allowModid) {
                 select->setName(parseModid());
             } else {
-                context_->trackReport(Diagnostic::UnexpectedToken, lastLoc_);
+                context_->trackReport(Diagnostic::UnexpectedToken, prevLoc_);
                 if (ahead_ == TK_PROPER_IDENT)
                     parseModid(); // Parse and discard it.
             }
@@ -207,13 +205,298 @@ Parser::DeclList HsParser::parseBody()
 {
     UAISO_ASSERT(ahead_ == TK_LBRACE, return DeclList());
     consumeToken();
-
-    while (ahead_ == TK_IMPORT)
+    bool wantBrace = false;
+    while (ahead_ == TK_IMPORT) {
         parseImport();
-
+        if (!maybeConsume(TK_SEMICOLON)) {
+            wantBrace = true;
+            break;
+        }
+    }
+    if (!wantBrace)
+        parseTopDecls();
     matchOrSkipTo(TK_RBRACE, "parseBody");
 
     return DeclList();
+}
+
+Parser::DeclList HsParser::parseTopDecls()
+{
+    do {
+        switch (ahead_) {
+        case TK_TYPE:
+            break;
+
+        case TK_DATA:
+            break;
+
+        case TK_NEWTYPE:
+            break;
+
+        case TK_CLASS:
+            break;
+
+        case TK_INSTANCE:
+            break;
+
+        case TK_DEFAULT:
+            break;
+
+        case TK_FOREIGN:
+            break;
+
+        default:
+            parseDecl();
+            break;
+        }
+    } while (maybeConsume(TK_SEMICOLON));
+
+    return DeclList();
+}
+
+Parser::Decl HsParser::parseDecl()
+{
+    switch (ahead_) {
+    case TK_SEMICOLON:
+        consumeToken();
+        return EmptyDeclAst::create();
+
+    case TK_INFIX:
+    case TK_INFIXL:
+    case TK_INFIXR:
+        // TODO: Fixity declaration.
+        return Decl();
+
+    default:
+        return parsePatBindOrFuncOrTypeSig();
+    }
+}
+
+Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
+{
+    Name name;
+    if (maybeConsume(TK_IDENT)) {
+        name = SimpleNameAst::create(prevLoc_);
+    } else if (ahead_ == TK_LPAREN
+               && isVarSym(peekToken(2))
+               && peekToken(3) == TK_RPAREN) {
+        consumeToken();
+        name = PuncNameAst::create(prevLoc_);
+    }
+
+    if (!name)
+        return parsePatBindOrFunc();
+
+    bool wantTySig = false;
+    NameList vars;
+    while (maybeConsume(TK_COMMA)) {
+        addToList(vars, parseSymOrId(&HsParser::parseVarSym, &HsParser::parseVarId));
+        wantTySig = true;
+    }
+    if (wantTySig || ahead_ == TK_COLON_COLON) {
+        auto group = NameAstList::create(std::move(name));
+        if (vars)
+            group->merge(std::move(vars));
+        return parseTypeSig(/* group */);
+    }
+
+    std::unique_ptr<PatExprAst> pat;
+    if (ahead_ == TK_AT) {
+        parseAsPat();
+    }
+
+    if (auto name = maybeParseQConOp()) {
+        parsePat();
+    }
+
+    switch (ahead_) {
+    case TK_EQ:
+        // TODO: Expression.
+        break;
+
+    case TK_PIPE:
+        // TODO: Guard.
+        break;
+
+    default:
+        if (pat)
+            return parseInfixFunc(/* pat */);
+        return parseFunc(/* name */);
+    }
+
+    return Decl();
+}
+
+Parser::Decl HsParser::parsePatBindOrFunc()
+{
+    return Decl();
+}
+
+Parser::Decl HsParser::parseTypeSig()
+{
+    UAISO_ASSERT(ahead_ == TK_COLON_COLON, return Decl());
+    consumeToken();
+    return Decl();
+}
+
+Parser::Decl HsParser::parsePatBind()
+{
+    return Decl();
+}
+
+Parser::Decl HsParser::parseInfixFunc()
+{
+    return Decl();
+}
+
+Parser::Decl HsParser::parseFunc()
+{
+    return Decl();
+}
+
+    //--- Expressions ---//
+
+Parser::Expr HsParser::parsePat()
+{
+    parseLPat();
+
+    if (auto name = maybeParseQConOp()) {
+        parsePat();
+    }
+
+    return Expr();
+}
+
+Parser::Expr HsParser::parseLPat()
+{
+    switch (ahead_) {
+    case TK_MINUS:
+        consumeToken();
+        if (maybeConsume(TK_INT_LIT))
+            return NumLitExprAst::create(prevLoc_, NumLitVariety::IntFormat);
+        match(TK_FLOAT_LIT);
+        return NumLitExprAst::create(prevLoc_, NumLitVariety::FloatFormat);
+
+    case TK_LBRACKET:
+        return parseListConOrLitPat();
+
+    case TK_LPAREN: {
+        const Token peek = peekToken(2);
+        if (peek == TK_PROPER_IDENT || isConSym(peek)) {
+            parseQCon();
+            parsePatList();
+            return CallExprAst::create();
+        }
+        return parseTupleConOrLitOrWrapOrUnitPat();
+    }
+
+    case TK_PROPER_IDENT:
+        parseQConId();
+        parsePatList();
+        return CallExprAst::create();
+
+    default:
+        return parseAPat();
+    }
+}
+
+Parser::Expr HsParser::parseAPat()
+{
+    switch (ahead_) {
+    case TK_INT_LIT:
+        return parseIntLit();
+
+    case TK_FLOAT_LIT:
+        return parseFloatLit();
+
+    case TK_TRUE_VALUE:
+    case TK_FALSE_VALUE:
+        return parseBoolLit();
+
+    case TK_CHAR_LIT:
+        return parseCharLit();
+
+    case TK_STR_LIT:
+        return parseStrLit();
+
+    case TK_UNDERSCORE:
+        consumeToken();
+        return WildCardExprAst::create(prevLoc_);
+
+    case TK_TILDE:
+        // TODO: Irrefutable pattern.
+        return Expr();
+
+    default:
+        break;
+    }
+
+    return Expr();
+}
+
+Parser::Expr HsParser::parseListConOrLitPat()
+{
+    UAISO_ASSERT(ahead_ == TK_LBRACKET, return Expr());
+    consumeToken();
+
+    if (maybeConsume(TK_RBRACKET))
+        return CallExprAst::create(); // List's data con `[ ]'.
+
+    parsePatDList();
+    matchOrSkipTo(TK_RBRACKET, "parseListConOrLit");
+    return Expr();
+}
+
+Parser::Expr HsParser::parseTupleConOrLitOrWrapOrUnitPat()
+{
+    UAISO_ASSERT(ahead_ == TK_LPAREN, return Expr());
+    consumeToken();
+
+    if (maybeConsume(TK_RPAREN))
+        return NullLitExprAst::create(); // Unit value.
+
+    size_t tupleCnt = 0;
+    while (maybeConsume(TK_COMMA)) {
+        ++tupleCnt;
+    }
+    if (tupleCnt) {
+        matchOrSkipTo(TK_LPAREN, "parseTupleConOrLitOrWrapOrUnit");
+        parsePatList();
+        return Expr();
+    }
+
+    // Tuple literal.
+    parsePatDList();
+    matchOrSkipTo(TK_LPAREN, "parseTupleConOrLitOrWrapOrUnit");
+    return Expr();
+}
+
+Parser::ExprList HsParser::parsePatList()
+{
+    return ExprList();
+}
+
+Parser::ExprList HsParser::parsePatDList()
+{
+    return ExprList();
+}
+
+Parser::ExprList HsParser::parseAPatList()
+{
+    return ExprList();
+}
+
+Parser::ExprList HsParser::parseAPatDList()
+{
+    return ExprList();
+}
+
+Parser::Expr HsParser::parseAsPat()
+{
+    UAISO_ASSERT(ahead_ == TK_AT, return Expr());
+    consumeToken();
+    parseAPat();
+    return Expr();
 }
 
 Parser::Expr HsParser::parseExpr()
@@ -225,25 +508,58 @@ Parser::Expr HsParser::parseAExpr()
 {
     switch (ahead_) {
     case TK_INT_LIT:
-        consumeToken();
-        return Expr(newAst<NumLitExprAst>()->setLitLoc(lastLoc_)
-                    ->setVariety(NumLitVariety::IntFormat));
+        return parseIntLit();
 
     case TK_FLOAT_LIT:
-        consumeToken();
-        return Expr(newAst<NumLitExprAst>()->setLitLoc(lastLoc_)
-                    ->setVariety(NumLitVariety::FloatFormat));
+        return parseFloatLit();
 
     case TK_TRUE_VALUE:
     case TK_FALSE_VALUE:
-        consumeToken();
-        return Expr(newAst<BoolLitExprAst>()->setLitLoc(lastLoc_));
+        return parseBoolLit();
 
     default:
-        failMatch();
+        fail();
         return Expr();
     }
 }
+
+Parser::Expr HsParser::parseIntLit()
+{
+    UAISO_ASSERT(ahead_ == TK_INT_LIT, return Expr());
+    consumeToken();
+    return NumLitExprAst::create(prevLoc_, NumLitVariety::IntFormat);
+}
+
+Parser::Expr HsParser::parseFloatLit()
+{
+    UAISO_ASSERT(ahead_ == TK_FLOAT_LIT, return Expr());
+    consumeToken();
+    return NumLitExprAst::create(prevLoc_, NumLitVariety::FloatFormat);
+}
+
+Parser::Expr HsParser::parseStrLit()
+{
+    UAISO_ASSERT(ahead_ == TK_STR_LIT, return Expr());
+    consumeToken();
+    return StrLitExprAst::create(prevLoc_);
+}
+
+Parser::Expr HsParser::parseCharLit()
+{
+    UAISO_ASSERT(ahead_ == TK_CHAR_LIT, return Expr());
+    consumeToken();
+    return CharLitExprAst::create(prevLoc_);
+}
+
+Parser::Expr HsParser::parseBoolLit()
+{
+    UAISO_ASSERT(ahead_ == TK_TRUE_VALUE
+                 || ahead_ == TK_FALSE_VALUE, return Expr());
+    consumeToken();
+    return BoolLitExprAst::create(prevLoc_);
+}
+
+    //--- Names ---//
 
 Parser::Name HsParser::parseModid()
 {
@@ -338,44 +654,24 @@ Parser::Name HsParser::parseQVarSym()
 
 Parser::Name HsParser::parseConSym()
 {
-    switch (ahead_) {
-    case TK_COLON:
-    case TK_SPECIAL_IDENT:
+    if (isConSym(ahead_)) {
         consumeToken();
-        return SimpleNameAst::create(lastLoc_);
-
-    default:
-        failMatch();
-        return ErrorNameAst::create(lastLoc_);
+        return SpecialNameAst::create(prevLoc_);
     }
+
+    fail();
+    return ErrorNameAst::create(prevLoc_);
 }
 
 Parser::Name HsParser::parseVarSym()
 {
-    switch (ahead_) {
-    case TK_EXCLAM:
-    case TK_POUND:
-    case TK_DOLLAR:
-    case TK_PERCENT:
-    case TK_AMPER:
-    case TK_ASTERISK:
-    case TK_PLUS:
-    case TK_MINUS:
-    case TK_DOT:
-    case TK_SLASH:
-    case TK_LS:
-    case TK_GR:
-    case TK_QUESTION:
-    case TK_CARET:
-    case TK_SYMBOL_IDENT: {
+    if (isVarSym(ahead_)) {
         consumeToken();
-        return SimpleNameAst::create(lastLoc_);
+        return PuncNameAst::create(prevLoc_);
     }
 
-    default:
-        failMatch();
-        return ErrorNameAst::create(lastLoc_);
-    }
+    fail();
+    return ErrorNameAst::create(prevLoc_);
 }
 
 Parser::Name HsParser::parseConId()
@@ -388,11 +684,30 @@ Parser::Name HsParser::parseVarId()
     return parseName(TK_IDENT);
 }
 
+Parser::Name HsParser::maybeParseQConOp()
+{
+    if (maybeConsume(TK_COLON))
+        return SpecialNameAst::create(prevLoc_);
+
+    if (ahead_ == TK_BACKTICK
+            && peekToken(2) == TK_PROPER_IDENT) {
+        consumeToken();
+        auto name = parseQConId();
+        matchOrSkipTo(TK_BACKTICK, "parseQConOp");
+        return name;
+    }
+
+    if (ahead_ == TK_PROPER_IDENT)
+        return parseQConSym();
+
+    return Name();
+}
+
 Parser::Name HsParser::parseQName(Name (HsParser::*parseFunc)())
 {
     auto qname = NestedNameAst::create();
     while (maybeConsume(TK_PROPER_IDENT)) {
-        addToList(qname->names_, SimpleNameAst::create(lastLoc_));
+        addToList(qname->names_, SimpleNameAst::create(prevLoc_));
         match(TK_JOKER);
     }
     addToList(qname->names_, ((this->*(parseFunc))()));
@@ -408,6 +723,6 @@ HsParser::Name HsParser::parseName(Token tk)
      * design. Therefore, an ErrorNameAst must be constructed in such case.
      */
     if (match(tk))
-        return SimpleNameAst::create(lastLoc_);
-    return ErrorNameAst::create(lastLoc_);
+        return SimpleNameAst::create(prevLoc_);
+    return ErrorNameAst::create(prevLoc_);
 }

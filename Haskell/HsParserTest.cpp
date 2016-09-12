@@ -250,7 +250,7 @@ void HsParser::HsParserTest::testCase26()
     core(R"raw(
 module Foo where
 import A
-)raw");
+    )raw");
 }
 
 void HsParser::HsParserTest::testCase27()
@@ -258,7 +258,7 @@ void HsParser::HsParserTest::testCase27()
     core(R"raw(
 module Foo where
 import qualified A
-)raw");
+    )raw");
 }
 
 void HsParser::HsParserTest::testCase28()
@@ -266,7 +266,7 @@ void HsParser::HsParserTest::testCase28()
     core(R"raw(
 module Foo where
 import qualified A as ModA
-)raw");
+    )raw");
 }
 
 void HsParser::HsParserTest::testCase29()
@@ -274,7 +274,7 @@ void HsParser::HsParserTest::testCase29()
     core(R"raw(
 module Foo where
 import qualified A as ModA(foo, bar, zem)
-)raw");
+    )raw");
 }
 
 void HsParser::HsParserTest::testCase30()
@@ -282,7 +282,7 @@ void HsParser::HsParserTest::testCase30()
     core(R"raw(
 module Foo where
 import qualified A as ModA hiding(foo, bar, zem)
-)raw");
+    )raw");
 }
 
 void HsParser::HsParserTest::testCase31()
@@ -290,13 +290,41 @@ void HsParser::HsParserTest::testCase31()
     core(R"raw(
 module Foo where
 import qualified A (foo, bar, zem)
-)raw");
+    )raw");
 }
 
-void HsParser::HsParserTest::testCase32() {}
-void HsParser::HsParserTest::testCase33() {}
-void HsParser::HsParserTest::testCase34() {}
-void HsParser::HsParserTest::testCase35() {}
+void HsParser::HsParserTest::testCase32()
+{
+    core(R"raw(
+module Foo where
+import A
+import B
+import C
+    )raw");
+}
+
+void HsParser::HsParserTest::testCase33()
+{
+    core(R"raw(
+module Foo where;
+    )raw");
+}
+
+void HsParser::HsParserTest::testCase34()
+{
+    core(R"raw(
+module Foo where;;
+    )raw");
+}
+
+void HsParser::HsParserTest::testCase35()
+{
+    core(R"raw(
+module Foo where
+;
+    )raw");
+}
+
 void HsParser::HsParserTest::testCase36() {}
 void HsParser::HsParserTest::testCase37() {}
 void HsParser::HsParserTest::testCase38() {}

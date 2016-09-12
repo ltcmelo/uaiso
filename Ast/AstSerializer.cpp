@@ -623,10 +623,10 @@ AstSerializer::VisitResult AstSerializer::traverseAssignExpr(AssignExprAst* ast)
     return Continue;
 }
 
-AstSerializer::VisitResult AstSerializer::traverseBinaryExpr(BinaryExprAst* ast)
+AstSerializer::VisitResult AstSerializer::traverseBinExpr(BinExprAst* ast)
 {
     *output__ << "(" << static_cast<size_t>(ast->kind());
-    Base::traverseBinaryExpr(ast);
+    Base::traverseBinExpr(ast);
     *output__ << ")";
     return Continue;
 }
@@ -719,10 +719,10 @@ AstSerializer::VisitResult AstSerializer::traverseConcatExpr(ConcatExprAst* ast)
     return Continue;
 }
 
-AstSerializer::VisitResult AstSerializer::traverseCondExpr(CondExprAst* ast)
+AstSerializer::VisitResult AstSerializer::traverseTerExpr(TerExprAst* ast)
 {
     *output__ << "(" << static_cast<size_t>(ast->kind());
-    Base::traverseCondExpr(ast);
+    Base::traverseTerExpr(ast);
     *output__ << ")";
     return Continue;
 }
@@ -903,10 +903,10 @@ AstSerializer::VisitResult AstSerializer::traversePlusExpr(PlusExprAst* ast)
     return Continue;
 }
 
-AstSerializer::VisitResult AstSerializer::traversePrimaryExpr(PrimaryExprAst* ast)
+AstSerializer::VisitResult AstSerializer::traversePriExpr(PriExprAst* ast)
 {
     *output__ << "(" << static_cast<size_t>(ast->kind());
-    Base::traversePrimaryExpr(ast);
+    Base::traversePriExpr(ast);
     *output__ << ")";
     return Continue;
 }
@@ -1011,14 +1011,6 @@ AstSerializer::VisitResult AstSerializer::traverseMixinExpr(MixinExprAst* ast)
 {
     *output__ << "(" << static_cast<size_t>(ast->kind());
     Base::traverseMixinExpr(ast);
-    *output__ << ")";
-    return Continue;
-}
-
-AstSerializer::VisitResult AstSerializer::traverseVoidInitExpr(VoidInitExprAst* ast)
-{
-    *output__ << "(" << static_cast<size_t>(ast->kind());
-    Base::traverseVoidInitExpr(ast);
     *output__ << ")";
     return Continue;
 }

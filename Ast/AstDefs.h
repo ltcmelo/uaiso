@@ -105,73 +105,73 @@
     GEN_CODE_FOR(Version, Decl)
 
 #define EXPR_AST_MIXIN(GEN_CODE_FOR) \
-    GEN_CODE_FOR(Add, BinaryExpr) \
+    GEN_CODE_FOR(Add, BinExpr) \
     GEN_CODE_FOR(AddrOf, UnaryExpr) \
     GEN_CODE_FOR(ArrayInit, Expr) \
     GEN_CODE_FOR(ArrayIndex, Expr) \
-    GEN_CODE_FOR(ArrayLength, PrimaryExpr) \
+    GEN_CODE_FOR(ArrayLength, PriExpr) \
     GEN_CODE_FOR(ArraySlice, Expr) \
     GEN_CODE_FOR(Assert, Expr) \
     GEN_CODE_FOR(Assign, Expr) \
-    GEN_CODE_FOR(Binary, Expr) \
-    GEN_CODE_FOR(BitAnd, BinaryExpr) \
+    GEN_CODE_FOR(Bin, Expr) \
+    GEN_CODE_FOR(BitAnd, BinExpr) \
     GEN_CODE_FOR(BitComp, UnaryExpr) \
-    GEN_CODE_FOR(BitOr, BinaryExpr) \
-    GEN_CODE_FOR(BitXor, BinaryExpr) \
-    GEN_CODE_FOR(BoolLit, PrimaryExpr) \
+    GEN_CODE_FOR(BitOr, BinExpr) \
+    GEN_CODE_FOR(BitXor, BinExpr) \
+    GEN_CODE_FOR(BoolLit, PriExpr) \
     GEN_CODE_FOR(Call, Expr) \
     GEN_CODE_FOR(Cast, Expr) \
     GEN_CODE_FOR(Chan, UnaryExpr) \
-    GEN_CODE_FOR(CharLit, PrimaryExpr) \
-    GEN_CODE_FOR(Comma, BinaryExpr) \
-    GEN_CODE_FOR(Concat, BinaryExpr ) \
-    GEN_CODE_FOR(Cond, Expr) \
+    GEN_CODE_FOR(CharLit, PriExpr) \
+    GEN_CODE_FOR(Comma, BinExpr) \
+    GEN_CODE_FOR(Concat, BinExpr ) \
     GEN_CODE_FOR(Del, Expr) \
     GEN_CODE_FOR(Designate, Expr) \
-    GEN_CODE_FOR(Div, BinaryExpr) \
+    GEN_CODE_FOR(Div, BinExpr) \
     GEN_CODE_FOR(Error, Expr) \
-    GEN_CODE_FOR(Eq, BinaryExpr) \
-    GEN_CODE_FOR(FuncLit, PrimaryExpr) \
+    GEN_CODE_FOR(Eq, BinExpr) \
+    GEN_CODE_FOR(FuncLit, PriExpr) \
     GEN_CODE_FOR(Ident, Expr) \
-    GEN_CODE_FOR(In, BinaryExpr) \
+    GEN_CODE_FOR(In, BinExpr) \
     GEN_CODE_FOR(IncDec, UnaryExpr) \
-    GEN_CODE_FOR(Is, BinaryExpr) \
+    GEN_CODE_FOR(Is, BinExpr) \
     GEN_CODE_FOR(ListCompre, Expr) \
-    GEN_CODE_FOR(LogicAnd, BinaryExpr) \
+    GEN_CODE_FOR(LogicAnd, BinExpr) \
     GEN_CODE_FOR(LogicNot, UnaryExpr) \
-    GEN_CODE_FOR(LogicOr, BinaryExpr) \
+    GEN_CODE_FOR(LogicOr, BinExpr) \
     GEN_CODE_FOR(Make, Expr) \
     GEN_CODE_FOR(MemberAccess, Expr) \
     GEN_CODE_FOR(Minus, UnaryExpr) \
-    GEN_CODE_FOR(Mod, BinaryExpr) \
-    GEN_CODE_FOR(Mul, BinaryExpr) \
+    GEN_CODE_FOR(Mod, BinExpr) \
+    GEN_CODE_FOR(Mul, BinExpr) \
     GEN_CODE_FOR(NestedNew, Expr) \
     GEN_CODE_FOR(New, Expr) \
-    GEN_CODE_FOR(NullLit, PrimaryExpr) \
-    GEN_CODE_FOR(NumLit, PrimaryExpr) \
+    GEN_CODE_FOR(NullLit, PriExpr) \
+    GEN_CODE_FOR(NumLit, PriExpr) \
     GEN_CODE_FOR(Plus, UnaryExpr) \
     GEN_CODE_FOR(Pat, Expr) \
-    GEN_CODE_FOR(Primary, Expr) \
+    GEN_CODE_FOR(Pri, Expr) \
     GEN_CODE_FOR(Print, Expr) \
-    GEN_CODE_FOR(Power, BinaryExpr) \
+    GEN_CODE_FOR(Power, BinExpr) \
     GEN_CODE_FOR(PtrDeref, UnaryExpr) \
-    GEN_CODE_FOR(RecordLit, PrimaryExpr) \
+    GEN_CODE_FOR(RecordLit, PriExpr) \
     GEN_CODE_FOR(RecordInit, Expr) \
-    GEN_CODE_FOR(Rel, BinaryExpr) \
-    GEN_CODE_FOR(Shift, BinaryExpr) \
-    GEN_CODE_FOR(StrLit, PrimaryExpr) \
-    GEN_CODE_FOR(Sub, BinaryExpr) \
+    GEN_CODE_FOR(Rel, BinExpr) \
+    GEN_CODE_FOR(Shift, BinExpr) \
+    GEN_CODE_FOR(StrLit, PriExpr) \
+    GEN_CODE_FOR(Sub, BinExpr) \
     GEN_CODE_FOR(Subrange, Expr) \
-    GEN_CODE_FOR(Super, PrimaryExpr) \
-    GEN_CODE_FOR(This, PrimaryExpr) \
+    GEN_CODE_FOR(Super, PriExpr) \
+    GEN_CODE_FOR(Ter, Expr) \
+    GEN_CODE_FOR(This, PriExpr) \
     GEN_CODE_FOR(TupleLit, Expr) \
     GEN_CODE_FOR(Typeid, Expr) \
     GEN_CODE_FOR(TypeAssert, Expr) \
-    GEN_CODE_FOR(TypeQuery, PrimaryExpr) \
+    GEN_CODE_FOR(TypeQuery, PriExpr) \
     GEN_CODE_FOR(Unary, Expr) \
     GEN_CODE_FOR(Unpack, Expr) \
     GEN_CODE_FOR(Mixin, Expr) \
-    GEN_CODE_FOR(VoidInit, Expr) \
+    GEN_CODE_FOR(WildCard, Expr) \
     GEN_CODE_FOR(Wrapped, Expr) \
     GEN_CODE_FOR(Yield, Expr)
 

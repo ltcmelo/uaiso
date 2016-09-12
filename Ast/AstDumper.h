@@ -127,7 +127,7 @@ private:
     VisitResult visitArrayIndexExpr(ArrayIndexExprAst* ast);
     VisitResult visitAssertExpr(AssertExprAst* ast);
     VisitResult visitAssignExpr(AssignExprAst* ast);
-    VisitResult visitBinaryExpr(BinaryExprAst* ast);
+    VisitResult visitBinExpr(BinExprAst* ast);
     VisitResult visitBitAndExpr(BitAndExprAst* ast);
     VisitResult visitBitCompExpr(BitCompExprAst* ast);
     VisitResult visitBitOrExpr(BitOrExprAst* ast);
@@ -138,7 +138,7 @@ private:
     VisitResult visitCharLitExpr(CharLitExprAst* ast);
     VisitResult visitCommaExpr(CommaExprAst* ast);
     VisitResult visitConcatExpr(ConcatExprAst* ast);
-    VisitResult visitCondExpr(CondExprAst* ast);
+    VisitResult visitTerExpr(TerExprAst* ast);
     VisitResult visitDelExpr(DelExprAst* ast);
     VisitResult visitDesignateExpr(DesignateExprAst* ast);
     VisitResult visitDivExpr(DivExprAst* ast);
@@ -160,7 +160,7 @@ private:
     VisitResult visitNewExpr(NewExprAst* ast);
     VisitResult visitNumLitExpr(NumLitExprAst* ast);
     VisitResult visitPlusExpr(PlusExprAst* ast);
-    VisitResult visitPrimaryExpr(PrimaryExprAst* ast);
+    VisitResult visitPriExpr(PriExprAst* ast);
     VisitResult visitPowerExpr(PowerExprAst* ast);
     VisitResult visitPtrDerefExpr(PtrDerefExprAst* ast);
     VisitResult visitNullLitExpr(NullLitExprAst* ast);
@@ -175,7 +175,6 @@ private:
     VisitResult visitTypeidExpr(TypeidExprAst* ast);
     VisitResult visitUnaryExpr(UnaryExprAst* ast);
     VisitResult visitMixinExpr(MixinExprAst* ast);
-    VisitResult visitVoidInitExpr(VoidInitExprAst* ast);
     VisitResult visitWrappedExpr(WrappedExprAst* ast);
     VisitResult visitTypeQueryExpr(TypeQueryExprAst* ast);
     VisitResult visitSubrangeExpr(SubrangeExprAst* ast);

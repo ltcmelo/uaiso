@@ -21,23 +21,17 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_TYPEFWD_H__
-#define UAISO_TYPEFWD_H__
+#include "Parsing/ParserLL1.h"
+#include "Parsing/Lexer.h"
+#include "Parsing/ParsingContext.h"
 
-namespace uaiso {
+using namespace uaiso;
 
-class ArrayType;
-class EnumType;
-class FloatType;
-class FuncType;
-class IntType;
-class ElaborateType;
-class PtrType;
-class RecordType;
-class StrType;
-class Type;
-class EmptyType;
-
-} // namespace uaiso
-
-#endif
+void ParserLL1::consumeToken()
+{
+    // Upon a match, a token is consumed but we still need to assign its
+    // location to the AST. So we keep track of it before lexing again.
+    prevLoc_ = lexer_->tokenLoc();
+    prevLoc_.fileName_ = context_->fileName();
+    ahead_ = lexer_->lex();
+}

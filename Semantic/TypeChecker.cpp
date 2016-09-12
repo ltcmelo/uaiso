@@ -305,7 +305,7 @@ bool TypeChecker::analyseAssign(const Type* lhsTy,
             ok = true;
         break;
     case Type::Kind::Subrange:
-    case Type::Kind::Void:
+    case Type::Kind::Empty:
         break;
     default:
         UAISO_ASSERT(false, return false);
@@ -574,7 +574,7 @@ TypeChecker::VisitResult TypeChecker::visitNullLitExpr(NullLitExprAst* ast)
         P->exprTy_.emplace(new PtrType(std::unique_ptr<Type>(new InferredType)));
         break;
     default:
-        UAISO_ASSERT(false, {});
+        P->exprTy_.emplace(new EmptyType);
         break;
     }
 
@@ -791,21 +791,14 @@ TypeChecker::VisitResult TypeChecker::traverseArrayIndexExpr(ArrayIndexExprAst* 
 
 TypeChecker::VisitResult TypeChecker::visitAssertExpr(AssertExprAst* ast)
 {
-    P->exprTy_.emplace(new VoidType);
-
-    return Continue;
-}
-
-TypeChecker::VisitResult TypeChecker::visitVoidInitExpr(VoidInitExprAst* ast)
-{
-    P->exprTy_.emplace(new VoidType);
+    P->exprTy_.emplace(new EmptyType);
 
     return Continue;
 }
 
 TypeChecker::VisitResult TypeChecker::visitDelExpr(DelExprAst* ast)
 {
-    P->exprTy_.emplace(new VoidType);
+    P->exprTy_.emplace(new EmptyType);
 
     return Continue;
 }
@@ -814,7 +807,7 @@ TypeChecker::VisitResult TypeChecker::traverseAssignExpr(AssignExprAst* ast)
 {
     if (!ast->exprs1() || !ast->exprs2()) {
         // TODO: Either void or the assigned type.
-        P->exprTy_.emplace(new VoidType);
+        P->exprTy_.emplace(new EmptyType);
         return Continue;
     }
 
@@ -860,7 +853,7 @@ TypeChecker::VisitResult TypeChecker::traverseAssignExpr(AssignExprAst* ast)
         ++idx;
     }
 
-    P->exprTy_.emplace(new VoidType);
+    P->exprTy_.emplace(new EmptyType);
 
     return Continue;
 }
@@ -1011,9 +1004,9 @@ TypeChecker::VisitResult TypeChecker::traverseRelExpr(RelExprAst* ast)
     return Continue;
 }
 
-TypeChecker::VisitResult TypeChecker::traverseCondExpr(CondExprAst* ast)
+TypeChecker::VisitResult TypeChecker::traverseTerExpr(TerExprAst* ast)
 {
-    VIS_CALL(Base::traverseCondExpr(ast));
+    VIS_CALL(Base::traverseTerExpr(ast));
 
     ENSURE_NONEMPTY_STACK;
     std::unique_ptr<Type> ty = P->popExprType();
@@ -1225,7 +1218,7 @@ TypeChecker::VisitResult TypeChecker::traverseMixinExpr(MixinExprAst* ast)
 {
     // TODO: Inject the mixin expression.
 
-    P->exprTy_.emplace(new VoidType);
+    P->exprTy_.emplace(new EmptyType);
 
     return Continue;
 }

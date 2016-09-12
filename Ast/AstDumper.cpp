@@ -427,9 +427,9 @@ AstDumper::VisitResult AstDumper::visitAssignExpr(AssignExprAst* ast)
     return Continue;
 }
 
-AstDumper::VisitResult AstDumper::visitBinaryExpr(BinaryExprAst* ast)
+AstDumper::VisitResult AstDumper::visitBinExpr(BinExprAst* ast)
 {
-    *output__ << level << "BinaryExprAst" << std::endl;
+    *output__ << level << "BinExprAst" << std::endl;
     return Continue;
 }
 
@@ -493,9 +493,9 @@ AstDumper::VisitResult AstDumper::visitConcatExpr(ConcatExprAst* ast)
     return Continue;
 }
 
-AstDumper::VisitResult AstDumper::visitCondExpr(CondExprAst* ast)
+AstDumper::VisitResult AstDumper::visitTerExpr(TerExprAst* ast)
 {
-    *output__ << level << "CondExprAst" << std::endl;
+    *output__ << level << "TerExprAst" << std::endl;
     return Continue;
 }
 
@@ -625,9 +625,9 @@ AstDumper::VisitResult AstDumper::visitPlusExpr(PlusExprAst* ast)
     return Continue;
 }
 
-AstDumper::VisitResult AstDumper::visitPrimaryExpr(PrimaryExprAst* ast)
+AstDumper::VisitResult AstDumper::visitPriExpr(PriExprAst* ast)
 {
-    *output__ << level << "PrimaryExprAst" << std::endl;
+    *output__ << level << "PriExprAst" << std::endl;
     return Continue;
 }
 
@@ -712,12 +712,6 @@ AstDumper::VisitResult AstDumper::visitUnaryExpr(UnaryExprAst* ast)
 AstDumper::VisitResult AstDumper::visitMixinExpr(MixinExprAst* ast)
 {
     *output__ << level << "MixinExprAst" << std::endl;
-    return Continue;
-}
-
-AstDumper::VisitResult AstDumper::visitVoidInitExpr(VoidInitExprAst* ast)
-{
-    *output__ << level << "VoidInitExprAst" << std::endl;
     return Continue;
 }
 

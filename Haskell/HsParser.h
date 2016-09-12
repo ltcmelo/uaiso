@@ -27,14 +27,14 @@
 #include "Ast/AstFwd.h"
 #include "Ast/AstList.h"
 #include "Common/Test.h"
-#include "Parsing/Parser.h"
+#include "Parsing/ParserLLk.h"
 
 namespace uaiso {
 
 class Lexer;
 class ParsingContext;
 
-class UAISO_API HsParser final : public Parser
+class UAISO_API HsParser final : public ParserLLk
 {
 public:
     HsParser();
@@ -52,6 +52,22 @@ private:
 
     Expr parseExpr();
     Expr parseAExpr();
+    Expr parsePat();
+    Expr parseAPat();
+    Expr parseLPat();
+    Expr parseAsPat();
+    ExprList parsePatList();
+    ExprList parsePatDList();
+    ExprList parseAPatList();
+    ExprList parseAPatDList();
+    Expr parseIntLit();
+    Expr parseFloatLit();
+    Expr parseStrLit();
+    Expr parseCharLit();
+    Expr parseBoolLit();
+    Expr parseWildcard();
+    Expr parseListConOrLitPat();
+    Expr parseTupleConOrLitOrWrapOrUnitPat();
 
     //--- Declarations ---//
 
@@ -60,6 +76,14 @@ private:
     Decl parseImport();
     DeclList parseSelection(bool allowModid);
     DeclList parseBody();
+    DeclList parseTopDecls();
+    Decl parseDecl();
+    Decl parseTypeSig();
+    Decl parsePatBindOrFunc();
+    Decl parsePatBindOrFuncOrTypeSig();
+    Decl parsePatBind();
+    Decl parseInfixFunc();
+    Decl parseFunc();
 
     //--- Names ---//
 
@@ -77,6 +101,10 @@ private:
     Name parseCon();
     Name parseConId();
     Name parseConSym();
+    Name maybeParseQConOp();
+
+    bool isVarSym(const Token tk) const;
+    bool isConSym(const Token tk) const;
 
     // Helpers
 
@@ -84,6 +112,44 @@ private:
     Name parseQName(Name (HsParser::*parseFunc)());
     Name parseSymOrId(Name (HsParser::*parseSym)(), Name (HsParser::*parseId)());
 };
+
+
+// Auxiliary lookhead functions.
+
+inline bool HsParser::isVarSym(const Token tk) const
+{
+    switch (tk) {
+    case TK_EXCLAM:
+    case TK_POUND:
+    case TK_DOLLAR:
+    case TK_PERCENT:
+    case TK_AMPER:
+    case TK_ASTERISK:
+    case TK_PLUS:
+    case TK_MINUS:
+    case TK_DOT:
+    case TK_SLASH:
+    case TK_LS:
+    case TK_GR:
+    case TK_QUESTION:
+    case TK_CARET:
+    case TK_SYMBOL_IDENT:
+        return true;
+    default:
+        return false;
+    }
+}
+
+inline bool HsParser::isConSym(const Token tk) const
+{
+    switch (tk) {
+    case TK_COLON:
+    case TK_SPECIAL_IDENT:
+        return true;
+    default:
+        return false;
+    }
+}
 
 } // namespace uaiso
 

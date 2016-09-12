@@ -21,22 +21,51 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_TYPEFWD_H__
-#define UAISO_TYPEFWD_H__
+#ifndef UAISO_PARSERLLk_H__
+#define UAISO_PARSERLLk_H__
+
+#include "Parsing/Parser.h"
+#include <cstddef>
+#include <tuple>
+#include <vector>
 
 namespace uaiso {
 
-class ArrayType;
-class EnumType;
-class FloatType;
-class FuncType;
-class IntType;
-class ElaborateType;
-class PtrType;
-class RecordType;
-class StrType;
-class Type;
-class EmptyType;
+class ParserLLk : public Parser
+{
+public:
+    virtual ~ParserLLk() = default;
+
+protected:
+    ParserLLk();
+
+    void prepare(Lexer* lexer, ParsingContext* context) override;
+
+    void consumeToken() override;
+    void consumeToken(size_t k);
+
+    /*!
+     * \brief peekToken
+     * \param k
+     * \return
+     *
+     * Peek token beyond the one ahead.
+     */
+    const Token peekToken(size_t k);
+
+    SourceLoc currentLoc() const override;
+
+private:
+    // Hide the lexer to avoid conflicting use with the parser.
+    using Parser::lexer_;
+
+    using Buffer = std::vector<std::tuple<Token, SourceLoc>>;
+    using Pos = Buffer::size_type;
+
+    Buffer buffer_;
+    Pos cur_;
+    Pos last_;
+};
 
 } // namespace uaiso
 

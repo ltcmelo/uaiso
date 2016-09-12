@@ -113,7 +113,6 @@ private:
     VisitResult visitNullLitExpr(NullLitExprAst* ast);
     VisitResult visitStrLitExpr(StrLitExprAst* ast);
     VisitResult visitAssertExpr(AssertExprAst* ast); // precisa verificar
-    VisitResult visitVoidInitExpr(VoidInitExprAst* ast);
     VisitResult visitDelExpr(DelExprAst* ast);
     VisitResult visitArrayLengthExpr(ArrayLengthExprAst* ast);
 
@@ -157,7 +156,7 @@ private:
     VisitResult traverseEqExpr(EqExprAst* ast);
     VisitResult traverseInExpr(InExprAst* ast);
     VisitResult traverseIsExpr(IsExprAst* ast);
-    VisitResult traverseCondExpr(CondExprAst* ast);
+    VisitResult traverseTerExpr(TerExprAst* ast);
 
     // Type creation/convertion/assertion
     VisitResult traverseCastExpr(CastExprAst* ast);

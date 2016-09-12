@@ -436,7 +436,7 @@ Binder::VisitResult Binder::visitDecoratedSpec(DecoratedSpecAst* ast)
 
 Binder::VisitResult Binder::visitVoidSpec(VoidSpecAst* ast)
 {
-    P->declTy_.emplace(new VoidType);
+    P->declTy_.emplace(new EmptyType);
 
     return Continue;
 }
@@ -456,7 +456,7 @@ Binder::VisitResult Binder::visitBuiltinSpec(BuiltinSpecAst* ast)
     std::unique_ptr<Type> ty;
     switch (tk) {
     case TK_VOID:
-        ty.reset(new VoidType);
+        ty.reset(new EmptyType);
         break;
 
     case TK_BOOL:

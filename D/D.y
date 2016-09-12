@@ -161,10 +161,10 @@ void D_yyerror(YYLTYPE* yylloc,
 %type <decls_> BaseRecordList ParamGroupDeclList TemplateParamList AliasBindDeclList VarDeclList
 %type <decls_> RestrictTemplateParamList Decls EnumMemberDeclList ImportList ImportSelectionDeclList
 
-%type <expr_> Expr AssignExpr CondExpr BinaryExpr UnaryExpr PrimaryExpr PostfixExpr
+%type <expr_> Expr AssignExpr TerExpr BinExpr UnaryExpr PriExpr PostfixExpr
 %type <expr_> ThisExpr SuperExpr NewExpr TypeidExpr AssertExpr MixinExpr SpecialKeyword
 %type <expr_> PointerLit BoolLit NumLit StringLit CharLit ArrayLit FuncLit TypeQueryExpr
-%type <expr_> Init NonVoidInit StructInit ArrayInit StructMemberInit ArrayMemberInit
+%type <expr_> Init NonNullLit StructInit ArrayInit StructMemberInit ArrayMemberInit
 %type <exprs_> StructMemberInits ArrayMemberInits ExprList
 
 %type <stmt_> Stmt BlockStmt FuncEnd FuncBody FuncOutStmt CondStmt ExprStmt
@@ -551,252 +551,252 @@ Expr:
 ;
 
 AssignExpr:
-    CondExpr
-|   CondExpr '=' AssignExpr
+    TerExpr
+|   TerExpr '=' AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "+=" AssignExpr
+|   TerExpr "+=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "-=" AssignExpr
+|   TerExpr "-=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "*=" AssignExpr
+|   TerExpr "*=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "/=" AssignExpr
+|   TerExpr "/=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "%=" AssignExpr
+|   TerExpr "%=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "|=" AssignExpr
+|   TerExpr "|=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "^=" AssignExpr
+|   TerExpr "^=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "^^=" AssignExpr
+|   TerExpr "^^=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "&=" AssignExpr
+|   TerExpr "&=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "<<=" AssignExpr
+|   TerExpr "<<=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr ">>=" AssignExpr
+|   TerExpr ">>=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr ">>>=" AssignExpr
+|   TerExpr ">>>=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
-|   CondExpr "~=" AssignExpr
+|   TerExpr "~=" AssignExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AssignExprAst>()->addExpr1($1)->setOprLoc(locA)->addExpr2($3);
     }
 ;
 
-CondExpr:
-    BinaryExpr
-|   BinaryExpr '?' Expr ':' CondExpr
+TerExpr:
+    BinExpr
+|   BinExpr '?' Expr ':' TerExpr
     {
         DECL_2_LOC(@2, @4);
-        $$ = newAst<CondExprAst>()->setCond($1)->setQuestionLoc(locA)->setYes($3)
+        $$ = newAst<TerExprAst>()->setCond($1)->setQuestionLoc(locA)->setYes($3)
                 ->setDelimLoc(locB)->setNo($5);
     }
 ;
 
-BinaryExpr:
+BinExpr:
     UnaryExpr
-|   BinaryExpr "||" BinaryExpr
+|   BinExpr "||" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<LogicOrExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "&&" BinaryExpr
+|   BinExpr "&&" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<LogicAndExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '|' BinaryExpr
+|   BinExpr '|' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<BitOrExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '^' BinaryExpr
+|   BinExpr '^' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<BitXorExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '&' BinaryExpr
+|   BinExpr '&' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<BitAndExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "==" BinaryExpr
+|   BinExpr "==" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<EqExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "!=" BinaryExpr
+|   BinExpr "!=" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<EqExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '<' BinaryExpr
+|   BinExpr '<' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '>' BinaryExpr
+|   BinExpr '>' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "<=" BinaryExpr
+|   BinExpr "<=" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr ">=" BinaryExpr
+|   BinExpr ">=" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "<>" BinaryExpr
+|   BinExpr "<>" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "<>=" BinaryExpr
+|   BinExpr "<>=" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "!<>" BinaryExpr
+|   BinExpr "!<>" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "!<>=" BinaryExpr
+|   BinExpr "!<>=" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "!<" BinaryExpr
+|   BinExpr "!<" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "!<=" BinaryExpr
+|   BinExpr "!<=" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "!>" BinaryExpr
+|   BinExpr "!>" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "!>=" BinaryExpr
+|   BinExpr "!>=" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<RelExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr IS BinaryExpr
+|   BinExpr IS BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<IsExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr NOT_IS_HACK BinaryExpr
+|   BinExpr NOT_IS_HACK BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<IsExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr IN BinaryExpr
+|   BinExpr IN BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<InExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr NOT_IN_HACK BinaryExpr
+|   BinExpr NOT_IN_HACK BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<InExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "<<" BinaryExpr
+|   BinExpr "<<" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<ShiftExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr ">>" BinaryExpr
+|   BinExpr ">>" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<ShiftExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr ">>>" BinaryExpr
+|   BinExpr ">>>" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<ShiftExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '+' BinaryExpr
+|   BinExpr '+' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<AddExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '-' BinaryExpr
+|   BinExpr '-' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<SubExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '~' BinaryExpr
+|   BinExpr '~' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<ConcatExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '*' BinaryExpr
+|   BinExpr '*' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<MulExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '/' BinaryExpr
+|   BinExpr '/' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<DivExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr '%' BinaryExpr
+|   BinExpr '%' BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<ModExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
     }
-|   BinaryExpr "^^" BinaryExpr
+|   BinExpr "^^" BinExpr
     {
         DECL_1_LOC(@2);
         $$ = newAst<PowerExprAst>()->setExpr1($1)->setOprLoc(locA)->setExpr2($3);
@@ -872,7 +872,7 @@ UnaryExpr:
 ;
 
 PostfixExpr:
-    PrimaryExpr
+    PriExpr
 |   PostfixExpr "++"
     {
         DECL_1_LOC(@2);
@@ -965,7 +965,7 @@ PostfixExpr:
 
 PostfixExprSync: ']' | ')' | EOP;
 
-PrimaryExpr:
+PriExpr:
     IdentOrTemplateInst
     {
         $$ = newAst<IdentExprAst>()->setName($1);
@@ -2238,14 +2238,14 @@ TemplateValueParam:
         $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__>>()->setName($2)
                 ->setAssignLoc(locA)->setDefaultArg($4)->setSpec($1);
     }
-|   UnqualType Ident ':' CondExpr
+|   UnqualType Ident ':' TerExpr
     {
         DECL_1_LOC(@3);
         $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__Empty__,
                                          TemplateParamSpecialization__>>()->setName($2)
             ->setBindLoc(locA)->setSpecialization($4)->setSpec($1);
     }
-|   UnqualType Ident ':' CondExpr '=' AssignExpr
+|   UnqualType Ident ':' TerExpr '=' AssignExpr
     {
         DECL_2_LOC(@3, @5);
         $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__,
@@ -2253,7 +2253,7 @@ TemplateValueParam:
                 ->setAssignLoc(locA)->setDefaultArg($4)
                 ->setBindLoc(locB)->setSpecialization($6)->setSpec($1);
     }
-|   UnqualType Ident ':' CondExpr '=' SpecialKeyword
+|   UnqualType Ident ':' TerExpr '=' SpecialKeyword
     {
         DECL_2_LOC(@3, @5);
         $$ = newAst<TemplateParamDeclAst__<TemplateParamDefaultArg__,
@@ -2331,14 +2331,14 @@ Init:
     VOID
     {
         DECL_1_LOC(@1);
-        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<NullLitExprAst>()->setLitLoc(locA);
     }
-|   NonVoidInit
+|   NonNullLit
 ;
 
-NonVoidInit:
+NonNullLit:
     /* An ArrayInit is an ArrayLit, which is already matched
-       by an AssignExpr (as a PrimaryExpr). */
+       by an AssignExpr (as a PriExpr). */
     AssignExpr
 |   StructInit
 ;
@@ -2375,8 +2375,8 @@ ArrayMemberInits:
 ;
 
 ArrayMemberInit:
-    NonVoidInit
-|   AssignExpr ':' NonVoidInit
+    NonNullLit
+|   AssignExpr ':' NonNullLit
     {
         DECL_1_LOC(@1);
         $$ = newAst<DesignateExprAst>()->setId($1)->setDelimLoc(locA)->setValue($3);
@@ -2415,8 +2415,8 @@ StructMemberInits:
 ;
 
 StructMemberInit:
-    NonVoidInit
-|   Ident ':' NonVoidInit
+    NonNullLit
+|   Ident ':' NonNullLit
     {
         DECL_1_LOC(@1);
         auto id = newAst<IdentExprAst>()->setName($1);
@@ -3634,7 +3634,7 @@ GotoStmt:
 ;
 
 WithStmt:
-    /* Expr will match `Symbol` and `TemplateInst` as `PrimaryExpr` for the
+    /* Expr will match `Symbol` and `TemplateInst` as `PriExpr` for the
        as the other versions of the with statement. */
     WITH '(' Expr ')' Stmt
     {
@@ -3957,14 +3957,14 @@ FuncLit:
         /* TODO */ IGNORE_FOR_NOW($2);
 
         DECL_1_LOC(@1);
-        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<NullLitExprAst>()->setLitLoc(locA);
     }
 |   FuncKey Type FuncBody
     {
         /* TODO */ IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($3);
 
         DECL_1_LOC(@1);
-        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<NullLitExprAst>()->setLitLoc(locA);
     }
 |   FuncKey Type ParamClauseDecl FuncBody
     {
@@ -3972,21 +3972,21 @@ FuncLit:
         IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($3); IGNORE_FOR_NOW($4);
 
         DECL_1_LOC(@1);
-        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<NullLitExprAst>()->setLitLoc(locA);
     }
 |   FuncKey ParamClauseDecl FuncBody
     {
         /* TODO */ IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($3);
 
         DECL_1_LOC(@1);
-        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<NullLitExprAst>()->setLitLoc(locA);
     }
 |   ParamClauseDecl FuncBody
     {
         /* TODO */ IGNORE_FOR_NOW($1); IGNORE_FOR_NOW($2);
 
         DECL_1_LOC(@1);
-        $$ = newAst<VoidInitExprAst>()->setKeyLoc(locA);
+        $$ = newAst<NullLitExprAst>()->setLitLoc(locA);
     }
 ;
 

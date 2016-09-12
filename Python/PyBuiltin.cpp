@@ -152,8 +152,8 @@ Builtin::TypeDeclPtr PyBuiltin::createRootTypeDecl(LexemeMap* lexs) const
     // The `object` class
     Environment env;
     env.insertTypeDecl(createFunc<RecordType>(lexs, "__new__"));
-    env.insertTypeDecl(createFunc<VoidType>(lexs, "__init__"));
-    env.insertTypeDecl(createFunc<VoidType>(lexs, "__del__"));
+    env.insertTypeDecl(createFunc<EmptyType>(lexs, "__init__"));
+    env.insertTypeDecl(createFunc<EmptyType>(lexs, "__del__"));
     env.insertTypeDecl(createFunc<StrType>(lexs, "__repr__"));
     env.insertTypeDecl(createFunc<StrType>(lexs, "__str__"));
     //env.insertTypeDecl(createFunc<ArrayType>(lexs, "__bytes__"));
@@ -168,8 +168,8 @@ Builtin::TypeDeclPtr PyBuiltin::createRootTypeDecl(LexemeMap* lexs) const
     env.insertTypeDecl(createFunc<BoolType>(lexs, "__bool__"));
     env.insertTypeDecl(createFunc<InferredType>(lexs, "__getattr__"));
     env.insertTypeDecl(createFunc<InferredType>(lexs, "__getattribute__"));
-    env.insertTypeDecl(createFunc<VoidType>(lexs, "__setattr__"));
-    env.insertTypeDecl(createFunc<VoidType>(lexs, "__delattr__"));
+    env.insertTypeDecl(createFunc<EmptyType>(lexs, "__setattr__"));
+    env.insertTypeDecl(createFunc<EmptyType>(lexs, "__delattr__"));
     //env.insertTypeDecl(createFunc<ArrayType>(lexs, "__dir__"));
     std::unique_ptr<RecordType> recTy(new RecordType);
     recTy->setEnv(env);

@@ -80,9 +80,9 @@
 #define SubrangeType_Cast(T) static_cast<uaiso::SubrangeType*>(T)
 #define SubrangeType_ConstCast(T) const_cast<uaiso::SubrangeType*>(ConstSubrangeType_Cast(T))
 
-#define ConstVoidType_Cast(T) static_cast<const uaiso::VoidType*>(T)
-#define VoidType_Cast(T) static_cast<uaiso::VoidType*>(T)
-#define VoidType_ConstCast(T) const_cast<uaiso::VoidType*>(ConstVoidType_Cast(T))
+#define ConstEmptyType_Cast(T) static_cast<const uaiso::EmptyType*>(T)
+#define EmptyType_Cast(T) static_cast<uaiso::EmptyType*>(T)
+#define EmptyType_ConstCast(T) const_cast<uaiso::EmptyType*>(ConstEmptyType_Cast(T))
 
 
 #endif

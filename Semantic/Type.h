@@ -52,20 +52,20 @@ public:
      */
     enum class Kind : char
     {
-        Array,
-        Bool,
+        Array, // TODO: Separate array and list types.
+        Bool,          //!< A boolean type.
         Chan,
         Elaborate,
-        Enum,
-        Float,
-        Func,
-        Inferred,
-        Int,
-        Ptr,
+        Enum,          //!< An enumeration type.
+        Float,         //!< A floating-point type.
+        Func,          //!< A function type.
+        Inferred,      //!< A type yet to be inferred.
+        Int,           //!< An integral type.
+        Ptr,           //!< A pointer type.
         Record,
         Str,
         Subrange,
-        Void
+        Empty          //!< Either the void or the unit type.
     };
 
     Kind kind() const;
@@ -86,15 +86,17 @@ protected:
 };
 
 /*!
- * \brief The VoidType class
+ * \brief The EmptyType class
+ *
+ * Interpreted as either a void or unit type.
  */
-class UAISO_API VoidType final : public Type
+class UAISO_API EmptyType final : public Type
 {
 public:
-    VoidType() : Type(Kind::Void)
+    EmptyType() : Type(Kind::Empty)
     {}
 
-    VoidType* clone() const override;
+    EmptyType* clone() const override;
 };
 
 /*!

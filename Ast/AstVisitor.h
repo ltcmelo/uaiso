@@ -593,16 +593,16 @@ AstVisitor<DerivedT>::traverseExportSelectionDecl(ExportSelectionDeclAst* decl)
     /*--- Expressions traversal ---*/
 
 TRIVIAL_VISIT(ArrayLengthExpr)
-TRIVIAL_VISIT(VoidInitExpr)
-TRIVIAL_VISIT(PrimaryExpr)
-TRIVIAL_VISIT(CharLitExpr)
-TRIVIAL_VISIT(StrLitExpr)
 TRIVIAL_VISIT(BoolLitExpr)
+TRIVIAL_VISIT(CharLitExpr)
+TRIVIAL_VISIT(ErrorExpr)
 TRIVIAL_VISIT(NullLitExpr)
 TRIVIAL_VISIT(NumLitExpr)
-TRIVIAL_VISIT(ThisExpr)
+TRIVIAL_VISIT(PriExpr)
+TRIVIAL_VISIT(StrLitExpr)
 TRIVIAL_VISIT(SuperExpr)
-TRIVIAL_VISIT(ErrorExpr)
+TRIVIAL_VISIT(ThisExpr)
+TRIVIAL_VISIT(WildCardExpr)
 
 TRIVIAL_VISIT(MixinExpr)
 
@@ -615,9 +615,9 @@ AstVisitor<DerivedT>::traverseUnaryExpr(UnaryExprAst *ast)
 }
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
-AstVisitor<DerivedT>::traverseBinaryExpr(BinaryExprAst *ast)
+AstVisitor<DerivedT>::traverseBinExpr(BinExprAst *ast)
 {
-    EVAL_RESULT_0(recursivelyVisitBinaryExpr(ast));
+    EVAL_RESULT_0(recursivelyVisitBinExpr(ast));
     EVAL_RESULT_N(traverseExpr(ast->expr1_.get()));
     EVAL_RESULT_N(traverseExpr(ast->expr2_.get()));
     return Continue;
@@ -675,9 +675,9 @@ AstVisitor<DerivedT>::traverseAddrOfExpr(AddrOfExprAst *ast)
 }
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
-AstVisitor<DerivedT>::traverseCondExpr(CondExprAst *ast)
+AstVisitor<DerivedT>::traverseTerExpr(TerExprAst *ast)
 {
-    EVAL_RESULT_0(recursivelyVisitCondExpr(ast));
+    EVAL_RESULT_0(recursivelyVisitTerExpr(ast));
     EVAL_RESULT_N(traverseExpr(ast->cond_.get()));
     EVAL_RESULT_N(traverseExpr(ast->yes_.get()));
     EVAL_RESULT_N(traverseExpr(ast->no_.get()));

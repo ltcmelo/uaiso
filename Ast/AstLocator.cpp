@@ -878,14 +878,14 @@ const SourceLoc& AstLocator::lastLoc(AssignExprAst* ast) const
     return lastLoc(ast->exprs2_->back());
 }
 
-const SourceLoc& AstLocator::loc(BinaryExprAst* ast) const
+const SourceLoc& AstLocator::loc(BinExprAst* ast) const
 {
     UAISO_ASSERT(false, return kEmptyLoc);
 
     return kEmptyLoc;
 }
 
-const SourceLoc& AstLocator::lastLoc(BinaryExprAst* ast) const
+const SourceLoc& AstLocator::lastLoc(BinExprAst* ast) const
 {
     UAISO_ASSERT(false, return kEmptyLoc);
 
@@ -1002,12 +1002,12 @@ const SourceLoc& AstLocator::lastLoc(ConcatExprAst* ast) const
     return lastLoc(ast->expr2_.get());
 }
 
-const SourceLoc& AstLocator::loc(CondExprAst* ast) const
+const SourceLoc& AstLocator::loc(TerExprAst* ast) const
 {
     return loc(ast->cond_.get());
 }
 
-const SourceLoc& AstLocator::lastLoc(CondExprAst* ast) const
+const SourceLoc& AstLocator::lastLoc(TerExprAst* ast) const
 {
     return lastLoc(ast->no_.get());
 }
@@ -1233,14 +1233,14 @@ const SourceLoc& AstLocator::lastLoc(PlusExprAst* ast) const
     return lastLoc(ast->expr_.get());
 }
 
-const SourceLoc& AstLocator::loc(PrimaryExprAst* ast) const
+const SourceLoc& AstLocator::loc(PriExprAst* ast) const
 {
     UAISO_ASSERT(false, return kEmptyLoc);
 
     return kEmptyLoc;
 }
 
-const SourceLoc& AstLocator::lastLoc(PrimaryExprAst* ast) const
+const SourceLoc& AstLocator::lastLoc(PriExprAst* ast) const
 {
     UAISO_ASSERT(false, return kEmptyLoc);
 
@@ -1381,16 +1381,6 @@ const SourceLoc& AstLocator::lastLoc(MixinExprAst* ast) const
     return ast->rDelimLoc_;
 }
 
-const SourceLoc& AstLocator::loc(VoidInitExprAst* ast) const
-{
-    return ast->keyLoc_;
-}
-
-const SourceLoc& AstLocator::lastLoc(VoidInitExprAst* ast) const
-{
-    return ast->keyLoc_;
-}
-
 const SourceLoc& AstLocator::loc(WrappedExprAst* ast) const
 {
     return ast->lDelimLoc_;
@@ -1455,6 +1445,16 @@ const SourceLoc& AstLocator::loc(PatExprAst* ast) const
 const SourceLoc& AstLocator::lastLoc(PatExprAst* ast) const
 {
     return lastLoc(ast->expr());
+}
+
+const SourceLoc& AstLocator::loc(WildCardExprAst* ast) const
+{
+    return ast->keyLoc();
+}
+
+const SourceLoc& AstLocator::lastLoc(WildCardExprAst* ast) const
+{
+    return ast->keyLoc();
 }
 
 const SourceLoc& AstLocator::loc(ListCompreExprAst* ast) const

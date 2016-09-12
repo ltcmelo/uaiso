@@ -41,7 +41,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase1()
 
     runCore(FactoryCreator::create(LangId::Go), code,
             "/from/go/tour/code.go", std::vector<Diagnostic::Code>(),
-            std::make_pair("", Type::Kind::Void));
+            std::make_pair("", Type::Kind::Empty));
 }
 
 void TypeChecker::TypeCheckerTest::GoTestCase2()
@@ -58,7 +58,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase2()
 
     auto expected = { Diagnostic::IncompatibleAssignment };
     runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
-            expected, std::make_pair("", Type::Kind::Void));
+            expected, std::make_pair("", Type::Kind::Empty));
 }
 
 void TypeChecker::TypeCheckerTest::GoTestCase3()
@@ -76,7 +76,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase3()
     auto expected = { Diagnostic::IncompatibleAssignment,
                       Diagnostic::IncompatibleAssignment };
     runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
-            expected, std::make_pair("", Type::Kind::Void));
+            expected, std::make_pair("", Type::Kind::Empty));
 }
 
 void TypeChecker::TypeCheckerTest::GoTestCase4()
@@ -107,7 +107,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase5()
 
     runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             std::vector<Diagnostic::Code>(),
-            std::make_pair("", Type::Kind::Void));
+            std::make_pair("", Type::Kind::Empty));
 }
 
 void TypeChecker::TypeCheckerTest::GoTestCase6()
@@ -124,7 +124,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase6()
     auto expected = { Diagnostic::IntegerValueExpected };
     runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             expected,
-            std::make_pair("", Type::Kind::Void));
+            std::make_pair("", Type::Kind::Empty));
 }
 
 void TypeChecker::TypeCheckerTest::GoTestCase7()
@@ -140,7 +140,7 @@ void TypeChecker::TypeCheckerTest::GoTestCase7()
 
     runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             std::vector<Diagnostic::Code>(),
-            std::make_pair("", Type::Kind::Void));
+            std::make_pair("", Type::Kind::Empty));
 }
 
 
@@ -157,5 +157,5 @@ void TypeChecker::TypeCheckerTest::GoTestCase8()
 
     runCore(FactoryCreator::create(LangId::Go), code, "/from/go/tour/code.go",
             std::vector<Diagnostic::Code>(),
-            std::make_pair("", Type::Kind::Void));
+            std::make_pair("", Type::Kind::Empty));
 }

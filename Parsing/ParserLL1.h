@@ -21,22 +21,30 @@
 /*--- The UaiSo! Project ---*/
 /*--------------------------*/
 
-#ifndef UAISO_TYPEFWD_H__
-#define UAISO_TYPEFWD_H__
+#ifndef UAISO_PARSERLL1_H__
+#define UAISO_PARSERLL1_H__
+
+#include "Parsing/Parser.h"
+#include "Parsing/Lexer.h"
 
 namespace uaiso {
 
-class ArrayType;
-class EnumType;
-class FloatType;
-class FuncType;
-class IntType;
-class ElaborateType;
-class PtrType;
-class RecordType;
-class StrType;
-class Type;
-class EmptyType;
+class ParserLL1 : public Parser
+{
+public:
+    virtual ~ParserLL1() = default;
+
+private:
+    // Hide the lexer to avoid conflicting use with the parser.
+    using Parser::lexer_;
+
+protected:
+    ParserLL1() = default;
+
+    void consumeToken() override;
+
+    SourceLoc currentLoc() const override { return lexer_->tokenLoc(); }
+};
 
 } // namespace uaiso
 

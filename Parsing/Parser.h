@@ -54,11 +54,12 @@ protected:
     using Stmt = std::unique_ptr<StmtAst>;
     using StmtList = std::unique_ptr<StmtAstList>;
 
+    virtual void prepare(Lexer* lexer, ParsingContext* context);
+
     /*!
      * \brief consumeToken
      */
-    void consumeToken();
-    void consumeTokenCheckEOP();
+    virtual void consumeToken() = 0;
 
     /*!
      * \brief maybeConsume
@@ -84,12 +85,20 @@ protected:
      * \brief failMatch
      * \param consume
      */
-    void failMatch();
+    void fail();
+
+    /*!
+     * \brief loc
+     * \return
+     *
+     * Current source location of the parser.
+     */
+    virtual SourceLoc currentLoc() const = 0;
 
     Lexer* lexer_ { nullptr };
     ParsingContext* context_ { nullptr };
     Token ahead_ { TK_INVALID };
-    SourceLoc lastLoc_;
+    SourceLoc prevLoc_;
 };
 
 } // namespace uaiso

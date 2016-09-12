@@ -95,11 +95,11 @@ TypeT* Type::trivialClone(ArgT&&... args) const
     return ty;
 }
 
-    //--- VoidType ---//
+    //--- EmptyType ---//
 
-VoidType* VoidType::clone() const
+EmptyType* EmptyType::clone() const
 {
-    return trivialClone<VoidType>();
+    return trivialClone<EmptyType>();
 }
 
     //--- BoolType ---//

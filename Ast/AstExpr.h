@@ -39,48 +39,21 @@ public:
     using Ast::Ast;
 };
 
-/*!
- * \brief The CondExprAst class
- *
- * A conditional expression.
- */
-class UAISO_API CondExprAst final : public ExprAst
+class UAISO_API PriExprAst : public ExprAst
 {
 public:
-    AST_CLASS(Cond, Expr)
-
-    CondExprAst()
-        : ExprAst(Kind::CondExpr)
-    {}
-
-    NAMED_AST_PARAM(Cond, cond, ExprAst)
-    NAMED_LOC_PARAM(Question, question)
-    NAMED_AST_PARAM(Yes, yes, ExprAst)
-    NAMED_LOC_PARAM(Delim, delim)
-    NAMED_AST_PARAM(No, no, ExprAst)
-
-    std::unique_ptr<ExprAst> cond_;
-    SourceLoc questionLoc_;
-    std::unique_ptr<ExprAst> yes_;
-    SourceLoc delimLoc_;
-    std::unique_ptr<ExprAst> no_;
-};
-
-class UAISO_API PrimaryExprAst : public ExprAst
-{
-public:
-    AST_CLASS(Primary, Expr)
+    AST_CLASS(Pri, Expr)
     using ExprAst::ExprAst;
 };
 
-class UAISO_API CharLitExprAst final : public PrimaryExprAst
+class UAISO_API CharLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(CharLit, Expr)
     SINGLE_LOC_AST(Lit)
 
     CharLitExprAst()
-        : PrimaryExprAst(Kind::CharLitExpr)
+        : PriExprAst(Kind::CharLitExpr)
     {}
 
     NAMED_LOC_PARAM(Lit, lit)
@@ -88,14 +61,14 @@ public:
     SourceLoc litLoc_;
 };
 
-class UAISO_API StrLitExprAst final : public PrimaryExprAst
+class UAISO_API StrLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(StrLit, Expr)
     SINGLE_LOC_AST(Lit)
 
     StrLitExprAst()
-        : PrimaryExprAst(Kind::StrLitExpr)
+        : PriExprAst(Kind::StrLitExpr)
     {}
 
     NAMED_LOC_PARAM(Lit, lit)
@@ -103,7 +76,7 @@ public:
     SourceLoc litLoc_;
 };
 
-class UAISO_API NumLitExprAst final : public PrimaryExprAst
+class UAISO_API NumLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(NumLit, Expr)
@@ -118,7 +91,7 @@ public:
     }
 
     NumLitExprAst()
-        : PrimaryExprAst(Kind::NumLitExpr)
+        : PriExprAst(Kind::NumLitExpr)
     {
         INIT_VARIETY(NumLitVariety::Unknown);
     }
@@ -128,14 +101,14 @@ public:
     SourceLoc litLoc_;
 };
 
-class UAISO_API BoolLitExprAst final : public PrimaryExprAst
+class UAISO_API BoolLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(BoolLit, Expr)
     SINGLE_LOC_AST(Lit)
 
     BoolLitExprAst()
-        : PrimaryExprAst(Kind::BoolLitExpr)
+        : PriExprAst(Kind::BoolLitExpr)
     {}
 
     NAMED_LOC_PARAM(Lit, lit)
@@ -143,14 +116,14 @@ public:
     SourceLoc litLoc_;
 };
 
-class UAISO_API NullLitExprAst final : public PrimaryExprAst
+class UAISO_API NullLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(NullLit, Expr)
     SINGLE_LOC_AST(Lit)
 
     NullLitExprAst()
-        : PrimaryExprAst(Kind::NullLitExpr)
+        : PriExprAst(Kind::NullLitExpr)
     {}
 
     NAMED_LOC_PARAM(Lit, lit)
@@ -158,13 +131,13 @@ public:
     SourceLoc litLoc_;
 };
 
-class UAISO_API FuncLitExprAst final : public PrimaryExprAst
+class UAISO_API FuncLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(FuncLit, Expr)
 
     FuncLitExprAst()
-        : PrimaryExprAst(Kind::FuncLitExpr)
+        : PriExprAst(Kind::FuncLitExpr)
     {}
 
     NAMED_AST_PARAM(Spec, spec, SpecAst)
@@ -178,13 +151,13 @@ public:
 /*!
  * \brief The RecordLitExprAst class
  */
-class UAISO_API RecordLitExprAst final : public PrimaryExprAst
+class UAISO_API RecordLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(RecordLit, Expr)
 
     RecordLitExprAst()
-        : PrimaryExprAst(Kind::RecordLitExpr)
+        : PriExprAst(Kind::RecordLitExpr)
     {}
 
     RecordLitExprAst* setSpec(SpecAst* spec);
@@ -196,14 +169,14 @@ public:
     std::unique_ptr<ExprAst> init_;
 };
 
-class UAISO_API ThisExprAst final : public PrimaryExprAst
+class UAISO_API ThisExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(This, Expr)
     SINGLE_LOC_AST(Key)
 
     ThisExprAst()
-        : PrimaryExprAst(Kind::ThisExpr)
+        : PriExprAst(Kind::ThisExpr)
     {}
 
     NAMED_LOC_PARAM(Key, key)
@@ -211,14 +184,14 @@ public:
     SourceLoc keyLoc_;
 };
 
-class UAISO_API SuperExprAst final : public PrimaryExprAst
+class UAISO_API SuperExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(Super, Expr)
     SINGLE_LOC_AST(Key)
 
     SuperExprAst()
-        : PrimaryExprAst(Kind::SuperExpr)
+        : PriExprAst(Kind::SuperExpr)
     {}
 
     NAMED_LOC_PARAM(Key, key)
@@ -226,13 +199,13 @@ public:
     SourceLoc keyLoc_;
 };
 
-class UAISO_API ArrayLengthExprAst final : public PrimaryExprAst
+class UAISO_API ArrayLengthExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(ArrayLength, Expr)
 
     ArrayLengthExprAst()
-        : PrimaryExprAst(Kind::ArrayLengthExpr)
+        : PriExprAst(Kind::ArrayLengthExpr)
     {}
 
     NAMED_LOC_PARAM(Key, key)
@@ -240,13 +213,13 @@ public:
     SourceLoc keyLoc_;
 };
 
-class UAISO_API IdentExprAst final : public PrimaryExprAst
+class UAISO_API IdentExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(Ident, Expr)
 
     IdentExprAst()
-        : PrimaryExprAst(Kind::IdentExpr)
+        : PriExprAst(Kind::IdentExpr)
     {}
 
     IdentExprAst* setName(NameAstList* names);
@@ -259,13 +232,13 @@ public:
 /*!
  * \brief The TypeQueryExprAst class
  */
-class UAISO_API TypeQueryExprAst : public PrimaryExprAst
+class UAISO_API TypeQueryExprAst : public PriExprAst
 {
 public:
     AST_CLASS(TypeQuery, Expr)
 
     TypeQueryExprAst()
-        : PrimaryExprAst(Kind::TypeQueryExpr)
+        : PriExprAst(Kind::TypeQueryExpr)
     {}
 
     NAMED_LOC_PARAM(Key, key)
@@ -397,10 +370,10 @@ public:
     {}
 };
 
-class UAISO_API BinaryExprAst : public ExprAst
+class UAISO_API BinExprAst : public ExprAst
 {
 public:
-    AST_CLASS(Binary, Expr)
+    AST_CLASS(Bin, Expr)
     using ExprAst::ExprAst;
 
     NAMED_AST_PARAM(Expr1, expr1, ExprAst)
@@ -412,183 +385,183 @@ public:
     std::unique_ptr<ExprAst> expr2_;
 };
 
-class UAISO_API CommaExprAst final : public BinaryExprAst
+class UAISO_API CommaExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Comma, Expr)
 
     CommaExprAst()
-        : BinaryExprAst(Kind::CommaExpr)
+        : BinExprAst(Kind::CommaExpr)
     {}
 };
 
-class UAISO_API EqExprAst final : public BinaryExprAst
+class UAISO_API EqExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Eq, Expr)
 
     EqExprAst()
-        : BinaryExprAst(Kind::EqExpr)
+        : BinExprAst(Kind::EqExpr)
     {}
 };
 
-class UAISO_API RelExprAst final : public BinaryExprAst
+class UAISO_API RelExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Rel, Expr)
 
     RelExprAst()
-        : BinaryExprAst(Kind::RelExpr)
+        : BinExprAst(Kind::RelExpr)
     {}
 };
 
-class UAISO_API ShiftExprAst final : public BinaryExprAst
+class UAISO_API ShiftExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Shift, Expr)
 
     ShiftExprAst()
-        : BinaryExprAst(Kind::ShiftExpr)
+        : BinExprAst(Kind::ShiftExpr)
     {}
 };
 
-class UAISO_API ConcatExprAst final : public BinaryExprAst
+class UAISO_API ConcatExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Concat, Expr)
 
     ConcatExprAst()
-        : BinaryExprAst(Kind::ConcatExpr)
+        : BinExprAst(Kind::ConcatExpr)
     {}
 };
 
-class UAISO_API IsExprAst final : public BinaryExprAst
+class UAISO_API IsExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Is, Expr)
 
     IsExprAst()
-        : BinaryExprAst(Kind::IsExpr)
+        : BinExprAst(Kind::IsExpr)
     {}
 };
 
-class UAISO_API InExprAst final : public BinaryExprAst
+class UAISO_API InExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(In, Expr)
 
     InExprAst()
-        : BinaryExprAst(Kind::InExpr)
+        : BinExprAst(Kind::InExpr)
     {}
 };
 
-class UAISO_API BitXorExprAst final : public BinaryExprAst
+class UAISO_API BitXorExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(BitXor, Expr)
 
     BitXorExprAst()
-        : BinaryExprAst(Kind::BitXorExpr)
+        : BinExprAst(Kind::BitXorExpr)
     {}
 };
 
-class UAISO_API BitOrExprAst final : public BinaryExprAst
+class UAISO_API BitOrExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(BitOr, Expr)
 
     BitOrExprAst()
-        : BinaryExprAst(Kind::BitOrExpr)
+        : BinExprAst(Kind::BitOrExpr)
     {}
 };
 
-class UAISO_API BitAndExprAst final : public BinaryExprAst
+class UAISO_API BitAndExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(BitAnd, Expr)
 
     BitAndExprAst()
-        : BinaryExprAst(Kind::BitAndExpr)
+        : BinExprAst(Kind::BitAndExpr)
     {}
 };
 
-class UAISO_API LogicOrExprAst final : public BinaryExprAst
+class UAISO_API LogicOrExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(LogicOr, Expr)
 
     LogicOrExprAst()
-        : BinaryExprAst(Kind::LogicOrExpr)
+        : BinExprAst(Kind::LogicOrExpr)
     {}
 };
 
-class UAISO_API LogicAndExprAst final : public BinaryExprAst
+class UAISO_API LogicAndExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(LogicAnd, Expr)
 
     LogicAndExprAst()
-        : BinaryExprAst(Kind::LogicAndExpr)
+        : BinExprAst(Kind::LogicAndExpr)
     {}
 };
 
-class UAISO_API AddExprAst final : public BinaryExprAst
+class UAISO_API AddExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Add, Expr)
 
     AddExprAst()
-        : BinaryExprAst(Kind::AddExpr)
+        : BinExprAst(Kind::AddExpr)
     {}
 };
 
-class UAISO_API SubExprAst final : public BinaryExprAst
+class UAISO_API SubExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Sub, Expr)
 
     SubExprAst()
-        : BinaryExprAst(Kind::SubExpr)
+        : BinExprAst(Kind::SubExpr)
     {}
 };
 
-class UAISO_API MulExprAst final : public BinaryExprAst
+class UAISO_API MulExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Mul, Expr)
 
     MulExprAst()
-        : BinaryExprAst(Kind::MulExpr)
+        : BinExprAst(Kind::MulExpr)
     {}
 };
 
-class UAISO_API DivExprAst final : public BinaryExprAst
+class UAISO_API DivExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Div, Expr)
 
     DivExprAst()
-        : BinaryExprAst(Kind::DivExpr)
+        : BinExprAst(Kind::DivExpr)
     {}
 };
 
-class UAISO_API ModExprAst final : public BinaryExprAst
+class UAISO_API ModExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Mod, Expr)
 
     ModExprAst()
-        : BinaryExprAst(Kind::ModExpr)
+        : BinExprAst(Kind::ModExpr)
     {}
 };
 
-class UAISO_API PowerExprAst final : public BinaryExprAst
+class UAISO_API PowerExprAst final : public BinExprAst
 {
 public:
     AST_CLASS(Power, Expr)
 
     PowerExprAst()
-        : BinaryExprAst(Kind::PowerExpr)
+        : BinExprAst(Kind::PowerExpr)
     {}
 };
 
@@ -698,20 +671,6 @@ public:
     SourceLoc lDelimLoc_;
     std::unique_ptr<ExprAst> expr_;
     SourceLoc rDelimLoc_;
-};
-
-class UAISO_API VoidInitExprAst final : public ExprAst
-{
-public:
-    AST_CLASS(VoidInit, Expr)
-
-    VoidInitExprAst()
-        : ExprAst(Kind::VoidInitExpr)
-    {}
-
-    NAMED_LOC_PARAM(Key, key)
-
-    SourceLoc keyLoc_;
 };
 
 class UAISO_API RecordInitExprAst final : public ExprAst
@@ -1157,6 +1116,53 @@ public:
     //! and so on. In adition, it can be a function call - in such case, the
     //! function is expected to be a (data) constructor.
     std::unique_ptr<ExprAst> expr_;
+};
+
+/*!
+ * \brief The WildCardExprAst class
+ *
+ * A wild-card expression.
+ */
+class UAISO_API WildCardExprAst final : public ExprAst
+{
+public:
+    AST_CLASS(WildCard, Expr)
+    SINGLE_LOC_AST(Key)
+
+    WildCardExprAst()
+        : ExprAst(Kind::WildCardExpr)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+
+    SourceLoc keyLoc_;
+};
+
+/*!
+ * \brief The TerExprAst class
+ *
+ * The ternary expression.
+ */
+class UAISO_API TerExprAst final : public ExprAst
+{
+public:
+    AST_CLASS(Ter, Expr)
+
+    TerExprAst()
+        : ExprAst(Kind::TerExpr)
+    {}
+
+    NAMED_AST_PARAM(Cond, cond, ExprAst)
+    NAMED_LOC_PARAM(Question, question)
+    NAMED_AST_PARAM(Yes, yes, ExprAst)
+    NAMED_LOC_PARAM(Delim, delim)
+    NAMED_AST_PARAM(No, no, ExprAst)
+
+    std::unique_ptr<ExprAst> cond_;
+    SourceLoc questionLoc_;
+    std::unique_ptr<ExprAst> yes_;
+    SourceLoc delimLoc_;
+    std::unique_ptr<ExprAst> no_;
 };
 
 } // namespace uaiso

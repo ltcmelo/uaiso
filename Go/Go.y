@@ -150,7 +150,7 @@ void GO_yyerror(const YYLTYPE* yylloc,
 %type <decls_> FieldDecls InterfaceMembers VarGroupDeclList RecordDeclList
 %type <decls_> ParamGroupDeclList ParamDeclList VarDeclList Decls ImportList
 
-%type <expr_> Expr UnaryExpr PostfixExpr PrimaryExpr SubrangeExpr ConvExpr Init
+%type <expr_> Expr UnaryExpr PostfixExpr PriExpr SubrangeExpr ConvExpr Init
 %type <expr_> BoolLit NullLit CharLit StringLit NumLit FuncLit CompositeLit
 %type <expr_> EffectExpr
 %type <exprs_> ExprList InitList
@@ -660,7 +660,7 @@ UnaryExpr:
 ;
 
 PostfixExpr:
-    PrimaryExpr
+    PriExpr
 |   PostfixExpr '.' Ident
     {
         DECL_1_LOC(@2);
@@ -812,7 +812,7 @@ PostfixExpr:
 
 PostfixExprSync: ']'| ')';
 
-PrimaryExpr:
+PriExpr:
     Ident
     {
         $$ = newAst<IdentExprAst>()->setName($1);

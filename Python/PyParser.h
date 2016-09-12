@@ -25,7 +25,7 @@
 #define UAISO_PYPARSER_H__
 
 #include "Common/Test.h"
-#include "Parsing/Parser.h"
+#include "Parsing/ParserLL1.h"
 #include <functional>
 #include <initializer_list>
 #include <utility>
@@ -40,7 +40,7 @@ class ParsingContext;
  *
  * Based on https://docs.python.org/2/reference/grammar.html
  */
-class UAISO_API PyParser final : public Parser
+class UAISO_API PyParser final : public ParserLL1
 {
 public:
     PyParser();
@@ -61,7 +61,7 @@ private:
         Factor
     };
 
-    std::pair<Precedence, std::unique_ptr<BinaryExprAst>> fetchPrecAhead() const;
+    std::pair<Precedence, std::unique_ptr<BinExprAst>> fetchPrecAhead() const;
 
     using ListCompre = std::unique_ptr<ListCompreExprAst>;
     using ParamGroup = std::unique_ptr<ParamGroupDeclAst>;
@@ -126,7 +126,7 @@ private:
     Expr parseNotTest();
     Expr parseComparison();
     Expr parseExpr();
-    Expr parseBinaryExpr(Precedence precedence);
+    Expr parseBinExpr(Precedence precedence);
     Expr parseFactor();
     Expr parsePower();
     Expr parseAtom();
@@ -157,7 +157,7 @@ private:
     template <class UnaryAstT>
     Expr completeUnaryExpr(Expr (PyParser::*parseFunc) ());
     template <class BinaryAstT>
-    Expr completeBinaryExpr(Expr expr, Expr (PyParser::*parseFunc) ());
+    Expr completeBinExpr(Expr expr, Expr (PyParser::*parseFunc) ());
     Expr completeAssignExpr(Expr expr, Expr (PyParser::*parseFunc) ());
     Expr completeSubrangeExpr(Expr expr);
     ListCompre completeListCompre(ListCompre listCompre,
