@@ -8,12 +8,12 @@ Uaiso is a parsing infrastructure that provides a unifying AST (Abstract Syntax 
 
 ## Supported languages
 
-Language | Version | Parser | AST | Semantics | Active | Video
+Language | Version | Parser | AST | Semantics | Active | Demo
 ---------|---------|--------|-----|-----------|--------|------
-D | 2.0 | Bison, GLR | partial | ok | no | youtu.be/71aqIwv3vJs
-Go | 1.5+ | Bison, GLR | complete | ok | yes | youtu.be/nUpcVBAw0DM
+D | 2.0 | Bison, GLR | partial | ok | no | [D completion](https://youtu.be/71aqIwv3vJs)
+Go | 1.5+ | Bison, GLR | complete | ok | yes | [Go completion](https://youtu.be/nUpcVBAw0DM)
 Haskell | 2010 | Hand, LL(k) | WIP | ? | yes | -
-Python | 2.x | Hand, LL(1) | complete | basic | yes | youtu.be/71aqIwv3vJs
+Python | 2.x | Hand, LL(1) | complete | basic | yes | [Overall intro](https://youtu.be/71aqIwv3vJs)
 
 ## Prerequisities
 
