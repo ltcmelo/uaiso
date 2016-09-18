@@ -176,7 +176,7 @@ bool PyParser::parse(Lexer* lexer, ParsingContext* context)
     UAISO_ASSERT(lexer, return false);
     UAISO_ASSERT(context && context->fileName(), return false);
 
-    prepare(lexer, context);
+    init(lexer, context);
     consumeToken();
     std::unique_ptr<StmtAstList> stmts;
     while (ahead_ != TK_EOP) {

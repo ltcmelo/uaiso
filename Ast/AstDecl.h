@@ -56,6 +56,7 @@ class UAISO_API EmptyDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Empty, Decl)
+    SINGLE_LOC_AST(Key)
 
     EmptyDeclAst()
         : DeclAst(Kind::EmptyDecl)

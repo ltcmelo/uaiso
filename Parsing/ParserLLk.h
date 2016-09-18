@@ -39,7 +39,7 @@ public:
 protected:
     ParserLLk();
 
-    void prepare(Lexer* lexer, ParsingContext* context) override;
+    void init(Lexer* lexer, ParsingContext* context) override;
 
     void consumeToken() override;
     void consumeToken(size_t k);

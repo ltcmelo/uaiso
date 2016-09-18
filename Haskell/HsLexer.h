@@ -49,6 +49,8 @@ private:
     Token lexAscSymbol2(char& ch, const char& ch2, Token tk2, Token tkMore);
     Token lexAscSymbolMore(char& ch, Token tk);
 
+    Token pendingToken();
+
     bool isAscSymbol(const char ch) const;
 
     Token filterKeyword(const char* spell, size_t len) const override;
@@ -61,10 +63,12 @@ private:
         uint32_t atLineStart_    : 1;
         uint32_t wantBrace_      : 1;
         uint32_t waitOffsetMark_ : 1;
-        uint32_t pendingQual_    : 4;
-        uint32_t pendingName_    : 1;
-        uint32_t pendingOprtr_   : 16; // In sync with Token.h.
-        uint32_t delimCount_     : 4;
+        uint32_t pendQual_       : 4;
+        uint32_t pendName_       : 1;
+        uint32_t pendPropName_   : 1;
+        uint32_t pendCon_        : 1;
+        uint32_t pendSym_        : 16; // Must be in sync with Token.h.
+        uint32_t delimCnt_       : 4;
     };
     union
     {

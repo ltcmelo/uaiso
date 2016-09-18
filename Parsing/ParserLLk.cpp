@@ -32,7 +32,7 @@ ParserLLk::ParserLLk()
     : cur_(0)
 {}
 
-void ParserLLk::prepare(Lexer* lexer, ParsingContext* context)
+void ParserLLk::init(Lexer* lexer, ParsingContext* context)
 {
     UAISO_ASSERT(buffer_.empty(), return);
 

@@ -23,7 +23,6 @@
 
 #include "Parsing/Token.h"
 #include <iostream>
-#include <unordered_map>
 
 namespace uaiso {
 

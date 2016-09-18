@@ -49,35 +49,59 @@ HsLexer::HsLexer()
 HsLexer::~HsLexer()
 {}
 
-Token HsLexer::lex()
+Token HsLexer::pendingToken()
 {
-    // Check for pending lexemes from a qualified name or operator.
-    if (bit_.pendingQual_ || bit_.pendingName_ || bit_.pendingOprtr_) {
-        if (bit_.delimCount_
-                && bit_.delimCount_ == (bit_.pendingQual_
-                                        + bit_.pendingName_
-                                        + (bit_.pendingOprtr_ > 0 ? 1 : 0))) {
-            --bit_.delimCount_;
-            return TK_JOKER;
-        }
-
-        if (bit_.pendingQual_) {
-            --bit_.pendingQual_;
-            return TK_PROPER_IDENT;
-        }
-
-        if (bit_.pendingName_) {
-            --bit_.pendingName_;
-            return TK_IDENT;
-        }
-
-        UAISO_ASSERT(bit_.pendingOprtr_, return TK_INVALID);
-        auto oprtr = static_cast<Token>(bit_.pendingOprtr_);
-        bit_.pendingOprtr_ = 0;
-        return oprtr;
+    // Check for pending lexemes from a qualified name or operator. See the
+    // lexing of identifiers for a detailed explanation.
+    if (bit_.delimCnt_
+            && bit_.delimCnt_ == (bit_.pendQual_
+                                  + bit_.pendName_
+                                  + bit_.pendPropName_
+                                  + (bit_.pendSym_ || bit_.pendCon_ ? 1 : 0))) {
+        --bit_.delimCnt_;
+        return TK_JOKER;
     }
 
-    Token tk = TK_INVALID;
+    if (bit_.pendQual_) {
+        --bit_.pendQual_;
+        return (bit_.pendSym_ ?
+                    TK_PUNC_IDENT_QUAL
+                  : bit_.pendCon_ ?
+                        TK_SPECIAL_IDENT_QUAL
+                      : bit_.pendPropName_ ? TK_PROPER_IDENT_QUAL : TK_IDENT_QUAL);
+    }
+
+    if (bit_.pendName_) {
+        --bit_.pendName_;
+        return TK_IDENT;
+    }
+
+    if (bit_.pendPropName_) {
+        --bit_.pendPropName_;
+        return TK_PROPER_IDENT;
+    }
+
+    if (bit_.pendCon_) {
+        --bit_.pendCon_;
+        return TK_SPECIAL_IDENT;
+    }
+
+    if (bit_.pendSym_) {
+        UAISO_ASSERT(bit_.pendSym_, return TK_INVALID);
+        auto sym = static_cast<Token>(bit_.pendSym_);
+        bit_.pendSym_ = 0;
+        return sym;
+    }
+
+    return TK_INVALID;
+}
+
+Token HsLexer::lex()
+{
+    Token tk = pendingToken();
+    if (tk != TK_INVALID)
+        return tk;
+
     updatePos();
 
 LexNextToken:
@@ -182,19 +206,19 @@ LexNextToken:
         break;
 
     case '.':
-        tk = lexAscSymbol2(ch, '.', TK_DOT_DOT, TK_SYMBOL_IDENT);
+        tk = lexAscSymbol2(ch, '.', TK_DOT_DOT, TK_PUNC_IDENT);
         break;
 
     case '-':
-        tk = lexAscSymbol2(ch, '>', TK_DASH_ARROW, TK_SYMBOL_IDENT);
+        tk = lexAscSymbol2(ch, '>', TK_DASH_ARROW, TK_PUNC_IDENT);
         break;
 
     case '=':
-        tk = lexAscSymbol2(ch, '>', TK_EQ_ARROW, TK_SYMBOL_IDENT);
+        tk = lexAscSymbol2(ch, '>', TK_EQ_ARROW, TK_PUNC_IDENT);
         break;
 
     case '<':
-        tk = lexAscSymbol2(ch, '-', TK_ARROW_DASH, TK_SYMBOL_IDENT);
+        tk = lexAscSymbol2(ch, '-', TK_ARROW_DASH, TK_PUNC_IDENT);
         break;
 
     case ':':
@@ -320,7 +344,7 @@ Token HsLexer::lexAscSymbol(char& ch)
     if (!isAscSymbol(ch))
         return tk;
 
-    return lexAscSymbolMore(ch, TK_SYMBOL_IDENT);
+    return lexAscSymbolMore(ch, TK_PUNC_IDENT);
 }
 
 Token HsLexer::lexAscSymbol2(char& ch, const char& ch2, Token tk2, Token tkMore)
@@ -405,7 +429,7 @@ Token HsLexer::classifyIdent(char& ch)
     // We have a capitalized identifier. It could be a lexeme on its own or it
     // could be the qualification of something like `A.B`, `A.b`, or `A.+`,
     // which also must be lexed as a single lexeme. However, we deviate slightly
-    // from the Haskell report here: our design cannot handled nested names
+    // from the Haskell report here: our design cannot handle nested names
     // within a single lexeme, we need the independent parts of the name. So
     // we lex as according to the rules but we keep the individual identifier
     // and delimiter tokens pending, which are fed to the parser separately.
@@ -415,44 +439,59 @@ Token HsLexer::classifyIdent(char& ch)
     std::function<void ()> classifyRecursively = [&]() {
         if (ch != '.') {
             context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
+            if (bit_.pendQual_) {
+                // Previous name was not a qualifier, but a proper name.
+                --bit_.pendQual_;
+                ++bit_.pendPropName_;
+            }
             return;
         }
 
         // The presence of the `.` is not sufficient to characterize the
         // qualification, it must be followed by an identifier or operator.
         char next = peekChar(1);
-        if (hsLang.isIdentChar(next) && !bit_.pendingName_) {
-            ++bit_.delimCount_;
+        if (hsLang.isIdentChar(next) && !bit_.pendName_) {
+            ++bit_.delimCnt_;
             ch = consumeCharPeekNext();
             mark_ = curr_;
             while (hsLang.isIdentChar(ch))
                 ch = consumeCharPeekNext();
             context_->trackLexeme<Ident>(mark_, curr_ - mark_, LineCol(line_, col_));
             if (next >= 97) {
-                ++bit_.pendingName_;
-            } else {
-                ++bit_.pendingQual_;
-                classifyRecursively();
+                ++bit_.pendName_;
+                tk = TK_IDENT_QUAL;
+                return;
             }
+            ++bit_.pendQual_;
+            tk = TK_PROPER_IDENT_QUAL;
+            classifyRecursively();
         }
 
         if (isAscSymbol(next)) {
-            ++bit_.delimCount_;
+            ++bit_.delimCnt_;
             ch = consumeCharPeekNext();
+            if (next == ':') {
+                lexAscSymbol2(ch, ':', TK_COLON_COLON, TK_SPECIAL_IDENT);
+                ++bit_.pendCon_;
+                tk = TK_SPECIAL_IDENT_QUAL;
+                return;
+            }
+
             if (next == '.')
-                bit_.pendingOprtr_ = lexAscSymbol2(ch, '.', TK_DOT_DOT, TK_SYMBOL_IDENT);
+                bit_.pendSym_ = lexAscSymbol2(ch, '.', TK_DOT_DOT, TK_PUNC_IDENT);
             else if (next == '-')
-                bit_.pendingOprtr_ = lexAscSymbol2(ch, '>', TK_DASH_ARROW, TK_SYMBOL_IDENT);
+                bit_.pendSym_ = lexAscSymbol2(ch, '>', TK_DASH_ARROW, TK_PUNC_IDENT);
             else if (next == '=')
-                bit_.pendingOprtr_ = lexAscSymbol2(ch, '>', TK_EQ_ARROW, TK_SYMBOL_IDENT);
+                bit_.pendSym_ = lexAscSymbol2(ch, '>', TK_EQ_ARROW, TK_PUNC_IDENT);
             else if (next == '<')
-                bit_.pendingOprtr_ = lexAscSymbol2(ch, '-', TK_ARROW_DASH, TK_SYMBOL_IDENT);
-            else if (next == ':')
-                bit_.pendingOprtr_ = lexAscSymbol2(ch, ':', TK_COLON_COLON, TK_SPECIAL_IDENT);
+                bit_.pendSym_ = lexAscSymbol2(ch, '-', TK_ARROW_DASH, TK_PUNC_IDENT);
             else
-                bit_.pendingOprtr_ = lexAscSymbol(ch);
+                bit_.pendSym_ = lexAscSymbol(ch);
+            tk = TK_PUNC_IDENT_QUAL;
+            return;
         }
     };
+
     classifyRecursively();
 
     return tk;

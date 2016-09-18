@@ -30,7 +30,12 @@
 
 using namespace uaiso;
 
-void Parser::prepare(Lexer *lexer, ParsingContext *context)
+namespace uaiso
+{
+extern std::unordered_map<std::uint16_t, const char*> tokenName;
+}
+
+void Parser::init(Lexer *lexer, ParsingContext *context)
 {
     lexer_ = lexer;
     context_ = context;
@@ -63,6 +68,14 @@ bool Parser::match(Token tk)
     }
     consumeToken();
     return true;
+}
+
+void Parser::matchOrSkipTo(Token tk, const char *rule)
+{
+    if (!match(tk)) {
+        DEBUG_TRACE("%s, skip to %s\n", rule, tokenName[tk]);
+        skipTo(tk);
+    }
 }
 
 void Parser::fail()

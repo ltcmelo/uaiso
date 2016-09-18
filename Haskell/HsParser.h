@@ -46,8 +46,6 @@ private:
 
     using NestedName = std::unique_ptr<NestedNameAst>;
 
-    void matchOrSkipTo(Token tk, const char* rule);
-
     //--- Expressions ---//
 
     Expr parseExpr();
@@ -87,20 +85,22 @@ private:
 
     //--- Names ---//
 
-    Name parseModid();
-    Name parseVarOrCon();
-    Name parseQVar();
+    Name parseModid(); // ok
+    Name parseVarOrCon(); // ok
+    Name parseQVar(); // ok
     Name parseQVarId();
-    Name parseQVarSym();
-    Name parseQCon();
+    Name parseQVarSymWrap(); // ok
+    Name parseQCon(); // ok
     Name parseQConId();
-    Name parseQConSym();
+    Name parseQConSymWrap(); // ok
     Name parseVar();
-    Name parseVarId();
-    Name parseVarSym();
+    Name parseVarId(); // no
+    Name parseVarSym(); // ok
+    Name parseVarSymWrap();
     Name parseCon();
-    Name parseConId();
-    Name parseConSym();
+    Name parseConId(); // no
+    Name parseConSym(); // ok
+    Name parseConSymWrap();
     Name maybeParseQConOp();
 
     bool isVarSym(const Token tk) const;
@@ -109,8 +109,8 @@ private:
     // Helpers
 
     Name parseName(Token tk);
-    Name parseQName(Name (HsParser::*parseFunc)());
-    Name parseSymOrId(Name (HsParser::*parseSym)(), Name (HsParser::*parseId)());
+    Name parseQName(Token qualTk, Name (HsParser::*parseFunc)());
+    Name parseSymWrapOrId(Name (HsParser::*parseSymWrap)(), Name (HsParser::*parseId)());
 };
 
 
@@ -133,7 +133,7 @@ inline bool HsParser::isVarSym(const Token tk) const
     case TK_GR:
     case TK_QUESTION:
     case TK_CARET:
-    case TK_SYMBOL_IDENT:
+    case TK_PUNC_IDENT:
         return true;
     default:
         return false;

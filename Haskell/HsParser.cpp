@@ -33,11 +33,6 @@
 
 using namespace uaiso;
 
-namespace uaiso
-{
-extern std::unordered_map<std::uint16_t, const char*> tokenName;
-}
-
 namespace
 {
 // Contextual keywords.
@@ -49,20 +44,12 @@ const char* const kQualified = "qualified";
 HsParser::HsParser()
 {}
 
-void HsParser::matchOrSkipTo(Token tk, const char *rule)
-{
-    if (!match(tk)) {
-        DEBUG_TRACE("%s, skip to %s\n", rule, tokenName[tk]);
-        skipTo(tk);
-    }
-}
-
 bool HsParser::parse(Lexer* lexer, ParsingContext* context)
 {
     UAISO_ASSERT(lexer, return false);
     UAISO_ASSERT(context && context->fileName(), return false);
 
-    prepare(lexer, context);
+    init(lexer, context);
     consumeToken();
     if (ahead_ == TK_EOP)
         return false;
@@ -80,8 +67,9 @@ bool HsParser::parse(Lexer* lexer, ParsingContext* context)
 Parser::Decl HsParser::parseModule()
 {
     UAISO_ASSERT(ahead_ == TK_MODULE, return Decl());
-    consumeToken();
+
     auto module = ModuleDeclAst::create();
+    consumeToken();
     module->setKeyLoc(prevLoc_);
     module->setName(parseModid());
     if (ahead_ == TK_LPAREN)
@@ -95,25 +83,24 @@ Parser::Decl HsParser::parseModule()
 Parser::Decl HsParser::parseExport()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Decl());
-    consumeToken();
-    auto expot = ExportDeclAst::create();
-    expot->setLDelimLoc(prevLoc_);
-    expot->setSelections(parseSelection(true));
-    matchOrSkipTo(TK_RPAREN, "parseExport");
-    expot->setRDelimLoc(prevLoc_);
 
-    return std::move(expot);
+    auto xport = ExportDeclAst::create();
+    ParenMatcher<ExportDeclAst> wrap(this, "parseExport", xport.get());
+    xport->setSelections(parseSelection(true));
+
+    return std::move(xport);
 }
 
 Parser::Decl HsParser::parseImport()
 {
     UAISO_ASSERT(ahead_ == TK_IMPORT, return Decl());
-    consumeToken();
+
     auto group = ImportGroupDeclAst::create();
+    consumeToken();
     group->setKeyLoc(prevLoc_);
 
     // Utility lambda to compare contextual keywords.
-    auto matchIdent = [this] (const std::string& s) {
+    auto contextKeyAhead = [this] (const std::string& s) {
         if (ahead_ == TK_IDENT) {
             const Ident* ident = context_->fetchLexeme<Ident>(currentLoc().lineCol());
             return ident && ident->str() == s;
@@ -122,79 +109,99 @@ Parser::Decl HsParser::parseImport()
     };
 
     auto import = ImportDeclAst::create();
-    if (matchIdent(kQualified))
+    if (contextKeyAhead(kQualified))
         import->setMode(parseName(TK_IDENT));
+
     auto target = IdentExprAst::create();
     target->setName(parseModid());
     import->setTarget(std::move(target));
-    if (matchIdent(kAs)) {
+    if (contextKeyAhead(kAs)) {
         consumeToken();
         import->setAsLoc(prevLoc_);
         import->setLocalName(parseModid());
     }
-    if (matchIdent(kHiding))
-        consumeToken(); // TODO: Store hidden names.
-    if (maybeConsume(TK_LPAREN)) {
-        import->setLDelimLoc(prevLoc_);
-        import->setSelections(parseSelection(false));
-        matchOrSkipTo(TK_RPAREN, "parseImport");
-        import->setRDelimLoc(prevLoc_);
-    }
-    group->addModule(std::move(import));
 
+    // Selected imports, either to be visible or to be hidden.
+    if (contextKeyAhead(kHiding))
+        consumeToken(); // TODO: Store hidden names.
+    if (ahead_ == TK_LPAREN) {
+        ParenMatcher<ImportDeclAst> wrap(this, "parseImport", import.get());
+        import->setSelections(parseSelection(false));
+    }
+
+    group->addModule(std::move(import));
     return std::move(group);
 }
 
-Parser::DeclList HsParser::parseSelection(bool allowModid)
+Parser::DeclList HsParser::parseSelection(bool isExport)
 {
     DeclList selects;
     do {
         auto select = ExportSelectionDeclAst::create();
         switch (ahead_) {
         case TK_RPAREN:
-            break; // We're done.
+            break; // Empty selection, we're done.
 
         case TK_MODULE:
             consumeToken();
-            if (allowModid) {
+            if (isExport) {
                 select->setName(parseModid());
             } else {
+                // Since we encountered an incorrect `module', perhaps the
+                // module specification is also there. If so, we skip it.
+                if (ahead_ == TK_PROPER_IDENT_QUAL
+                        || ahead_ == TK_PROPER_IDENT) {
+                    parseModid();
+                }
                 context_->trackReport(Diagnostic::UnexpectedToken, prevLoc_);
-                if (ahead_ == TK_PROPER_IDENT)
-                    parseModid(); // Parse and discard it.
             }
-            break;
-
-        case TK_LPAREN:
-            select->setName(parseQVarSym());
             break;
 
         case TK_IDENT:
             select->setName(parseVarId());
             break;
 
-        default:
-            auto qname = NestedNameAst::create();
-            do {
-                addToList(qname->names_, parseConId());
-            } while (maybeConsume(TK_JOKER) && ahead_ == TK_PROPER_IDENT);
+        case TK_IDENT_QUAL:
+            select->setName(parseQName(TK_IDENT_QUAL, &HsParser::parseVarId));
+            break;
 
-            if (ahead_ == TK_IDENT) {
-                addToList(qname->names_, parseVarId());
-            } else if (ahead_ == TK_LPAREN) {
-                consumeToken();
-                if (maybeConsume(TK_DOT_DOT)) {
-                    // TODO: Mark export all.
-                } else {
-                    do {
-                        parseVarOrCon(); // TODO: Store "sub-selections".
-                    } while (maybeConsume(TK_COMMA));
-                }
-                matchOrSkipTo(TK_RPAREN, "parseExportItem");
-            }
-            select->setName(std::move(qname));
+        case TK_LPAREN: {
+            if (isExport)
+                select->setName(parseQVarSymWrap());
+            else
+                select->setName(parseVarSymWrap());
             break;
         }
+
+        default:
+            Name name;
+            if (isExport)
+                name = parseQName(TK_PROPER_IDENT_QUAL, &HsParser::parseConId);
+            else
+                name = parseConId();
+
+            // The import/export of a type constructor or type class may specify
+            // individual members. But if we have no name, an error happened and
+            // we try skipping to a coma.
+            if (name) {
+                if (ahead_ == TK_LPAREN) {
+                    ParenMatcher<> wrap(this, "parseVarOrConOrDotDot");
+                    if (maybeConsume(TK_DOT_DOT)) {
+                        // TODO: Mark export all.
+                    } else {
+                        do {
+                            parseVarOrCon(); // TODO: Store "sub-selections".
+                        } while (maybeConsume(TK_COMMA));
+                    }
+                }
+            } else {
+                skipTo(TK_COMMA);
+            }
+            select->setName(std::move(name));
+            break;
+        }
+
+        // Each item is part of the current import/export selection.
         addToList(selects, std::move(select));
     } while (maybeConsume(TK_COMMA));
 
@@ -204,18 +211,14 @@ Parser::DeclList HsParser::parseSelection(bool allowModid)
 Parser::DeclList HsParser::parseBody()
 {
     UAISO_ASSERT(ahead_ == TK_LBRACE, return DeclList());
-    consumeToken();
-    bool wantBrace = false;
+
+    BraceMatcher<> wraper(this, "parseBody");
     while (ahead_ == TK_IMPORT) {
         parseImport();
-        if (!maybeConsume(TK_SEMICOLON)) {
-            wantBrace = true;
-            break;
-        }
+        if (!maybeConsume(TK_SEMICOLON))
+            return DeclList();
     }
-    if (!wantBrace)
-        parseTopDecls();
-    matchOrSkipTo(TK_RBRACE, "parseBody");
+    parseTopDecls();
 
     return DeclList();
 }
@@ -259,7 +262,7 @@ Parser::Decl HsParser::parseDecl()
     switch (ahead_) {
     case TK_SEMICOLON:
         consumeToken();
-        return EmptyDeclAst::create();
+        return EmptyDeclAst::create(prevLoc_);
 
     case TK_INFIX:
     case TK_INFIXL:
@@ -280,17 +283,22 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
     } else if (ahead_ == TK_LPAREN
                && isVarSym(peekToken(2))
                && peekToken(3) == TK_RPAREN) {
-        consumeToken();
+        consumeToken(2);
         name = PuncNameAst::create(prevLoc_);
+        consumeToken();
     }
 
+    // A type signature begins with a `var', which is either a `varid', or a
+    // `(varsym)'. If the name is empty, we have a pattern binding or function.
     if (!name)
         return parsePatBindOrFunc();
 
+    // If we see a `,' we have something like `varid,' or `(varsym),', which
+    // cannot be neither a pattern bind nor a function, it's a type signature.
     bool wantTySig = false;
     NameList vars;
     while (maybeConsume(TK_COMMA)) {
-        addToList(vars, parseSymOrId(&HsParser::parseVarSym, &HsParser::parseVarId));
+        addToList(vars, parseSymWrapOrId(&HsParser::parseVarSym, &HsParser::parseVarId));
         wantTySig = true;
     }
     if (wantTySig || ahead_ == TK_COLON_COLON) {
@@ -563,93 +571,90 @@ Parser::Expr HsParser::parseBoolLit()
 
 Parser::Name HsParser::parseModid()
 {
-    auto modid = NestedNameAst::create();
-    do {
-        modid->addName(parseName(TK_PROPER_IDENT));
-    } while (maybeConsume(TK_JOKER));
-
-    return std::move(modid);
+    return parseQName(TK_PROPER_IDENT_QUAL, &HsParser::parseConId);
 }
 
 Parser::Name HsParser::parseVarOrCon()
 {
-    if (maybeConsume(TK_LPAREN)) {
-        Name name;
-        switch (ahead_) {
-        case TK_COLON:
-        case TK_SPECIAL_IDENT:
-            name = parseConSym();
-            break;
-
-        default:
-            name = parseVarSym();
-            break;
+    if (ahead_ == TK_LPAREN) {
+        ParenMatcher<> wrap(this, "parseVarOrConSym");
+        if (ahead_ == TK_COLON || ahead_ == TK_SPECIAL_IDENT) {
+            consumeToken();
+            return SpecialNameAst::create(prevLoc_);
         }
-        matchOrSkipTo(TK_RPAREN, "parseVarOrConName");
-        return name;
+        return parseVarSym();
     }
 
-    if (ahead_ == TK_IDENT)
-        return parseVarId();
+    if (maybeConsume(TK_IDENT))
+        return SimpleNameAst::create(prevLoc_);
+
     return parseConId();
 }
 
-Parser::Name HsParser::parseSymOrId(Name (HsParser::*parseSym)(),
-                                    Name (HsParser::*parseId)())
+Parser::Name HsParser::parseSymWrapOrId(Name (HsParser::*parseSymWrap)(),
+                                        Name (HsParser::*parseId)())
 {
     if (ahead_ == TK_LPAREN)
-        return (this->*(parseSym))();
+        return (this->*(parseSymWrap))();
     return (this->*(parseId))();
 }
 
 Parser::Name HsParser::parseQCon()
 {
-    return parseSymOrId(&HsParser::parseQConSym, &HsParser::parseQConId);
+    return parseSymWrapOrId(&HsParser::parseQConSymWrap, &HsParser::parseQConId);
 }
 
 Parser::Name HsParser::parseQVar()
 {
-    return parseSymOrId(&HsParser::parseQVarSym, &HsParser::parseQVarId);
+    return parseSymWrapOrId(&HsParser::parseQVarSymWrap, &HsParser::parseQVarId);
 }
 
 Parser::Name HsParser::parseCon()
 {
-    return parseSymOrId(&HsParser::parseConSym, &HsParser::parseConId);
+    return parseSymWrapOrId(&HsParser::parseConSymWrap, &HsParser::parseConId);
 }
 
 Parser::Name HsParser::parseVar()
 {
-    return parseSymOrId(&HsParser::parseVarSym, &HsParser::parseVarId);
+    return parseSymWrapOrId(&HsParser::parseVarSymWrap, &HsParser::parseVarId);
 }
 
 Parser::Name HsParser::parseQConId()
 {
-    return parseQName(&HsParser::parseConId);
+    return parseQName(TK_PROPER_IDENT_QUAL, &HsParser::parseConId);
 }
 
 Parser::Name HsParser::parseQVarId()
 {
-    return parseQName(&HsParser::parseVarId);
+    return parseQName(TK_PROPER_IDENT_QUAL, &HsParser::parseVarId);
 }
 
-Parser::Name HsParser::parseQConSym()
+Parser::Name HsParser::parseQConSymWrap()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Name());
-    consumeToken();
-    auto name = parseQName(&HsParser::parseConSym);
-    matchOrSkipTo(TK_RPAREN, "parseQConSymName");
-
-    return std::move(name);
+    ParenMatcher<> wrap(this, "parseQConSymWrap");
+    return parseQName(TK_SPECIAL_IDENT_QUAL, &HsParser::parseConSym);
 }
 
-Parser::Name HsParser::parseQVarSym()
+Parser::Name HsParser::parseQVarSymWrap()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Name());
-    consumeToken();
-    auto name = parseQName(&HsParser::parseVarSym);
-    matchOrSkipTo(TK_RPAREN, "parseQVarSymName");
+    ParenMatcher<> wrap(this, "parseQVarSymWrap");
+    return parseQName(TK_PUNC_IDENT_QUAL, &HsParser::parseVarSym);
+}
 
-    return std::move(name);
+Parser::Name HsParser::parseConSymWrap()
+{
+    UAISO_ASSERT(ahead_ == TK_LPAREN, return Name());
+    ParenMatcher<> wrap(this, "parseConSymWrap");
+    return parseConSym();
+}
+
+Parser::Name HsParser::parseVarSymWrap()
+{
+    UAISO_ASSERT(ahead_ == TK_LPAREN, return Name());
+    ParenMatcher<> wrap(this, "parseVarSymWrap");
+    return parseVarSym();
 }
 
 Parser::Name HsParser::parseConSym()
@@ -691,27 +696,26 @@ Parser::Name HsParser::maybeParseQConOp()
 
     if (ahead_ == TK_BACKTICK
             && peekToken(2) == TK_PROPER_IDENT) {
-        consumeToken();
-        auto name = parseQConId();
-        matchOrSkipTo(TK_BACKTICK, "parseQConOp");
-        return name;
+        Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "parseQConOp");
+        return parseQConId();
     }
 
-    if (ahead_ == TK_PROPER_IDENT)
-        return parseQConSym();
+    if (ahead_ == TK_SPECIAL_IDENT_QUAL
+            || ahead_ == TK_SPECIAL_IDENT) {
+        return parseQConSymWrap();
+    }
 
     return Name();
 }
 
-Parser::Name HsParser::parseQName(Name (HsParser::*parseFunc)())
+Parser::Name HsParser::parseQName(Token qualTk, Name (HsParser::*parseFunc)())
 {
     auto qname = NestedNameAst::create();
-    while (maybeConsume(TK_PROPER_IDENT)) {
+    while (maybeConsume(qualTk)) {
         addToList(qname->names_, SimpleNameAst::create(prevLoc_));
         match(TK_JOKER);
     }
     addToList(qname->names_, ((this->*(parseFunc))()));
-
     return std::move(qname);
 }
 

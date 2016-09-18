@@ -126,7 +126,6 @@ def write_token_names():
     content = _gen_file_header
     content += (
         "#include \"Parsing/Token.h\"\n"
-        "#include <unordered_map>\n"
         "\n"
         "namespace uaiso {\n"
         "\n"
@@ -164,6 +163,7 @@ def write_tokens():
         "#include \"Common/Config.h\"\n"
         "#include <cstdint>\n"
         "#include <iostream>\n"
+        "#include <unordered_map>\n"
         "\n"
         "namespace uaiso {\n"
         "\n"

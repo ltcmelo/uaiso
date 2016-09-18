@@ -54,7 +54,7 @@ protected:
     using Stmt = std::unique_ptr<StmtAst>;
     using StmtList = std::unique_ptr<StmtAstList>;
 
-    virtual void prepare(Lexer* lexer, ParsingContext* context);
+    virtual void init(Lexer* lexer, ParsingContext* context);
 
     /*!
      * \brief consumeToken
@@ -82,6 +82,13 @@ protected:
     bool match(Token tk);
 
     /*!
+     * \brief matchOrSkipTo
+     * \param tk
+     * \param rule
+     */
+    void matchOrSkipTo(Token tk, const char* rule);
+
+    /*!
      * \brief failMatch
      * \param consume
      */
@@ -99,7 +106,61 @@ protected:
     ParsingContext* context_ { nullptr };
     Token ahead_ { TK_INVALID };
     SourceLoc prevLoc_;
+
+    // A dummy AST to satisfy as a default arguments for the matchers below.
+    struct DummyMatchAst
+    {
+        void setLDelimLoc(const SourceLoc&) {}
+        void setRDelimLoc(const SourceLoc&) {}
+    };
+
+    /*!
+     * Matchers for rules wrapped in delimiters.
+     */
+    template <int Left, int Right, class AstT = DummyMatchAst>
+    class Matcher
+    {
+    public:
+        Matcher(Parser* parser, const char* const rule, AstT* ast = nullptr);
+        ~Matcher();
+    private:
+        Parser* parser_;
+        const char* const rule_;
+        AstT* ast_;
+    };
+    template <class AstT = DummyMatchAst>
+    struct ParenMatcher final : Matcher<TK_LPAREN, TK_RPAREN, AstT>
+        { using Matcher<TK_LPAREN, TK_RPAREN, AstT>::Matcher; };
+    template <class AstT = DummyMatchAst>
+    struct BracketMatcher final : Matcher<TK_LBRACKET, TK_RBRACKET, AstT>
+        { using Matcher<TK_LBRACKET, TK_RBRACKET, AstT>::Matcher; };
+    template <class AstT = DummyMatchAst>
+    struct BraceMatcher final : Matcher<TK_LBRACE, TK_RBRACE, AstT>
+        { using Matcher<TK_LBRACE, TK_RBRACE, AstT>::Matcher; };
 };
+
+template <int Left, int Right, class AstT>
+Parser::Matcher<Left, Right, AstT>::Matcher(Parser* parser,
+                                            const char* const rule,
+                                            AstT* ast)
+    : parser_(parser), rule_(rule), ast_(ast)
+{
+    UAISO_ASSERT(parser_->ahead_ == Left, return);
+    parser_->consumeToken();
+    // Both this jump and the one in the destructor will eventually go away
+    // once all ASTs classes expose the corresponding methods.
+    if (ast_)
+        ast_->setLDelimLoc(parser_->prevLoc_);
+}
+
+template <int Left, int Right, class AstT>
+Parser::Matcher<Left, Right, AstT>::~Matcher()
+{
+    parser_->matchOrSkipTo(Token(Right), rule_);
+    // See comment in the constructor about this jump.
+    if (ast_)
+        ast_->setRDelimLoc(parser_->prevLoc_);
+}
 
 } // namespace uaiso
 

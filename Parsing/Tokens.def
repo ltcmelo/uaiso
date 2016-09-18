@@ -22,12 +22,12 @@
 /*--------------------------*/
 
     /*
-       Tokens for fundamental types are defined according to their meaning, not
-       to their spelling in a particular language. For example, in D a 64-bit
-       integer is `long`, but it's represented by token TK_INT64. Sometimes the
-       the name will coincidently match, like in Go, where a 64-bit integer is
-       indeed `int64`. This strategy allows simplified generic handline in higher
-       level layers.
+       Tokens for fundamental types specifiers are defined according to their
+       typical meaning, which is not necessarily the actual spelling in a
+       given language. For example, in D a 64-bit integer is `long', but the
+       produced token is TK_INT64. Sometimes the name will coincidently match,
+       like in Go, where a 64-bit integer is indeed `int64'. This strategy
+       allows simplified generic handline in higher level layers.
     */
 
     //--- ASCII (consistent with Bison) ---//
@@ -79,12 +79,16 @@ TOKEN NEWLINE "<newline>"
 TOKEN COMPLETION "<completion>"
 TOKEN JOKER "<joker>"
 
-    //--- Identifier ---//
+    //--- Identifiers ---//
 
 TOKEN IDENT "<ident>"
+TOKEN IDENT_QUAL "<ident_qual>"
 TOKEN PROPER_IDENT "<proper_ident>"
-TOKEN SYMBOL_IDENT "<symbol_ident>"
+TOKEN PROPER_IDENT_QUAL "<proper_ident_qual>"
+TOKEN PUNC_IDENT "<punc_ident>"
+TOKEN PUNC_IDENT_QUAL "<punc_ident_qual>"
 TOKEN SPECIAL_IDENT "<special_ident>"
+TOKEN SPECIAL_IDENT_QUAL "<special_ident_qual>"
 
     //--- Comments ---//
 
