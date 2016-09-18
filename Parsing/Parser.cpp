@@ -35,9 +35,13 @@ namespace uaiso
 extern std::unordered_map<std::uint16_t, const char*> tokenName;
 }
 
-void Parser::init(Lexer *lexer, ParsingContext *context)
+void Parser::setLexer(Lexer *lexer)
 {
     lexer_ = lexer;
+}
+
+void Parser::setContext(ParsingContext *context)
+{
     context_ = context;
 }
 

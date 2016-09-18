@@ -54,7 +54,15 @@ protected:
     using Stmt = std::unique_ptr<StmtAst>;
     using StmtList = std::unique_ptr<StmtAstList>;
 
-    virtual void init(Lexer* lexer, ParsingContext* context);
+    void setLexer(Lexer* lexer);
+    void setContext(ParsingContext* context);
+
+    /*!
+     * \brief init
+     *
+     * Hook for parser-specific initialization.
+     */
+    virtual void init() {}
 
     /*!
      * \brief consumeToken

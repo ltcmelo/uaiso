@@ -49,7 +49,9 @@ bool HsParser::parse(Lexer* lexer, ParsingContext* context)
     UAISO_ASSERT(lexer, return false);
     UAISO_ASSERT(context && context->fileName(), return false);
 
-    init(lexer, context);
+    setLexer(lexer);
+    setContext(context);
+    init();
     consumeToken();
     if (ahead_ == TK_EOP)
         return false;
