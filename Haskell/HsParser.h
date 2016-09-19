@@ -64,8 +64,8 @@ private:
     Expr parseCharLit();
     Expr parseBoolLit();
     Expr parseWildcard();
-    Expr parseListConOrLitPat();
-    Expr parseTupleConOrLitOrWrapOrUnitPat();
+    Expr parseListConOrListLitPat();
+    Expr parseWrapOrUnitOrTupLitPat();
 
     //--- Declarations ---//
 
@@ -85,26 +85,28 @@ private:
 
     //--- Names ---//
 
-    Name parseModid(); // ok
-    Name parseVarOrCon(); // ok
-    Name parseQVar(); // ok
+    Name parseModid();
+    Name parseVarOrCon();
+    Name parseQVar();
     Name parseQVarId();
-    Name parseQVarSymWrap(); // ok
-    Name parseQCon(); // ok
+    Name parseQVarSymWrap();
+    Name parseQCon();
     Name parseQConId();
-    Name parseQConSymWrap(); // ok
+    Name parseQConSym();
+    Name parseQConSymWrap();
     Name parseVar();
-    Name parseVarId(); // no
-    Name parseVarSym(); // ok
+    Name parseVarId();
+    Name parseVarSym();
     Name parseVarSymWrap();
     Name parseCon();
-    Name parseConId(); // no
-    Name parseConSym(); // ok
+    Name parseConId();
+    Name parseConSym();
     Name parseConSymWrap();
     Name maybeParseQConOp();
 
     bool isVarSym(const Token tk) const;
     bool isConSym(const Token tk) const;
+    bool isAPatFIRST(const Token tk) const;
 
     // Helpers
 
@@ -145,6 +147,28 @@ inline bool HsParser::isConSym(const Token tk) const
     switch (tk) {
     case TK_COLON:
     case TK_SPECIAL_IDENT:
+        return true;
+    default:
+        return false;
+    }
+}
+
+inline bool HsParser::isAPatFIRST(const Token tk) const
+{
+    switch (tk) {
+    case TK_IDENT:
+    case TK_PROPER_IDENT:
+    case TK_PROPER_IDENT_QUAL:
+    case TK_LPAREN:
+    case TK_LBRACKET:
+    case TK_TILDE:
+    case TK_INT_LIT:
+    case TK_FLOAT_LIT:
+    case TK_TRUE_VALUE:
+    case TK_FALSE_VALUE:
+    case TK_CHAR_LIT:
+    case TK_STR_LIT:
+    case TK_UNDERSCORE:
         return true;
     default:
         return false;

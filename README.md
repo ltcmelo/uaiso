@@ -10,10 +10,10 @@ Uaiso is a parsing infrastructure that provides a unifying AST (Abstract Syntax 
 
 Language | Version | Parser | AST | Semantics | Active | Demo
 ---------|---------|--------|-----|-----------|--------|------
-D | 2.0 | Bison, GLR | partial | ok | no | [D completion](https://youtu.be/71aqIwv3vJs)
-Go | 1.5+ | Bison, GLR | complete | ok | yes | [Go completion](https://youtu.be/nUpcVBAw0DM)
-Haskell | 2010 | Hand, LL(k) | WIP | ? | yes | -
-Python | 2.x | Hand, LL(1) | complete | basic | yes | [Overall intro](https://youtu.be/71aqIwv3vJs)
+D | 2.0 | bison, GLR | partial | ok | no | [D completion](https://youtu.be/71aqIwv3vJs)
+Go | 1.5+ | bison, GLR | complete | ok | yes | [Go completion](https://youtu.be/nUpcVBAw0DM)
+Haskell | 2010 | hand, LL(k) | WIP | ? | yes | -
+Python | 2.x | hand, LL(1) | complete | basic | yes | [Overall intro](https://youtu.be/71aqIwv3vJs)
 
 ## Prerequisities
 

@@ -329,7 +329,7 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
         break;
 
     default:
-        if (pat)
+        if (pat) // TODO: Lookahead.
             return parseInfixFunc(/* pat */);
         return parseFunc(/* name */);
     }
@@ -387,23 +387,57 @@ Parser::Expr HsParser::parseLPat()
         match(TK_FLOAT_LIT);
         return NumLitExprAst::create(prevLoc_, NumLitVariety::FloatFormat);
 
+    case TK_PROPER_IDENT_QUAL: {
+        auto qconid = parseQConId();
+        if (isAPatFIRST(ahead_))
+            parseAPatList();
+        return CallExprAst::create();
+    }
+
+    case TK_PROPER_IDENT: {
+        auto conid = SimpleNameAst::create(prevLoc_);
+        if (isAPatFIRST(ahead_))
+            parseAPatList();
+        return CallExprAst::create();
+    }
+
     case TK_LBRACKET:
-        return parseListConOrLitPat();
+        return parseListConOrListLitPat();
 
     case TK_LPAREN: {
         const Token peek = peekToken(2);
-        if (peek == TK_PROPER_IDENT || isConSym(peek)) {
-            parseQCon();
-            parsePatList();
+
+        // General type constructors with arity k >= 1.
+        if (peek == TK_SPECIAL_IDENT_QUAL || peek == TK_SPECIAL_IDENT) {
+            consumeToken();
+            parseQConSym();
+            matchOrSkipTo(TK_RPAREN, "parseQConSymLPat");
+
+            if (ahead_ == TK_LBRACE) {
+                BraceMatcher<> wrap2(this, "parseLabelLPat");
+                // TODO: Labeled pattern.
+                return Expr();
+            }
+
+            if (isAPatFIRST(ahead_))
+                parseAPatList();
             return CallExprAst::create();
         }
-        return parseTupleConOrLitOrWrapOrUnitPat();
-    }
 
-    case TK_PROPER_IDENT:
-        parseQConId();
-        parsePatList();
-        return CallExprAst::create();
+        // Tuple data constructor `(,...,)'
+        if (peek == TK_COMMA) {
+            consumeToken();
+            do {
+                consumeToken();
+            } while (ahead_ == TK_COMMA);
+            matchOrSkipTo(TK_RPAREN, "parseTupConLPat");
+            if (isAPatFIRST(ahead_))
+                parseAPatList();
+            return Expr();
+        }
+
+        return parseWrapOrUnitOrTupLitPat();
+    }
 
     default:
         return parseAPat();
@@ -444,40 +478,29 @@ Parser::Expr HsParser::parseAPat()
     return Expr();
 }
 
-Parser::Expr HsParser::parseListConOrLitPat()
+Parser::Expr HsParser::parseListConOrListLitPat()
 {
     UAISO_ASSERT(ahead_ == TK_LBRACKET, return Expr());
-    consumeToken();
 
-    if (maybeConsume(TK_RBRACKET))
-        return CallExprAst::create(); // List's data con `[ ]'.
-
+    BracketMatcher<> wrap(this, "parseListConOrListLitPat");
+    if (ahead_ == TK_RBRACKET)
+        return CallExprAst::create(); // List data constructor `[ ]'.
     parsePatDList();
-    matchOrSkipTo(TK_RBRACKET, "parseListConOrLit");
+
     return Expr();
 }
 
-Parser::Expr HsParser::parseTupleConOrLitOrWrapOrUnitPat()
+Parser::Expr HsParser::parseWrapOrUnitOrTupLitPat()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Expr());
-    consumeToken();
 
-    if (maybeConsume(TK_RPAREN))
+    ParenMatcher<> wrap(this, "parseWrapOrUnitOrTupLitPat");
+    if (ahead_ == TK_RPAREN)
         return NullLitExprAst::create(); // Unit value.
 
-    size_t tupleCnt = 0;
-    while (maybeConsume(TK_COMMA)) {
-        ++tupleCnt;
-    }
-    if (tupleCnt) {
-        matchOrSkipTo(TK_LPAREN, "parseTupleConOrLitOrWrapOrUnit");
-        parsePatList();
-        return Expr();
-    }
-
-    // Tuple literal.
+    // TODO: Wrapped pattern or list.
     parsePatDList();
-    matchOrSkipTo(TK_LPAREN, "parseTupleConOrLitOrWrapOrUnit");
+
     return Expr();
 }
 
@@ -657,6 +680,13 @@ Parser::Name HsParser::parseVarSymWrap()
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Name());
     ParenMatcher<> wrap(this, "parseVarSymWrap");
     return parseVarSym();
+}
+
+Parser::Name HsParser::parseQConSym()
+{
+    UAISO_ASSERT(ahead_ == TK_SPECIAL_IDENT
+                 || ahead_ == TK_SPECIAL_IDENT_QUAL, return Name());
+    return parseQName(TK_SPECIAL_IDENT_QUAL, &HsParser::parseConSym);
 }
 
 Parser::Name HsParser::parseConSym()
