@@ -15,7 +15,7 @@ Go | 1.5+ | bison, GLR | complete | ok | yes | [Go completion](https://youtu.be/
 Haskell | 2010 | hand, LL(k) | WIP | ? | yes | -
 Python | 2.x | hand, LL(1) | complete | basic | yes | [Overall intro](https://youtu.be/71aqIwv3vJs)
 
-## Prerequisities
+## Prerequisites
 
 The source is written in standard C++. You should be able to build it anywhere, but I'm developing on Clang/OSX. Make sure to use --recursive to clone.
 
