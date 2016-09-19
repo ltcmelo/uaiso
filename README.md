@@ -1,6 +1,6 @@
 # Uaiso
 
-Uaiso is a parsing infrastructure that provides a unifying AST (Abstract Syntax Interface) and semantic services across programming languages. Ideally it can be used to:
+Uaiso is a parsing infrastructure that provides a unifying AST (Abstract Syntax Tree) and semantic services across programming languages. Ideally it can be used to:
 
 * Produce code completion on IDEs/text editors
 * Perform static analysis on programs
