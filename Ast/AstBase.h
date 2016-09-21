@@ -209,11 +209,19 @@ AstT* newAst()
         return std::unique_ptr<Self>(newAst<Self>()); \
     }
 
-#define SINGLE_LOC_AST(LOC_MEMBER) \
+#define SINGLE_LOC_CREATE(LOC_MEMBER) \
     static std::unique_ptr<Self> create(const SourceLoc& loc) \
     { \
         auto ast = create(); \
         ast->set##LOC_MEMBER##Loc(loc); \
+        return ast; \
+    }
+
+#define SINGLE_AST_CREATE(AST_MEMBER, AST_KIND) \
+    static std::unique_ptr<Self> create(std::unique_ptr<AST_KIND##Ast> p) \
+    { \
+        auto ast = create(); \
+        ast->set##AST_MEMBER(std::move(p)); \
         return ast; \
     }
 

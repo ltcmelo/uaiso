@@ -50,14 +50,6 @@ private:
 
     Expr parseExpr();
     Expr parseAExpr();
-    Expr parsePat();
-    Expr parseAPat();
-    Expr parseLPat();
-    Expr parseAsPat();
-    ExprList parsePatList();
-    ExprList parsePatDList();
-    ExprList parseAPatList();
-    ExprList parseAPatDList();
     Expr parseIntLit();
     Expr parseFloatLit();
     Expr parseStrLit();
@@ -82,6 +74,14 @@ private:
     Decl parsePatBind();
     Decl parseInfixFunc();
     Decl parseFunc();
+    Decl parsePat();
+    Decl parseAPat();
+    Decl parseLPat();
+    Decl parseAsPat();
+    DeclList parsePatList();
+    DeclList parsePatDList();
+    DeclList parseAPatList();
+    DeclList parseAPatDList();
 
     //--- Names ---//
 

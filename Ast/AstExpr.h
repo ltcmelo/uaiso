@@ -50,7 +50,7 @@ class UAISO_API CharLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(CharLit, Expr)
-    SINGLE_LOC_AST(Lit)
+    SINGLE_LOC_CREATE(Lit)
 
     CharLitExprAst()
         : PriExprAst(Kind::CharLitExpr)
@@ -65,7 +65,7 @@ class UAISO_API StrLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(StrLit, Expr)
-    SINGLE_LOC_AST(Lit)
+    SINGLE_LOC_CREATE(Lit)
 
     StrLitExprAst()
         : PriExprAst(Kind::StrLitExpr)
@@ -80,7 +80,7 @@ class UAISO_API NumLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(NumLit, Expr)
-    SINGLE_LOC_AST(Lit)
+    SINGLE_LOC_CREATE(Lit)
     VARIETY_AST(NumLitVariety)
 
     static std::unique_ptr<Self> create(const SourceLoc& loc, NumLitVariety v)
@@ -105,7 +105,7 @@ class UAISO_API BoolLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(BoolLit, Expr)
-    SINGLE_LOC_AST(Lit)
+    SINGLE_LOC_CREATE(Lit)
 
     BoolLitExprAst()
         : PriExprAst(Kind::BoolLitExpr)
@@ -120,7 +120,7 @@ class UAISO_API NullLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(NullLit, Expr)
-    SINGLE_LOC_AST(Lit)
+    SINGLE_LOC_CREATE(Lit)
 
     NullLitExprAst()
         : PriExprAst(Kind::NullLitExpr)
@@ -173,7 +173,7 @@ class UAISO_API ThisExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(This, Expr)
-    SINGLE_LOC_AST(Key)
+    SINGLE_LOC_CREATE(Key)
 
     ThisExprAst()
         : PriExprAst(Kind::ThisExpr)
@@ -188,7 +188,7 @@ class UAISO_API SuperExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(Super, Expr)
-    SINGLE_LOC_AST(Key)
+    SINGLE_LOC_CREATE(Key)
 
     SuperExprAst()
         : PriExprAst(Kind::SuperExpr)
@@ -1090,52 +1090,6 @@ public:
     SourceLoc sepLoc_;
     std::unique_ptr<ExprAst> expr_;
     std::unique_ptr<GeneratorAstList> gens_;
-};
-
-/*!
- * \brief The PatExprAst class
- *
- * A pattern.
- */
-class UAISO_API PatExprAst final : public ExprAst
-{
-public:
-    AST_CLASS(Pat, Expr)
-
-    PatExprAst()
-        : ExprAst(Kind::PatExpr)
-    {}
-
-    NAMED_AST_PARAM(Name, name, NameAst)
-    NAMED_AST_PARAM(Expr, expr, ExprAst)
-
-    //! The name is used in syntax such as Haskell's "as-patterns".
-    std::unique_ptr<NameAst> name_;
-
-    //! The underlying expression can be a literal, an identifier, a wildcard,
-    //! and so on. In adition, it can be a function call - in such case, the
-    //! function is expected to be a (data) constructor.
-    std::unique_ptr<ExprAst> expr_;
-};
-
-/*!
- * \brief The WildCardExprAst class
- *
- * A wild-card expression.
- */
-class UAISO_API WildCardExprAst final : public ExprAst
-{
-public:
-    AST_CLASS(WildCard, Expr)
-    SINGLE_LOC_AST(Key)
-
-    WildCardExprAst()
-        : ExprAst(Kind::WildCardExpr)
-    {}
-
-    NAMED_LOC_PARAM(Key, key)
-
-    SourceLoc keyLoc_;
 };
 
 /*!

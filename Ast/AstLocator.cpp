@@ -503,14 +503,54 @@ const SourceLoc& AstLocator::loc(FuncDeclAst* ast) const
     return loc(ast->spec());
 }
 
-const SourceLoc& AstLocator::lastLoc(PatBindDeclAst* ast) const
+const SourceLoc& AstLocator::loc(PatDeclAst* ast) const
 {
-    return kEmptyLoc;
+    return loc(ast->expr());
+}
+
+const SourceLoc& AstLocator::lastLoc(PatDeclAst* ast) const
+{
+    return lastLoc(ast->expr());
+}
+
+const SourceLoc& AstLocator::loc(AsPatDeclAst* ast) const
+{
+    return loc(ast->name());
+}
+
+const SourceLoc& AstLocator::lastLoc(AsPatDeclAst* ast) const
+{
+    return lastLoc(ast->pat());
 }
 
 const SourceLoc& AstLocator::loc(PatBindDeclAst* ast) const
 {
-    return kEmptyLoc;
+    return loc(ast->pat());
+}
+
+const SourceLoc& AstLocator::lastLoc(PatBindDeclAst* ast) const
+{
+    return lastLoc(ast->bind());
+}
+
+const SourceLoc& AstLocator::loc(IrrefutPatDeclAst* ast) const
+{
+    return loc(ast->pat());
+}
+
+const SourceLoc& AstLocator::lastLoc(IrrefutPatDeclAst* ast) const
+{
+    return lastLoc(ast->pat());
+}
+
+const SourceLoc& AstLocator::loc(WildCardPatDeclAst* ast) const
+{
+    return ast->keyLoc();
+}
+
+const SourceLoc& AstLocator::lastLoc(WildCardPatDeclAst* ast) const
+{
+    return ast->keyLoc();
 }
 
 const SourceLoc& AstLocator::lastLoc(FuncDeclAst* ast) const
@@ -1433,28 +1473,6 @@ const SourceLoc& AstLocator::loc(YieldExprAst* ast) const
 const SourceLoc& AstLocator::lastLoc(YieldExprAst* ast) const
 {
     return lastLoc(ast->exprs_->back());
-}
-
-const SourceLoc& AstLocator::loc(PatExprAst* ast) const
-{
-    if (ast->name())
-        return loc(ast->name());
-    return loc(ast->expr());
-}
-
-const SourceLoc& AstLocator::lastLoc(PatExprAst* ast) const
-{
-    return lastLoc(ast->expr());
-}
-
-const SourceLoc& AstLocator::loc(WildCardExprAst* ast) const
-{
-    return ast->keyLoc();
-}
-
-const SourceLoc& AstLocator::lastLoc(WildCardExprAst* ast) const
-{
-    return ast->keyLoc();
 }
 
 const SourceLoc& AstLocator::loc(ListCompreExprAst* ast) const

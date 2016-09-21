@@ -323,6 +323,10 @@ AstVisitor<DerivedT>::traverseCodegenAttr(CodegenAttrAst* ast)
 
 TRIVIAL_VISIT(EmptyDecl)
 TRIVIAL_VISIT(ErrorDecl)
+TRIVIAL_VISIT(PatDecl)
+TRIVIAL_VISIT(AsPatDecl)
+TRIVIAL_VISIT(WildCardPatDecl)
+TRIVIAL_VISIT(IrrefutPatDecl)
 TRIVIAL_VISIT(PatBindDecl)
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
@@ -602,8 +606,6 @@ TRIVIAL_VISIT(PriExpr)
 TRIVIAL_VISIT(StrLitExpr)
 TRIVIAL_VISIT(SuperExpr)
 TRIVIAL_VISIT(ThisExpr)
-TRIVIAL_VISIT(WildCardExpr)
-
 TRIVIAL_VISIT(MixinExpr)
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
@@ -1093,15 +1095,6 @@ AstVisitor<DerivedT>::traverseYieldExpr(YieldExprAst* ast)
 {
     EVAL_RESULT_0(recursivelyVisitYieldExpr(ast));
     EVAL_RESULT_LIST_N(traverseList<ExprAst>(ast->exprs_.get(), &DerivedT::traverseExpr));
-    return Continue;
-}
-
-template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
-AstVisitor<DerivedT>::traversePatExpr(PatExprAst* ast)
-{
-    EVAL_RESULT_0(recursivelyVisitPatExpr(ast));
-    EVAL_RESULT_N(traverseName(ast->name_.get()));
-    EVAL_RESULT_N(traverseExpr(ast->expr_.get()));
     return Continue;
 }
 

@@ -56,7 +56,7 @@ class UAISO_API EmptyDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Empty, Decl)
-    SINGLE_LOC_AST(Key)
+    SINGLE_LOC_CREATE(Key)
 
     EmptyDeclAst()
         : DeclAst(Kind::EmptyDecl)
@@ -1110,6 +1110,91 @@ public:
     SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
     SourceLoc terminLoc_;
+};
+
+/*!
+ * \brief The PatDeclAst class
+ *
+ * A pattern.
+ */
+class UAISO_API PatDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(Pat, Decl)
+    SINGLE_AST_CREATE(Expr, Expr)
+
+    PatDeclAst()
+        : DeclAst(Kind::PatDecl)
+    {}
+
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+
+    //! The underlying expression can be a literal, an identifier, etc. In the
+    //! case of a function call, it's expected to be a (data) constructor.
+    std::unique_ptr<ExprAst> expr_;
+};
+
+class UAISO_API AsPatDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(AsPat, Decl)
+
+    AsPatDeclAst()
+        : DeclAst(Kind::AsPatDecl)
+    {}
+
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Pat, pat, DeclAst)
+
+    std::unique_ptr<NameAst> name_;
+    SourceLoc keyLoc_;
+    std::unique_ptr<DeclAst> pat_;
+};
+
+/*!
+ * \brief The WildCardPatDeclAst class
+ *
+ * A wild-card pattern.
+ */
+class UAISO_API WildCardPatDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(WildCardPat, Decl)
+    SINGLE_LOC_CREATE(Key)
+
+    WildCardPatDeclAst()
+        : DeclAst(Kind::WildCardPatDecl)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+
+    SourceLoc keyLoc_;
+};
+
+class UAISO_API IrrefutPatDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(IrrefutPat, Decl)
+
+    IrrefutPatDeclAst()
+        : DeclAst(Kind::IrrefutPatDecl)
+    {}
+
+    static std::unique_ptr<Self> create(const SourceLoc& loc,
+                                        std::unique_ptr<DeclAst> pat)
+    {
+        auto ast = create();
+        ast->setKeyLoc(loc);
+        ast->setPat(std::move(pat));
+        return ast;
+    }
+
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(Pat, pat, DeclAst)
+
+    SourceLoc keyLoc_;
+    std::unique_ptr<DeclAst> pat_;
 };
 
 /*!

@@ -41,7 +41,7 @@ class UAISO_API ErrorNameAst final : public NameAst
 {
 public:
     AST_CLASS(Error, Name)
-    SINGLE_LOC_AST(Name)
+    SINGLE_LOC_CREATE(Name)
 
     ErrorNameAst()
         : NameAst(Kind::ErrorName)
@@ -56,7 +56,7 @@ class UAISO_API SimpleNameAst final : public NameAst
 {
 public:
     AST_CLASS(Simple, Name)
-    SINGLE_LOC_AST(Name)
+    SINGLE_LOC_CREATE(Name)
 
     SimpleNameAst()
         : NameAst(Kind::SimpleName)
@@ -97,7 +97,7 @@ class UAISO_API PuncNameAst final : public NameAst
 {
 public:
     AST_CLASS(Punc, Name)
-    SINGLE_LOC_AST(Name)
+    SINGLE_LOC_CREATE(Name)
 
     PuncNameAst()
         : NameAst(Kind::PuncName)
@@ -115,7 +115,7 @@ class UAISO_API SpecialNameAst final : public NameAst
 {
 public:
     AST_CLASS(Special, Name)
-    SINGLE_LOC_AST(Name)
+    SINGLE_LOC_CREATE(Name)
 
     SpecialNameAst()
         : NameAst(Kind::SpecialName)
@@ -157,7 +157,7 @@ class UAISO_API GenNameAst final : public NameAst
 {
 public:
     AST_CLASS(Gen, Name)
-    SINGLE_LOC_AST(Name)
+    SINGLE_LOC_CREATE(Name)
 
     GenNameAst()
         : NameAst(Kind::GenName)
@@ -178,7 +178,7 @@ class UAISO_API CompletionNameAst final : public NameAst
 {
 public:
     AST_CLASS(Completion, Name)
-    SINGLE_LOC_AST(Name)
+    SINGLE_LOC_CREATE(Name)
 
     CompletionNameAst()
         : NameAst(Kind::CompletionName)

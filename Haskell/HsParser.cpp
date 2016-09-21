@@ -151,10 +151,8 @@ Parser::DeclList HsParser::parseSelection(bool isExport)
             } else {
                 // Since we encountered an incorrect `module', perhaps the
                 // module specification is also there. If so, we skip it.
-                if (ahead_ == TK_PROPER_IDENT_QUAL
-                        || ahead_ == TK_PROPER_IDENT) {
+                if (ahead_ == TK_PROPER_IDENT_QUAL || ahead_ == TK_PROPER_IDENT)
                     parseModid();
-                }
                 context_->trackReport(Diagnostic::UnexpectedToken, prevLoc_);
             }
             break;
@@ -310,7 +308,7 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
         return parseTypeSig(/* group */);
     }
 
-    std::unique_ptr<PatExprAst> pat;
+    std::unique_ptr<PatDeclAst> pat;
     if (ahead_ == TK_AT) {
         parseAsPat();
     }
@@ -364,9 +362,7 @@ Parser::Decl HsParser::parseFunc()
     return Decl();
 }
 
-    //--- Expressions ---//
-
-Parser::Expr HsParser::parsePat()
+Parser::Decl HsParser::parsePat()
 {
     parseLPat();
 
@@ -374,40 +370,38 @@ Parser::Expr HsParser::parsePat()
         parsePat();
     }
 
-    return Expr();
+    return Decl();
 }
 
-Parser::Expr HsParser::parseLPat()
+Parser::Decl HsParser::parseLPat()
 {
     switch (ahead_) {
     case TK_MINUS:
         consumeToken();
-        if (maybeConsume(TK_INT_LIT))
-            return NumLitExprAst::create(prevLoc_, NumLitVariety::IntFormat);
-        match(TK_FLOAT_LIT);
-        return NumLitExprAst::create(prevLoc_, NumLitVariety::FloatFormat);
+        if (ahead_ == TK_INT_LIT)
+            return PatDeclAst::create(parseIntLit());
+        return PatDeclAst::create(parseFloatLit());
 
     case TK_PROPER_IDENT_QUAL: {
         auto qconid = parseQConId();
         if (isAPatFIRST(ahead_))
             parseAPatList();
-        return CallExprAst::create();
+        return PatDeclAst::create(CallExprAst::create());
     }
 
     case TK_PROPER_IDENT: {
         auto conid = SimpleNameAst::create(prevLoc_);
         if (isAPatFIRST(ahead_))
             parseAPatList();
-        return CallExprAst::create();
+        return PatDeclAst::create(CallExprAst::create());
     }
 
     case TK_LBRACKET:
-        return parseListConOrListLitPat();
+        return PatDeclAst::create(parseListConOrListLitPat());
 
     case TK_LPAREN: {
-        const Token peek = peekToken(2);
-
         // General type constructors with arity k >= 1.
+        const Token peek = peekToken(2);
         if (peek == TK_SPECIAL_IDENT_QUAL || peek == TK_SPECIAL_IDENT) {
             consumeToken();
             parseQConSym();
@@ -416,12 +410,12 @@ Parser::Expr HsParser::parseLPat()
             if (ahead_ == TK_LBRACE) {
                 BraceMatcher<> wrap2(this, "parseLabelLPat");
                 // TODO: Labeled pattern.
-                return Expr();
+                return Decl();
             }
 
             if (isAPatFIRST(ahead_))
                 parseAPatList();
-            return CallExprAst::create();
+            return PatDeclAst::create(CallExprAst::create());
         }
 
         // Tuple data constructor `(,...,)'
@@ -433,10 +427,10 @@ Parser::Expr HsParser::parseLPat()
             matchOrSkipTo(TK_RPAREN, "parseTupConLPat");
             if (isAPatFIRST(ahead_))
                 parseAPatList();
-            return Expr();
+            return Decl();
         }
 
-        return parseWrapOrUnitOrTupLitPat();
+        return PatDeclAst::create(parseWrapOrUnitOrTupLitPat());
     }
 
     default:
@@ -444,39 +438,67 @@ Parser::Expr HsParser::parseLPat()
     }
 }
 
-Parser::Expr HsParser::parseAPat()
+Parser::Decl HsParser::parseAPat()
 {
     switch (ahead_) {
     case TK_INT_LIT:
-        return parseIntLit();
+        return PatDeclAst::create(parseIntLit());
 
     case TK_FLOAT_LIT:
-        return parseFloatLit();
+        return PatDeclAst::create(parseFloatLit());
 
     case TK_TRUE_VALUE:
     case TK_FALSE_VALUE:
-        return parseBoolLit();
+        return PatDeclAst::create(parseBoolLit());
 
     case TK_CHAR_LIT:
-        return parseCharLit();
+        return PatDeclAst::create(parseCharLit());
 
     case TK_STR_LIT:
-        return parseStrLit();
+        return PatDeclAst::create(parseStrLit());
 
     case TK_UNDERSCORE:
         consumeToken();
-        return WildCardExprAst::create(prevLoc_);
+        return WildCardPatDeclAst::create(prevLoc_);
 
     case TK_TILDE:
-        // TODO: Irrefutable pattern.
-        return Expr();
+        consumeToken();
+        return IrrefutPatDeclAst::create(prevLoc_, parseAPat());
 
     default:
-        break;
+        return Decl();
     }
-
-    return Expr();
 }
+
+Parser::DeclList HsParser::parsePatList()
+{
+    return DeclList();
+}
+
+Parser::DeclList HsParser::parsePatDList()
+{
+    return DeclList();
+}
+
+Parser::DeclList HsParser::parseAPatList()
+{
+    return DeclList();
+}
+
+Parser::DeclList HsParser::parseAPatDList()
+{
+    return DeclList();
+}
+
+Parser::Decl HsParser::parseAsPat()
+{
+    UAISO_ASSERT(ahead_ == TK_AT, return Decl());
+    consumeToken();
+    parseAPat();
+    return Decl();
+}
+
+    //--- Expressions ---//
 
 Parser::Expr HsParser::parseListConOrListLitPat()
 {
@@ -501,34 +523,6 @@ Parser::Expr HsParser::parseWrapOrUnitOrTupLitPat()
     // TODO: Wrapped pattern or list.
     parsePatDList();
 
-    return Expr();
-}
-
-Parser::ExprList HsParser::parsePatList()
-{
-    return ExprList();
-}
-
-Parser::ExprList HsParser::parsePatDList()
-{
-    return ExprList();
-}
-
-Parser::ExprList HsParser::parseAPatList()
-{
-    return ExprList();
-}
-
-Parser::ExprList HsParser::parseAPatDList()
-{
-    return ExprList();
-}
-
-Parser::Expr HsParser::parseAsPat()
-{
-    UAISO_ASSERT(ahead_ == TK_AT, return Expr());
-    consumeToken();
-    parseAPat();
     return Expr();
 }
 

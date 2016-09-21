@@ -70,6 +70,7 @@
 
 #define DECL_AST_MIXIN(GEN_CODE_FOR) \
     GEN_CODE_FOR(Alias, Decl) \
+    GEN_CODE_FOR(AsPat, Decl) \
     GEN_CODE_FOR(Base, Decl) \
     GEN_CODE_FOR(Block, Decl) \
     GEN_CODE_FOR(Constraint, Decl) \
@@ -86,11 +87,13 @@
     GEN_CODE_FOR(ImportGroup, Decl) \
     GEN_CODE_FOR(ImportSelection, Decl) \
     GEN_CODE_FOR(Invariant, Decl) \
+    GEN_CODE_FOR(IrrefutPat, Decl) \
     GEN_CODE_FOR(Module, Decl) \
     GEN_CODE_FOR(Package, Decl) \
     GEN_CODE_FOR(Param, Decl) \
     GEN_CODE_FOR(ParamGroup, Decl) \
     GEN_CODE_FOR(ParamClause, Decl) \
+    GEN_CODE_FOR(Pat, Decl) \
     GEN_CODE_FOR(PatBind, Decl) \
     GEN_CODE_FOR(Record, Decl) \
     GEN_CODE_FOR(Section, Decl) \
@@ -100,6 +103,7 @@
     GEN_CODE_FOR(TemplateParam, Decl) \
     GEN_CODE_FOR(TemplateParamClause, Decl) \
     GEN_CODE_FOR(UnitTest, Decl) \
+    GEN_CODE_FOR(WildCardPat, Decl) \
     GEN_CODE_FOR(Var, Decl) \
     GEN_CODE_FOR(VarGroup, Decl) \
     GEN_CODE_FOR(Version, Decl)
@@ -149,7 +153,6 @@
     GEN_CODE_FOR(NullLit, PriExpr) \
     GEN_CODE_FOR(NumLit, PriExpr) \
     GEN_CODE_FOR(Plus, UnaryExpr) \
-    GEN_CODE_FOR(Pat, Expr) \
     GEN_CODE_FOR(Pri, Expr) \
     GEN_CODE_FOR(Print, Expr) \
     GEN_CODE_FOR(Power, BinExpr) \
@@ -171,7 +174,6 @@
     GEN_CODE_FOR(Unary, Expr) \
     GEN_CODE_FOR(Unpack, Expr) \
     GEN_CODE_FOR(Mixin, Expr) \
-    GEN_CODE_FOR(WildCard, Expr) \
     GEN_CODE_FOR(Wrapped, Expr) \
     GEN_CODE_FOR(Yield, Expr)
 
