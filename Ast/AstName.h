@@ -67,25 +67,22 @@ public:
     SourceLoc nameLoc_;
 };
 
-class UAISO_API NestedNameAst final : public NameAst
+/*!
+ * \brief The SpecialNameAst class
+ */
+class UAISO_API SpecialNameAst final : public NameAst
 {
 public:
-    AST_CLASS(Nested, Name)
+    AST_CLASS(Special, Name)
+    SINGLE_LOC_CREATE(Name)
 
-    static std::unique_ptr<Self> create(NameAstList* names)
-    {
-        auto nested = create();
-        nested->setNames(std::unique_ptr<NameAstList>(names));
-        return nested;
-    }
-
-    NestedNameAst()
-        : NameAst(Kind::NestedName)
+    SpecialNameAst()
+        : NameAst(Kind::SpecialName)
     {}
 
-    NAMED_AST_LIST_PARAM(Name, names, NameAst)
+    NAMED_LOC_PARAM(Name, name)
 
-    std::unique_ptr<NameAstList> names_;
+    SourceLoc nameLoc_;
 };
 
 /*!
@@ -108,22 +105,25 @@ public:
     SourceLoc nameLoc_;
 };
 
-/*!
- * \brief The SpecialNameAst class
- */
-class UAISO_API SpecialNameAst final : public NameAst
+class UAISO_API NestedNameAst final : public NameAst
 {
 public:
-    AST_CLASS(Special, Name)
-    SINGLE_LOC_CREATE(Name)
+    AST_CLASS(Nested, Name)
 
-    SpecialNameAst()
-        : NameAst(Kind::SpecialName)
+    static std::unique_ptr<Self> create(NameAstList* names)
+    {
+        auto nested = create();
+        nested->setNames(std::unique_ptr<NameAstList>(names));
+        return nested;
+    }
+
+    NestedNameAst()
+        : NameAst(Kind::NestedName)
     {}
 
-    NAMED_LOC_PARAM(Name, name)
+    NAMED_AST_LIST_PARAM(Name, names, NameAst)
 
-    SourceLoc nameLoc_;
+    std::unique_ptr<NameAstList> names_;
 };
 
 class UAISO_API TemplateInstNameAst final : public NameAst

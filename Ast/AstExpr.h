@@ -217,6 +217,7 @@ class UAISO_API IdentExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(Ident, Expr)
+    SINGLE_AST_CREATE(Name, Name)
 
     IdentExprAst()
         : PriExprAst(Kind::IdentExpr)

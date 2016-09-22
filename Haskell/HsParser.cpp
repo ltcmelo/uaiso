@@ -308,9 +308,9 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
         return parseTypeSig(/* group */);
     }
 
-    std::unique_ptr<PatDeclAst> pat;
+    std::unique_ptr<DeclAst> pat;
     if (ahead_ == TK_AT) {
-        parseAsPat();
+        pat = finishAsPat(std::move(name));
     }
 
     if (auto name = maybeParseQConOp()) {
@@ -382,55 +382,35 @@ Parser::Decl HsParser::parseLPat()
             return PatDeclAst::create(parseIntLit());
         return PatDeclAst::create(parseFloatLit());
 
+    case TK_PROPER_IDENT:
     case TK_PROPER_IDENT_QUAL: {
-        auto qconid = parseQConId();
-        if (isAPatFIRST(ahead_))
-            parseAPatList();
-        return PatDeclAst::create(CallExprAst::create());
-    }
-
-    case TK_PROPER_IDENT: {
-        auto conid = SimpleNameAst::create(prevLoc_);
+        auto qConId = parseQConId();
+        if (ahead_ == TK_LBRACE)
+            return finishLabeledPat(std::move(qConId));
         if (isAPatFIRST(ahead_))
             parseAPatList();
         return PatDeclAst::create(CallExprAst::create());
     }
 
     case TK_LBRACKET:
-        return PatDeclAst::create(parseListConOrListLitPat());
+        return PatDeclAst::create(parseListConOrListLit());
 
     case TK_LPAREN: {
-        // General type constructors with arity k >= 1.
-        const Token peek = peekToken(2);
-        if (peek == TK_SPECIAL_IDENT_QUAL || peek == TK_SPECIAL_IDENT) {
-            consumeToken();
-            parseQConSym();
-            matchOrSkipTo(TK_RPAREN, "parseQConSymLPat");
-
-            if (ahead_ == TK_LBRACE) {
-                BraceMatcher<> wrap2(this, "parseLabelLPat");
-                // TODO: Labeled pattern.
-                return Decl();
-            }
-
+        consumeToken();
+        if (ahead_ == TK_SPECIAL_IDENT_QUAL || ahead_ == TK_SPECIAL_IDENT) {
+            auto qConSym = parseQConSym();
+            matchOrSkipTo(TK_RPAREN, "parseQConSym");
+            if (ahead_ == TK_LBRACE)
+                return finishLabeledPat(std::move(qConSym));
             if (isAPatFIRST(ahead_))
                 parseAPatList();
             return PatDeclAst::create(CallExprAst::create());
         }
 
-        // Tuple data constructor `(,...,)'
-        if (peek == TK_COMMA) {
-            consumeToken();
-            do {
-                consumeToken();
-            } while (ahead_ == TK_COMMA);
-            matchOrSkipTo(TK_RPAREN, "parseTupConLPat");
-            if (isAPatFIRST(ahead_))
-                parseAPatList();
-            return Decl();
-        }
-
-        return PatDeclAst::create(parseWrapOrUnitOrTupLitPat());
+        finishUnitOrTupConOrTupLitOrWrap();
+        if (isAPatFIRST(ahead_))
+            parseAPatList();
+        return Decl();
     }
 
     default:
@@ -465,7 +445,39 @@ Parser::Decl HsParser::parseAPat()
         consumeToken();
         return IrrefutPatDeclAst::create(prevLoc_, parseAPat());
 
+    case TK_IDENT: {
+        consumeToken();
+        auto var = SimpleNameAst::create(prevLoc_);
+        if (ahead_ == TK_AT)
+            return finishAsPat(std::move(var));
+        return PatDeclAst::create(IdentExprAst::create(std::move(var)));
+    }
+
+    case TK_PROPER_IDENT:
+    case TK_PROPER_IDENT_QUAL: {
+        auto qConId = parseQConId();
+        if (ahead_ == TK_LBRACE)
+            return finishLabeledPat(std::move(qConId));
+        return PatDeclAst::create(CallExprAst::create());
+    }
+
+    case TK_LBRACKET:
+        return PatDeclAst::create(parseListConOrListLit());
+
+    case TK_LPAREN: {
+        consumeToken();
+        if (ahead_ == TK_SPECIAL_IDENT_QUAL || ahead_ == TK_SPECIAL_IDENT) {
+            auto qConSym = parseQConSym();
+            matchOrSkipTo(TK_RPAREN, "parseQConSym");
+            if (ahead_ == TK_LBRACE)
+                return finishLabeledPat(std::move(qConSym));
+            return PatDeclAst::create(CallExprAst::create());
+        }
+        return PatDeclAst::create(finishUnitOrTupConOrTupLitOrWrap());
+    }
+
     default:
+        fail();
         return Decl();
     }
 }
@@ -490,21 +502,32 @@ Parser::DeclList HsParser::parseAPatDList()
     return DeclList();
 }
 
-Parser::Decl HsParser::parseAsPat()
+Parser::Decl HsParser::finishAsPat(Name name)
 {
     UAISO_ASSERT(ahead_ == TK_AT, return Decl());
+
+    auto pat = AsPatDeclAst::create();
     consumeToken();
-    parseAPat();
+    pat->setKeyLoc(prevLoc_);
+    pat->setName(std::move(name));
+    pat->setPat(parseAPat());
+    return Decl(std::move(pat));
+}
+
+Parser::Decl HsParser::finishLabeledPat(Parser::Name qConId)
+{
+    UAISO_ASSERT(ahead_ == TK_LBRACE, return Decl());
+
     return Decl();
 }
 
     //--- Expressions ---//
 
-Parser::Expr HsParser::parseListConOrListLitPat()
+Parser::Expr HsParser::parseListConOrListLit()
 {
     UAISO_ASSERT(ahead_ == TK_LBRACKET, return Expr());
 
-    BracketMatcher<> wrap(this, "parseListConOrListLitPat");
+    BracketMatcher<> wrap(this, "parseListConOrListLit");
     if (ahead_ == TK_RBRACKET)
         return CallExprAst::create(); // List data constructor `[ ]'.
     parsePatDList();
@@ -512,13 +535,21 @@ Parser::Expr HsParser::parseListConOrListLitPat()
     return Expr();
 }
 
-Parser::Expr HsParser::parseWrapOrUnitOrTupLitPat()
+Parser::Expr HsParser::finishUnitOrTupConOrTupLitOrWrap()
 {
-    UAISO_ASSERT(ahead_ == TK_LPAREN, return Expr());
+    const SourceLoc loc = std::move(prevLoc_);
+    if (maybeConsume(TK_RPAREN))
+        return NullLitExprAst::create(joinedLoc(loc, prevLoc_)); // Unit value.
 
-    ParenMatcher<> wrap(this, "parseWrapOrUnitOrTupLitPat");
-    if (ahead_ == TK_RPAREN)
-        return NullLitExprAst::create(); // Unit value.
+    // A `,' indicates a tuple data constructor.
+    if (ahead_ == TK_COMMA) {
+        size_t tupCnt = 0;
+        do {
+            ++tupCnt;
+        } while (maybeConsume(TK_COMMA));
+        matchOrSkipTo(TK_RPAREN, "parseTupleDataCon");
+        return CallExprAst::create();
+    }
 
     // TODO: Wrapped pattern or list.
     parsePatDList();
@@ -720,18 +751,17 @@ Parser::Name HsParser::maybeParseQConOp()
     if (maybeConsume(TK_COLON))
         return SpecialNameAst::create(prevLoc_);
 
-    if (ahead_ == TK_BACKTICK
-            && peekToken(2) == TK_PROPER_IDENT) {
+    if (ahead_ == TK_SPECIAL_IDENT_QUAL || ahead_ == TK_SPECIAL_IDENT)
+        return parseQConSym();
+
+    const Token peek = peekToken(2);
+    if (ahead_ == TK_BACKTICK && (peek == TK_PROPER_IDENT
+                                  || peek == TK_PROPER_IDENT_QUAL)) {
         Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "parseQConOp");
         return parseQConId();
     }
 
-    if (ahead_ == TK_SPECIAL_IDENT_QUAL
-            || ahead_ == TK_SPECIAL_IDENT) {
-        return parseQConSymWrap();
-    }
-
-    return Name();
+    return Name(); // A "maybe" function, caller must deal with a null return.
 }
 
 Parser::Name HsParser::parseQName(Token qualTk, Name (HsParser::*parseFunc)())
