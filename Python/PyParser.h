@@ -66,14 +66,14 @@ private:
     using ListCompre = std::unique_ptr<ListCompreExprAst>;
     using ParamGroup = std::unique_ptr<ParamGroupDeclAst>;
 
-    bool isTestAhead() const;
-    bool isNonLambdaTestAhead() const;
-    bool isExprAhead() const;
-    bool isFactorAhead() const;
-    bool isAtomAhead() const;
-    bool isArgAhead() const;
-    bool isSubscriptAhead() const;
-    bool isNameAhead() const;
+    bool isTestFIRST() const;
+    bool isNonLambdaTestFIRST() const;
+    bool isExprFIRST() const;
+    bool isFactorFIRST() const;
+    bool isAtomFIRST() const;
+    bool isArgFIRST() const;
+    bool isSubscriptFIRST() const;
+    bool isNameFIRST() const;
 
     //--- Names ---//
 
@@ -165,14 +165,92 @@ private:
                                   ListCompre (PyParser::*filterFunc) (ListCompre));
     Expr completeWrapped(const std::function<Expr ()> exprFunc);
     Decl completeParam(ParamGroup group);
-
-    template <class AstListT>
-    std::pair<std::unique_ptr<AstListT>, bool>
-    parseList(Token tk,
-              bool (PyParser::*checkAhead) () const,
-              std::unique_ptr<typename AstListT::AstType> (PyParser::*) (),
-              bool acceptTrailing = true);
 };
+
+inline bool PyParser::isTestFIRST() const
+{
+    switch (ahead_) {
+    case TK_LAMBDA:
+        return true;
+    default:
+        return isNonLambdaTestFIRST();
+    }
+}
+
+inline bool PyParser::isNonLambdaTestFIRST() const
+{
+    switch (ahead_) {
+    case TK_NOT:
+        return true;
+    default:
+        return isExprFIRST();
+    }
+}
+
+inline bool PyParser::isExprFIRST() const
+{
+    return isFactorFIRST();
+}
+
+inline bool PyParser::isFactorFIRST() const
+{
+    switch (ahead_) {
+    case TK_PLUS:
+    case TK_MINUS:
+    case TK_TILDE:
+        return true;
+    default:
+        return isAtomFIRST();
+    }
+}
+
+inline bool PyParser::isAtomFIRST() const
+{
+    switch (ahead_) {
+    case TK_LPAREN:
+    case TK_LBRACKET:
+    case TK_LBRACE:
+    case TK_BACKTICK:
+    case TK_IDENT:
+    case TK_COMPLETION:
+    case TK_INT_LIT:
+    case TK_FLOAT_LIT:
+    case TK_STR_LIT:
+    case TK_NULL_VALUE:
+    case TK_TRUE_VALUE:
+    case TK_FALSE_VALUE:
+        return true;
+    default:
+        return false;
+    }
+}
+
+inline bool PyParser::isArgFIRST() const
+{
+    switch (ahead_) {
+    case TK_STAR:
+    case TK_STAR_STAR:
+        return true;
+    default:
+        return isTestFIRST();
+    }
+}
+
+inline bool PyParser::isSubscriptFIRST() const
+{
+    switch (ahead_) {
+    case TK_DOT_DOT_DOT:
+    case TK_COLON:
+        return true;
+    default:
+        return isTestFIRST();
+    }
+}
+
+inline bool PyParser::isNameFIRST() const
+{
+    return ahead_ == TK_IDENT || ahead_ == TK_COMPLETION;
+}
 
 } // namespace uaiso
 

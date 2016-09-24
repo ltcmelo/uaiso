@@ -41,6 +41,7 @@ class UAISO_API EmptyStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Empty, Stmt)
+    SINGLE_LOC_CREATE(Key)
 
     EmptyStmtAst()
         : StmtAst(Kind::EmptyStmt)
