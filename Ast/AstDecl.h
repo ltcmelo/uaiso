@@ -72,6 +72,7 @@ class UAISO_API VarDeclAst : public DeclAst
 {
 public:
     AST_CLASS(Var, Decl)
+    SINGLE_AST_CREATE(Name, Name)
 
     VarDeclAst()
         : DeclAst(Kind::VarDecl)
@@ -293,6 +294,7 @@ class UAISO_API ParamDeclAst : public DeclAst
 {
 public:
     AST_CLASS(Param, Decl)
+    SINGLE_AST_CREATE(Name, Name)
 
     ParamDeclAst()
         : DeclAst(Kind::ParamDecl)
@@ -1082,6 +1084,7 @@ class UAISO_API BaseDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Base, Decl)
+    SINGLE_AST_CREATE(Name, Name)
 
     BaseDeclAst()
         : DeclAst(Kind::BaseDecl)

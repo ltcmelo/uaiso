@@ -3564,7 +3564,7 @@ ForeachDecl:
             auto p = std::move(l->detachHead());
             auto var = VarDeclAst::create();
             var->setName(std::move(p.first));
-            group->decls_ ? group->decls_->pushBack(std::move(var)) :
+            group->decls_ ? group->decls_->append(std::move(var)) :
                             (void)(group->decls_ = DeclAstList::create(std::move(var)));
             l = std::move(p.second);
         }

@@ -79,7 +79,7 @@ private:
                     auto var = VarDeclAst::create();
                     var->setName(name);
                     if (decl_) {
-                        decl_->decls_->pushBack(std::move(var));
+                        decl_->decls_->append(std::move(var));
                     } else {
                         VarGroupDeclAst* group = nullptr;
                         if (ast->exprs2_) {

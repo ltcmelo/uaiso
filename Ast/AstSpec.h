@@ -80,6 +80,7 @@ class UAISO_API NamedSpecAst final : public SpecAst
 {
 public:
     AST_CLASS(Named, Spec)
+    SINGLE_AST_CREATE(Name, Name)
 
     NamedSpecAst()
         : SpecAst(Kind::NamedSpec)

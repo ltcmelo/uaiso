@@ -83,7 +83,10 @@ public:
     static ListType* createSR(AstType* ast)
     {
         UAISO_ASSERT(ast, return nullptr, "invalid ast");
-        return new ListType(ast);
+
+        auto list = new ListType(ast, nullptr);
+        list->next_.reset(list); // Self-referencing until being linearized.
+        return list;
     }
 
     /*!
@@ -99,9 +102,13 @@ public:
     ListType* handleSR(AstType* ast)
     {
         UAISO_ASSERT(ast, return nullptr, "invalid ast");
-        UAISO_ASSERT(next_.get() != nullptr, return nullptr, "list is linear");
-        next_.reset(new ListType(std::unique_ptr<AstType>(ast), std::move(next_)));
-        return next_.get();
+        UAISO_ASSERT(next_.get(),
+                     return nullptr,
+                     "list has already been finished (linearized)");
+
+        auto list = new ListType(ast, next_.release());
+        next_.reset(list);
+        return list;
     }
 
     /*!
@@ -115,6 +122,7 @@ public:
     ListType* finishSR()
     {
         UAISO_ASSERT(next_.get() != nullptr, return nullptr, "list is linear");
+
         return next_.release();
     }
 
@@ -128,6 +136,7 @@ public:
     ListType* mergeSR(ListType* list)
     {
         UAISO_ASSERT(list, return nullptr, "invalid list node");
+
         list->next_.release();
         list->next_.reset(next_.release());
         next_.reset(list);
@@ -144,33 +153,32 @@ public:
     static std::unique_ptr<ListType> create(std::unique_ptr<AstType> ast)
     {
         UAISO_ASSERT(ast, return std::unique_ptr<ListType>(), "invalid ast");
-        return std::unique_ptr<ListType>(new ListType(std::move(ast)));
+
+        return std::unique_ptr<ListType>(new ListType(ast.release(), nullptr));
     }
 
-    void pushBack(std::unique_ptr<AstType> ast)
+    void append(std::unique_ptr<AstType> ast)
     {
         UAISO_ASSERT(ast, return, "invalid ast");
-        if (next_)
-            next_->pushBack(std::move(ast));
-        else
-            next_.reset(new ListType(std::move(ast)));
+
+        next_ ? next_->append(std::move(ast))
+              : next_.reset(new ListType(ast.release(), nullptr));
     }
 
     void merge(std::unique_ptr<ListType> list)
     {
-        UAISO_ASSERT(list, return, "invalid list node");
-        if (next_)
-            next_->merge(std::move(list));
-        else
-            next_ = std::move(list);
+        if (!list)
+            return;
+        next_ ? next_->merge(std::move(list))
+              : static_cast<void>(next_ = std::move(list));
     }
 
     ListType* subList() const { return next_.get(); }
 
     ListType* lastSubList() const
     {
-        return next_ ? next_->lastSubList() :
-                       const_cast<ListType*>(static_cast<const ListType*>(this));
+        return next_ ? next_->lastSubList()
+                     : const_cast<ListType*>(static_cast<const ListType*>(this));
     }
 
     AstType* front() const { return ast_.get(); }
@@ -186,8 +194,7 @@ public:
      *
      * Detach the list's head, returning the front item and the new head.
      */
-    std::pair<std::unique_ptr<AstType>, std::unique_ptr<ListType>>
-    detachHead()
+    std::pair<std::unique_ptr<AstType>, std::unique_ptr<ListType>> detachHead()
     {
         std::unique_ptr<ListType> newHead = std::move(next_);
         next_.reset(nullptr);
@@ -225,15 +232,8 @@ public:
     Iterator end() const { return Iterator(); }
 
 protected:
-    AstList(AstType* ast)
-        : ast_(ast)
-        , next_(static_cast<ListType*>(this))
-    {}
-
-    AstList(std::unique_ptr<AstType> ast,
-            std::unique_ptr<ListType> next = std::unique_ptr<ListType>())
-        : ast_(std::move(ast))
-        , next_(std::move(next))
+    AstList(AstType* ast, ListType* next)
+        : ast_(ast), next_(next)
     {}
 
     std::unique_ptr<AstType> ast_;
@@ -285,20 +285,19 @@ using FilterAstList = TrivialAstList<FilterAst>;
     //--- Convenience ---//
 
 template <class AstListT>
-void addToList(std::unique_ptr<AstListT>& list,
-               std::unique_ptr<typename AstListT::AstType> ast)
+void appendOrCreate(std::unique_ptr<AstListT>& list,
+                    std::unique_ptr<typename AstListT::AstType> ast)
 {
-    if (ast)
-        list ? list->pushBack(std::move(ast)) :
-               (void)(list = AstListT::create(std::move(ast)));
+    list ? list->append(std::move(ast))
+         : static_cast<void>(list = AstListT::create(std::move(ast)));
 }
 
 template <class AstListT>
-void mergeList(std::unique_ptr<AstListT>& list, std::unique_ptr<AstListT> otherList)
+void mergeOrReplace(std::unique_ptr<AstListT>& list,
+                    std::unique_ptr<AstListT> other)
 {
-    if (otherList)
-        list ? list->merge(std::move(otherList)) :
-               (void)(list = std::move(otherList));
+    list ? list->merge(std::move(other))
+         : static_cast<void>(list = std::move(other));
 }
 
 } // namespace uaiso

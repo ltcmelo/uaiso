@@ -258,20 +258,16 @@ AstT* newAst()
 #define NAMED_AST_LIST_PARAM(NAME, MEMBER, PARAM_TYPE) \
     Self* add##NAME(PARAM_TYPE* param) \
     { \
-        if (param) { \
-            MEMBER##_ ? \
-                MEMBER##_->pushBack(std::unique_ptr<PARAM_TYPE>(param)) : \
-                (void)(MEMBER##_ = PARAM_TYPE##List::create(std::unique_ptr<PARAM_TYPE>(param))); \
-        } \
+        MEMBER##_ ? \
+            MEMBER##_->append(std::unique_ptr<PARAM_TYPE>(param)) : \
+            (void)(MEMBER##_ = PARAM_TYPE##List::create(std::unique_ptr<PARAM_TYPE>(param))); \
         return this; \
     } \
     Self* merge##NAME##s(std::unique_ptr<PARAM_TYPE##List> param) \
     { \
-        if (param) { \
-            MEMBER##_ ? \
-                MEMBER##_->merge(std::move(param)) : \
-                (void)(MEMBER##_ = std::move(param)); \
-        } \
+        MEMBER##_ ? \
+            MEMBER##_->merge(std::move(param)) : \
+            (void)(MEMBER##_ = std::move(param)); \
         return this; \
     } \
     Self* set##NAME##s(std::unique_ptr<PARAM_TYPE##List> param) \
@@ -281,11 +277,9 @@ AstT* newAst()
     } \
     Self* add##NAME(std::unique_ptr<PARAM_TYPE> param) \
     { \
-        if (param) { \
-            MEMBER##_ ? \
-                MEMBER##_->pushBack(std::move(param)) : \
-                (void)(MEMBER##_ = PARAM_TYPE##List::create(std::move(param))); \
-        } \
+        MEMBER##_ ? \
+            MEMBER##_->append(std::move(param)) : \
+            (void)(MEMBER##_ = PARAM_TYPE##List::create(std::move(param))); \
         return this; \
     } \
     Self* set##NAME##s##SR(PARAM_TYPE##List* param) \

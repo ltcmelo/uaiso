@@ -57,6 +57,24 @@ class UAISO_API ExprStmtAst final : public StmtAst
 public:
     AST_CLASS(Expr, Stmt)
 
+    static std::unique_ptr<Self> create(std::unique_ptr<ExprAstList> exprs,
+                                        const SourceLoc& loc = kEmptyLoc)
+    {
+        auto ast = create();
+        ast->setExprs(std::move(exprs));
+        ast->setTerminLoc(loc);
+        return ast;
+    }
+
+    static std::unique_ptr<Self> create(std::unique_ptr<ExprAst> expr,
+                                        const SourceLoc& loc = kEmptyLoc)
+    {
+        auto ast = create();
+        ast->addExpr(std::move(expr));
+        ast->setTerminLoc(loc);
+        return ast;
+    }
+
     ExprStmtAst()
         : StmtAst(Kind::ExprStmt)
     {}
@@ -72,6 +90,7 @@ class UAISO_API DeclStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Decl, Stmt)
+    SINGLE_AST_CREATE(Decl, Decl)
 
     DeclStmtAst()
         : StmtAst(Kind::DeclStmt)
@@ -326,6 +345,7 @@ class UAISO_API ContinueStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Continue, Stmt)
+    SINGLE_LOC_CREATE(Key)
 
     ContinueStmtAst()
         : StmtAst(Kind::ContinueStmt)
@@ -344,6 +364,7 @@ class UAISO_API BreakStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Break, Stmt)
+    SINGLE_LOC_CREATE(Key)
 
     BreakStmtAst()
         : StmtAst(Kind::BreakStmt)

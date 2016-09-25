@@ -202,7 +202,7 @@ Parser::DeclList HsParser::parseSelection(bool isExport)
         }
 
         // Each item is part of the current import/export selection.
-        addToList(selects, std::move(select));
+        appendOrCreate(selects, std::move(select));
     } while (maybeConsume(TK_COMMA));
 
     return selects;
@@ -298,7 +298,7 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
     bool wantTySig = false;
     NameList vars;
     while (maybeConsume(TK_COMMA)) {
-        addToList(vars, parseSymWrapOrId(&HsParser::parseVarSym, &HsParser::parseVarId));
+        appendOrCreate(vars, parseSymWrapOrId(&HsParser::parseVarSym, &HsParser::parseVarId));
         wantTySig = true;
     }
     if (wantTySig || ahead_ == TK_COLON_COLON) {
@@ -796,10 +796,10 @@ Parser::Name HsParser::parseQName(Token qualTk, Name (HsParser::*parseFunc)())
 {
     auto qname = NestedNameAst::create();
     while (maybeConsume(qualTk)) {
-        addToList(qname->names_, SimpleNameAst::create(prevLoc_));
+        appendOrCreate(qname->names_, SimpleNameAst::create(prevLoc_));
         match(TK_JOKER);
     }
-    addToList(qname->names_, ((this->*(parseFunc))()));
+    appendOrCreate(qname->names_, ((this->*(parseFunc))()));
     return std::move(qname);
 }
 

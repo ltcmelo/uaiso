@@ -199,7 +199,7 @@ Parser::parseSeqCore(std::function<bool ()> keepGoing,
         item = ((static_cast<ParserT*>(this))->*(parseFunc))();
         if (!item)
             break;
-        list->pushBack(std::move(item));
+        list->append(std::move(item));
     }
 
     return list;
@@ -255,7 +255,7 @@ Parser::parseDSeqTrail(Token delimTk,
         item = ((static_cast<ParserT*>(this))->*(parseFunc))();
         if (!item)
             break;
-        list->pushBack(std::move(item));
+        list->append(std::move(item));
     }
 
     return list;

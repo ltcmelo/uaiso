@@ -70,6 +70,11 @@ class UAISO_API GeneratorAst final : public Ast
 public:
     using Self = GeneratorAst;
 
+    static std::unique_ptr<Self> create()
+    {
+        return std::unique_ptr<Self>(newAst<Self>());
+    }
+
     GeneratorAst()
         : Ast(Kind::Generator)
     {}

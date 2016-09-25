@@ -57,7 +57,7 @@ VarGroupDeclAst* turnExprsIntoVarGroupDecl(ExprAstList* exprs)
         auto name = IdentExpr_Cast(expr)->name_.release();
         auto var = VarDeclAst::create();
         var->setName(name);
-        group->decls_ ? group->decls_->pushBack(std::move(var)) :
+        group->decls_ ? group->decls_->append(std::move(var)) :
                         (void)(group->decls_ = DeclAstList::create(std::move(var)));
     }
     delete exprs;
@@ -80,10 +80,10 @@ void splitBaseDeclsAndFields(RecordSpecAst* spec, DeclAstList* decls)
         auto p = std::move(declsP->detachHead());
         spec->bases_ = std::unique_ptr<DeclAstList>();
         if (p.first->kind() == Ast::Kind::BaseDecl) {
-            spec->bases_ ? spec->bases_->pushBack(std::move(p.first)) :
+            spec->bases_ ? spec->bases_->append(std::move(p.first)) :
                            (void)(spec->bases_ =  DeclAstList::create(std::move(p.first)));
         } else {
-            spec->decls_ ? spec->decls_->pushBack(std::move(p.first)) :
+            spec->decls_ ? spec->decls_->append(std::move(p.first)) :
                            (void)(spec->decls_ = DeclAstList::create(std::move(p.first)));
         }
         declsP = std::move(p.second);
@@ -99,7 +99,7 @@ SpecAst* extractSpecFromExpr(ExprAst* nameExpr) {
         if (memberExpr->exprOrSpec_->kind() == Ast::Kind::IdentExpr) {
             auto names = NameAstList::create(std::move(IdentExpr_Cast(memberExpr->exprOrSpec_.get())
                                              ->name_));
-            names->pushBack(std::move(memberExpr->name_));
+            names->append(std::move(memberExpr->name_));
             name = newAst<NestedNameAst>()->setNamesSR(names.release());
         }
     }
