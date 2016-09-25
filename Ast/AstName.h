@@ -41,15 +41,15 @@ class UAISO_API ErrorNameAst final : public NameAst
 {
 public:
     AST_CLASS(Error, Name)
-    SINGLE_LOC_CREATE(Name)
+    SINGLE_LOC_CREATE(Error)
 
     ErrorNameAst()
         : NameAst(Kind::ErrorName)
     {}
 
-    NAMED_LOC_PARAM(Name, name)
+    NAMED_LOC_PARAM(Error, error)
 
-    SourceLoc nameLoc_;
+    SourceLoc errorLoc_;
 };
 
 class UAISO_API SimpleNameAst final : public NameAst

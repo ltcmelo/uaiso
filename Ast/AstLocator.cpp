@@ -112,12 +112,12 @@ const SourceLoc& AstLocator::lastLoc(SpecialNameAst* ast) const
 
 const SourceLoc& AstLocator::loc(ErrorNameAst* ast) const
 {
-    return ast->nameLoc_;
+    return ast->errorLoc_;
 }
 
 const SourceLoc& AstLocator::lastLoc(ErrorNameAst* ast) const
 {
-    return ast->nameLoc_;
+    return ast->errorLoc_;
 }
 
 const SourceLoc& AstLocator::loc(CompletionNameAst* ast) const
@@ -511,6 +511,36 @@ const SourceLoc& AstLocator::loc(PatDeclAst* ast) const
 const SourceLoc& AstLocator::lastLoc(PatDeclAst* ast) const
 {
     return lastLoc(ast->expr());
+}
+
+const SourceLoc& AstLocator::loc(WrappedPatDeclAst* ast) const
+{
+    return ast->lDelimLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(WrappedPatDeclAst* ast) const
+{
+    return ast->rDelimLoc_;
+}
+
+const SourceLoc& AstLocator::loc(TuplePatDeclAst* ast) const
+{
+    return ast->lDelimLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(TuplePatDeclAst* ast) const
+{
+    return ast->rDelimLoc_;
+}
+
+const SourceLoc& AstLocator::loc(ListPatDeclAst* ast) const
+{
+    return ast->lDelimLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(ListPatDeclAst* ast) const
+{
+    return ast->rDelimLoc_;
 }
 
 const SourceLoc& AstLocator::loc(AsPatDeclAst* ast) const

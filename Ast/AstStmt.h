@@ -649,6 +649,7 @@ class UAISO_API ErrorStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Error, Stmt)
+    SINGLE_LOC_CREATE(Error)
 
     ErrorStmtAst()
         : StmtAst(Kind::ErrorStmt)

@@ -88,6 +88,7 @@
     GEN_CODE_FOR(ImportSelection, Decl) \
     GEN_CODE_FOR(Invariant, Decl) \
     GEN_CODE_FOR(IrrefutPat, Decl) \
+    GEN_CODE_FOR(ListPat, Decl) \
     GEN_CODE_FOR(Module, Decl) \
     GEN_CODE_FOR(Package, Decl) \
     GEN_CODE_FOR(Param, Decl) \
@@ -102,8 +103,10 @@
     GEN_CODE_FOR(Template, Decl) \
     GEN_CODE_FOR(TemplateParam, Decl) \
     GEN_CODE_FOR(TemplateParamClause, Decl) \
+    GEN_CODE_FOR(TuplePat, Decl) \
     GEN_CODE_FOR(UnitTest, Decl) \
     GEN_CODE_FOR(WildCardPat, Decl) \
+    GEN_CODE_FOR(WrappedPat, Decl) \
     GEN_CODE_FOR(Var, Decl) \
     GEN_CODE_FOR(VarGroup, Decl) \
     GEN_CODE_FOR(Version, Decl)

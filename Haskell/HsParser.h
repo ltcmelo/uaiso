@@ -56,8 +56,6 @@ private:
     Expr parseCharLit();
     Expr parseBoolLit();
     Expr parseWildcard();
-    Expr parseListConOrListLit();
-    Expr finishUnitOrTupConOrTupLitOrWrap();
 
     //--- Declarations ---//
 
@@ -83,6 +81,8 @@ private:
     DeclList parseAPatDList();
     Decl finishAsPat(Name var);
     Decl finishLabeledPat(Name qConId);
+    Decl finishListConOrListPat();
+    Decl finishUnitOrWrapOrTupConOrTupPat();
 
     //--- Names ---//
 

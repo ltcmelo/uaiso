@@ -594,6 +594,28 @@ AstVisitor<DerivedT>::traverseExportSelectionDecl(ExportSelectionDeclAst* decl)
     return Continue;
 }
 
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseWrappedPatDecl(WrappedPatDeclAst *ast)
+{
+    EVAL_RESULT_0(recursivelyVisitWrappedPatDecl(ast));
+    EVAL_RESULT_N(traverseDecl(ast->decl_.get()));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseTuplePatDecl(TuplePatDeclAst* decl)
+{
+    EVAL_RESULT_LIST_0(traverseList<DeclAst>(decl->pats_.get(), &DerivedT::traverseDecl));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseListPatDecl(ListPatDeclAst* decl)
+{
+    EVAL_RESULT_LIST_0(traverseList<DeclAst>(decl->pats_.get(), &DerivedT::traverseDecl));
+    return Continue;
+}
+
     /*--- Expressions traversal ---*/
 
 TRIVIAL_VISIT(ArrayLengthExpr)

@@ -123,7 +123,7 @@ Parser::Decl HsParser::parseImport()
         import->setLocalName(parseModid());
     }
 
-    // Selected imports, either to be visible or to be hidden.
+    // Selected imports, either visible or to be hidden.
     if (contextKeyAhead(kHiding))
         consumeToken(); // TODO: Store hidden names.
     if (ahead_ == TK_LPAREN) {
@@ -393,7 +393,8 @@ Parser::Decl HsParser::parseLPat()
     }
 
     case TK_LBRACKET:
-        return PatDeclAst::create(parseListConOrListLit());
+        consumeToken();
+        return finishListConOrListPat();
 
     case TK_LPAREN: {
         consumeToken();
@@ -407,7 +408,7 @@ Parser::Decl HsParser::parseLPat()
             return PatDeclAst::create(CallExprAst::create());
         }
 
-        finishUnitOrTupConOrTupLitOrWrap();
+        finishUnitOrWrapOrTupConOrTupPat();
         if (isAPatFIRST(ahead_))
             parseAPatList();
         return Decl();
@@ -462,7 +463,8 @@ Parser::Decl HsParser::parseAPat()
     }
 
     case TK_LBRACKET:
-        return PatDeclAst::create(parseListConOrListLit());
+        consumeToken();
+        return finishListConOrListPat();
 
     case TK_LPAREN: {
         consumeToken();
@@ -473,12 +475,12 @@ Parser::Decl HsParser::parseAPat()
                 return finishLabeledPat(std::move(qConSym));
             return PatDeclAst::create(CallExprAst::create());
         }
-        return PatDeclAst::create(finishUnitOrTupConOrTupLitOrWrap());
+        return finishUnitOrWrapOrTupConOrTupPat();
     }
 
     default:
         fail();
-        return Decl();
+        return ErrorDeclAst::create(prevLoc_);
     }
 }
 
@@ -521,41 +523,65 @@ Parser::Decl HsParser::finishLabeledPat(Parser::Name qConId)
     return Decl();
 }
 
-    //--- Expressions ---//
-
-Parser::Expr HsParser::parseListConOrListLit()
+Parser::Decl HsParser::finishUnitOrWrapOrTupConOrTupPat()
 {
-    UAISO_ASSERT(ahead_ == TK_LBRACKET, return Expr());
+    const SourceLoc lParenLoc = std::move(prevLoc_);
 
-    BracketMatcher<> wrap(this, "parseListConOrListLit");
-    if (ahead_ == TK_RBRACKET)
-        return CallExprAst::create(); // List data constructor `[ ]'.
-    parsePatDList();
-
-    return Expr();
-}
-
-Parser::Expr HsParser::finishUnitOrTupConOrTupLitOrWrap()
-{
-    const SourceLoc loc = std::move(prevLoc_);
+    // A `)' with nothing inside is the unit value.
     if (maybeConsume(TK_RPAREN))
-        return NullLitExprAst::create(joinedLoc(loc, prevLoc_)); // Unit value.
+        return PatDeclAst::create(NullLitExprAst::create(joinedLoc(lParenLoc, prevLoc_)));
 
-    // A `,' indicates a tuple data constructor.
-    if (ahead_ == TK_COMMA) {
-        size_t tupCnt = 0;
+    // A `,' immediately following a `(' is a tuple data constructor.
+    if (maybeConsume(TK_COMMA)) {
+        size_t tupCnt = 1;
         do {
             ++tupCnt;
         } while (maybeConsume(TK_COMMA));
         matchOrSkipTo(TK_RPAREN, "parseTupleDataCon");
-        return CallExprAst::create();
+        return PatDeclAst::create(CallExprAst::create());
     }
 
-    // TODO: Wrapped pattern or list.
-    parsePatDList();
+    // The remaining option is to match a pattern. If a `)' follows it, we have
+    // a wrapped pattern. Otherwise, we expect a `,' to match a tuple pattern.
+    auto pat = parsePat();
+    if (maybeConsume(TK_RPAREN)) {
+        auto decl = WrappedPatDeclAst::create();
+        decl->setLDelimLoc(lParenLoc);
+        decl->setDecl(std::move(pat));
+        decl->setRDelimLoc(prevLoc_);
+        return std::move(decl);
+    }
 
-    return Expr();
+    auto tup = TuplePatDeclAst::create();
+    tup->setLDelimLoc(lParenLoc);
+    tup->addPat(std::move(pat));
+    match(TK_COMMA);
+    tup->mergePats(parseDSeq<DeclAstList, HsParser>(TK_COMMA, &HsParser::parsePat));
+    matchOrSkipTo(TK_RPAREN, "parseTuplePat");
+    tup->setRDelimLoc(prevLoc_);
+
+    return std::move(tup);
 }
+
+Parser::Decl HsParser::finishListConOrListPat()
+{
+    const SourceLoc lBrackLoc = std::move(prevLoc_);
+
+    // A `)' with nothing inside is the list data constructor.
+    if (maybeConsume(TK_RBRACKET))
+        return PatDeclAst::create(CallExprAst::create());
+
+    // Otherwise, we expect a `,' delimited sequence to match a list pattern.
+    auto list = ListPatDeclAst::create();
+    list->setLDelimLoc(lBrackLoc);
+    list->mergePats(parseDSeq<DeclAstList, HsParser>(TK_COMMA, &HsParser::parsePat));
+    matchOrSkipTo(TK_RBRACKET, "parseListPat");
+    list->setRDelimLoc(prevLoc_);
+
+    return std::move(list);
+}
+
+    //--- Expressions ---//
 
 Parser::Expr HsParser::parseExpr()
 {
@@ -577,7 +603,7 @@ Parser::Expr HsParser::parseAExpr()
 
     default:
         fail();
-        return Expr();
+        return ErrorExprAst::create(prevLoc_);
     }
 }
 
@@ -761,7 +787,9 @@ Parser::Name HsParser::maybeParseQConOp()
         return parseQConId();
     }
 
-    return Name(); // A "maybe" function, caller must deal with a null return.
+    // This is "maybe parse" function so the caller must be aware a null AST
+    // can be returned. We shouldn't create an error name here.
+    return Name();
 }
 
 Parser::Name HsParser::parseQName(Token qualTk, Name (HsParser::*parseFunc)())

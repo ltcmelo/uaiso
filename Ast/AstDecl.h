@@ -42,6 +42,7 @@ class UAISO_API ErrorDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Error, Decl)
+    SINGLE_LOC_CREATE(Error)
 
     ErrorDeclAst()
         : DeclAst(Kind::ErrorDecl)
@@ -1195,6 +1196,69 @@ public:
 
     SourceLoc keyLoc_;
     std::unique_ptr<DeclAst> pat_;
+};
+
+/*!
+ * \brief The WrappedPatDeclAst class
+ */
+class UAISO_API WrappedPatDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(WrappedPat, Decl)
+
+    WrappedPatDeclAst()
+        : DeclAst(Kind::WrappedPatDecl)
+    {}
+
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(Decl, decl, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<DeclAst> decl_;
+    SourceLoc rDelimLoc_;
+};
+
+/*!
+ * \brief The TuplePatDeclAst class
+ */
+class UAISO_API TuplePatDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(TuplePat, Decl)
+
+    TuplePatDeclAst()
+        : DeclAst(Kind::TuplePatDecl)
+    {}
+
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Pat, pats, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<DeclAstList> pats_;
+    SourceLoc rDelimLoc_;
+};
+
+/*!
+ * \brief The ListPatDeclAst class
+ */
+class UAISO_API ListPatDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(ListPat, Decl)
+
+    ListPatDeclAst()
+        : DeclAst(Kind::ListPatDecl)
+    {}
+
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Pat, pats, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<DeclAstList> pats_;
+    SourceLoc rDelimLoc_;
 };
 
 /*!

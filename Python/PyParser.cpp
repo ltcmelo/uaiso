@@ -1910,24 +1910,17 @@ Parser::Name PyParser::parseDottedName()
 
 Parser::Name PyParser::parseName()
 {
-    if (maybeConsume(TK_COMPLETION)) {
-        auto name = CompletionNameAst::create();
-        name->setNameLoc(prevLoc_);
-        return Name(std::move(name));
-    }
+    if (maybeConsume(TK_COMPLETION))
+        return CompletionNameAst::create(prevLoc_);
 
     // If not a completion, we must match an identifier. However, if the
     // match doesn't succeed in this case we can't ignore and create a
     // simple name AST. Otherwise we end up with name without a
     // corresponding identifier in the lexeme map. An error name is then
     // created for consistency throughout the pipeline.
-    if (match(TK_IDENT)) {
-        auto name = SimpleNameAst::create();
-        name->setNameLoc(prevLoc_);
-        return Name(std::move(name));
-    }
-
-    return Name(newAst<ErrorNameAst>()->setNameLoc(prevLoc_));
+    if (match(TK_IDENT))
+        return SimpleNameAst::create(prevLoc_);
+    return ErrorNameAst::create(prevLoc_);
 }
 
 Parser::Expr PyParser::parseStrLit()

@@ -1022,6 +1022,7 @@ class UAISO_API ErrorExprAst final : public ExprAst
 {
 public:
     AST_CLASS(Error, Expr)
+    SINGLE_LOC_CREATE(Error)
 
     ErrorExprAst()
         : ExprAst(Kind::ErrorExpr)
