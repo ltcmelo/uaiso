@@ -1480,10 +1480,7 @@ Parser::Expr PyParser::parsePower()
             call->setBase(std::move(atom));
             if (isArgFIRST())
                 call->setArgs(parseArgList());
-            if (!match(TK_RPAREN)) {
-                DEBUG_TRACE("parsePower, skip to TK_RPAREN\n");
-                skipTo(TK_RPAREN);
-            }
+            matchOrSkipTo(TK_RPAREN, "parsePower");
             call->setRDelimLoc(prevLoc_);
             atom = std::move(call);
             break;
@@ -1495,10 +1492,7 @@ Parser::Expr PyParser::parsePower()
             arrayAccess->setLDelimLoc(prevLoc_);
             arrayAccess->setBase(std::move(atom));
             arrayAccess->setRange(parseSubscript());
-            if (!match(TK_RBRACKET)) {
-                DEBUG_TRACE("parsePower, skip to TK_RBRACKET\n");
-                skipTo(TK_RBRACKET);
-            }
+            matchOrSkipTo(TK_RBRACKET, "parsePower");
             atom = std::move(arrayAccess);
             break;
         }
@@ -1704,10 +1698,7 @@ Parser::Expr PyParser::parseDictOrSetMaker()
     default:
         if (test)
             dictOrSet->addInit(std::move(test));
-        if (!match(TK_RBRACE)) {
-            DEBUG_TRACE("parseDictOrSetMaker, skip to TK_RBRACE\n");
-            skipTo(TK_RBRACE);
-        }
+        matchOrSkipTo(TK_RBRACE, "parseDictOrSetMaker");
         dictOrSet->setRDelimLoc(prevLoc_);
         return std::move(dictOrSet);
     }
@@ -1921,10 +1912,7 @@ PyParser::completeWrapped(const std::function<Expr ()> exprFunc)
     auto wrap = WrappedExprAst::create();
     wrap->setLDelimLoc(prevLoc_);
     wrap->setExpr(exprFunc());
-    if (!match(TK_RPAREN)) {
-        DEBUG_TRACE("completeWrapped, skip to TK_PAREN\n");
-        skipTo(TK_RPAREN);
-    }
+    matchOrSkipTo(TK_RPAREN, "completeWrapped, skip to TK_PAREN\n");
     wrap->setRDelimLoc(prevLoc_);
     return std::move(wrap);
 }
