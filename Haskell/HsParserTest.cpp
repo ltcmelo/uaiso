@@ -541,8 +541,24 @@ module Foo where
         true);
 }
 
-void HsParser::HsParserTest::testCase55() {}
-void HsParser::HsParserTest::testCase56() {}
+void HsParser::HsParserTest::testCase55()
+{
+    core(R"raw(
+module Foo where
+(:<>:) :: Abc
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase56()
+{
+    core(R"raw(
+module Foo where
+No :: Abc
+        )raw",
+        true);
+}
+
 void HsParser::HsParserTest::testCase57() {}
 void HsParser::HsParserTest::testCase58() {}
 void HsParser::HsParserTest::testCase59() {}
