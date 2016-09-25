@@ -285,7 +285,7 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
                && peekToken(3) == TK_RPAREN) {
         consumeToken(2);
         name = PuncNameAst::create(prevLoc_);
-        consumeToken();
+        consumeToken(); // The closing `)'.
     }
 
     // A type signature begins with a `var', which is either a `varid', or a
@@ -298,14 +298,17 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
     bool wantTySig = false;
     NameList vars;
     while (maybeConsume(TK_COMMA)) {
-        appendOrCreate(vars, parseSymWrapOrId(&HsParser::parseVarSym, &HsParser::parseVarId));
+        appendOrCreate(vars, parseSymWrapOrId(&HsParser::parseVarSymWrap,
+                                              &HsParser::parseVarId));
         wantTySig = true;
     }
     if (wantTySig || ahead_ == TK_COLON_COLON) {
+        matchOrSkipTo(TK_COLON_COLON, "parseTySig");
         auto group = NameAstList::create(std::move(name));
         if (vars)
             group->merge(std::move(vars));
-        return parseTypeSig(/* group */);
+        parseContextType();
+        return VarGroupDeclAst::create();
     }
 
     std::unique_ptr<DeclAst> pat;
@@ -337,13 +340,6 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
 
 Parser::Decl HsParser::parsePatBindOrFunc()
 {
-    return Decl();
-}
-
-Parser::Decl HsParser::parseTypeSig()
-{
-    UAISO_ASSERT(ahead_ == TK_COLON_COLON, return Decl());
-    consumeToken();
     return Decl();
 }
 
@@ -579,6 +575,36 @@ Parser::Decl HsParser::finishListConOrListPat()
     list->setRDelimLoc(prevLoc_);
 
     return std::move(list);
+}
+
+    //--- Specifiers ---//
+
+Parser::Spec HsParser::parseContextType()
+{
+    // TODO: Context.
+    return parseType();
+}
+
+Parser::Spec HsParser::parseType()
+{
+    return parseBType();
+}
+
+Parser::Spec HsParser::parseBType()
+{
+    return parseAType();
+}
+
+Parser::Spec HsParser::parseAType()
+{
+    switch (ahead_) {
+    case TK_PROPER_IDENT_QUAL:
+    case TK_PROPER_IDENT:
+        return NamedSpecAst::create(parseQConId());
+
+    default:
+        return Spec();
+    }
 }
 
     //--- Expressions ---//

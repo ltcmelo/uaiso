@@ -52,6 +52,8 @@ protected:
     using ExprList = std::unique_ptr<ExprAstList>;
     using Name = std::unique_ptr<NameAst>;
     using NameList = std::unique_ptr<NameAstList>;
+    using Spec = std::unique_ptr<SpecAst>;
+    using SpecList = std::unique_ptr<SpecAstList>;
     using Stmt = std::unique_ptr<StmtAst>;
     using StmtList = std::unique_ptr<StmtAstList>;
 

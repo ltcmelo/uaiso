@@ -55,7 +55,8 @@ void ParserLLk::consumeToken()
 
 void ParserLLk::consumeToken(size_t k)
 {
-    auto&& data = std::move(buffer_[++cur_ + k - 1]);
+    cur_ += k;
+    auto&& data = std::move(buffer_[cur_]);
 
     ahead_ = std::get<0>(data);
     prevLoc_ = std::get<1>(std::move(data));
@@ -66,9 +67,9 @@ const Token ParserLLk::peekToken(size_t k)
 {
     UAISO_ASSERT(k > 1, return TK_INVALID);
 
-    if (cur_ + k > last_)
+    if (cur_ + k - 1> last_)
         return TK_EOP;
-    return std::get<0>(buffer_[cur_ + k]);
+    return std::get<0>(buffer_[cur_ + k - 1]);
 }
 
 SourceLoc ParserLLk::currentLoc() const

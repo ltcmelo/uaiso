@@ -66,7 +66,6 @@ private:
     DeclList parseBody();
     DeclList parseTopDecls();
     Decl parseDecl();
-    Decl parseTypeSig();
     Decl parsePatBindOrFunc();
     Decl parsePatBindOrFuncOrTypeSig();
     Decl parsePatBind();
@@ -83,6 +82,13 @@ private:
     Decl finishLabeledPat(Name qConId);
     Decl finishListConOrListPat();
     Decl finishUnitOrWrapOrTupConOrTupPat();
+
+    //--- Specifiers ---//
+
+    Spec parseContextType();
+    Spec parseType();
+    Spec parseBType();
+    Spec parseAType();
 
     //--- Names ---//
 

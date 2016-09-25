@@ -74,6 +74,35 @@ public:
              , &HsParserTest::testCase38
              , &HsParserTest::testCase39
              , &HsParserTest::testCase40
+             , &HsParserTest::testCase41
+             , &HsParserTest::testCase42
+             , &HsParserTest::testCase43
+             , &HsParserTest::testCase44
+             , &HsParserTest::testCase45
+             , &HsParserTest::testCase46
+             , &HsParserTest::testCase47
+             , &HsParserTest::testCase48
+             , &HsParserTest::testCase49
+             , &HsParserTest::testCase50
+             , &HsParserTest::testCase51
+             , &HsParserTest::testCase52
+             , &HsParserTest::testCase53
+             , &HsParserTest::testCase54
+             , &HsParserTest::testCase55
+             , &HsParserTest::testCase56
+             , &HsParserTest::testCase57
+             , &HsParserTest::testCase58
+             , &HsParserTest::testCase59
+             , &HsParserTest::testCase60
+             , &HsParserTest::testCase61
+             , &HsParserTest::testCase62
+             , &HsParserTest::testCase63
+             , &HsParserTest::testCase64
+             , &HsParserTest::testCase65
+             , &HsParserTest::testCase66
+             , &HsParserTest::testCase67
+             , &HsParserTest::testCase68
+             , &HsParserTest::testCase69
              )
 
      void testCase1();
@@ -116,6 +145,35 @@ public:
      void testCase38();
      void testCase39();
      void testCase40();
+     void testCase41();
+     void testCase42();
+     void testCase43();
+     void testCase44();
+     void testCase45();
+     void testCase46();
+     void testCase47();
+     void testCase48();
+     void testCase49();
+     void testCase50();
+     void testCase51();
+     void testCase52();
+     void testCase53();
+     void testCase54();
+     void testCase55();
+     void testCase56();
+     void testCase57();
+     void testCase58();
+     void testCase59();
+     void testCase60();
+     void testCase61();
+     void testCase62();
+     void testCase63();
+     void testCase64();
+     void testCase65();
+     void testCase66();
+     void testCase67();
+     void testCase68();
+     void testCase69();
 };
 
 MAKE_CLASS_TEST(HsParser)
@@ -325,8 +383,176 @@ module Foo where
     )raw");
 }
 
-void HsParser::HsParserTest::testCase36() {}
-void HsParser::HsParserTest::testCase37() {}
-void HsParser::HsParserTest::testCase38() {}
-void HsParser::HsParserTest::testCase39() {}
-void HsParser::HsParserTest::testCase40() {}
+void HsParser::HsParserTest::testCase36()
+{
+    core(R"raw(
+module Foo where
+x :: Abc
+    )raw");
+}
+
+void HsParser::HsParserTest::testCase37()
+{
+    core(R"raw(
+module Foo where
+x, y :: Abc
+    )raw");
+}
+
+void HsParser::HsParserTest::testCase38()
+{
+    core(R"raw(
+module Foo where
+x, y, z :: Abc
+    )raw");
+}
+
+void HsParser::HsParserTest::testCase39()
+{
+    core(R"raw(
+module Foo where
+x, y, z d :: Abc
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase40()
+{
+    core(R"raw(
+module Foo where
+x, y, z = Abc
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase41()
+{
+    core(R"raw(
+module Foo where
+x, y, z :: Abc Mno
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase42()
+{
+    core(R"raw(
+module Foo where
+(<@>) :: Abc
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase43()
+{
+    core(R"raw(
+module Foo where
+(<@>), (<@>) :: Abc
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase44()
+{
+    core(R"raw(
+module Foo where
+(<@>), (<@@@>) :: Abc
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase45()
+{
+    core(R"raw(
+module Foo where
+($<>$), (%%%%) :: Abc
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase46()
+{
+    core(R"raw(
+module Foo where
+($<>$), xyz, (%%%%) :: Abc
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase47()
+{
+    core(R"raw(
+module Foo where
+mno, ($<>$), xyz, (%%%%) :: Abc
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase48()
+{
+    core(R"raw(
+module Foo where
+mno, xzy, ($<>$), ikj, (%%%%) :: Abc
+         )raw");
+}
+
+void HsParser::HsParserTest::testCase49()
+{
+    core(R"raw(
+module Foo where
+mno, xzy, ($<>$), (%%%%), ijk :: Abc
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase50()
+{
+    core(R"raw(
+module Foo where
+($<>$), (%%%%), ijk, mno, xzy :: Abc
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase51()
+{
+    core(R"raw(
+module Foo where
+($<>$), (%%%%), ijk, mno, xzy, :: Abc
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase52()
+{
+    core(R"raw(
+module Foo where
+($<>$), xzy :: Abc
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase53()
+{
+    core(R"raw(
+module Foo where
+($<>$ :: Abc
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase54()
+{
+    core(R"raw(
+module Foo where
+($<>$) xzy :: Abc
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase55() {}
+void HsParser::HsParserTest::testCase56() {}
+void HsParser::HsParserTest::testCase57() {}
+void HsParser::HsParserTest::testCase58() {}
+void HsParser::HsParserTest::testCase59() {}
+void HsParser::HsParserTest::testCase60() {}
+void HsParser::HsParserTest::testCase61() {}
+void HsParser::HsParserTest::testCase62() {}
+void HsParser::HsParserTest::testCase63() {}
+void HsParser::HsParserTest::testCase64() {}
+void HsParser::HsParserTest::testCase65() {}
+void HsParser::HsParserTest::testCase66() {}
+void HsParser::HsParserTest::testCase67() {}
+void HsParser::HsParserTest::testCase68() {}
+void HsParser::HsParserTest::testCase69() {}
