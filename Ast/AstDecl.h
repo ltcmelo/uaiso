@@ -1125,17 +1125,15 @@ class UAISO_API PatDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Pat, Decl)
-    SINGLE_AST_CREATE(Expr, Expr)
+    SINGLE_AST_CREATE(Name, Name)
 
     PatDeclAst()
         : DeclAst(Kind::PatDecl)
     {}
 
-    NAMED_AST_PARAM(Expr, expr, ExprAst)
+    NAMED_AST_PARAM(Name, name, NameAst)
 
-    //! The underlying expression can be a literal, an identifier, etc. In the
-    //! case of a function call, it's expected to be a (data) constructor.
-    std::unique_ptr<ExprAst> expr_;
+    std::unique_ptr<NameAst> name_;
 };
 
 class UAISO_API AsPatDeclAst final : public DeclAst
@@ -1154,6 +1152,36 @@ public:
     std::unique_ptr<NameAst> name_;
     SourceLoc keyLoc_;
     std::unique_ptr<DeclAst> pat_;
+};
+
+class UAISO_API TrivialPatDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(TrivialPat, Decl)
+    SINGLE_AST_CREATE(Expr, Expr)
+
+    TrivialPatDeclAst()
+        : DeclAst(Kind::TrivialPatDecl)
+    {}
+
+    NAMED_AST_PARAM(Expr, expr, ExprAst)
+
+    std::unique_ptr<ExprAst> expr_;
+};
+
+/*!
+ * \brief The DestructPatDeclAst class
+ *
+ * A destructuring pattern.
+ */
+class UAISO_API DestructPatDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(DestructPat, Decl)
+
+    DestructPatDeclAst()
+        : DeclAst(Kind::DestructPatDecl)
+    {}
 };
 
 /*!

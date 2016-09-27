@@ -505,12 +505,32 @@ const SourceLoc& AstLocator::loc(FuncDeclAst* ast) const
 
 const SourceLoc& AstLocator::loc(PatDeclAst* ast) const
 {
-    return loc(ast->expr());
+    return loc(ast->name());
 }
 
 const SourceLoc& AstLocator::lastLoc(PatDeclAst* ast) const
 {
+    return lastLoc(ast->name());
+}
+
+const SourceLoc& AstLocator::loc(TrivialPatDeclAst* ast) const
+{
+    return loc(ast->expr());
+}
+
+const SourceLoc& AstLocator::lastLoc(TrivialPatDeclAst* ast) const
+{
     return lastLoc(ast->expr());
+}
+
+const SourceLoc& AstLocator::loc(DestructPatDeclAst* ast) const
+{
+    return kEmptyLoc;
+}
+
+const SourceLoc& AstLocator::lastLoc(DestructPatDeclAst* ast) const
+{
+    return kEmptyLoc;
 }
 
 const SourceLoc& AstLocator::loc(WrappedPatDeclAst* ast) const

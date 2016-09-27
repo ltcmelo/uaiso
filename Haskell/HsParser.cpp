@@ -311,12 +311,11 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
         return VarGroupDeclAst::create();
     }
 
-    std::unique_ptr<DeclAst> pat;
-    if (ahead_ == TK_AT) {
+    Decl pat;
+    if (ahead_ == TK_AT)
         pat = finishAsPat(std::move(name));
-    }
 
-    if (auto name = maybeParseQConOp()) {
+    if (auto qConOp = maybeParseQConOp()) {
         parsePat();
     }
 
@@ -375,8 +374,8 @@ Parser::Decl HsParser::parseLPat()
     case TK_MINUS:
         consumeToken();
         if (ahead_ == TK_INT_LIT)
-            return PatDeclAst::create(parseIntLit());
-        return PatDeclAst::create(parseFloatLit());
+            return TrivialPatDeclAst::create(parseIntLit());
+        return TrivialPatDeclAst::create(parseFloatLit());
 
     case TK_PROPER_IDENT:
     case TK_PROPER_IDENT_QUAL: {
@@ -385,7 +384,7 @@ Parser::Decl HsParser::parseLPat()
             return finishLabeledPat(std::move(qConId));
         if (isAPatFIRST(ahead_))
             parseAPatList();
-        return PatDeclAst::create(CallExprAst::create());
+        return PatDeclAst::create();
     }
 
     case TK_LBRACKET:
@@ -401,7 +400,7 @@ Parser::Decl HsParser::parseLPat()
                 return finishLabeledPat(std::move(qConSym));
             if (isAPatFIRST(ahead_))
                 parseAPatList();
-            return PatDeclAst::create(CallExprAst::create());
+            return PatDeclAst::create();
         }
 
         finishUnitOrWrapOrTupConOrTupPat();
@@ -419,20 +418,20 @@ Parser::Decl HsParser::parseAPat()
 {
     switch (ahead_) {
     case TK_INT_LIT:
-        return PatDeclAst::create(parseIntLit());
+        return TrivialPatDeclAst::create(parseIntLit());
 
     case TK_FLOAT_LIT:
-        return PatDeclAst::create(parseFloatLit());
+        return TrivialPatDeclAst::create(parseFloatLit());
 
     case TK_TRUE_VALUE:
     case TK_FALSE_VALUE:
-        return PatDeclAst::create(parseBoolLit());
+        return TrivialPatDeclAst::create(parseBoolLit());
 
     case TK_CHAR_LIT:
-        return PatDeclAst::create(parseCharLit());
+        return TrivialPatDeclAst::create(parseCharLit());
 
     case TK_STR_LIT:
-        return PatDeclAst::create(parseStrLit());
+        return TrivialPatDeclAst::create(parseStrLit());
 
     case TK_UNDERSCORE:
         consumeToken();
@@ -447,7 +446,7 @@ Parser::Decl HsParser::parseAPat()
         auto var = SimpleNameAst::create(prevLoc_);
         if (ahead_ == TK_AT)
             return finishAsPat(std::move(var));
-        return PatDeclAst::create(IdentExprAst::create(std::move(var)));
+        return PatDeclAst::create(std::move(var));
     }
 
     case TK_PROPER_IDENT:
@@ -455,7 +454,7 @@ Parser::Decl HsParser::parseAPat()
         auto qConId = parseQConId();
         if (ahead_ == TK_LBRACE)
             return finishLabeledPat(std::move(qConId));
-        return PatDeclAst::create(CallExprAst::create());
+        return PatDeclAst::create();
     }
 
     case TK_LBRACKET:
@@ -469,7 +468,7 @@ Parser::Decl HsParser::parseAPat()
             matchOrSkipTo(TK_RPAREN, "parseQConSym");
             if (ahead_ == TK_LBRACE)
                 return finishLabeledPat(std::move(qConSym));
-            return PatDeclAst::create(CallExprAst::create());
+            return PatDeclAst::create();
         }
         return finishUnitOrWrapOrTupConOrTupPat();
     }
@@ -525,7 +524,8 @@ Parser::Decl HsParser::finishUnitOrWrapOrTupConOrTupPat()
 
     // A `)' with nothing inside is the unit value.
     if (maybeConsume(TK_RPAREN))
-        return PatDeclAst::create(NullLitExprAst::create(joinedLoc(lParenLoc, prevLoc_)));
+        return TrivialPatDeclAst::create(
+                    NullLitExprAst::create(joinedLoc(lParenLoc, prevLoc_)));
 
     // A `,' immediately following a `(' is a tuple data constructor.
     if (maybeConsume(TK_COMMA)) {
@@ -534,7 +534,7 @@ Parser::Decl HsParser::finishUnitOrWrapOrTupConOrTupPat()
             ++tupCnt;
         } while (maybeConsume(TK_COMMA));
         matchOrSkipTo(TK_RPAREN, "parseTupleDataCon");
-        return PatDeclAst::create(CallExprAst::create());
+        return PatDeclAst::create();
     }
 
     // The remaining option is to match a pattern. If a `)' follows it, we have
@@ -565,7 +565,7 @@ Parser::Decl HsParser::finishListConOrListPat()
 
     // A `)' with nothing inside is the list data constructor.
     if (maybeConsume(TK_RBRACKET))
-        return PatDeclAst::create(CallExprAst::create());
+        return PatDeclAst::create();
 
     // Otherwise, we expect a `,' delimited sequence to match a list pattern.
     auto list = ListPatDeclAst::create();

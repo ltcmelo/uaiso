@@ -75,6 +75,7 @@
     GEN_CODE_FOR(Block, Decl) \
     GEN_CODE_FOR(Constraint, Decl) \
     GEN_CODE_FOR(Debug, Decl) \
+    GEN_CODE_FOR(DestructPat, Decl) \
     GEN_CODE_FOR(Empty, Decl) \
     GEN_CODE_FOR(Enum, Decl) \
     GEN_CODE_FOR(EnumMember, Decl) \
@@ -104,6 +105,7 @@
     GEN_CODE_FOR(TemplateParam, Decl) \
     GEN_CODE_FOR(TemplateParamClause, Decl) \
     GEN_CODE_FOR(TuplePat, Decl) \
+    GEN_CODE_FOR(TrivialPat, Decl) \
     GEN_CODE_FOR(UnitTest, Decl) \
     GEN_CODE_FOR(WildCardPat, Decl) \
     GEN_CODE_FOR(WrappedPat, Decl) \
