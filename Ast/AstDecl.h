@@ -563,6 +563,28 @@ public:
 };
 
 /*!
+ * \brief The ChainedFuncDeclAst class
+ */
+class UAISO_API ChainedFuncDeclAst final : public DeclAst
+{
+public:
+    AST_CLASS(ChainedFunc, Decl)
+    SINGLE_AST_CREATE(Func, Decl)
+
+    ChainedFuncDeclAst()
+        : DeclAst(Kind::ChainedFuncDecl)
+    {}
+
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(Func, func, DeclAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<DeclAst> func_;
+    SourceLoc rDelimLoc_;
+};
+
+/*!
  * \brief The FuncRecvDeclAst class
  */
 class UAISO_API FuncRecvDeclAst final : public FuncDeclAst
@@ -1117,18 +1139,18 @@ public:
 };
 
 /*!
- * \brief The PatDeclAst class
+ * \brief The VarPatDeclAst class
  *
- * A pattern.
+ * A pattern that is a variable.
  */
-class UAISO_API PatDeclAst final : public DeclAst
+class UAISO_API VarPatDeclAst final : public DeclAst
 {
 public:
-    AST_CLASS(Pat, Decl)
+    AST_CLASS(VarPat, Decl)
     SINGLE_AST_CREATE(Name, Name)
 
-    PatDeclAst()
-        : DeclAst(Kind::PatDecl)
+    VarPatDeclAst()
+        : DeclAst(Kind::VarPatDecl)
     {}
 
     NAMED_AST_PARAM(Name, name, NameAst)
@@ -1136,6 +1158,11 @@ public:
     std::unique_ptr<NameAst> name_;
 };
 
+/*!
+ * \brief The AsPatDeclAst class
+ *
+ * A Haskell-like "as pattern".
+ */
 class UAISO_API AsPatDeclAst final : public DeclAst
 {
 public:
@@ -1154,14 +1181,17 @@ public:
     std::unique_ptr<DeclAst> pat_;
 };
 
-class UAISO_API TrivialPatDeclAst final : public DeclAst
+/*!
+ * \brief The BasicPatDeclAst class
+ */
+class UAISO_API BasicPatDeclAst final : public DeclAst
 {
 public:
-    AST_CLASS(TrivialPat, Decl)
+    AST_CLASS(BasicPat, Decl)
     SINGLE_AST_CREATE(Expr, Expr)
 
-    TrivialPatDeclAst()
-        : DeclAst(Kind::TrivialPatDecl)
+    BasicPatDeclAst()
+        : DeclAst(Kind::BasicPatDecl)
     {}
 
     NAMED_AST_PARAM(Expr, expr, ExprAst)
@@ -1170,18 +1200,27 @@ public:
 };
 
 /*!
- * \brief The DestructPatDeclAst class
+ * \brief The CtorPatDeclAst class
  *
- * A destructuring pattern.
+ * A value constructor pattern.
  */
-class UAISO_API DestructPatDeclAst final : public DeclAst
+class UAISO_API CtorPatDeclAst final : public DeclAst
 {
 public:
-    AST_CLASS(DestructPat, Decl)
+    AST_CLASS(CtorPat, Decl)
+    VARIETY_AST(NotationVariety)
 
-    DestructPatDeclAst()
-        : DeclAst(Kind::DestructPatDecl)
-    {}
+    CtorPatDeclAst()
+        : DeclAst(Kind::CtorPatDecl)
+    {
+        INIT_VARIETY(NotationVariety::Unknown);
+    }
+
+    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_AST_LIST_PARAM(Pat, pats, DeclAst)
+
+    std::unique_ptr<NameAst> name_;
+    std::unique_ptr<DeclAstList> pats_;
 };
 
 /*!
@@ -1236,17 +1275,18 @@ class UAISO_API WrappedPatDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(WrappedPat, Decl)
+    SINGLE_AST_CREATE(Pat, Decl)
 
     WrappedPatDeclAst()
         : DeclAst(Kind::WrappedPatDecl)
     {}
 
     NAMED_LOC_PARAM(LDelim, lDelim)
-    NAMED_AST_PARAM(Decl, decl, DeclAst)
+    NAMED_AST_PARAM(Pat, pat, DeclAst)
     NAMED_LOC_PARAM(RDelim, rDelim)
 
     SourceLoc lDelimLoc_;
-    std::unique_ptr<DeclAst> decl_;
+    std::unique_ptr<DeclAst> pat_;
     SourceLoc rDelimLoc_;
 };
 
@@ -1306,11 +1346,11 @@ public:
         : DeclAst(Kind::PatBindDecl)
     {}
 
-    NAMED_AST_PARAM(Pat, pat, ExprAst)
+    NAMED_AST_PARAM(Pat, pat, DeclAst)
     NAMED_LOC_PARAM(Eq, eq)
     NAMED_AST_PARAM(Bind, bind, ExprAst)
 
-    std::unique_ptr<ExprAst> pat_;
+    std::unique_ptr<DeclAst> pat_;
     SourceLoc eqLoc_;
     std::unique_ptr<ExprAst> bind_;
 };

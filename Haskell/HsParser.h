@@ -28,6 +28,8 @@
 #include "Ast/AstList.h"
 #include "Common/Test.h"
 #include "Parsing/ParserLLk.h"
+#include <cstddef>
+#include <vector>
 
 namespace uaiso {
 
@@ -56,6 +58,8 @@ private:
     Expr parseCharLit();
     Expr parseBoolLit();
     Expr parseWildcard();
+    Expr parsePlainRhs();
+    Expr parseGuardRhs();
 
     //--- Declarations ---//
 
@@ -66,22 +70,27 @@ private:
     DeclList parseBody();
     DeclList parseTopDecls();
     Decl parseDecl();
-    Decl parsePatBindOrFunc();
-    Decl parsePatBindOrFuncOrTypeSig();
+    Decl parsePatBindOrAnyFuncOrTypeSig();
+    Decl parsePatBindOrInfFuncOrChainFunc();
+    Decl parsePatBindOrChainFunc(std::vector<SourceLoc>&& parens);
     Decl parsePatBind();
-    Decl parseInfixFunc();
+    Decl parseInfFunc();
     Decl parseFunc();
     Decl parsePat();
     Decl parseAPat();
     Decl parseLPat();
+    Decl parseFuncRhs(Decl func);
+    Decl parsePatBindRhs(Decl pat, Expr (HsParser::*parse)());
     DeclList parsePatList();
     DeclList parsePatDList();
     DeclList parseAPatList();
     DeclList parseAPatDList();
-    Decl finishAsPat(Name var);
+    Decl finishAsPat(Name var, bool extendMatch);
+    Decl finishInfixCtor(Decl pat, Name qConOp);
     Decl finishLabeledPat(Name qConId);
     Decl finishListConOrListPat();
     Decl finishUnitOrWrapOrTupConOrTupPat();
+    Decl finishPatBindOrInfixFunc(Decl pat);
 
     //--- Specifiers ---//
 
@@ -99,10 +108,12 @@ private:
     Name parseQVarSymWrap();
     Name parseQCon();
     Name parseQConId();
+    Name parseQConIdTick();
     Name parseQConSym();
     Name parseQConSymWrap();
     Name parseVar();
     Name parseVarId();
+    Name parseVarIdTick();
     Name parseVarSym();
     Name parseVarSymWrap();
     Name parseCon();
@@ -110,6 +121,7 @@ private:
     Name parseConSym();
     Name parseConSymWrap();
     Name maybeParseQConOp();
+    Name maybeParseVar();
 
     bool isVarSym(const Token tk) const;
     bool isConSym(const Token tk) const;

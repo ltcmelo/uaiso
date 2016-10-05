@@ -117,10 +117,10 @@ enum class AssignVariety : char
 enum class FuncVariety : char
 {
     Unknown,
-    Regular,
+    Plain,
     Method,
-    Constructor,
-    Destructor
+    Ctor,
+    Dtor
 };
 
 /*!
@@ -142,6 +142,16 @@ enum class AllocScheme : char
     Unknown,
     Dynamic,
     CompileTime,
+};
+
+/*!
+ * \brief The NotationVariety enum
+ */
+enum class NotationVariety : char
+{
+    Unknown,
+    Infix,
+    Prefix
 };
 
 } // namespace uaiso

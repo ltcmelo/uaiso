@@ -103,6 +103,36 @@ public:
              , &HsParserTest::testCase67
              , &HsParserTest::testCase68
              , &HsParserTest::testCase69
+             , &HsParserTest::testCase70
+             , &HsParserTest::testCase71
+             , &HsParserTest::testCase72
+             , &HsParserTest::testCase73
+             , &HsParserTest::testCase74
+             , &HsParserTest::testCase75
+             , &HsParserTest::testCase76
+             , &HsParserTest::testCase77
+             , &HsParserTest::testCase78
+             , &HsParserTest::testCase79
+             , &HsParserTest::testCase80
+             , &HsParserTest::testCase81
+             , &HsParserTest::testCase82
+             , &HsParserTest::testCase83
+             , &HsParserTest::testCase84
+             , &HsParserTest::testCase85
+             , &HsParserTest::testCase86
+             , &HsParserTest::testCase87
+             , &HsParserTest::testCase88
+             , &HsParserTest::testCase89
+             , &HsParserTest::testCase90
+             , &HsParserTest::testCase91
+             , &HsParserTest::testCase92
+             , &HsParserTest::testCase93
+             , &HsParserTest::testCase94
+             , &HsParserTest::testCase95
+             , &HsParserTest::testCase96
+             , &HsParserTest::testCase97
+             , &HsParserTest::testCase98
+             , &HsParserTest::testCase99
              )
 
      void testCase1();
@@ -174,6 +204,36 @@ public:
      void testCase67();
      void testCase68();
      void testCase69();
+     void testCase70();
+     void testCase71();
+     void testCase72();
+     void testCase73();
+     void testCase74();
+     void testCase75();
+     void testCase76();
+     void testCase77();
+     void testCase78();
+     void testCase79();
+     void testCase80();
+     void testCase81();
+     void testCase82();
+     void testCase83();
+     void testCase84();
+     void testCase85();
+     void testCase86();
+     void testCase87();
+     void testCase88();
+     void testCase89();
+     void testCase90();
+     void testCase91();
+     void testCase92();
+     void testCase93();
+     void testCase94();
+     void testCase95();
+     void testCase96();
+     void testCase97();
+     void testCase98();
+     void testCase99();
 };
 
 MAKE_CLASS_TEST(HsParser)
@@ -559,16 +619,331 @@ No :: Abc
         true);
 }
 
-void HsParser::HsParserTest::testCase57() {}
-void HsParser::HsParserTest::testCase58() {}
-void HsParser::HsParserTest::testCase59() {}
-void HsParser::HsParserTest::testCase60() {}
-void HsParser::HsParserTest::testCase61() {}
-void HsParser::HsParserTest::testCase62() {}
-void HsParser::HsParserTest::testCase63() {}
-void HsParser::HsParserTest::testCase64() {}
-void HsParser::HsParserTest::testCase65() {}
-void HsParser::HsParserTest::testCase66() {}
-void HsParser::HsParserTest::testCase67() {}
-void HsParser::HsParserTest::testCase68() {}
-void HsParser::HsParserTest::testCase69() {}
+void HsParser::HsParserTest::testCase57()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+a = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase58()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+a@b = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase59()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+a@(b) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase60()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+a@(b:c) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase61()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+(a:b) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase62()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+(a@b) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase63()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+(a@b:c) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase64()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+(((a@b:c))) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase65()
+{
+    // Almost a pattern binding, missing a closing paren.
+    core(R"raw(
+module Foo where
+(((a@b:c)) = 10
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase66()
+{
+    // Almost a pattern binding, extra closing paren.
+    core(R"raw(
+module Foo where
+(a@b:c)) = 10
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase67()
+{
+    // Neither a pattern binding nor a function.
+    core(R"raw(
+module Foo where
+(a@b:c) d = 10
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase68()
+{
+    // "Chained" function.
+    core(R"raw(
+module Foo where
+(f x y) z = 1
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase69()
+{
+    // "Chained" function.
+    core(R"raw(
+module Foo where
+(((f x y))) z = 1
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase70()
+{
+    // Almost a "chained" function, missing closing paren.
+    core(R"raw(
+module Foo where
+((f x y) z = 1
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase71()
+{
+    // "Chained" function.
+    core(R"raw(
+module Foo where
+(f <|> g) x = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase72()
+{
+    // Regular function.
+    core(R"raw(
+module Foo where
+(<|>) x y = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase73()
+{
+    // Infix function.
+    core(R"raw(
+module Foo where
+x <|> y = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase74()
+{
+    // "Chained" function.
+    core(R"raw(
+module Foo where
+((<|>) x y) z = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase75()
+{
+    // "Chained" function.
+    core(R"raw(
+module Foo where
+(x <|> y) z = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase76()
+{
+    // Infix function.
+    core(R"raw(
+module Foo where
+x `f` y = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase77()
+{
+    // "Chained" function.
+    core(R"raw(
+module Foo where
+(x `f` y) z = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase78()
+{
+    // "Chained" function.
+    core(R"raw(
+module Foo where
+(f . g) x = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase79()
+{
+    core(R"raw(
+module Foo where
+x `f` y z = 10
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase80()
+{
+    core(R"raw(
+module Foo where
+(x `f` y z) w = 10
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase81()
+{
+    core(R"raw(
+module Foo where
+a:b = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase82()
+{
+    core(R"raw(
+module Foo where
+[a:b] = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase83()
+{
+    core(R"raw(
+module Foo where
+[a:b] <||> c = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase84()
+{
+    core(R"raw(
+module Foo where
+([a:b]) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase85()
+{
+    core(R"raw(
+module Foo where
+((([a:b]))) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase86()
+{
+    // "Chained" function.
+    core(R"raw(
+module Foo where
+([a:b] <|> [c:d]) e = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase87()
+{
+    core(R"raw(
+module Foo where
+[a:b] c d = 10
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase88()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+(a) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase89()
+{
+    // Pattern binding.
+    core(R"raw(
+module Foo where
+((a)) = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase90()
+{
+    core(R"raw(
+module Foo where
+a@b <*> c@d = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase91()
+{
+    core(R"raw(
+module Foo where
+a:b <*> c = 10
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase92()
+{
+    core(R"raw(
+module Foo where
+a@b c d = 10
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase93() {}
+void HsParser::HsParserTest::testCase94() {}
+void HsParser::HsParserTest::testCase95() {}
+void HsParser::HsParserTest::testCase96() {}
+void HsParser::HsParserTest::testCase97() {}
+void HsParser::HsParserTest::testCase98() {}
+void HsParser::HsParserTest::testCase99() {}

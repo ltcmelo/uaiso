@@ -93,6 +93,13 @@ protected:
     bool match(Token tk);
 
     /*!
+     * \brief match
+     * \param isExpected
+     * \return
+     */
+    bool match(std::function<bool (const Token)> isExpected);
+
+    /*!
      * \brief matchOrSkipTo
      * \param tk
      * \param rule
@@ -119,7 +126,8 @@ protected:
     SourceLoc prevLoc_;
 
     //!@{
-    //! Generic functions for parsing sequences of repeating rules.
+    //! Generic functions for parsing sequences of repeating rules. All of them
+    //! expect at least one match.
     /*!
      * Parse a sequence split by delimiters. A trailling delimiter is accepted.
      */
@@ -138,7 +146,7 @@ protected:
               std::unique_ptr<typename ListT::AstType> (ParserT::*parseFunc) ());
     /*!
      * Parse a sequence without delimiters. Typically, the stop condition is
-     * a token of the FOLLOW set of the sequence rule.
+     * a token from the FOLLOW set of the sequence rule.
      */
     template <class ListT, class ParserT>
     std::unique_ptr<ListT>

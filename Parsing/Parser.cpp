@@ -64,9 +64,12 @@ void Parser::skipTo(Token tk)
 
 bool Parser::match(Token tk)
 {
-    UAISO_ASSERT(tk != TK_EOP, return false);
+    return match([tk] (const Token ahead) { return tk == ahead; });
+}
 
-    if (ahead_ != tk) {
+bool Parser::match(std::function<bool (const Token)> isExpected)
+{
+    if (!isExpected(ahead_)) {
         fail();
         return false;
     }

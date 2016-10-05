@@ -28,6 +28,9 @@
 #include "Common/Trace__.h"
 #include "Parsing/Lexeme.h"
 #include "Parsing/ParsingContext.h"
+#include <algorithm>
+#include <functional>
+#include <type_traits>
 
 #define TRACE_NAME "HsParser"
 
@@ -227,6 +230,9 @@ Parser::DeclList HsParser::parseTopDecls()
 {
     do {
         switch (ahead_) {
+        case TK_RBRACE:
+            break; // We're done.
+
         case TK_TYPE:
             break;
 
@@ -268,33 +274,25 @@ Parser::Decl HsParser::parseDecl()
     case TK_INFIXL:
     case TK_INFIXR:
         // TODO: Fixity declaration.
-        return Decl();
+        return ErrorDeclAst::create();
 
     default:
-        return parsePatBindOrFuncOrTypeSig();
+        return parsePatBindOrAnyFuncOrTypeSig();
     }
 }
 
-Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
+Parser::Decl HsParser::parsePatBindOrAnyFuncOrTypeSig()
 {
-    Name name;
-    if (maybeConsume(TK_IDENT)) {
-        name = SimpleNameAst::create(prevLoc_);
-    } else if (ahead_ == TK_LPAREN
-               && isVarSym(peekToken(2))
-               && peekToken(3) == TK_RPAREN) {
-        consumeToken(2);
-        name = PuncNameAst::create(prevLoc_);
-        consumeToken(); // The closing `)'.
-    }
+    Name name = maybeParseVar();
 
-    // A type signature begins with a `var', which is either a `varid', or a
-    // `(varsym)'. If the name is empty, we have a pattern binding or function.
+    // Both type signatures and regular functions begin with a `var', which is
+    // either a `varid', or a `(varsym)'. So if the name is empty, we can only
+    // match a pattern binding, an infix function, or a wrapped function.
     if (!name)
-        return parsePatBindOrFunc();
+        return parsePatBindOrInfFuncOrChainFunc();
 
-    // If we see a `,' we have something like `varid,' or `(varsym),', which
-    // cannot be neither a pattern bind nor a function, it's a type signature.
+    // If we see a `,' we try to match a `varid, ...' or `(varsym), ...', which
+    // can't be neither a pattern bind nor a function, only a type signature.
     bool wantTySig = false;
     NameList vars;
     while (maybeConsume(TK_COMMA)) {
@@ -308,53 +306,281 @@ Parser::Decl HsParser::parsePatBindOrFuncOrTypeSig()
         if (vars)
             group->merge(std::move(vars));
         parseContextType();
-        return VarGroupDeclAst::create();
+        return VarGroupDeclAst::create(); // TODO.
     }
 
-    Decl pat;
+    // If there's an `@' ahead, the name derives a pattern and we can no longer
+    // match a regular function, only a pattern binding or an infix function.
     if (ahead_ == TK_AT)
-        pat = finishAsPat(std::move(name));
+        return finishPatBindOrInfixFunc(finishAsPat(std::move(name), true));
 
+    // If the name binds to a value constructor it derives a pattern and, as
+    // above, we can only match a pattern binding or an infix function.
     if (auto qConOp = maybeParseQConOp()) {
-        parsePat();
+        return finishPatBindOrInfixFunc(
+            finishInfixCtor(VarPatDeclAst::create(std::move(name)), std::move(qConOp)));
     }
 
+    // Perhaps the name is a "plain" pattern, so we can still match a pattern
+    // binding, but we must consider both infix and regular functions as well.
+    auto func = FuncDeclAst::create();
     switch (ahead_) {
     case TK_EQ:
-        // TODO: Expression.
-        break;
+        return parsePatBindRhs(VarPatDeclAst::create(std::move(name)),
+                               &HsParser::parsePlainRhs);
 
     case TK_PIPE:
-        // TODO: Guard.
-        break;
+        return parsePatBindRhs(VarPatDeclAst::create(std::move(name)),
+                               &HsParser::parseGuardRhs);
 
-    default:
-        if (pat) // TODO: Lookahead.
-            return parseInfixFunc(/* pat */);
-        return parseFunc(/* name */);
+    case TK_BACKTICK:
+        func->setName(parseVarIdTick());
+        parsePat();
+        return parseFuncRhs(std::move(func));
+
+    case TK_EXCLAM:
+    case TK_POUND:
+    case TK_DOLLAR:
+    case TK_PERCENT:
+    case TK_AMPER:
+    case TK_ASTERISK:
+    case TK_PLUS:
+    case TK_MINUS:
+    case TK_DOT:
+    case TK_SLASH:
+    case TK_LS:
+    case TK_GR:
+    case TK_QUESTION:
+    case TK_CARET:
+    case TK_PUNC_IDENT: {
+        consumeToken();
+        auto name = PuncNameAst::create(prevLoc_);
+        parsePat();
+        return parseFuncRhs(std::move(func));
     }
 
-    return Decl();
+    default:
+        parseSeq<DeclAstList, HsParser>(
+                    [] (const Token tk) {
+                        return tk == TK_EQ || tk == TK_PIPE || tk == TK_EOP;
+                    },
+                    &HsParser::parseAPat);
+        return parseFuncRhs(std::move(func));
+    }
 }
 
-Parser::Decl HsParser::parsePatBindOrFunc()
+Parser::Decl HsParser::parsePatBindOrInfFuncOrChainFunc()
 {
-    return Decl();
+    // If we a `(' ahead, it becomes more complicated because now it's also
+    // possible to match "chained" functions, such as `(f . g) x = f (g x)'.
+    if (ahead_ == TK_LPAREN)
+        return parsePatBindOrChainFunc(std::vector<SourceLoc>());
+
+    // We must match either a pattern binding or an infix function and we know
+    // neither of them start with a name, so the only alternative is a pattern.
+    auto pat = parsePat();
+    switch (ahead_) {
+    case TK_EQ:
+        return parsePatBindRhs(std::move(pat), &HsParser::parsePlainRhs);
+
+    case TK_PIPE:
+        return parsePatBindRhs(std::move(pat), &HsParser::parseGuardRhs);
+
+    default:
+        auto func = FuncDeclAst::create();
+        if (ahead_ == TK_BACKTICK)
+            func->setName(parseVarIdTick());
+        else
+            func->setName(parseVarSym());
+        parsePat();
+        return parseFuncRhs(std::move(func));
+    }
+}
+
+Parser::Decl HsParser::parsePatBindOrChainFunc(std::vector<SourceLoc>&& parens)
+{
+    UAISO_ASSERT(ahead_ == TK_LPAREN, return Decl());
+
+    // We've just seen a `(', a lot of matches are possible:
+    //   1) a regular function that begins with a `(varsym)'
+    //   2) an infix function with a wrapped pattern at front
+    //   3) a pattern binding
+    //   4) a further wrapping of a pattern or "chaining" of a function
+    // The strategy we take is to accumulate the openning paranthesis and
+    // recursively call this function. Eventually, we'll identify what we can
+    // match. We then exhaust the closing parenthesis and finish the rule.
+
+    consumeToken();
+    parens.emplace_back(std::move(prevLoc_)); // Pile up opening parens.
+
+    if (ahead_ == TK_LPAREN)
+       return parsePatBindOrChainFunc(std::move(parens));
+
+    // A generic lambda that will exhaust the parenthesis and either wrap the
+    // pattern or chain a function.
+    auto exhaustParens = [this](auto patOrFunc, const std::vector<SourceLoc> &parens)
+    {
+        for (auto it = parens.rbegin(); it != parens.rend(); ++it) {
+            patOrFunc = std::remove_pointer<
+                    typename decltype(patOrFunc)::element_type>::type::
+                        create(std::move(patOrFunc));
+            patOrFunc->setLDelimLoc(*it);
+            if (!match(TK_RPAREN)) {
+                skipTo(TK_RPAREN);
+                patOrFunc->setRDelimLoc(prevLoc_);
+                break;
+            }
+            patOrFunc->setRDelimLoc(prevLoc_);
+        };
+        return std::move(patOrFunc);
+    };
+
+    // Finish parsing by matching the chained function rule.
+    auto finishChainFunc = [this, &parens, exhaustParens] (Decl pat, Name name) {
+        auto func = FuncDeclAst::create();
+        func->setName(std::move(name));
+        parsePat();
+        auto chainFunc =
+            exhaustParens(ChainedFuncDeclAst::create(std::move(func)), parens);
+        parseSeq<DeclAstList, HsParser>(
+                    [] (const Token tk) {
+                        return tk == TK_EQ || tk == TK_PIPE || tk == TK_EOP;
+                    },
+                    &HsParser::parseAPat);
+        return parseFuncRhs(std::move(chainFunc));
+    };
+
+    // Finish parsing by matching the wrapped pattern binding function.
+    auto finishChainFuncOrWrapPatBind =
+            [this, &parens, exhaustParens, finishChainFunc] (Decl pat) {
+        if (ahead_ == TK_RPAREN) {
+            auto wrapPat =
+                exhaustParens(WrappedPatDeclAst::create(std::move(pat)), parens);
+            return parsePatBindRhs(std::move(wrapPat), nullptr);
+        }
+
+        auto parse = &HsParser::parseVarSym;
+        if (ahead_ == TK_BACKTICK)
+            parse = &HsParser::parseVarIdTick;
+        return finishChainFunc(std::move(pat), ((this)->*(parse))());
+    };
+
+    switch (ahead_) {
+    case TK_IDENT: {
+        consumeToken();
+        Name name = SimpleNameAst::create(prevLoc_);
+
+        if (auto qConOp = maybeParseQConOp()) {
+            return finishChainFuncOrWrapPatBind(finishInfixCtor(
+                    VarPatDeclAst::create(std::move(name)), std::move(qConOp)));
+        }
+
+        switch (ahead_) {
+        case TK_AT:
+            return finishChainFuncOrWrapPatBind(finishAsPat(std::move(name), true));
+
+        case TK_BACKTICK:
+            return finishChainFunc(VarPatDeclAst::create(std::move(name)), parseVarIdTick());
+
+        case TK_EXCLAM:
+        case TK_POUND:
+        case TK_DOLLAR:
+        case TK_PERCENT:
+        case TK_AMPER:
+        case TK_ASTERISK:
+        case TK_PLUS:
+        case TK_MINUS:
+        case TK_DOT:
+        case TK_SLASH:
+        case TK_LS:
+        case TK_GR:
+        case TK_QUESTION:
+        case TK_CARET:
+        case TK_PUNC_IDENT:
+            return finishChainFunc(VarPatDeclAst::create(std::move(name)), parseVarSym());
+
+        case TK_RPAREN: {
+            auto wrapPat = exhaustParens(WrappedPatDeclAst::create(
+                VarPatDeclAst::create(std::move(name))), parens);
+            return parsePatBindRhs(std::move(wrapPat), nullptr);
+        }
+
+        default:
+            auto func = FuncDeclAst::create();
+            parseSeq<DeclAstList, HsParser>(
+                        [] (const Token tk) {
+                return tk == TK_RPAREN || tk == TK_EOP;
+            },
+            &HsParser::parseAPat);
+            auto chainFunc = exhaustParens(ChainedFuncDeclAst::create(std::move(func)), parens);
+            parseSeq<DeclAstList, HsParser>(
+                        [] (const Token tk) {
+                return tk == TK_EQ || tk == TK_PIPE || tk == TK_EOP;
+            },
+            &HsParser::parseAPat);
+            return parseFuncRhs(std::move(chainFunc));
+        }
+    }
+
+    // It might look that we're checking for a `varsym' ahead, which wouldn't
+    // make sense. But this not the case, when inside this function, a `(' has
+    // been seen, so we're actually checking for a `(varsym)' ahead.
+    case TK_EXCLAM:
+    case TK_POUND:
+    case TK_DOLLAR:
+    case TK_PERCENT:
+    case TK_AMPER:
+    case TK_ASTERISK:
+    case TK_PLUS:
+    case TK_MINUS:
+    case TK_DOT:
+    case TK_SLASH:
+    case TK_LS:
+    case TK_GR:
+    case TK_QUESTION:
+    case TK_CARET:
+    case TK_PUNC_IDENT: {
+        consumeToken();
+        auto name = PuncNameAst::create(prevLoc_);
+        match(TK_RPAREN);
+        std::rotate(parens.begin(), parens.begin() + 1, parens.end());
+        parens.pop_back();
+        auto func = FuncDeclAst::create();
+        parseSeq<DeclAstList, HsParser>(
+                    [] (const Token tk) {
+                        return tk == TK_RPAREN || tk == TK_EOP;
+                    },
+                    &HsParser::parseAPat);
+        if (!parens.empty()) {
+            auto chainFunc = exhaustParens(ChainedFuncDeclAst::create(std::move(func)), parens);
+            parseSeq<DeclAstList, HsParser>(
+                        [] (const Token tk) {
+                            return tk == TK_EQ || tk == TK_PIPE || tk == TK_EOP;
+                        },
+                        &HsParser::parseAPat);
+            return parseFuncRhs(std::move(chainFunc));
+        }
+        return parseFuncRhs(std::move(func));
+    }
+
+    default:
+        return finishChainFuncOrWrapPatBind(parsePat());
+    }
 }
 
 Parser::Decl HsParser::parsePatBind()
 {
-    return Decl();
+    return ErrorDeclAst::create();
 }
 
-Parser::Decl HsParser::parseInfixFunc()
+Parser::Decl HsParser::parseInfFunc()
 {
-    return Decl();
+    return ErrorDeclAst::create();
 }
 
 Parser::Decl HsParser::parseFunc()
 {
-    return Decl();
+    return ErrorDeclAst::create();
 }
 
 Parser::Decl HsParser::parsePat()
@@ -365,7 +591,7 @@ Parser::Decl HsParser::parsePat()
         parsePat();
     }
 
-    return Decl();
+    return ErrorDeclAst::create();
 }
 
 Parser::Decl HsParser::parseLPat()
@@ -374,8 +600,8 @@ Parser::Decl HsParser::parseLPat()
     case TK_MINUS:
         consumeToken();
         if (ahead_ == TK_INT_LIT)
-            return TrivialPatDeclAst::create(parseIntLit());
-        return TrivialPatDeclAst::create(parseFloatLit());
+            return BasicPatDeclAst::create(parseIntLit());
+        return BasicPatDeclAst::create(parseFloatLit());
 
     case TK_PROPER_IDENT:
     case TK_PROPER_IDENT_QUAL: {
@@ -384,7 +610,7 @@ Parser::Decl HsParser::parseLPat()
             return finishLabeledPat(std::move(qConId));
         if (isAPatFIRST(ahead_))
             parseAPatList();
-        return PatDeclAst::create();
+        return VarPatDeclAst::create();
     }
 
     case TK_LBRACKET:
@@ -400,13 +626,13 @@ Parser::Decl HsParser::parseLPat()
                 return finishLabeledPat(std::move(qConSym));
             if (isAPatFIRST(ahead_))
                 parseAPatList();
-            return PatDeclAst::create();
+            return VarPatDeclAst::create();
         }
 
         finishUnitOrWrapOrTupConOrTupPat();
         if (isAPatFIRST(ahead_))
             parseAPatList();
-        return Decl();
+        return ErrorDeclAst::create();
     }
 
     default:
@@ -418,20 +644,20 @@ Parser::Decl HsParser::parseAPat()
 {
     switch (ahead_) {
     case TK_INT_LIT:
-        return TrivialPatDeclAst::create(parseIntLit());
+        return BasicPatDeclAst::create(parseIntLit());
 
     case TK_FLOAT_LIT:
-        return TrivialPatDeclAst::create(parseFloatLit());
+        return BasicPatDeclAst::create(parseFloatLit());
 
     case TK_TRUE_VALUE:
     case TK_FALSE_VALUE:
-        return TrivialPatDeclAst::create(parseBoolLit());
+        return BasicPatDeclAst::create(parseBoolLit());
 
     case TK_CHAR_LIT:
-        return TrivialPatDeclAst::create(parseCharLit());
+        return BasicPatDeclAst::create(parseCharLit());
 
     case TK_STR_LIT:
-        return TrivialPatDeclAst::create(parseStrLit());
+        return BasicPatDeclAst::create(parseStrLit());
 
     case TK_UNDERSCORE:
         consumeToken();
@@ -445,8 +671,8 @@ Parser::Decl HsParser::parseAPat()
         consumeToken();
         auto var = SimpleNameAst::create(prevLoc_);
         if (ahead_ == TK_AT)
-            return finishAsPat(std::move(var));
-        return PatDeclAst::create(std::move(var));
+            return finishAsPat(std::move(var), false);
+        return VarPatDeclAst::create(std::move(var));
     }
 
     case TK_PROPER_IDENT:
@@ -454,7 +680,7 @@ Parser::Decl HsParser::parseAPat()
         auto qConId = parseQConId();
         if (ahead_ == TK_LBRACE)
             return finishLabeledPat(std::move(qConId));
-        return PatDeclAst::create();
+        return VarPatDeclAst::create();
     }
 
     case TK_LBRACKET:
@@ -468,7 +694,7 @@ Parser::Decl HsParser::parseAPat()
             matchOrSkipTo(TK_RPAREN, "parseQConSym");
             if (ahead_ == TK_LBRACE)
                 return finishLabeledPat(std::move(qConSym));
-            return PatDeclAst::create();
+            return VarPatDeclAst::create();
         }
         return finishUnitOrWrapOrTupConOrTupPat();
     }
@@ -499,7 +725,7 @@ Parser::DeclList HsParser::parseAPatDList()
     return DeclList();
 }
 
-Parser::Decl HsParser::finishAsPat(Name name)
+Parser::Decl HsParser::finishAsPat(Name name, bool extendMatch)
 {
     UAISO_ASSERT(ahead_ == TK_AT, return Decl());
 
@@ -508,24 +734,40 @@ Parser::Decl HsParser::finishAsPat(Name name)
     pat->setKeyLoc(prevLoc_);
     pat->setName(std::move(name));
     pat->setPat(parseAPat());
+
+    if (extendMatch) {
+        if (auto qConOp = maybeParseQConOp())
+            return finishInfixCtor(std::move(pat), std::move(qConOp));
+    }
+
     return Decl(std::move(pat));
+}
+
+Parser::Decl HsParser::finishInfixCtor(Parser::Decl pat, Parser::Name qConOp)
+{
+    auto ctor = CtorPatDeclAst::create();
+    ctor->addPat(std::move(pat));
+    ctor->setName(std::move(qConOp));
+    ctor->addPat(parsePat());
+    ctor->setVariety(NotationVariety::Infix);
+    return std::move(ctor);
 }
 
 Parser::Decl HsParser::finishLabeledPat(Parser::Name qConId)
 {
     UAISO_ASSERT(ahead_ == TK_LBRACE, return Decl());
 
-    return Decl();
+    return ErrorDeclAst::create();
 }
 
 Parser::Decl HsParser::finishUnitOrWrapOrTupConOrTupPat()
 {
-    const SourceLoc lParenLoc = std::move(prevLoc_);
+    const SourceLoc paren = std::move(prevLoc_);
 
     // A `)' with nothing inside is the unit value.
     if (maybeConsume(TK_RPAREN))
-        return TrivialPatDeclAst::create(
-                    NullLitExprAst::create(joinedLoc(lParenLoc, prevLoc_)));
+        return BasicPatDeclAst::create(
+                    NullLitExprAst::create(joinedLoc(paren, prevLoc_)));
 
     // A `,' immediately following a `(' is a tuple data constructor.
     if (maybeConsume(TK_COMMA)) {
@@ -534,22 +776,21 @@ Parser::Decl HsParser::finishUnitOrWrapOrTupConOrTupPat()
             ++tupCnt;
         } while (maybeConsume(TK_COMMA));
         matchOrSkipTo(TK_RPAREN, "parseTupleDataCon");
-        return PatDeclAst::create();
+        return VarPatDeclAst::create();
     }
 
-    // The remaining option is to match a pattern. If a `)' follows it, we have
-    // a wrapped pattern. Otherwise, we expect a `,' to match a tuple pattern.
+    // The remaining options are a wrapped pattern, in the case of a `)' or
+    // a tuple pattern in the case of a `,'.
     auto pat = parsePat();
     if (maybeConsume(TK_RPAREN)) {
-        auto decl = WrappedPatDeclAst::create();
-        decl->setLDelimLoc(lParenLoc);
-        decl->setDecl(std::move(pat));
-        decl->setRDelimLoc(prevLoc_);
-        return std::move(decl);
+        auto wrapPat = WrappedPatDeclAst::create(std::move(pat));
+        wrapPat->setLDelimLoc(paren);
+        wrapPat->setRDelimLoc(prevLoc_);
+        return std::move(wrapPat);
     }
 
     auto tup = TuplePatDeclAst::create();
-    tup->setLDelimLoc(lParenLoc);
+    tup->setLDelimLoc(paren);
     tup->addPat(std::move(pat));
     match(TK_COMMA);
     tup->mergePats(parseDSeq<DeclAstList, HsParser>(TK_COMMA, &HsParser::parsePat));
@@ -559,13 +800,69 @@ Parser::Decl HsParser::finishUnitOrWrapOrTupConOrTupPat()
     return std::move(tup);
 }
 
+Parser::Decl HsParser::finishPatBindOrInfixFunc(Parser::Decl pat)
+{
+    std::unique_ptr<FuncDeclAst> func;
+    switch (ahead_) {
+    case TK_EQ:
+        return parsePatBindRhs(std::move(pat), &HsParser::parsePlainRhs);
+
+    case TK_PIPE:
+        return parsePatBindRhs(std::move(pat), &HsParser::parseGuardRhs);
+
+    case TK_BACKTICK: {
+        func = FuncDeclAst::create();
+        Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "infix function name");
+        func->setName(parseVarId());
+        // Fallthrough.
+    }
+
+    default:
+        if (!func) {
+            func = FuncDeclAst::create();
+            func->setName(parseVarSym());
+        }
+        parsePat();
+        return parseFuncRhs(std::move(func));
+    }
+}
+
+Parser::Decl HsParser::parsePatBindRhs(Parser::Decl pat,
+                                       Parser::Expr (HsParser::*parse)())
+{
+    if (!parse) {
+        parse = ahead_ == TK_EQ ? &HsParser::parsePlainRhs
+                                : &HsParser::parseGuardRhs;
+    }
+
+    auto patBind = PatBindDeclAst::create();
+    consumeToken();
+    patBind->setEqLoc(prevLoc_);
+    patBind->setPat(std::move(pat));
+    patBind->setBind(((this)->*(parse))());
+    return std::move(patBind);
+}
+
+Parser::Decl HsParser::parseFuncRhs(Decl func)
+{
+    if (ahead_ == TK_EQ) {
+        consumeToken();
+        parsePlainRhs();
+    } else {
+        match(TK_PIPE);
+        parseGuardRhs();
+    }
+
+    return func;
+}
+
 Parser::Decl HsParser::finishListConOrListPat()
 {
     const SourceLoc lBrackLoc = std::move(prevLoc_);
 
     // A `)' with nothing inside is the list data constructor.
     if (maybeConsume(TK_RBRACKET))
-        return PatDeclAst::create();
+        return VarPatDeclAst::create();
 
     // Otherwise, we expect a `,' delimited sequence to match a list pattern.
     auto list = ListPatDeclAst::create();
@@ -631,6 +928,16 @@ Parser::Expr HsParser::parseAExpr()
         fail();
         return ErrorExprAst::create(prevLoc_);
     }
+}
+
+Parser::Expr HsParser::parsePlainRhs()
+{
+    return parseExpr();
+}
+
+Parser::Expr HsParser::parseGuardRhs()
+{
+    return Expr();
 }
 
 Parser::Expr HsParser::parseIntLit()
@@ -768,23 +1075,17 @@ Parser::Name HsParser::parseQConSym()
 
 Parser::Name HsParser::parseConSym()
 {
-    if (isConSym(ahead_)) {
-        consumeToken();
+    auto check = [this] (const Token tk) { return isConSym(tk); };
+    if (match(check))
         return SpecialNameAst::create(prevLoc_);
-    }
-
-    fail();
     return ErrorNameAst::create(prevLoc_);
 }
 
 Parser::Name HsParser::parseVarSym()
 {
-    if (isVarSym(ahead_)) {
-        consumeToken();
+    auto check = [this] (const Token tk) { return isVarSym(tk); };
+    if (match(check))
         return PuncNameAst::create(prevLoc_);
-    }
-
-    fail();
     return ErrorNameAst::create(prevLoc_);
 }
 
@@ -798,6 +1099,37 @@ Parser::Name HsParser::parseVarId()
     return parseName(TK_IDENT);
 }
 
+Parser::Name HsParser::parseVarIdTick()
+{
+    UAISO_ASSERT(ahead_ == TK_BACKTICK, return Name());
+    Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "varid in backticks");
+    return parseVarId();
+}
+
+Parser::Name HsParser::parseQConIdTick()
+{
+    UAISO_ASSERT(ahead_ == TK_BACKTICK, return Name());
+    Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "conid in backticks");
+    return parseQConId();
+}
+
+Parser::Name HsParser::maybeParseVar()
+{
+    if (maybeConsume(TK_IDENT))
+        return SimpleNameAst::create(prevLoc_);
+
+    if (ahead_ == TK_LPAREN
+               && isVarSym(peekToken(2))
+               && peekToken(3) == TK_RPAREN) {
+        consumeToken(2);
+        auto name = PuncNameAst::create(prevLoc_);
+        consumeToken(); // The closing `)'.
+        return std::move(name);
+    }
+
+    return Name(); // A "maybe" function may return null.
+}
+
 Parser::Name HsParser::maybeParseQConOp()
 {
     if (maybeConsume(TK_COLON))
@@ -807,15 +1139,12 @@ Parser::Name HsParser::maybeParseQConOp()
         return parseQConSym();
 
     const Token peek = peekToken(2);
-    if (ahead_ == TK_BACKTICK && (peek == TK_PROPER_IDENT
-                                  || peek == TK_PROPER_IDENT_QUAL)) {
-        Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "parseQConOp");
-        return parseQConId();
+    if (ahead_ == TK_BACKTICK
+            && (peek == TK_PROPER_IDENT || peek == TK_PROPER_IDENT_QUAL)) {
+        return parseQConIdTick();
     }
 
-    // This is "maybe parse" function so the caller must be aware a null AST
-    // can be returned. We shouldn't create an error name here.
-    return Name();
+    return Name(); // A "maybe" function may return null.
 }
 
 Parser::Name HsParser::parseQName(Token qualTk, Name (HsParser::*parseFunc)())

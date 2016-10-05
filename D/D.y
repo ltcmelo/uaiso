@@ -1720,7 +1720,7 @@ CtorDecl:
             ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
         auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($3);
-        func->setVariety(FuncVariety::Constructor);
+        func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   THIS UnifiedParamClauseDecl FuncAttrs FuncEnd
@@ -1734,7 +1734,7 @@ CtorDecl:
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
         auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
         auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($4);
-        func->setVariety(FuncVariety::Constructor);
+        func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   THIS UnifiedParamClauseDecl FuncAttrs Constraint FuncEnd
@@ -1750,7 +1750,7 @@ CtorDecl:
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
         auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
         auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($5);
-        func->setVariety(FuncVariety::Constructor);
+        func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   Attrs THIS UnifiedParamClauseDecl FuncEnd
@@ -1764,7 +1764,7 @@ CtorDecl:
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
         auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($1);
         auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($4);
-        func->setVariety(FuncVariety::Constructor);
+        func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   Attrs THIS UnifiedParamClauseDecl FuncAttrs FuncEnd
@@ -1779,7 +1779,7 @@ CtorDecl:
         auto attrs = $1->mergeSR($4);
         auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR(attrs);
         auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($5);
-        func->setVariety(FuncVariety::Constructor);
+        func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   Attrs THIS UnifiedParamClauseDecl FuncAttrs Constraint FuncEnd
@@ -1796,7 +1796,7 @@ CtorDecl:
         auto attrs = $1->mergeSR($4);
         auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR(attrs);
         auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($6);
-        func->setVariety(FuncVariety::Constructor);
+        func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 ;
@@ -1811,7 +1811,7 @@ DtorDecl:
             ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
         auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($5);
-        func->setVariety(FuncVariety::Destructor);
+        func->setVariety(FuncVariety::Dtor);
         $$ = func;
     }
 |   '~' THIS '(' ')' FuncAttrs FuncEnd
@@ -1824,7 +1824,7 @@ DtorDecl:
         auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($5);
         auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
         auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
-        func->setVariety(FuncVariety::Destructor);
+        func->setVariety(FuncVariety::Dtor);
         $$ = func;
     }
 |   Attrs '~' THIS '(' ')' FuncEnd
@@ -1837,7 +1837,7 @@ DtorDecl:
         auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($1);
         auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
         auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
-        func->setVariety(FuncVariety::Destructor);
+        func->setVariety(FuncVariety::Dtor);
         $$ = func;
     }
 |   Attrs '~' THIS '(' ')' FuncAttrs FuncEnd
@@ -1851,7 +1851,7 @@ DtorDecl:
         auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR(attrs);
         auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
         auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($7);
-        func->setVariety(FuncVariety::Destructor);
+        func->setVariety(FuncVariety::Dtor);
         $$ = func;
     }
 ;
@@ -1866,7 +1866,7 @@ Postblit:
             ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
         auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($5);
-        func->setVariety(FuncVariety::Constructor);
+        func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   THIS '(' THIS ')' FuncAttrs FuncEnd
@@ -1879,7 +1879,7 @@ Postblit:
         auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($5);
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
         auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
-        func->setVariety(FuncVariety::Constructor);
+        func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 ;

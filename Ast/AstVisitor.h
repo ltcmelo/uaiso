@@ -323,10 +323,10 @@ AstVisitor<DerivedT>::traverseCodegenAttr(CodegenAttrAst* ast)
 
 TRIVIAL_VISIT(EmptyDecl)
 TRIVIAL_VISIT(ErrorDecl)
-TRIVIAL_VISIT(PatDecl)
+TRIVIAL_VISIT(VarPatDecl)
 TRIVIAL_VISIT(AsPatDecl)
-TRIVIAL_VISIT(TrivialPatDecl)
-TRIVIAL_VISIT(DestructPatDecl)
+TRIVIAL_VISIT(BasicPatDecl)
+TRIVIAL_VISIT(CtorPatDecl)
 TRIVIAL_VISIT(WildCardPatDecl)
 TRIVIAL_VISIT(IrrefutPatDecl)
 TRIVIAL_VISIT(PatBindDecl)
@@ -416,6 +416,14 @@ AstVisitor<DerivedT>::traverseFuncDecl(FuncDeclAst* decl)
     EVAL_RESULT_N(traverseName(decl->name_.get()));
     EVAL_RESULT_N(traverseSpec(decl->spec_.get()));
     EVAL_RESULT_N(traverseStmt(decl->stmt_.get()));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseChainedFuncDecl(ChainedFuncDeclAst* decl)
+{
+    EVAL_RESULT_0(recursivelyVisitChainedFuncDecl(decl));
+    EVAL_RESULT_N(traverseDecl(decl->func_.get()));
     return Continue;
 }
 
@@ -600,7 +608,7 @@ template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseWrappedPatDecl(WrappedPatDeclAst *ast)
 {
     EVAL_RESULT_0(recursivelyVisitWrappedPatDecl(ast));
-    EVAL_RESULT_N(traverseDecl(ast->decl_.get()));
+    EVAL_RESULT_N(traverseDecl(ast->pat_.get()));
     return Continue;
 }
 

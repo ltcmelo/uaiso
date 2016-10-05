@@ -72,10 +72,12 @@
     GEN_CODE_FOR(Alias, Decl) \
     GEN_CODE_FOR(AsPat, Decl) \
     GEN_CODE_FOR(Base, Decl) \
+    GEN_CODE_FOR(BasicPat, Decl) \
     GEN_CODE_FOR(Block, Decl) \
+    GEN_CODE_FOR(ChainedFunc, Decl) \
     GEN_CODE_FOR(Constraint, Decl) \
+    GEN_CODE_FOR(CtorPat, Decl) \
     GEN_CODE_FOR(Debug, Decl) \
-    GEN_CODE_FOR(DestructPat, Decl) \
     GEN_CODE_FOR(Empty, Decl) \
     GEN_CODE_FOR(Enum, Decl) \
     GEN_CODE_FOR(EnumMember, Decl) \
@@ -95,7 +97,6 @@
     GEN_CODE_FOR(Param, Decl) \
     GEN_CODE_FOR(ParamGroup, Decl) \
     GEN_CODE_FOR(ParamClause, Decl) \
-    GEN_CODE_FOR(Pat, Decl) \
     GEN_CODE_FOR(PatBind, Decl) \
     GEN_CODE_FOR(Record, Decl) \
     GEN_CODE_FOR(Section, Decl) \
@@ -105,11 +106,11 @@
     GEN_CODE_FOR(TemplateParam, Decl) \
     GEN_CODE_FOR(TemplateParamClause, Decl) \
     GEN_CODE_FOR(TuplePat, Decl) \
-    GEN_CODE_FOR(TrivialPat, Decl) \
     GEN_CODE_FOR(UnitTest, Decl) \
     GEN_CODE_FOR(WildCardPat, Decl) \
     GEN_CODE_FOR(WrappedPat, Decl) \
     GEN_CODE_FOR(Var, Decl) \
+    GEN_CODE_FOR(VarPat, Decl) \
     GEN_CODE_FOR(VarGroup, Decl) \
     GEN_CODE_FOR(Version, Decl)
 
