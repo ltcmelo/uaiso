@@ -741,4 +741,13 @@ void HsLexer::HsLexerTest::testCase44()
 }
 
 void HsLexer::HsLexerTest::testCase45()
-{}
+{
+    auto tks = core("(:<-:) :: Int");
+
+    std::vector<Token> expected {
+        TK_LPAREN, TK_SPECIAL_IDENT, TK_RPAREN, TK_COLON_COLON,
+        TK_PROPER_IDENT, TK_EOP
+    };
+    UAISO_EXPECT_INT_EQ(expected.size(), tks.size());
+    UAISO_EXPECT_CONTAINER_EQ(expected, tks);
+}

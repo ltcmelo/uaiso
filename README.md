@@ -12,8 +12,8 @@ Language | Version | Parser | AST | Semantics | Active | Demo
 ---------|---------|--------|-----|-----------|--------|------
 D | 2.0 | bison, GLR | partial | ok | no | [D completion](https://youtu.be/71aqIwv3vJs)
 Go | 1.5+ | bison, GLR | complete | ok | yes | [Go completion](https://youtu.be/nUpcVBAw0DM)
-Haskell | 2010 | hand, LL(k) | WIP | ? | yes | -
-Python | 2.x | hand, LL(1) | complete | basic | yes | [Overall intro](https://youtu.be/71aqIwv3vJs)
+Haskell | 2010 | LL(k) | WIP | ? | yes | -
+Python | 2.x | LL(1) | complete | basic | yes | [Overall intro](https://youtu.be/71aqIwv3vJs)
 
 ## Prerequisites
 

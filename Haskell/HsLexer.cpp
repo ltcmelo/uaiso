@@ -380,17 +380,18 @@ bool HsLexer::isAscSymbol(const char ch) const
     case '&':
     case '*':
     case '+':
+    case '.':
     case '/':
+    case '<':
+    case '=':
     case '>':
     case '?':
     case '@':
     case '\\':
     case '^':
     case '|':
+    case '-':
     case '~':
-    case '.':
-    case '=':
-    case '<':
     case ':':
         return true;
 

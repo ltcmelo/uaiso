@@ -25,15 +25,6 @@
 
 using namespace uaiso;
 
-FuncSpecAst* FuncSpecAst::setResult(SpecAst* spec)
-{
-    auto clause = newAst<ParamClauseDeclAst>();
-    auto group = newAst<ParamGroupDeclAst>()->setSpec(spec);
-    clause->decls_ = DeclAstList::create(std::unique_ptr<ParamGroupDeclAst>(group));
-    result_.reset(clause);
-    return this;
-}
-
 ArraySpecAst* ArraySpecAst::setSpec(SpecAst* spec)
 {
     exprOrSpec_.reset(spec);

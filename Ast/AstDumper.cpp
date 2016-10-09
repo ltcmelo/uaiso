@@ -523,9 +523,9 @@ AstDumper::VisitResult AstDumper::visitEqExpr(EqExprAst* ast)
     return Continue;
 }
 
-AstDumper::VisitResult AstDumper::visitFuncLitExpr(FuncLitExprAst* ast)
+AstDumper::VisitResult AstDumper::visitLambdaExpr(LambdaExprAst* ast)
 {
-    *output__ << level << "FuncLitExprAst" << std::endl;
+    *output__ << level << "LambdaExprAst" << std::endl;
     return Continue;
 }
 

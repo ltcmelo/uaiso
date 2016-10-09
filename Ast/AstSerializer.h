@@ -148,7 +148,7 @@ private:
     VisitResult traverseDesignateExpr(DesignateExprAst* ast);
     VisitResult traverseDivExpr(DivExprAst* ast);
     VisitResult traverseEqExpr(EqExprAst* ast);
-    VisitResult traverseFuncLitExpr(FuncLitExprAst* ast);
+    VisitResult traverseLambdaExpr(LambdaExprAst* ast);
     VisitResult traverseIdentExpr(IdentExprAst* ast);
     VisitResult traverseInExpr(InExprAst* ast);
     VisitResult traverseIncDecExpr(IncDecExprAst* ast);

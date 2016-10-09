@@ -64,6 +64,7 @@ private:
     std::pair<Precedence, std::unique_ptr<BinExprAst>> fetchPrecAhead() const;
 
     using ListCompre = std::unique_ptr<ListCompreExprAst>;
+    using ParamClauseDecl = std::unique_ptr<ParamClauseDeclAst>;
     using ParamGroup = std::unique_ptr<ParamGroupDeclAst>;
 
     bool isTestFIRST() const;
@@ -82,7 +83,7 @@ private:
 
     //--- Declarations ---//
 
-    Decl parseVarArgsList(bool wantParen);
+    ParamClauseDecl parseVarArgsList(bool wantParen);
     DeclList parseSubImports(bool selective);
 
     //--- Statements ---//

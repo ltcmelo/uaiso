@@ -50,7 +50,7 @@ class UAISO_API CharLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(CharLit, Expr)
-    SINGLE_LOC_CREATE(Lit)
+    CREATE_WITH_LOC(Lit)
 
     CharLitExprAst()
         : PriExprAst(Kind::CharLitExpr)
@@ -65,7 +65,7 @@ class UAISO_API StrLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(StrLit, Expr)
-    SINGLE_LOC_CREATE(Lit)
+    CREATE_WITH_LOC(Lit)
 
     StrLitExprAst()
         : PriExprAst(Kind::StrLitExpr)
@@ -80,7 +80,7 @@ class UAISO_API NumLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(NumLit, Expr)
-    SINGLE_LOC_CREATE(Lit)
+    CREATE_WITH_LOC(Lit)
     VARIETY_AST(NumLitVariety)
 
     static std::unique_ptr<Self> create(const SourceLoc& loc, NumLitVariety v)
@@ -105,7 +105,7 @@ class UAISO_API BoolLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(BoolLit, Expr)
-    SINGLE_LOC_CREATE(Lit)
+    CREATE_WITH_LOC(Lit)
 
     BoolLitExprAst()
         : PriExprAst(Kind::BoolLitExpr)
@@ -120,7 +120,7 @@ class UAISO_API NullLitExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(NullLit, Expr)
-    SINGLE_LOC_CREATE(Lit)
+    CREATE_WITH_LOC(Lit)
 
     NullLitExprAst()
         : PriExprAst(Kind::NullLitExpr)
@@ -131,19 +131,23 @@ public:
     SourceLoc litLoc_;
 };
 
-class UAISO_API FuncLitExprAst final : public PriExprAst
+class UAISO_API LambdaExprAst final : public PriExprAst
 {
 public:
-    AST_CLASS(FuncLit, Expr)
+    AST_CLASS(Lambda, Expr)
 
-    FuncLitExprAst()
-        : PriExprAst(Kind::FuncLitExpr)
+    LambdaExprAst()
+        : PriExprAst(Kind::LambdaExpr)
     {}
 
-    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_LOC_PARAM(Key, key)
+    NAMED_AST_PARAM(ParamClause, paramClause, ParamClauseDeclAst)
+    NAMED_AST_PARAM(Result, result, SpecAst)
     NAMED_AST_PARAM(Stmt, stmt, StmtAst)
 
-    std::unique_ptr<SpecAst> spec_;
+    SourceLoc keyLoc_;
+    std::unique_ptr<ParamClauseDeclAst> paramClause_;
+    std::unique_ptr<SpecAst> result_;
     std::unique_ptr<StmtAst> stmt_;
 };
 
@@ -173,7 +177,7 @@ class UAISO_API ThisExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(This, Expr)
-    SINGLE_LOC_CREATE(Key)
+    CREATE_WITH_LOC(Key)
 
     ThisExprAst()
         : PriExprAst(Kind::ThisExpr)
@@ -188,7 +192,7 @@ class UAISO_API SuperExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(Super, Expr)
-    SINGLE_LOC_CREATE(Key)
+    CREATE_WITH_LOC(Key)
 
     SuperExprAst()
         : PriExprAst(Kind::SuperExpr)
@@ -217,7 +221,7 @@ class UAISO_API IdentExprAst final : public PriExprAst
 {
 public:
     AST_CLASS(Ident, Expr)
-    SINGLE_AST_CREATE(Name, Name)
+    CREATE_WITH_AST(Name, Name)
 
     IdentExprAst()
         : PriExprAst(Kind::IdentExpr)
@@ -1022,7 +1026,7 @@ class UAISO_API ErrorExprAst final : public ExprAst
 {
 public:
     AST_CLASS(Error, Expr)
-    SINGLE_LOC_CREATE(Error)
+    CREATE_WITH_LOC(Error)
 
     ErrorExprAst()
         : ExprAst(Kind::ErrorExpr)

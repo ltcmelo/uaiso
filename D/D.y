@@ -163,7 +163,7 @@ void D_yyerror(YYLTYPE* yylloc,
 
 %type <expr_> Expr AssignExpr TerExpr BinExpr UnaryExpr PriExpr PostfixExpr
 %type <expr_> ThisExpr SuperExpr NewExpr TypeidExpr AssertExpr MixinExpr SpecialKeyword
-%type <expr_> PointerLit BoolLit NumLit StringLit CharLit ArrayLit FuncLit TypeQueryExpr
+%type <expr_> PointerLit BoolLit NumLit StringLit CharLit ArrayLit Lambda TypeQueryExpr
 %type <expr_> Init NonNullLit StructInit ArrayInit StructMemberInit ArrayMemberInit
 %type <exprs_> StructMemberInits ArrayMemberInits ExprList
 
@@ -1005,7 +1005,7 @@ PriExpr:
 |   StringLit
 |   CharLit
 |   ArrayLit
-|   FuncLit
+|   Lambda
 |   '(' Expr ')'
     {
         DECL_2_LOC(@1, @2);
@@ -1249,7 +1249,7 @@ Type:
     }
 |   Type Signature
     {
-        $$ = FuncSpec_Cast($2)->setResult($1);
+        $$ = FuncSpec_Cast($2)->setOutput($1);
     }
 ;
 
@@ -1316,24 +1316,28 @@ Composer:
 Signature:
     FUNCTION ParamClauseDecl
     {
+        IGNORE_FOR_NOW($2);
         DECL_1_LOC(@1);
-        $$ = newAst<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
+        $$ = newAst<FuncSpecAst>()->setKeyLoc(locA);
     }
 |   FUNCTION ParamClauseDecl FuncAttrs
     {
+        IGNORE_FOR_NOW($2);
         DECL_1_LOC(@1);
-        auto spec = newAst<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
+        auto spec = newAst<FuncSpecAst>()->setKeyLoc(locA);
         $$ = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
     }
 |   DELEGATE ParamClauseDecl
     {
+        IGNORE_FOR_NOW($2);
         DECL_1_LOC(@1);
-        $$ = newAst<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
+        $$ = newAst<FuncSpecAst>()->setKeyLoc(locA);
     }
 |   DELEGATE ParamClauseDecl FuncAttrs
     {
+        IGNORE_FOR_NOW($2);
         DECL_1_LOC(@1);
-        auto spec = newAst<FuncSpecAst>()->setKeyLoc(locA)->setParam($2);
+        auto spec = newAst<FuncSpecAst>()->setKeyLoc(locA);
         $$ = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
     }
 ;
@@ -1622,51 +1626,43 @@ FuncDecl:
     {
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())->setResult($1);
-        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($4);
+        $$ = newAst<FuncDeclAst>()->setName($2)->setStmt($4)
+            ->setParamClause(fullParam->param_.release())->setResult($1);
     }
 |   Type Ident UnifiedParamClauseDecl Constraint FuncEnd
     {
         IGNORE_FOR_NOW($4);
-
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())->setResult($1);
-        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($5);
+        $$ = newAst<FuncDeclAst>()->setName($2)->setStmt($5)
+            ->setParamClause(fullParam->param_.release())->setResult($1);
     }
 |   Type Ident UnifiedParamClauseDecl FuncAttrs FuncEnd
     {
+        IGNORE_FOR_NOW($4->finishSR());
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())->setResult($1);
-        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
-        $$ = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName($2)->setStmt($5);
+        $$ = newAst<FuncDeclAst>()->setName($2)->setStmt($5)
+            ->setParamClause(fullParam->param_.release())->setResult($1);
     }
 |   Type Ident UnifiedParamClauseDecl FuncAttrs Constraint FuncEnd
     {
+        IGNORE_FOR_NOW($4->finishSR());
         IGNORE_FOR_NOW($5);
-
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())->setResult($1);
-        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
-        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($6);
+        $$ = newAst<FuncDeclAst>()->setName($2)->setStmt($6)
+            ->setParamClause(fullParam->param_.release())->setResult($1);
     }
 |   Attrs Ident UnifiedParamClauseDecl FuncEnd
     {
         DECL_1_LOC(@1);
-
         using namespace detail;
         auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
         auto result = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())->setResult(result);
-        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($4);
+        $$ = newAst<FuncDeclAst>()->setName($2)->setStmt($4)
+            ->setParamClause(fullParam->param_.release())->setResult(result);
     }
 |   Attrs Ident UnifiedParamClauseDecl Constraint FuncEnd
     {
@@ -1677,35 +1673,31 @@ FuncDecl:
         auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
         auto result = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())->setResult(result);
-        $$ = newAst<FuncDeclAst>()->setSpec(spec)->setName($2)->setStmt($5);
+        $$ = newAst<FuncDeclAst>()->setName($2)->setStmt($5)
+            ->setParamClause(fullParam->param_.release())->setResult(result);
     }
 |   Attrs Ident UnifiedParamClauseDecl FuncAttrs FuncEnd
     {
+        IGNORE_FOR_NOW($4->finishSR());
         DECL_1_LOC(@1);
         using namespace detail;
         auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
         auto result = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())->setResult(result);
-        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
-        $$ = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName($2)->setStmt($5);
+        $$ = newAst<FuncDeclAst>()->setName($2)->setStmt($5)
+            ->setParamClause(fullParam->param_.release())->setResult(result);
     }
 |   Attrs Ident UnifiedParamClauseDecl FuncAttrs Constraint FuncEnd
     {
+        IGNORE_FOR_NOW($4->finishSR());
         IGNORE_FOR_NOW($5);
-
         DECL_1_LOC(@1);
         using namespace detail;
         auto inferred = newAst<InferredSpecAst>()->setKeyLoc(locA);
         auto result = newAst<DecoratedSpecAst>()->setAttrsSR($1)->setSpec(inferred);
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())->setResult(result);
-        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($4);
-        $$ = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName($2)->setStmt($6);
+        $$ = newAst<FuncDeclAst>()->setName($2)->setStmt($6)
+            ->setParamClause(fullParam->param_.release())->setResult(result);
     }
 ;
 
@@ -1715,87 +1707,79 @@ CtorDecl:
         DECL_1_LOC(@1);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($2));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
-        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($3);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($3)
+            ->setParamClause(fullParam->param_.release())
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   THIS UnifiedParamClauseDecl FuncAttrs FuncEnd
     {
+        IGNORE_FOR_NOW($3->finishSR());
         DECL_1_LOC(@1);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($2));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
-        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
-        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($4);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($4)
+            ->setParamClause(fullParam->param_.release())
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   THIS UnifiedParamClauseDecl FuncAttrs Constraint FuncEnd
     {
+        IGNORE_FOR_NOW($3->finishSR());
         IGNORE_FOR_NOW($4);
-
         DECL_1_LOC(@1);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($2));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
-        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($3);
-        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($5);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($5)
+            ->setParamClause(fullParam->param_.release())
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   Attrs THIS UnifiedParamClauseDecl FuncEnd
     {
+        IGNORE_FOR_NOW($1->finishSR());
         DECL_1_LOC(@2);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
-        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR($1);
-        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($4);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($4)
+            ->setParamClause(fullParam->param_.release())
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   Attrs THIS UnifiedParamClauseDecl FuncAttrs FuncEnd
     {
+        IGNORE_FOR_NOW($1->finishSR());
+        IGNORE_FOR_NOW($4->finishSR());
         DECL_1_LOC(@2);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
-        auto attrs = $1->mergeSR($4);
-        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR(attrs);
-        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($5);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($5)
+            ->setParamClause(fullParam->param_.release())
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   Attrs THIS UnifiedParamClauseDecl FuncAttrs Constraint FuncEnd
     {
+        IGNORE_FOR_NOW($1->finishSR());
+        IGNORE_FOR_NOW($4->finishSR());
         IGNORE_FOR_NOW($5);
-
         DECL_1_LOC(@2);
         using namespace detail;
         std::unique_ptr<FullParam> fullParam(static_cast<FullParam*>($3));
-        auto spec = newAst<FuncSpecAst>();
-        spec->setParam(fullParam->param_.release())
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
-        auto attrs = $1->mergeSR($4);
-        auto attrSpec = newAst<DecoratedSpecAst>()->setSpec(spec)->setAttrsSR(attrs);
-        auto func = newAst<FuncDeclAst>()->setSpec(attrSpec)->setName(name)->setStmt($6);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($6)
+            ->setParamClause(fullParam->param_.release())
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
@@ -1807,50 +1791,50 @@ DtorDecl:
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
         auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto spec = newAst<FuncSpecAst>()->setParam(param)
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
-        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($5);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($5)
+            ->setParamClause(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Dtor);
         $$ = func;
     }
 |   '~' THIS '(' ')' FuncAttrs FuncEnd
     {
+        IGNORE_FOR_NOW($5);
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
         auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto baseSpec = newAst<FuncSpecAst>()->setParam(param)
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
-        auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($5);
         auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
-        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($6)
+            ->setParamClause(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Dtor);
         $$ = func;
     }
 |   Attrs '~' THIS '(' ')' FuncEnd
     {
+        IGNORE_FOR_NOW($1->finishSR());
         /* TODO: Join ~ and this */
         DECL_4_LOC(@2, @3, @4, @5);
         auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto baseSpec = newAst<FuncSpecAst>()->setParam(param)
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
-        auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($1);
         auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
-        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($6)
+            ->setParamClause(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Dtor);
         $$ = func;
     }
 |   Attrs '~' THIS '(' ')' FuncAttrs FuncEnd
     {
+        IGNORE_FOR_NOW($1->finishSR());
+        IGNORE_FOR_NOW($6);
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
-        auto attrs = $1->mergeSR($6);
         auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locC)->setRDelimLoc(locD);
-        auto baseSpec = newAst<FuncSpecAst>()->setParam(param)
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
-        auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR(attrs);
         auto name = newAst<SimpleNameAst>()->setNameLoc(locB);
-        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($7);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($7)
+            ->setParamClause(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Dtor);
         $$ = func;
     }
@@ -1862,23 +1846,23 @@ Postblit:
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
         auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locB)->setRDelimLoc(locC);
-        auto spec = newAst<FuncSpecAst>()->setParam(param)
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
-        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($5);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($5)
+            ->setParamClause(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
 |   THIS '(' THIS ')' FuncAttrs FuncEnd
     {
+        IGNORE_FOR_NOW($5->finishSR());
         /* TODO: Join ~ and this */
         DECL_4_LOC(@1, @2, @3, @4);
         auto param = newAst<ParamClauseDeclAst>()->setLDelimLoc(locB)->setRDelimLoc(locC);
-        auto baseSpec = newAst<FuncSpecAst>()->setParam(param)
-            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
-        auto spec = newAst<DecoratedSpecAst>()->setSpec(baseSpec)->setAttrsSR($5);
         auto name = newAst<SimpleNameAst>()->setNameLoc(locA);
-        auto func = newAst<FuncDeclAst>()->setSpec(spec)->setName(name)->setStmt($6);
+        auto func = newAst<FuncDeclAst>()->setName(name)->setStmt($6)
+            ->setParamClause(param)
+            ->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
         func->setVariety(FuncVariety::Ctor);
         $$ = func;
     }
@@ -3065,24 +3049,24 @@ RecordTemplateDecl:
 TemplateDecl:
     TEMPLATE Ident TemplateParamClause '{' '}'
     {
-        IGNORE_FOR_NOW($3);
+        IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($3);
 
         DECL_3_LOC(@1, @4, @5);
-        $$ = newAst<TemplateDeclAst>()->setKeyLoc(locA)->setName($2);
+        $$ = newAst<TemplateDeclAst>()->setKeyLoc(locA);
     }
 |   TEMPLATE Ident TemplateParamClause '{' Decls '}'
     {
-        IGNORE_FOR_NOW($3); IGNORE_LIST_FOR_NOW($5);
+        IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($3); IGNORE_LIST_FOR_NOW($5);
 
         DECL_3_LOC(@1, @4, @6);
-        $$ = newAst<TemplateDeclAst>()->setKeyLoc(locA)->setName($2);
+        $$ = newAst<TemplateDeclAst>()->setKeyLoc(locA);
     }
 |   TEMPLATE Ident TemplateParamClause Constraint '{' Decls '}'
     {
-        IGNORE_FOR_NOW($3); IGNORE_FOR_NOW($4); IGNORE_LIST_FOR_NOW($6);
+        IGNORE_FOR_NOW($2); IGNORE_FOR_NOW($3); IGNORE_FOR_NOW($4); IGNORE_LIST_FOR_NOW($6);
 
         DECL_3_LOC(@1, @5, @7);
-        $$ = newAst<TemplateDeclAst>()->setKeyLoc(locA)->setName($2);
+        $$ = newAst<TemplateDeclAst>()->setKeyLoc(locA);
     }
 ;
 
@@ -3955,7 +3939,7 @@ ArrayLit:
     ArrayInit
 ;
 
-FuncLit:
+Lambda:
     FuncKey FuncBody
     {
         /* TODO */ IGNORE_FOR_NOW($2);

@@ -778,7 +778,7 @@ Parser::Expr PyParser::parseWithItem()
  * fpdef: NAME | '(' fplist ')'
  * fplist: fpdef (',' fpdef)* [',']
  */
-Parser::Decl PyParser::parseVarArgsList(bool wantParen)
+PyParser::ParamClauseDecl PyParser::parseVarArgsList(bool wantParen)
 {
     auto clause = ParamClauseDeclAst::create();
     if (wantParen) {
@@ -838,7 +838,7 @@ Parser::Decl PyParser::parseVarArgsList(bool wantParen)
     if (wantParen)
         matchOrSkipTo(TK_RPAREN, "parseFuncDef");
 
-    return std::move(clause);
+    return clause;
 }
 
 /*
@@ -849,17 +849,14 @@ Parser::Stmt PyParser::parseFuncDef()
 {
     UAISO_ASSERT(ahead_ == TK_DEF, return Stmt());
 
-    auto spec = std::unique_ptr<FuncSpecAst__<>>(newAst<FuncSpecAst__<>>());
     consumeToken();
-    spec->setKeyLoc(prevLoc_);
     auto decl = FuncDeclAst::create();
+    decl->setKeyLoc(prevLoc_);
     decl->setName(parseName());
-    spec->setParam(parseVarArgsList(true));
+    decl->setParamClause(parseVarArgsList(true));
 
     match(TK_COLON);
-    spec->setLDelimLoc(prevLoc_);
     decl->setStmt(parseSuite());
-    decl->setSpec(std::move(spec));
 
     return DeclStmtAst::create(std::move(decl));
 }
@@ -1835,15 +1832,12 @@ Parser::Expr PyParser::parseLambdaCore(Expr (PyParser::*parseFunc) ())
 {
     UAISO_ASSERT(ahead_ == TK_LAMBDA, return Expr());
 
-    auto spec = std::unique_ptr<FuncSpecAst__<>>(newAst<FuncSpecAst__<>>());
     consumeToken();
-    spec->setKeyLoc(prevLoc_);
-    spec->setParam(parseVarArgsList(false));
+    auto lambda = LambdaExprAst::create();
+    lambda->setKeyLoc(prevLoc_);
+    lambda->setParamClause(parseVarArgsList(false));
 
     match(TK_COLON);
-    spec->setLDelimLoc(prevLoc_);
-    auto lambda = FuncLitExprAst::create();
-    lambda->setSpec(std::move(spec));
     lambda->setStmt(ExprStmtAst::create(((this)->*(parseFunc))()));
 
     return std::move(lambda);

@@ -44,16 +44,22 @@
 
 #define SPEC_AST_MIXIN(GEN_CODE_FOR) \
     GEN_CODE_FOR(Array, OpaqueSpec) \
+    GEN_CODE_FOR(Alpha, Spec) \
     GEN_CODE_FOR(Builtin, Spec) \
     GEN_CODE_FOR(Chan, OpaqueSpec) \
     GEN_CODE_FOR(Decorated, Spec) \
+    GEN_CODE_FOR(Error, Spec) \
     GEN_CODE_FOR(Opaque, Spec) \
     GEN_CODE_FOR(Func, Spec) \
     GEN_CODE_FOR(Inferred, Spec) \
+    GEN_CODE_FOR(List, Spec) \
     GEN_CODE_FOR(Named, Spec) \
     GEN_CODE_FOR(Ptr, OpaqueSpec) \
     GEN_CODE_FOR(Record, Spec) \
+    GEN_CODE_FOR(Tuple, Spec) \
+    GEN_CODE_FOR(TypeApp, Spec) \
     GEN_CODE_FOR(Typeof, Spec) \
+    GEN_CODE_FOR(Unit, Spec) \
     GEN_CODE_FOR(Void, Spec)
 
 #define ATTR_AST_MIXIN(GEN_CODE_FOR) \
@@ -74,7 +80,7 @@
     GEN_CODE_FOR(Base, Decl) \
     GEN_CODE_FOR(BasicPat, Decl) \
     GEN_CODE_FOR(Block, Decl) \
-    GEN_CODE_FOR(ChainedFunc, Decl) \
+    GEN_CODE_FOR(ChainedFunc, FuncDecl) \
     GEN_CODE_FOR(Constraint, Decl) \
     GEN_CODE_FOR(CtorPat, Decl) \
     GEN_CODE_FOR(Debug, Decl) \
@@ -140,11 +146,11 @@
     GEN_CODE_FOR(Div, BinExpr) \
     GEN_CODE_FOR(Error, Expr) \
     GEN_CODE_FOR(Eq, BinExpr) \
-    GEN_CODE_FOR(FuncLit, PriExpr) \
     GEN_CODE_FOR(Ident, Expr) \
     GEN_CODE_FOR(In, BinExpr) \
     GEN_CODE_FOR(IncDec, UnaryExpr) \
     GEN_CODE_FOR(Is, BinExpr) \
+    GEN_CODE_FOR(Lambda, PriExpr) \
     GEN_CODE_FOR(ListCompre, Expr) \
     GEN_CODE_FOR(LogicAnd, BinExpr) \
     GEN_CODE_FOR(LogicNot, UnaryExpr) \

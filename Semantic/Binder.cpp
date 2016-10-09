@@ -609,50 +609,16 @@ Binder::VisitResult Binder::traverseFuncSpec(FuncSpecAst* ast)
 {
     P->declTy_.emplace(new FuncType);
 
-    VIS_CALL(traverseDecl(ast->param()));
-    VIS_CALL(traverseDecl(ast->result()));
-
-    if (P->lang_->requiresReturnTypeInference() || !ast->result())
+    if (P->lang_->requiresReturnTypeInference() || !ast->output())
         return Continue;
 
-    // Assign the function's return type. The result must be a parameter clause.
-    UAISO_ASSERT(ast->result()->kind() == Ast::Kind::ParamClauseDecl,return Abort);
-    ParamClauseDeclAst* clause = ParamClauseDecl_Cast(ast->result());
-    if (!clause->decls())
-        return Continue;
+    VIS_CALL(traverseSpec(ast->output()));
 
-    // TODO: Currently supports only simple types, only the first parameter
-    // group is considered.
-    UAISO_ASSERT(clause->decls()->front()->kind() == Ast::Kind::ParamGroupDecl,
-                 return Abort);
-    ParamGroupDeclAst* group = ParamGroupDecl_Cast(clause->decls()->front());
-
-    // When as a result, a parameter group might contain actual declarations
-    // (if the language has named return values) or might simply be a type
-    // specifier. For the former case the return type is take from the
-    // parameter symbol, while in the later the return type is taken through
-    // a regular traversal over the spec.
-    UAISO_ASSERT(group->decls() || group->spec(), return Abort);
-    std::unique_ptr<Type> retTy;
-    if (group->decls()) {
-        UAISO_ASSERT(group->decls()->front()->kind() == Ast::Kind::ParamDecl,
-                     return Abort);
-        Param* ret = ParamDecl_Cast(group->decls()->front())->sym_;
-        if (ret->valueType()
-                && ret->valueType()->kind() != Type::Kind::Inferred) {
-            retTy.reset(ret->valueType()->clone());
-        }
-    } else {
-        VIS_CALL(traverseSpec(group->spec()));
-        ENSURE_NONEMPTY_TYPE_STACK;
-        retTy = P->popDeclType<>();
-    }
-
-    if (retTy) {
-        ENSURE_TOP_TYPE_IS(Func);
-        FuncType* funcTy = FuncType_Cast(P->declTy_.top().get());
-        funcTy->setReturnType(std::move(retTy));
-    }
+    ENSURE_NONEMPTY_TYPE_STACK;
+    std::unique_ptr<Type> retTy = P->popDeclType<>();
+    ENSURE_TOP_TYPE_IS(Func);
+    FuncType* funcTy = FuncType_Cast(P->declTy_.top().get());
+    funcTy->setReturnType(std::move(retTy));
 
     return Continue;
 }
@@ -1342,13 +1308,19 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
     if (P->lang_->hasFuncLevelScope())
         P->enterSubEnv();
 
-    VIS_CALL(traverseSpec(ast->spec()));
+    VIS_CALL(traverseDecl(ast->paramClause()));
+
+    std::unique_ptr<FuncType> funcTy(new FuncType);
+    if (!P->lang_->requiresReturnTypeInference() && ast->result()) {
+        VIS_CALL(traverseSpec(ast->result()));
+        ENSURE_NONEMPTY_TYPE_STACK;
+        funcTy->setReturnType(P->popDeclType<>());
+    }
 
     ENSURE_TOP_SYMBOL_IS(Func);
     func = P->popSymbol<Func>();
 
-    ENSURE_NONEMPTY_TYPE_STACK;
-    func->setType(P->popDeclType<FuncType>());
+    func->setType(std::move(funcTy));
 
     if (ast->stmt_ && ast->stmt_->kind() == Ast::Kind::BlockStmt) {
         // A block stmt of a function must have the same environment of
@@ -1412,7 +1384,7 @@ Binder::VisitResult Binder::traverseUnitTestDecl(UnitTestDeclAst* ast)
     //--- Expressions ---//
     //-------------------//
 
-Binder::VisitResult Binder::visitFuncLitExpr(FuncLitExprAst* ast)
+Binder::VisitResult Binder::visitLambdaExpr(LambdaExprAst* ast)
 {
     return Skip;
 }

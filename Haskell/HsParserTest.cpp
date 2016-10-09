@@ -133,6 +133,56 @@ public:
              , &HsParserTest::testCase97
              , &HsParserTest::testCase98
              , &HsParserTest::testCase99
+             , &HsParserTest::testCase100
+             , &HsParserTest::testCase101
+             , &HsParserTest::testCase102
+             , &HsParserTest::testCase103
+             , &HsParserTest::testCase104
+             , &HsParserTest::testCase105
+             , &HsParserTest::testCase106
+             , &HsParserTest::testCase107
+             , &HsParserTest::testCase108
+             , &HsParserTest::testCase109
+             , &HsParserTest::testCase110
+             , &HsParserTest::testCase111
+             , &HsParserTest::testCase112
+             , &HsParserTest::testCase113
+             , &HsParserTest::testCase114
+             , &HsParserTest::testCase115
+             , &HsParserTest::testCase116
+             , &HsParserTest::testCase117
+             , &HsParserTest::testCase118
+             , &HsParserTest::testCase119
+             , &HsParserTest::testCase120
+             , &HsParserTest::testCase121
+             , &HsParserTest::testCase122
+             , &HsParserTest::testCase123
+             , &HsParserTest::testCase124
+             , &HsParserTest::testCase125
+             , &HsParserTest::testCase126
+             , &HsParserTest::testCase127
+             , &HsParserTest::testCase128
+             , &HsParserTest::testCase129
+             , &HsParserTest::testCase130
+             , &HsParserTest::testCase131
+             , &HsParserTest::testCase133
+             , &HsParserTest::testCase132
+             , &HsParserTest::testCase134
+             , &HsParserTest::testCase135
+             , &HsParserTest::testCase136
+             , &HsParserTest::testCase137
+             , &HsParserTest::testCase138
+             , &HsParserTest::testCase139
+             , &HsParserTest::testCase140
+             , &HsParserTest::testCase141
+             , &HsParserTest::testCase143
+             , &HsParserTest::testCase142
+             , &HsParserTest::testCase144
+             , &HsParserTest::testCase145
+             , &HsParserTest::testCase146
+             , &HsParserTest::testCase147
+             , &HsParserTest::testCase148
+             , &HsParserTest::testCase149
              )
 
      void testCase1();
@@ -234,6 +284,56 @@ public:
      void testCase97();
      void testCase98();
      void testCase99();
+     void testCase100();
+     void testCase101();
+     void testCase102();
+     void testCase103();
+     void testCase104();
+     void testCase105();
+     void testCase106();
+     void testCase107();
+     void testCase108();
+     void testCase109();
+     void testCase110();
+     void testCase111();
+     void testCase112();
+     void testCase113();
+     void testCase114();
+     void testCase115();
+     void testCase116();
+     void testCase117();
+     void testCase118();
+     void testCase119();
+     void testCase120();
+     void testCase121();
+     void testCase122();
+     void testCase123();
+     void testCase124();
+     void testCase125();
+     void testCase126();
+     void testCase127();
+     void testCase128();
+     void testCase129();
+     void testCase130();
+     void testCase131();
+     void testCase132();
+     void testCase133();
+     void testCase134();
+     void testCase135();
+     void testCase136();
+     void testCase137();
+     void testCase138();
+     void testCase139();
+     void testCase140();
+     void testCase141();
+     void testCase142();
+     void testCase143();
+     void testCase144();
+     void testCase145();
+     void testCase146();
+     void testCase147();
+     void testCase148();
+     void testCase149();
 };
 
 MAKE_CLASS_TEST(HsParser)
@@ -489,9 +589,8 @@ void HsParser::HsParserTest::testCase41()
 {
     core(R"raw(
 module Foo where
-x, y, z :: Abc Mno
-        )raw",
-        true);
+x, y, z :: Template Ty
+        )raw");
 }
 
 void HsParser::HsParserTest::testCase42()
@@ -940,10 +1039,451 @@ a@b c d = 10
         true);
 }
 
-void HsParser::HsParserTest::testCase93() {}
-void HsParser::HsParserTest::testCase94() {}
-void HsParser::HsParserTest::testCase95() {}
-void HsParser::HsParserTest::testCase96() {}
-void HsParser::HsParserTest::testCase97() {}
-void HsParser::HsParserTest::testCase98() {}
-void HsParser::HsParserTest::testCase99() {}
+void HsParser::HsParserTest::testCase93()
+{
+    core(R"raw(
+module Foo where
+f :: A -> B
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase94()
+{
+    // Not a type signature for `f', because `a' and `b' are dangling.
+    core(R"raw(
+module Foo where
+f a b :: A -> B
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase95()
+{
+    // Not a type signature for `f', because a `::' is expected, not a `='.
+    core(R"raw(
+module Foo where
+f a b = A -> B
+        )raw",
+        true);
+}
+
+void HsParser::HsParserTest::testCase96()
+{
+    core(R"raw(
+module Foo where
+f :: A -> B -> C -> D
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase97()
+{
+    core(R"raw(
+module Foo where
+f :: A -> b -> B
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase98()
+{
+    core(R"raw(
+module Foo where
+f :: [] Int
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase99()
+{
+    core(R"raw(
+module Foo where
+f :: [] ([] Int)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase100()
+{
+    UAISO_SKIP_TEST;
+
+    core(R"raw(
+module Foo where
+f :: [] [] Int
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase101()
+{
+    core(R"raw(
+module Foo where
+f :: (A -> B -> C) -> D
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase102()
+{
+    core(R"raw(
+module Foo where
+f :: A -> B -> (C -> D)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase103()
+{
+    core(R"raw(
+module Foo where
+f :: A -> B (-> C) -> D
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase104()
+{
+    core(R"raw(
+module Foo where
+f :: (A, B, C) -> D
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase105()
+{
+    core(R"raw(
+module Foo where
+a :: ()
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase106()
+{
+    core(R"raw(
+module Foo where
+data Val;
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase107()
+{
+    core(R"raw(
+module Foo where
+data Val Val
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase108()
+{
+    core(R"raw(
+module Foo where
+data Val = One
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase109()
+{
+    core(R"raw(
+module Foo where
+data Val = One | Two
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase110()
+{
+    core(R"raw(
+module Foo where
+data Val = One
+         | Two
+         | Three
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase111()
+{
+    core(R"raw(
+module Foo where
+data Val = One
+         | Two
+         | Three
+    deriving Eq
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase112()
+{
+    core(R"raw(
+module Foo where
+data Val = One
+         | Two
+         | Three
+    deriving (Eq, Ord)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase113()
+{
+    core(R"raw(
+module Foo where
+data Val = One
+         | Two
+         | Three
+    deriving Eq, Ord)
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase114()
+{
+    core(R"raw(
+module Foo where
+data Val = One |
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase115()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar Zem Qeu
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase116()
+{
+    core(R"raw(
+module Foo where
+data Val = One deriving (Eq, Ord)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase117()
+{
+    core(R"raw(
+module Foo where
+data Val = One
+    deriving (Eq, Ord)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase118()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar Zem Qeu
+         | Eta
+         | Tad Dem
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase119()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar Zem Qeu
+         | Eta
+         | Tad Dem
+    deriving (Eq, Ord)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase120()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar Zem Qeu
+         | Eta :<-:
+         | Tad Dem
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase121()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar Zem Qeu
+         | Eta
+         |
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase122()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar Zem Qeu
+         | Eta
+    deriving (Eq, Ord)
+         | Tad
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase123()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar Zem Qeu
+    deriving (Eq, Ord)
+         | Tad
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase124()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar Zem Qeu
+         | Eta :<-: Eta
+    deriving (Eq, Ord)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase125()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar []Int
+    deriving (Eq, Ord)
+        )raw");
+
+}
+
+void HsParser::HsParserTest::testCase126()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar :<-: []Int
+         | Eta
+    deriving (Eq, Ord)
+        )raw");
+
+}
+
+void HsParser::HsParserTest::testCase127()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar :<: (Int -> Int)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase128()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar :<: (Int -> Int)
+    deriving Eq
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase129()
+{
+    core(R"raw(
+module Foo where
+data Val = (Int -> Int) :<: Zaf
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase130()
+{
+    core(R"raw(
+module Foo where
+data Val = (Int -> Int) :<: (Int -> Int)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase131()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar :<: (Int -> Int)
+         | Bie
+    deriving Eq
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase132()
+{
+    core(R"raw(
+module Foo where
+data Val = | Bar
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase133()
+{
+    core(R"raw(
+module Foo where
+data Val = deriving Eq
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase134()
+{
+    core(R"raw(
+module Foo where
+data Val = Bar :<: (Int -> Int)
+         |
+    deriving (Eq, Ord)
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase135()
+{
+    core(R"raw(
+module Foo where
+data Val = []([] Int) :<- Bar
+    deriving (Eq, Ord)
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase136()
+{
+    core(R"raw(
+module Foo where
+data Val = [] | :<- Bar
+    deriving (Eq, Ord)
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase137()
+{
+    core(R"raw(
+module Foo where
+data Bar a = Zem a
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase138()
+{
+    core(R"raw(
+module Foo where
+data Bar a = Zem a | Nope
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase139()
+{
+    core(R"raw(
+module Foo where
+data Bar a = Nope | Zem a deriving Eq
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase140()
+{
+    core(R"raw(
+module Foo where
+data Bar a b c = Zem a
+               | Qui a b c
+               | Yum a b
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase141()
+{
+    core(R"raw(
+module Foo where
+data Bar = Zem !Raw
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase142() {}
+void HsParser::HsParserTest::testCase143() {}
+void HsParser::HsParserTest::testCase144() {}
+void HsParser::HsParserTest::testCase145() {}
+void HsParser::HsParserTest::testCase146() {}
+void HsParser::HsParserTest::testCase147() {}
+void HsParser::HsParserTest::testCase148() {}
+void HsParser::HsParserTest::testCase149() {}

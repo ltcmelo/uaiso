@@ -759,10 +759,10 @@ AstSerializer::VisitResult AstSerializer::traverseEqExpr(EqExprAst* ast)
     return Continue;
 }
 
-AstSerializer::VisitResult AstSerializer::traverseFuncLitExpr(FuncLitExprAst* ast)
+AstSerializer::VisitResult AstSerializer::traverseLambdaExpr(LambdaExprAst* ast)
 {
     *output__ << "(" << static_cast<size_t>(ast->kind());
-    Base::traverseFuncLitExpr(ast);
+    Base::traverseLambdaExpr(ast);
     *output__ << ")";
     return Continue;
 }

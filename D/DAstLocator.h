@@ -33,11 +33,7 @@ class UAISO_API DAstLocator final : public AstLocator
     using AstLocator::loc;
     using AstLocator::lastLoc;
 
-    const SourceLoc& loc(FuncSpecAst* ast) const override;
-    const SourceLoc& lastLoc(FuncSpecAst* ast) const override;
-
     const SourceLoc& lastLoc(EnumDeclAst* ast) const override;
-
     const SourceLoc& lastLoc(RecordDeclAst* ast) const override;
 };
 

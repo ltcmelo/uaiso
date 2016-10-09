@@ -41,14 +41,39 @@ public:
 
 /*!
  * \brief The VoidSpecAst class
+ *
+ * The void specifier designates a type not inhabited by any value. This is
+ * different from the unit specifier.
  */
 class UAISO_API VoidSpecAst final : public SpecAst
 {
 public:
     AST_CLASS(Void, Spec)
+    CREATE_WITH_LOC(Key)
 
     VoidSpecAst()
         : SpecAst(Kind::VoidSpec)
+    {}
+
+    NAMED_LOC_PARAM(Key, key)
+
+    SourceLoc keyLoc_;
+};
+
+/*!
+ * \brief The UnitSpecAst class
+ *
+ * The unit specifier designates a type inhabited a single value. This is
+ * different from the unit specifier.
+ */
+class UAISO_API UnitSpecAst final : public SpecAst
+{
+public:
+    AST_CLASS(Unit, Spec)
+    CREATE_WITH_LOC(Key)
+
+    UnitSpecAst()
+        : SpecAst(Kind::UnitSpec)
     {}
 
     NAMED_LOC_PARAM(Key, key)
@@ -80,10 +105,28 @@ class UAISO_API NamedSpecAst final : public SpecAst
 {
 public:
     AST_CLASS(Named, Spec)
-    SINGLE_AST_CREATE(Name, Name)
+    CREATE_WITH_AST(Name, Name)
 
     NamedSpecAst()
         : SpecAst(Kind::NamedSpec)
+    {}
+
+    NAMED_AST_PARAM(Name, name, NameAst)
+
+    std::unique_ptr<NameAst> name_;
+};
+
+/*!
+ * \brief The AlphaSpecAst class
+ */
+class UAISO_API AlphaSpecAst final : public SpecAst
+{
+public:
+    AST_CLASS(Alpha, Spec)
+    CREATE_WITH_AST(Name, Name)
+
+    AlphaSpecAst()
+        : SpecAst(Kind::AlphaSpec)
     {}
 
     NAMED_AST_PARAM(Name, name, NameAst)
@@ -165,101 +208,34 @@ public:
 
 /*!
  * \brief The FuncSpecAst class
- *
- * To allow multi-valued named results, the return of a function is
- * typically a ParamClausedDeclAst. In a language that supports a
- * "simple" return type, the parameter clause would be inhabited by
- * a single unnamed ParamDeclAst.
  */
 class UAISO_API FuncSpecAst : public SpecAst
 {
 public:
     AST_CLASS(Func, Spec)
+    VARIETY_AST(NotationVariety)
 
     FuncSpecAst()
         : SpecAst(Kind::FuncSpec)
-    {}
+    {
+        INIT_VARIETY(NotationVariety::Standard);
+    }
 
     NAMED_LOC_PARAM(Key, key)
-    NAMED_AST_PARAM(Param, param, DeclAst)
-    NAMED_AST_PARAM(Result, result, DeclAst)
-    NAMED_AST_PARAM__BASE__(TemplateParam, DeclAst)
-
-    /*!
-     * \brief setResult
-     * \param spec
-     * \return
-     *
-     * Conveniece for creating a ParamClauseDeclAst out of a single
-     * type specifier.
-     */
-    FuncSpecAst* setResult(SpecAst* spec);
-
-    /*!
-     * \brief isTemplate
-     * \return
-     *
-     * Return wether this function accepts type parameters.
-     */
-    virtual bool isTemplate() const { return false; }
-
-    /*!
-     * \brief templateParam
-     * \return
-     */
-    virtual DeclAst* templateParam() const { return nullptr; }
+    NAMED_AST_LIST_PARAM(Input, inputs, SpecAst)
+    NAMED_LOC_PARAM(Arrow, arrow)
+    NAMED_AST_PARAM(Output, output, SpecAst)
 
     SourceLoc keyLoc_;
-    std::unique_ptr<DeclAst> param_;
-    std::unique_ptr<DeclAst> result_;
-};
 
-/*
- * Helper type that "injects" a template param.
- */
-struct FuncTemplateParam__
-{
-    static bool checkTemplateParam__() { return true; }
+    //! The type is uncurried form. Parameters are stored in the input list.
+    std::unique_ptr<SpecAstList> inputs_;
 
-    void setTemplateParam__(DeclAst* decl) { templateParam_.reset(decl); }
-    DeclAst* templateParam__() const { return templateParam_.get(); }
+    //! The last arrow.
+    SourceLoc arrowLoc_;
 
-    std::unique_ptr<DeclAst> templateParam_;
-};
-
-struct FuncTemplateParam__Empty__
-{
-    static bool checkTemplateParam__() { return false; }
-    void setTemplateParam__(const DeclAst*) {}
-    DeclAst* templateParam__() const { return nullptr; }
-};
-
-/*!
- * A parameterized subclass of FuncSpecAst that avoids bloating the AST
- * memory size with members that are commonly absent. It works in combination
- * with the "member" injection helpers.
- */
-template <class TemplateParamT = FuncTemplateParam__Empty__>
-class FuncSpecAst__
-        : public FuncSpecAst
-        , private TemplateParamT
-{
-public:
-    using Self = FuncSpecAst__<TemplateParamT>;
-    using FuncSpecAst::FuncSpecAst;
-
-    NAMED_LOC_PARAM(Key, key)
-    NAMED_AST_PARAM(Param, param, DeclAst)
-    NAMED_AST_PARAM(Result, result, DeclAst)
-    NAMED_LOC_PARAM(LDelim, lDelim)
-    NAMED_LOC_PARAM(RDelim, rDelim)
-    NAMED_AST_PARAM__(TemplateParam, TemplateParamT, DeclAst)
-
-    bool isTemplate() const override { return TemplateParamT::checkTemplateParam__(); }
-    DeclAst* templateParam() const override { return TemplateParamT::templateParam__(); }
-
-    SourceLoc lDelimLoc_;
-    SourceLoc rDelimLoc_;
+    //! Multiple returns can be represeted with a tuple.
+    std::unique_ptr<SpecAst> output_;
 };
 
 /*!
@@ -326,6 +302,51 @@ public:
 };
 
 /*!
+ * \brief The ListSpecAst class
+ */
+class UAISO_API ListSpecAst final : public OpaqueSpecAst
+{
+public:
+    AST_CLASS(List, Spec)
+    VARIETY_AST(NotationVariety)
+
+    ListSpecAst()
+        : OpaqueSpecAst(Kind::ListSpec)
+    {
+        INIT_VARIETY(NotationVariety::Standard);
+    }
+
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_PARAM(BaseSpec, baseSpec, SpecAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<SpecAst> spec_;
+    SourceLoc rDelimLoc_;
+};
+
+/*!
+ * \brief The TupleSpecAst class
+ */
+class UAISO_API TupleSpecAst final : public SpecAst
+{
+public:
+    AST_CLASS(Tuple, Spec)
+
+    TupleSpecAst()
+        : SpecAst(Kind::TupleSpec)
+    {}
+
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Spec, specs, SpecAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<SpecAstList> specs_;
+    SourceLoc rDelimLoc_;
+};
+
+/*!
  * \brief The ChanSpecAst class
  */
 class UAISO_API ChanSpecAst final : public OpaqueSpecAst
@@ -362,7 +383,26 @@ public:
 
     NAMED_LOC_PARAM(Key, key)
 
-    SourceLoc keyLoc_; // Dummy
+    SourceLoc keyLoc_;
+};
+
+/*!
+ * \brief The TypeAppSpecAst class
+ *
+ * A type application.
+ */
+class UAISO_API TypeAppSpecAst final : public SpecAst
+{
+public:
+    AST_CLASS(TypeApp, Spec)
+
+    TypeAppSpecAst()
+        : SpecAst(Kind::TypeAppSpec)
+    {}
+
+    NAMED_AST_LIST_PARAM(Spec, specs, SpecAst)
+
+    std::unique_ptr<SpecAstList> specs_;
 };
 
 /*!
@@ -382,6 +422,21 @@ public:
 
     std::unique_ptr<SpecAst> spec_;
     std::unique_ptr<AttrAstList> attrs_;
+};
+
+class UAISO_API ErrorSpecAst final : public SpecAst
+{
+public:
+    AST_CLASS(Error, Spec)
+    CREATE_WITH_LOC(Error)
+
+    ErrorSpecAst()
+        : SpecAst(Kind::ErrorSpec)
+    {}
+
+    NAMED_LOC_PARAM(Error, error)
+
+    SourceLoc errorLoc_;
 };
 
 } // namespace uaiso

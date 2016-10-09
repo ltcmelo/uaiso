@@ -42,7 +42,7 @@ class UAISO_API ErrorDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Error, Decl)
-    SINGLE_LOC_CREATE(Error)
+    CREATE_WITH_LOC(Error)
 
     ErrorDeclAst()
         : DeclAst(Kind::ErrorDecl)
@@ -57,7 +57,7 @@ class UAISO_API EmptyDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Empty, Decl)
-    SINGLE_LOC_CREATE(Key)
+    CREATE_WITH_LOC(Key)
 
     EmptyDeclAst()
         : DeclAst(Kind::EmptyDecl)
@@ -72,7 +72,7 @@ class UAISO_API VarDeclAst : public DeclAst
 {
 public:
     AST_CLASS(Var, Decl)
-    SINGLE_AST_CREATE(Name, Name)
+    CREATE_WITH_AST(Name, Name)
 
     VarDeclAst()
         : DeclAst(Kind::VarDecl)
@@ -290,11 +290,14 @@ public:
     std::unique_ptr<DeclAstList> decls_;
 };
 
+/*!
+ * \brief The ParamDeclAst class
+ */
 class UAISO_API ParamDeclAst : public DeclAst
 {
 public:
     AST_CLASS(Param, Decl)
-    SINGLE_AST_CREATE(Name, Name)
+    CREATE_WITH_AST(Name, Name)
 
     ParamDeclAst()
         : DeclAst(Kind::ParamDecl)
@@ -541,65 +544,50 @@ class UAISO_API FuncDeclAst : public DeclAst
 public:
     AST_CLASS(Func, Decl)
     VARIETY_AST(FuncVariety)
+    CREATE_WITH_AST(Name, Name)
 
-    FuncDeclAst()
-        : DeclAst(Kind::FuncDecl)
-        , sym_(nullptr)
-    {
-        INIT_VARIETY(FuncVariety::Unknown);
-    }
+    FuncDeclAst();
 
+    NAMED_LOC_PARAM(Key, key)
     NAMED_AST_PARAM(Name, name, NameAst)
-    NAMED_AST_PARAM(Spec, spec, SpecAst)
+    NAMED_AST_PARAM(Recv, recv, DeclAst)
     NAMED_AST_PARAM(Stmt, stmt, StmtAst)
+    NAMED_AST_PARAM(ParamClause, paramClause, ParamClauseDeclAst)
+    NAMED_AST_PARAM(Result, result, SpecAst)
 
-    virtual bool hasExplicitReceiver() const { return false; }
-
+    SourceLoc keyLoc_;
     std::unique_ptr<NameAst> name_;
-    std::unique_ptr<SpecAst> spec_;
+    std::unique_ptr<DeclAst> recv_;
+    std::unique_ptr<ParamClauseDeclAst> paramClause_;
     std::unique_ptr<StmtAst> stmt_;
+    std::unique_ptr<SpecAst> result_;
 
     Func* sym_;
+
+protected:
+    using DeclAst::DeclAst;
 };
 
 /*!
  * \brief The ChainedFuncDeclAst class
  */
-class UAISO_API ChainedFuncDeclAst final : public DeclAst
+class UAISO_API ChainedFuncDeclAst final : public FuncDeclAst
 {
 public:
     AST_CLASS(ChainedFunc, Decl)
-    SINGLE_AST_CREATE(Func, Decl)
+    CREATE_WITH_AST(Func, FuncDecl)
 
     ChainedFuncDeclAst()
-        : DeclAst(Kind::ChainedFuncDecl)
+        : FuncDeclAst(Kind::ChainedFuncDecl)
     {}
 
     NAMED_LOC_PARAM(LDelim, lDelim)
-    NAMED_AST_PARAM(Func, func, DeclAst)
+    NAMED_AST_PARAM(Func, func, FuncDeclAst)
     NAMED_LOC_PARAM(RDelim, rDelim)
 
     SourceLoc lDelimLoc_;
-    std::unique_ptr<DeclAst> func_;
+    std::unique_ptr<FuncDeclAst> func_;
     SourceLoc rDelimLoc_;
-};
-
-/*!
- * \brief The FuncRecvDeclAst class
- */
-class UAISO_API FuncRecvDeclAst final : public FuncDeclAst
-{
-public:
-    AST_CLASS(FuncRecv, Decl)
-    using FuncDeclAst::FuncDeclAst;
-
-    NAMED_AST_PARAM(Name, name, NameAst)
-    NAMED_AST_PARAM(Stmt, stmt, StmtAst)
-    NAMED_AST_PARAM(Recv, recv, DeclAst)
-
-    bool hasExplicitReceiver() const override { return true; }
-
-    std::unique_ptr<DeclAst> recv_; // Go's receivers.
 };
 
 /*!
@@ -611,17 +599,19 @@ class UAISO_API TemplateDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Template, Decl)
+    CREATE_WITH_AST(Concept, Name)
 
     TemplateDeclAst()
         : DeclAst(Kind::TemplateDecl)
     {}
 
     NAMED_LOC_PARAM(Key, key)
-    NAMED_AST_PARAM(Name, name, NameAst)
+    NAMED_AST_PARAM(Concept, concept, NameAst)
+    NAMED_AST_PARAM(Decl, decl, DeclAst)
 
     SourceLoc keyLoc_;
-    std::unique_ptr<NameAst> name_;
-    // TODO: Incomplete...
+    std::unique_ptr<NameAst> concept_; //!< C++ terminology.
+    std::unique_ptr<DeclAst> decl_;
 };
 
 /*!
@@ -869,7 +859,7 @@ public:
     NAMED_LOC_PARAM(RDelim, rDelim)
     NAMED_LOC_PARAM(Termin, termin)
 
-    bool isEmpty() const;
+    bool isEmpty() const { return !decls_; }
 
     SourceLoc keyLoc_;
     SourceLoc lDelimLoc_;
@@ -1106,7 +1096,7 @@ class UAISO_API BaseDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(Base, Decl)
-    SINGLE_AST_CREATE(Name, Name)
+    CREATE_WITH_AST(Name, Name)
 
     BaseDeclAst()
         : DeclAst(Kind::BaseDecl)
@@ -1147,7 +1137,7 @@ class UAISO_API VarPatDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(VarPat, Decl)
-    SINGLE_AST_CREATE(Name, Name)
+    CREATE_WITH_AST(Name, Name)
 
     VarPatDeclAst()
         : DeclAst(Kind::VarPatDecl)
@@ -1188,7 +1178,7 @@ class UAISO_API BasicPatDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(BasicPat, Decl)
-    SINGLE_AST_CREATE(Expr, Expr)
+    CREATE_WITH_AST(Expr, Expr)
 
     BasicPatDeclAst()
         : DeclAst(Kind::BasicPatDecl)
@@ -1232,7 +1222,7 @@ class UAISO_API WildCardPatDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(WildCardPat, Decl)
-    SINGLE_LOC_CREATE(Key)
+    CREATE_WITH_LOC(Key)
 
     WildCardPatDeclAst()
         : DeclAst(Kind::WildCardPatDecl)
@@ -1275,7 +1265,7 @@ class UAISO_API WrappedPatDeclAst final : public DeclAst
 {
 public:
     AST_CLASS(WrappedPat, Decl)
-    SINGLE_AST_CREATE(Pat, Decl)
+    CREATE_WITH_AST(Pat, Decl)
 
     WrappedPatDeclAst()
         : DeclAst(Kind::WrappedPatDecl)

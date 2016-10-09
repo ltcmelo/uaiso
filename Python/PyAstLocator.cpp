@@ -42,7 +42,5 @@ const SourceLoc& PyAstLocator::lastLoc(ParamDeclAst* ast) const
 
 const SourceLoc& PyAstLocator::lastLoc(FuncSpecAst *ast) const
 {
-    if (ast->param_)
-        return lastLoc(ast->param_.get());
     return ast->keyLoc_;
 }

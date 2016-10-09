@@ -139,19 +139,19 @@ void GO_yyerror(const YYLTYPE* yylloc,
 %type <names_> NestedIdent
 
 %type <spec_> Type BuiltinType PlainType CompositeType PointerType CastType
-%type <spec_> StructType InterfaceType SpecialArgType Signature FuncType
+%type <spec_> StructType InterfaceType SpecialArgType FuncType
 %type <spec_> SenderChanType RecvChanType BidirChanType NonExprType
 %type <specs_> NonExprTypeList
 
 %type <decl_> Decl VarGroupDecl VarDecl VarSectionDecl
 %type <decl_> FieldDecl RecordDecl TypeGroupDecl ConstDecl InterfaceMember
 %type <decl_> FuncDecl FuncRecvDecl ParamGroupDecl ParamClauseDecl ParamDecl
-%type <decl_> ImportGroupDecl ImportDecl
+%type <decl_> ImportGroupDecl ImportDecl Signature
 %type <decls_> FieldDecls InterfaceMembers VarGroupDeclList RecordDeclList
 %type <decls_> ParamGroupDeclList ParamDeclList VarDeclList Decls ImportList
 
 %type <expr_> Expr UnaryExpr PostfixExpr PriExpr SubrangeExpr ConvExpr Init
-%type <expr_> BoolLit NullLit CharLit StringLit NumLit FuncLit CompositeLit
+%type <expr_> BoolLit NullLit CharLit StringLit NumLit Lambda CompositeLit
 %type <expr_> EffectExpr
 %type <exprs_> ExprList InitList
 
@@ -826,7 +826,7 @@ PriExpr:
 |   BoolLit
 |   NullLit
 |   CharLit
-|   FuncLit
+|   Lambda
 |   CompositeLit
 |   ConvExpr
 |   '(' Expr ')'
@@ -1333,10 +1333,24 @@ InterfaceType:
 ;
 
 FuncType:
-    FUNC Signature
+    FUNC ParamClauseDecl %prec PREFER_SHIFT
     {
+        IGNORE_FOR_NOW($2);
         DECL_1_LOC(@1);
-        $$ = FuncSpec_Cast($2)->setKeyLoc(locA);
+        $$ = newAst<FuncSpecAst>()->setOutput(newAst<VoidSpecAst>()->setKeyLoc(locA));
+    }
+|   FUNC ParamClauseDecl ParamClauseDecl
+    {
+        IGNORE_FOR_NOW($2);
+        IGNORE_FOR_NOW($3);
+        DECL_1_LOC(@1);
+        $$ = newAst<FuncSpecAst>();
+    }
+|   FUNC ParamClauseDecl PlainType
+    {
+        IGNORE_FOR_NOW($2);
+        DECL_1_LOC(@1);
+        $$ = newAst<FuncSpecAst>()->setOutput($3);
     }
 ;
 
@@ -1603,7 +1617,9 @@ InterfaceMember:
     }
 |   Ident Signature
     {
-        $$ = newAst<FuncDeclAst>()->setName($1)->setSpec($2);
+        auto func = FuncDecl_Cast($2);
+        func->setName($1);
+        $$ = func;
     }
 ;
 
@@ -1611,16 +1627,21 @@ FuncRecvDecl:
     FUNC ParamClauseDecl Ident Signature
     {
         DECL_1_LOC(@1);
-        auto spec = FuncSpec_Cast($4)->setKeyLoc(locA);
-        auto func = newAst<FuncRecvDeclAst>()->setRecv($2)->setName($3)->setSpec(spec);
+        auto func = FuncDecl_Cast($4);
+        func->setKeyLoc(locA);
+        func->setRecv($2);
+        func->setName($3);
         func->setVariety(FuncVariety::Method);
         $$ = func;
     }
 |   FUNC ParamClauseDecl Ident Signature BlockStmt
     {
         DECL_1_LOC(@1);
-        auto spec = FuncSpec_Cast($4)->setKeyLoc(locA);
-        auto func = newAst<FuncRecvDeclAst>()->setRecv($2)->setName($3)->setSpec(spec)->setStmt($5);
+        auto func = FuncDecl_Cast($4);
+        func->setKeyLoc(locA);
+        func->setRecv($2);
+        func->setName($3);
+        func->setStmt($5);
         func->setVariety(FuncVariety::Method);
         $$ = func;
     }
@@ -1630,14 +1651,21 @@ FuncDecl:
     FUNC Ident Signature
     {
         DECL_1_LOC(@1);
-        auto spec = FuncSpec_Cast($3)->setKeyLoc(locA);
-        $$ = newAst<FuncDeclAst>()->setName($2)->setSpec(spec);
+        auto func = FuncDecl_Cast($3);
+        func->setKeyLoc(locA);
+        func->setName($2);
+        func->setVariety(FuncVariety::Method);
+        $$ = func;
     }
 |   FUNC Ident Signature BlockStmt
     {
         DECL_1_LOC(@1);
-        auto spec = FuncSpec_Cast($3)->setKeyLoc(locA);
-        $$ = newAst<FuncDeclAst>()->setName($2)->setSpec(spec)->setStmt($4);
+        auto func = FuncDecl_Cast($3);
+        func->setKeyLoc(locA);
+        func->setName($2);
+        func->setStmt($4);
+        func->setVariety(FuncVariety::Method);
+        $$ = func;
     }
 ;
 
@@ -1648,15 +1676,28 @@ Signature:
     ParamClauseDecl %prec PREFER_SHIFT
     {
         DECL_1_LOC(@1);
-        $$ = newAst<FuncSpecAst>()->setParam($1)->setResult(newAst<VoidSpecAst>()->setKeyLoc(locA));
+        auto func = newAst<FuncDeclAst>();
+        func->setParamClause(ParamClauseDecl_Cast($1));
+        auto res = newAst<VoidSpecAst>();
+        res->setKeyLoc(locA);
+        func->setResult(res);
+        $$ = func;
     }
 |   ParamClauseDecl ParamClauseDecl
     {
-        $$ = newAst<FuncSpecAst>()->setParam($1)->setResult($2);
+        auto func = newAst<FuncDeclAst>();
+        func->setParamClause(ParamClauseDecl_Cast($1));
+        IGNORE_FOR_NOW($2);
+        auto rec = newAst<RecordSpecAst>();
+        func->setResult(rec);
+        $$ = func;
     }
 |   ParamClauseDecl PlainType
     {
-        $$ = newAst<FuncSpecAst>()->setParam($1)->setResult($2);
+        auto func = newAst<FuncDeclAst>();
+        func->setParamClause(ParamClauseDecl_Cast($1));
+        func->setResult($2);
+        $$ = func;
     }
 ;
 
@@ -2565,12 +2606,17 @@ NullLit:
     }
 ;
 
-FuncLit:
+Lambda:
     FUNC Signature BlockStmt
     {
         DECL_1_LOC(@1);
-        auto spec = FuncSpec_Cast($2)->setKeyLoc(locA);
-        $$ = newAst<FuncLitExprAst>()->setSpec(spec)->setStmt($3);
+        auto lambda = newAst<LambdaExprAst>();
+        lambda->setKeyLoc(locA);
+        lambda->setStmt($3);
+        auto func = FuncDecl_Cast($2);
+        lambda->setParamClause(func->paramClause_.release());
+        lambda->setResult(func->result_.release());
+        $$ = lambda;
     }
 ;
 

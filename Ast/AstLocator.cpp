@@ -160,6 +160,16 @@ const SourceLoc& AstLocator::lastLoc(NestedNameAst* ast) const
     return lastLoc(ast->names_->back());
 }
 
+const SourceLoc& AstLocator::loc(ErrorSpecAst* ast) const
+{
+    return ast->errorLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(ErrorSpecAst* ast) const
+{
+    return ast->errorLoc_;
+}
+
 const SourceLoc& AstLocator::loc(RecordSpecAst* ast) const
 {
     return ast->keyLoc_;
@@ -178,6 +188,36 @@ const SourceLoc& AstLocator::loc(ArraySpecAst* ast) const
 const SourceLoc& AstLocator::lastLoc(ArraySpecAst* ast) const
 {
     return ast->rDelimLoc_;
+}
+
+const SourceLoc& AstLocator::loc(ListSpecAst* ast) const
+{
+    return ast->lDelimLoc();
+}
+
+const SourceLoc& AstLocator::lastLoc(ListSpecAst* ast) const
+{
+    return ast->rDelimLoc();
+}
+
+const SourceLoc& AstLocator::loc(TupleSpecAst* ast) const
+{
+    return ast->lDelimLoc();
+}
+
+const SourceLoc& AstLocator::lastLoc(TupleSpecAst* ast) const
+{
+    return ast->rDelimLoc();
+}
+
+const SourceLoc& AstLocator::loc(TypeAppSpecAst *ast) const
+{
+    return loc(ast->specs()->front());
+}
+
+const SourceLoc& AstLocator::lastLoc(TypeAppSpecAst *ast) const
+{
+    return loc(ast->specs()->back());
 }
 
 const SourceLoc& AstLocator::loc(BuiltinSpecAst* ast) const
@@ -231,7 +271,7 @@ const SourceLoc& AstLocator::loc(FuncSpecAst* ast) const
 
 const SourceLoc& AstLocator::lastLoc(FuncSpecAst* ast) const
 {
-    return lastLoc(ast->result_.get());
+    return lastLoc(ast->output());
 }
 
 const SourceLoc& AstLocator::loc(InferredSpecAst* ast) const
@@ -250,6 +290,16 @@ const SourceLoc& AstLocator::loc(NamedSpecAst* ast) const
 }
 
 const SourceLoc& AstLocator::lastLoc(NamedSpecAst* ast) const
+{
+    return lastLoc(ast->name_.get());
+}
+
+const SourceLoc& AstLocator::loc(AlphaSpecAst* ast) const
+{
+    return loc(ast->name_.get());
+}
+
+const SourceLoc& AstLocator::lastLoc(AlphaSpecAst* ast) const
 {
     return lastLoc(ast->name_.get());
 }
@@ -280,6 +330,16 @@ const SourceLoc& AstLocator::loc(VoidSpecAst* ast) const
 }
 
 const SourceLoc& AstLocator::lastLoc(VoidSpecAst* ast) const
+{
+    return ast->keyLoc_;
+}
+
+const SourceLoc& AstLocator::loc(UnitSpecAst* ast) const
+{
+    return ast->keyLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(UnitSpecAst* ast) const
 {
     return ast->keyLoc_;
 }
@@ -600,12 +660,12 @@ const SourceLoc& AstLocator::loc(FuncDeclAst* ast) const
 {
     if (ast->name())
         return loc(ast->name_.get());
-    return loc(ast->spec());
+    return ast->keyLoc();
 }
 
 const SourceLoc& AstLocator::lastLoc(FuncDeclAst* ast) const
 {
-    return lastLoc(ast->spec_.get());
+    return lastLoc(ast->stmt());
 }
 
 const SourceLoc& AstLocator::loc(ChainedFuncDeclAst* ast) const
@@ -793,7 +853,7 @@ const SourceLoc& AstLocator::loc(TemplateDeclAst* ast) const
 
 const SourceLoc& AstLocator::lastLoc(TemplateDeclAst* ast) const
 {
-    return lastLoc(ast->name_.get());
+    return lastLoc(ast->decl_.get());
 }
 
 const SourceLoc& AstLocator::loc(TemplateParamDeclAst* ast) const
@@ -1152,14 +1212,14 @@ const SourceLoc& AstLocator::lastLoc(EqExprAst* ast) const
     return lastLoc(ast->expr2_.get());
 }
 
-const SourceLoc& AstLocator::loc(FuncLitExprAst* ast) const
+const SourceLoc& AstLocator::loc(LambdaExprAst* ast) const
 {
-    return loc(ast->spec_.get());
+    return ast->keyLoc();
 }
 
-const SourceLoc& AstLocator::lastLoc(FuncLitExprAst* ast) const
+const SourceLoc& AstLocator::lastLoc(LambdaExprAst* ast) const
 {
-    return lastLoc(ast->spec_.get());
+    return lastLoc(ast->stmt_.get());
 }
 
 const SourceLoc& AstLocator::loc(IdentExprAst* ast) const

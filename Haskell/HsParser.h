@@ -46,6 +46,7 @@ public:
 private:
     DECL_CLASS_TEST(HsParser)
 
+    using FuncDecl = std::unique_ptr<FuncDeclAst>;
     using NestedName = std::unique_ptr<NestedNameAst>;
 
     //--- Expressions ---//
@@ -91,6 +92,12 @@ private:
     Decl finishListConOrListPat();
     Decl finishUnitOrWrapOrTupConOrTupPat();
     Decl finishPatBindOrInfixFunc(Decl pat);
+    Decl parseData();
+    Decl finishData(Decl decl);
+    Decl parseDataCon(Decl decl);
+    Decl parseDataConType(Decl decl, bool strict);
+    Decl finishDataConInfix(Decl decl);
+    Decl parseDeriving(Decl decl);
 
     //--- Specifiers ---//
 
@@ -105,33 +112,38 @@ private:
     Name parseVarOrCon();
     Name parseQVar();
     Name parseQVarId();
-    Name parseQVarSymWrap();
+    Name parseQVarSymParen();
     Name parseQCon();
     Name parseQConId();
     Name parseQConIdTick();
     Name parseQConSym();
-    Name parseQConSymWrap();
+    Name parseQConSymParen();
     Name parseVar();
     Name parseVarId();
     Name parseVarIdTick();
     Name parseVarSym();
-    Name parseVarSymWrap();
+    Name parseVarSymParen();
+    Name parseVarOp();
     Name parseCon();
     Name parseConId();
+    Name parseConIdTick();
     Name parseConSym();
-    Name parseConSymWrap();
+    Name parseConSymParen();
+    Name parseConOp();
     Name maybeParseQConOp();
     Name maybeParseVar();
 
     bool isVarSym(const Token tk) const;
     bool isConSym(const Token tk) const;
     bool isAPatFIRST(const Token tk) const;
+    bool isATypeFIRST(const Token tk) const;
 
     // Helpers
 
     Name parseName(Token tk);
     Name parseQName(Token qualTk, Name (HsParser::*parseFunc)());
-    Name parseSymWrapOrId(Name (HsParser::*parseSymWrap)(), Name (HsParser::*parseId)());
+    Name parseSymParenOrId(Name (HsParser::*parseSymWrap)(), Name (HsParser::*parseId)());
+    Name parseSymOrIdTick(Name (HsParser::*parseSym)(), Name (HsParser::*parseIdTick)());
 };
 
 
@@ -188,6 +200,20 @@ inline bool HsParser::isAPatFIRST(const Token tk) const
     case TK_CHAR_LIT:
     case TK_STR_LIT:
     case TK_UNDERSCORE:
+        return true;
+    default:
+        return false;
+    }
+}
+
+inline bool HsParser::isATypeFIRST(const Token tk) const
+{
+    switch (tk) {
+    case TK_PROPER_IDENT_QUAL:
+    case TK_PROPER_IDENT:
+    case TK_IDENT:
+    case TK_LBRACKET:
+    case TK_LPAREN:
         return true;
     default:
         return false;

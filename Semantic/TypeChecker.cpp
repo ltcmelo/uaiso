@@ -1198,7 +1198,7 @@ TypeChecker::VisitResult TypeChecker::traverseRecordLitExpr(RecordLitExprAst* as
     return Continue;
 }
 
-TypeChecker::VisitResult TypeChecker::traverseFuncLitExpr(FuncLitExprAst* ast)
+TypeChecker::VisitResult TypeChecker::traverseLambdaExpr(LambdaExprAst* ast)
 {
     // TODO
 

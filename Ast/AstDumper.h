@@ -143,7 +143,7 @@ private:
     VisitResult visitDesignateExpr(DesignateExprAst* ast);
     VisitResult visitDivExpr(DivExprAst* ast);
     VisitResult visitEqExpr(EqExprAst* ast);
-    VisitResult visitFuncLitExpr(FuncLitExprAst* ast);
+    VisitResult visitLambdaExpr(LambdaExprAst* ast);
     VisitResult visitIdentExpr(IdentExprAst* ast);
     VisitResult visitInExpr(InExprAst* ast);
     VisitResult visitIncDecExpr(IncDecExprAst* ast);

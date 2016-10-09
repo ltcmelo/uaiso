@@ -22,10 +22,13 @@
 /*--------------------------*/
 
 #include "Ast/Ast.h"
+#include "Common/Assert.h"
 
 using namespace uaiso;
 
-bool SectionDeclAst::isEmpty() const
+FuncDeclAst::FuncDeclAst()
+    : DeclAst(Kind::FuncDecl)
+    , sym_(nullptr)
 {
-    return !decls_;
+    INIT_VARIETY(FuncVariety::Unknown);
 }

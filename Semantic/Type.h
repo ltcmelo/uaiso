@@ -52,19 +52,20 @@ public:
      */
     enum class Kind : char
     {
-        Array, // TODO: Separate array and list types.
+        // TODO: Separate array and list types.
+        Array,         //!< An array type.
         Bool,          //!< A boolean type.
-        Chan,
-        Elaborate,
+        Chan,          //!< A channel type.
+        Elaborate,     //!< An elaborate type.
         Enum,          //!< An enumeration type.
         Float,         //!< A floating-point type.
         Func,          //!< A function type.
         Inferred,      //!< A type yet to be inferred.
         Int,           //!< An integral type.
         Ptr,           //!< A pointer type.
-        Record,
-        Str,
-        Subrange,
+        Record,        //!< A record type.
+        Str,           //!< A string type.
+        Subrange,      //!< A subrange type.
         Empty          //!< Either the void or the unit type.
     };
 

@@ -182,7 +182,7 @@ private:
     VisitResult traverseTypeidExpr(TypeidExprAst* ast);
     VisitResult traverseRecordLitExpr(RecordLitExprAst* ast);
     VisitResult traverseRecordInitExpr(RecordInitExprAst* ast);
-    VisitResult traverseFuncLitExpr(FuncLitExprAst* ast);
+    VisitResult traverseLambdaExpr(LambdaExprAst* ast);
     VisitResult traverseMixinExpr(MixinExprAst* ast);
     VisitResult traverseMemberAccessExpr(MemberAccessExprAst* ast);
     VisitResult traverseSubrangeExpr(SubrangeExprAst* ast);

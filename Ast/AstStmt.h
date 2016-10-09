@@ -41,7 +41,7 @@ class UAISO_API EmptyStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Empty, Stmt)
-    SINGLE_LOC_CREATE(Key)
+    CREATE_WITH_LOC(Key)
 
     EmptyStmtAst()
         : StmtAst(Kind::EmptyStmt)
@@ -90,7 +90,7 @@ class UAISO_API DeclStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Decl, Stmt)
-    SINGLE_AST_CREATE(Decl, Decl)
+    CREATE_WITH_AST(Decl, Decl)
 
     DeclStmtAst()
         : StmtAst(Kind::DeclStmt)
@@ -345,7 +345,7 @@ class UAISO_API ContinueStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Continue, Stmt)
-    SINGLE_LOC_CREATE(Key)
+    CREATE_WITH_LOC(Key)
 
     ContinueStmtAst()
         : StmtAst(Kind::ContinueStmt)
@@ -364,7 +364,7 @@ class UAISO_API BreakStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Break, Stmt)
-    SINGLE_LOC_CREATE(Key)
+    CREATE_WITH_LOC(Key)
 
     BreakStmtAst()
         : StmtAst(Kind::BreakStmt)
@@ -670,7 +670,7 @@ class UAISO_API ErrorStmtAst final : public StmtAst
 {
 public:
     AST_CLASS(Error, Stmt)
-    SINGLE_LOC_CREATE(Error)
+    CREATE_WITH_LOC(Error)
 
     ErrorStmtAst()
         : StmtAst(Kind::ErrorStmt)

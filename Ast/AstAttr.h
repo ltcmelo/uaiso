@@ -39,7 +39,7 @@ public:
 class UAISO_API StorageClassAttrAst final : public AttrAst
 {
 public:
-    using Self = StorageClassAttrAst;
+    AST_CLASS(StorageClass, Attr)
 
     StorageClassAttrAst()
         : AttrAst(Kind::StorageClassAttr)
@@ -53,7 +53,7 @@ public:
 class UAISO_API LinkageAttrAst final : public AttrAst
 {
 public:
-    using Self = LinkageAttrAst;
+    AST_CLASS(Linkage, Attr)
 
     LinkageAttrAst()
         : AttrAst(Kind::LinkageAttr)
@@ -73,7 +73,7 @@ public:
 class UAISO_API VisibilityAttrAst final : public AttrAst
 {
 public:
-    using Self = VisibilityAttrAst;
+    AST_CLASS(Visibility, Attr)
 
     VisibilityAttrAst()
         : AttrAst(Kind::VisibilityAttr)
@@ -90,7 +90,7 @@ public:
 class UAISO_API DeclAttrAst : public AttrAst
 {
 public:
-    using Self = DeclAttrAst;
+    AST_CLASS(Decl, Attr)
 
     DeclAttrAst()
         : AttrAst(Kind::DeclAttr)
@@ -104,7 +104,7 @@ public:
 class UAISO_API AutoAttrAst : public AttrAst
 {
 public:
-    using Self = AutoAttrAst;
+    AST_CLASS(Auto, Attr)
 
     AutoAttrAst()
         : AttrAst(Kind::AutoAttr)
@@ -121,7 +121,7 @@ public:
 class UAISO_API TypeQualAttrAst final : public AttrAst
 {
 public:
-    using Self = TypeQualAttrAst;
+    AST_CLASS(TypeQual, Attr)
 
     TypeQualAttrAst()
         : AttrAst(Kind::TypeQualAttr)
@@ -135,7 +135,7 @@ public:
 class UAISO_API ParamDirAttrAst final : public AttrAst
 {
 public:
-    using Self = ParamDirAttrAst;
+    AST_CLASS(ParamDir, Attr)
 
     ParamDirAttrAst()
         : AttrAst(Kind::ParamDirAttr)
@@ -149,7 +149,7 @@ public:
 class UAISO_API EvalStrategyAttrAst final : public AttrAst
 {
 public:
-    using Self = EvalStrategyAttrAst;
+    AST_CLASS(EvalStrategy, Attr)
 
     EvalStrategyAttrAst()
         : AttrAst(Kind::EvalStrategyAttr)
@@ -168,7 +168,7 @@ public:
 class UAISO_API AnnotAttrAst final : public AttrAst
 {
 public:
-    using Self = AnnotAttrAst;
+    AST_CLASS(Annot, Attr)
 
     AnnotAttrAst()
         : AttrAst(Kind::AnnotAttr)
@@ -187,7 +187,7 @@ public:
 class UAISO_API CodegenAttrAst final : public AttrAst
 {
 public:
-    using Self = CodegenAttrAst;
+    AST_CLASS(Codegen, Attr)
 
     CodegenAttrAst()
         : AttrAst(Kind::CodegenAttr)

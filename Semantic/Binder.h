@@ -168,7 +168,7 @@ private:
     //--- Expressions ---//
 
     VisitResult visitRecordLitExpr(RecordLitExprAst* ast);
-    VisitResult visitFuncLitExpr(FuncLitExprAst* ast);
+    VisitResult visitLambdaExpr(LambdaExprAst* ast);
     VisitResult visitMemberAccessExpr(MemberAccessExprAst* ast);
     VisitResult visitRecordInitExpr(RecordInitExprAst* ast);
 

@@ -116,8 +116,8 @@ public:
      * \return the new head of the list
      *
      * Put a list created for shift-reduce (SR) parsing into linear form. The
-     * returned pointer is the new head of the list. It is the caller responsibility
-     * to take ownership over it.
+     * returned pointer is the new head of the list. The caller is responsible
+     * for taking ownership over it.
      */
     ListType* finishSR()
     {

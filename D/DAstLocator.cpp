@@ -26,16 +26,6 @@
 
 using namespace uaiso;
 
-const SourceLoc& DAstLocator::loc(FuncSpecAst* ast) const
-{
-    return loc(ast->param_.get());
-}
-
-const SourceLoc& DAstLocator::lastLoc(FuncSpecAst* ast) const
-{
-    return lastLoc(ast->param_.get());
-}
-
 const SourceLoc& DAstLocator::lastLoc(EnumDeclAst* ast) const
 {
     if (!ast->terminLoc_.isEmpty())
@@ -49,4 +39,3 @@ const SourceLoc& DAstLocator::lastLoc(RecordDeclAst* ast) const
         return ast->terminLoc_;
     return lastLoc(ast->spec_.get());
 }
-

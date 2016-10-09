@@ -151,7 +151,8 @@ enum class NotationVariety : char
 {
     Unknown,
     Infix,
-    Prefix
+    Prefix,
+    Standard
 };
 
 } // namespace uaiso

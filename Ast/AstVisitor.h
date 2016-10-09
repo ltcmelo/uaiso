@@ -227,6 +227,8 @@ AstVisitor<DerivedT>::traverseTemplateInstName(TemplateInstNameAst *ast)
     /*--- Specifiers traversal ---*/
 
 TRIVIAL_VISIT(VoidSpec)
+TRIVIAL_VISIT(UnitSpec)
+TRIVIAL_VISIT(ErrorSpec)
 TRIVIAL_VISIT(BuiltinSpec)
 TRIVIAL_VISIT(PtrSpec)
 TRIVIAL_VISIT(ChanSpec)
@@ -241,12 +243,19 @@ AstVisitor<DerivedT>::traverseNamedSpec(NamedSpecAst *ast)
 }
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseAlphaSpec(AlphaSpecAst *ast)
+{
+    EVAL_RESULT_0(recursivelyVisitAlphaSpec(ast));
+    EVAL_RESULT_N(traverseName(ast->name_.get()));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseFuncSpec(FuncSpecAst *ast)
 {
     EVAL_RESULT_0(recursivelyVisitFuncSpec(ast));
-    EVAL_RESULT_N(traverseDecl(ast->param_.get()));
-    EVAL_RESULT_N(traverseDecl(ast->result_.get()));
-    EVAL_RESULT_N(traverseDecl(ast->templateParam()));
+    EVAL_RESULT_LIST_N(traverseList<SpecAst>(ast->inputs_.get(), &DerivedT::traverseSpec));
+    EVAL_RESULT_N(traverseSpec(ast->output_.get()));
     return Continue;
 }
 
@@ -270,6 +279,22 @@ AstVisitor<DerivedT>::traverseRecordSpec(RecordSpecAst *ast)
 }
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseTupleSpec(TupleSpecAst *ast)
+{
+    EVAL_RESULT_0(recursivelyVisitTupleSpec(ast));
+    EVAL_RESULT_LIST_N(traverseList<SpecAst>(ast->specs_.get(), &DerivedT::traverseSpec));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseTypeAppSpec(TypeAppSpecAst *ast)
+{
+    EVAL_RESULT_0(recursivelyVisitTypeAppSpec(ast));
+    EVAL_RESULT_LIST_N(traverseList<SpecAst>(ast->specs_.get(), &DerivedT::traverseSpec));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseArraySpec(ArraySpecAst *ast)
 {
     EVAL_RESULT_0(recursivelyVisitArraySpec(ast));
@@ -279,6 +304,14 @@ AstVisitor<DerivedT>::traverseArraySpec(ArraySpecAst *ast)
         EVAL_RESULT_N(traverseExpr(Expr_Cast(ast->exprOrSpec_.get())));
     else
         EVAL_RESULT_N(traverseSpec(Spec_Cast(ast->exprOrSpec_.get())));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseListSpec(ListSpecAst *ast)
+{
+    EVAL_RESULT_0(recursivelyVisitListSpec(ast));
+    EVAL_RESULT_N(traverseSpec(Spec_Cast(ast->spec_.get())));
     return Continue;
 }
 
@@ -414,7 +447,8 @@ AstVisitor<DerivedT>::traverseFuncDecl(FuncDeclAst* decl)
 {
     EVAL_RESULT_0(recursivelyVisitFuncDecl(decl));
     EVAL_RESULT_N(traverseName(decl->name_.get()));
-    EVAL_RESULT_N(traverseSpec(decl->spec_.get()));
+    EVAL_RESULT_N(traverseDecl(decl->paramClause_.get()));
+    EVAL_RESULT_N(traverseSpec(decl->result_.get()));
     EVAL_RESULT_N(traverseStmt(decl->stmt_.get()));
     return Continue;
 }
@@ -536,7 +570,8 @@ template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseTemplateDecl(TemplateDeclAst* decl)
 {
     EVAL_RESULT_0(recursivelyVisitTemplateDecl(decl));
-    EVAL_RESULT_N(traverseName(decl->name_.get()));
+    EVAL_RESULT_N(traverseName(decl->concept_.get()));
+    EVAL_RESULT_N(traverseDecl(decl->decl_.get()));
     return Continue;
 }
 
@@ -719,10 +754,10 @@ AstVisitor<DerivedT>::traverseTerExpr(TerExprAst *ast)
 }
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
-AstVisitor<DerivedT>::traverseFuncLitExpr(FuncLitExprAst *ast)
+AstVisitor<DerivedT>::traverseLambdaExpr(LambdaExprAst *ast)
 {
-    EVAL_RESULT_0(recursivelyVisitFuncLitExpr(ast));
-    EVAL_RESULT_N(traverseSpec(ast->spec_.get()));
+    EVAL_RESULT_0(recursivelyVisitLambdaExpr(ast));
+    EVAL_RESULT_N(traverseDecl(ast->paramClause_.get()));
     EVAL_RESULT_N(traverseStmt(ast->stmt_.get()));
     return Continue;
 }
