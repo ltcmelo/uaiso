@@ -125,6 +125,15 @@ public:
      */
     virtual Symbol* clone() const = 0;
 
+    /*!
+     * \brief clone
+     * \param altName
+     * \return
+     *
+     * Clone the symbol under an alternative name.
+     */
+    virtual Symbol* clone(const Ident* altName) const = 0;
+
 protected:
     Symbol(Symbol::Kind kind);
 
@@ -152,6 +161,7 @@ public:
     Environment env() const;
 
     Namespace* clone() const override;
+    Namespace* clone(const Ident* altName) const override;
 
 private:
     DECL_PIMPL_CAST(Namespace)
@@ -237,8 +247,6 @@ public:
 
     using Decl::clone;
 
-    virtual TypeDecl* clone(const Ident* alternateName) const = 0;
-
 protected:
     using Decl::Decl;
 
@@ -277,6 +285,7 @@ public:
     BaseRecord(const Ident* name);
 
     BaseRecord* clone() const override;
+    BaseRecord* clone(const Ident* altName) const override;
 };
 
 /*!
@@ -290,32 +299,10 @@ public:
     Placeholder(const Ident* name);
 
     Placeholder* clone() const override;
-    Placeholder* clone(const Ident* alternateName) const override;
+    Placeholder* clone(const Ident* altName) const override;
 
 private:
     DECL_PIMPL_CAST(Placeholder)
-};
-
-/*!
- * \brief The Func class
- */
-class UAISO_API Func final : public TypeDecl
-{
-public:
-    Func(const Ident* name);
-    ~Func();
-
-    void setType(std::unique_ptr<FuncType> ty);
-    const FuncType* type() const;
-
-    void setEnv(Environment env);
-    Environment env() const;
-
-    Func* clone() const override;
-    Func* clone(const Ident* alternateName) const override;
-
-private:
-    DECL_PIMPL_CAST(Func)
 };
 
 /*!
@@ -327,7 +314,7 @@ public:
     Alias(const Ident* name);
 
     Alias* clone() const override;
-    Alias* clone(const Ident* alternateName) const override;
+    Alias* clone(const Ident* altName) const override;
 };
 
 /*!
@@ -343,7 +330,7 @@ public:
     const RecordType* type() const;
 
     Record* clone() const override;
-    Record* clone(const Ident* alternateName) const override;
+    Record* clone(const Ident* altName) const override;
 
 private:
     DECL_PIMPL_CAST(Record)
@@ -365,10 +352,31 @@ public:
     const EnumType* type() const;
 
     Enum* clone() const override;
-    Enum* clone(const Ident* alternateName) const override;
+    Enum* clone(const Ident* altName) const override;
 
 private:
     DECL_PIMPL_CAST(Enum)
+};
+
+/*!
+ * \brief The Func class
+ */
+class UAISO_API Func final : public ValueDecl
+{
+public:
+    Func(const Ident* name);
+    ~Func();
+
+    void setType(std::unique_ptr<FuncType> ty);
+
+    void setEnv(Environment env);
+    Environment env() const;
+
+    Func* clone() const override;
+    Func* clone(const Ident* altName) const override;
+
+private:
+    DECL_PIMPL_CAST(Func)
 };
 
 /*!
@@ -403,6 +411,7 @@ public:
     EvalStrategy evalStrategy() const;
 
     Param* clone() const override;
+    Param* clone(const Ident* altName) const override;
 
 private:
     DECL_PIMPL_CAST(Param)
@@ -418,6 +427,7 @@ public:
     ~Var();
 
     Var* clone() const override;
+    Var* clone(const Ident* altName) const override;
 
 private:
     DECL_PIMPL_CAST(Var)
@@ -432,6 +442,7 @@ public:
     EnumItem(const Ident *name);
 
     EnumItem* clone() const override;
+    EnumItem* clone(const Ident* altName) const override;
 };
 
     /*--- Utility ---*/

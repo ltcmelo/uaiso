@@ -150,21 +150,21 @@ void Binder::BinderTest::GoTestCase1()
     UAISO_EXPECT_FALSE(moduleEnv.searchDecl(lock));
     UAISO_EXPECT_FALSE(moduleEnv.searchDecl(val));
     UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(tls0));
-    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(tickspersecond));
-    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(tickspersecond));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(tickspersecond));
+    UAISO_EXPECT_FALSE(moduleEnv.searchTypeDecl(tickspersecond));
     UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(r));
-    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(makeStringSlice));
-    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(makeStringSlice));
-    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(parforalloc));
-    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(parforalloc));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(makeStringSlice));
+    UAISO_EXPECT_FALSE(moduleEnv.searchTypeDecl(makeStringSlice));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(parforalloc));
+    UAISO_EXPECT_FALSE(moduleEnv.searchTypeDecl(parforalloc));
     UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(envs));
     UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(argslice));
-    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(runtime_envs));
-    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(runtime_envs));
-    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(runtime_args));
-    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(runtime_args));
-    UAISO_EXPECT_TRUE(moduleEnv.searchTypeDecl(main));
-    UAISO_EXPECT_FALSE(moduleEnv.searchValueDecl(main));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(runtime_envs));
+    UAISO_EXPECT_FALSE(moduleEnv.searchTypeDecl(runtime_envs));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(runtime_args));
+    UAISO_EXPECT_FALSE(moduleEnv.searchTypeDecl(runtime_args));
+    UAISO_EXPECT_TRUE(moduleEnv.searchValueDecl(main));
+    UAISO_EXPECT_FALSE(moduleEnv.searchTypeDecl(main));
 
     Environment vertexEnv =
             ConstRecordType_Cast(moduleEnv.searchTypeDecl(vertex)->type())->env();
@@ -180,7 +180,7 @@ void Binder::BinderTest::GoTestCase1()
     UAISO_EXPECT_TRUE(ticksEnv.searchValueDecl(val));
 
     const Func* funcTicksPerSec =
-            ConstFunc_Cast(moduleEnv.searchTypeDecl(tickspersecond));
+            ConstFunc_Cast(moduleEnv.searchValueDecl(tickspersecond));
     Environment ticksPerSecEnv = funcTicksPerSec->env();
     UAISO_EXPECT_TRUE(ticksPerSecEnv.searchValueDecl(t0));
     UAISO_EXPECT_TRUE(ticksPerSecEnv.searchValueDecl(r));
@@ -192,13 +192,13 @@ void Binder::BinderTest::GoTestCase1()
     UAISO_EXPECT_TRUE(ticksPerSecEnvNested[1].searchValueDecl(c1));
 
     const Func* funcStringSlice =
-            ConstFunc_Cast(moduleEnv.searchTypeDecl(makeStringSlice));
+            ConstFunc_Cast(moduleEnv.searchValueDecl(makeStringSlice));
     Environment stringSliceEnv = funcStringSlice->env();
     stringSliceEnv.detachOuterEnv();
     UAISO_EXPECT_TRUE(stringSliceEnv.isEmpty());
 
     const Func* funcParallelFor =
-            ConstFunc_Cast(moduleEnv.searchTypeDecl(parforalloc));
+            ConstFunc_Cast(moduleEnv.searchValueDecl(parforalloc));
     Environment parallelForEnv = funcParallelFor->env();
     parallelForEnv.detachOuterEnv();
     UAISO_EXPECT_FALSE(parallelForEnv.isEmpty()); // Param is part of env.

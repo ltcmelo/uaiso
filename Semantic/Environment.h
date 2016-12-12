@@ -153,11 +153,20 @@ public:
     std::vector<const Import*> imports() const;
 
     /*!
-     * \brief insertType
+     * \brief insertDecl
+     * \param sym
+     *
+     * Insert symbol \a sym in either the type or value container of this
+     * environment. Symbols with duplicate name are kept but not ordered.
+     */
+    void insertDecl(std::unique_ptr<const Decl> sym);
+
+    /*!
+     * \brief insertTypeDecl
      * \param symbol
      *
-     * Insert symbol \a sym in the type container of this environment. No
-     * particular ordering is applied to symbols with duplicate name.
+     * Insert symbol \a sym in the type container of this environment. Symbols
+     * with duplicate name are kept but not ordered.
      */
     void insertTypeDecl(std::unique_ptr<const TypeDecl> sym);
 
@@ -165,8 +174,8 @@ public:
      * \brief insertValueDecl
      * \param symbol
      *
-     * Insert symbol \a sym in the value container of this environment. No
-     * particular ordering is applied to symbols with duplicate name.
+     * Insert symbol \a sym in the value container of this environment. Symbols
+     * with duplicate name are kept but not ordered.
      */
     void insertValueDecl(std::unique_ptr<const ValueDecl> sym);
 

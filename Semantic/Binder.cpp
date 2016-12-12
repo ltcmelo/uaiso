@@ -348,7 +348,7 @@ void Binder::insertBuiltins()
     auto insertFunc = [this](std::vector<Builtin::FuncPtr> funcs) {
         for (auto& func : funcs) {
             UAISO_ASSERT(func, return);
-            P->env_.insertTypeDecl(std::move(func));
+            P->env_.insertValueDecl(std::move(func));
         }
     };
 
@@ -1337,7 +1337,7 @@ Binder::VisitResult Binder::traverseFuncDecl(FuncDeclAst* ast)
     else
         func->setEnv(P->env_);
 
-    P->env_.insertTypeDecl(std::move(func));
+    P->env_.insertValueDecl(std::move(func));
 
     return Continue;
 }

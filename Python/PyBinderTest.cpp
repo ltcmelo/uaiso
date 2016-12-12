@@ -68,7 +68,7 @@ PyVerifyBasicCode(const Program* prog)
     UAISO_EXPECT_FALSE(env.isEmpty());
     UAISO_EXPECT_TRUE(env.searchValueDecl(i));
     UAISO_EXPECT_TRUE(env.searchValueDecl(s));
-    UAISO_EXPECT_TRUE(env.searchTypeDecl(f));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(f));
     UAISO_EXPECT_TRUE(env.searchTypeDecl(c));
     UAISO_EXPECT_TRUE(env.searchValueDecl(o));
 }
@@ -122,10 +122,10 @@ class bar:
     UAISO_EXPECT_TRUE(env.searchValueDecl(d));
     UAISO_EXPECT_TRUE(env.searchValueDecl(e));
     UAISO_EXPECT_TRUE(env.searchValueDecl(f));
-    UAISO_EXPECT_TRUE(env.searchTypeDecl(foo));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(foo));
     UAISO_EXPECT_TRUE(env.searchTypeDecl(bar));
 
-    const Func* funcFoo = ConstFunc_Cast(env.searchTypeDecl(foo));
+    const Func* funcFoo = ConstFunc_Cast(env.searchValueDecl(foo));
     Environment fooEnv = funcFoo->env();
     UAISO_EXPECT_TRUE(fooEnv.searchValueDecl(foo_local));
     UAISO_EXPECT_FALSE(env.searchValueDecl(foo_local));
@@ -136,8 +136,8 @@ class bar:
     Environment barEnv = classBar->type()->env();
     UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_static));
     UAISO_EXPECT_FALSE(env.searchValueDecl(bar_static));
-    UAISO_EXPECT_TRUE(barEnv.searchTypeDecl(bar_method));
-    UAISO_EXPECT_FALSE(env.searchTypeDecl(bar_method));
+    UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_method));
+    UAISO_EXPECT_FALSE(env.searchValueDecl(bar_method));
     UAISO_EXPECT_TRUE(barEnv.searchValueDecl(a));
 }
 
@@ -197,8 +197,8 @@ class bar:
     Environment barEnv = classBar->type()->env();
     UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_static));
     UAISO_EXPECT_FALSE(env.searchValueDecl(bar_static));
-    UAISO_EXPECT_TRUE(barEnv.searchTypeDecl(bar_method));
-    UAISO_EXPECT_FALSE(env.searchTypeDecl(bar_method));
+    UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_method));
+    UAISO_EXPECT_FALSE(env.searchValueDecl(bar_method));
     UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_inst1));
     UAISO_EXPECT_FALSE(env.searchValueDecl(bar_inst1));
     UAISO_EXPECT_TRUE(barEnv.searchValueDecl(bar_inst2));
@@ -283,8 +283,8 @@ def g():
     const Ident* l = lexs_.findAnyOfIdent("l");
 
     Environment env = prog->env();
-    UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
-    const Func* func = ConstFunc_Cast(env.searchTypeDecl(g));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(g));
+    const Func* func = ConstFunc_Cast(env.searchValueDecl(g));
     Environment funcEnv = func->env();
     UAISO_EXPECT_TRUE(funcEnv.searchValueDecl(l));
 }
@@ -307,8 +307,8 @@ def g():
     const Ident* l = lexs_.findAnyOfIdent("l");
 
     Environment env = prog->env();
-    UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
-    const Func* func = ConstFunc_Cast(env.searchTypeDecl(g));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(g));
+    const Func* func = ConstFunc_Cast(env.searchValueDecl(g));
     Environment funcEnv = func->env();
     UAISO_EXPECT_TRUE(funcEnv.searchValueDecl(l));
 }
@@ -331,8 +331,8 @@ def g():
     const Ident* l = lexs_.findAnyOfIdent("l");
 
     Environment env = prog->env();
-    UAISO_EXPECT_TRUE(env.searchTypeDecl(g));
-    const Func* func = ConstFunc_Cast(env.searchTypeDecl(g));
+    UAISO_EXPECT_TRUE(env.searchValueDecl(g));
+    const Func* func = ConstFunc_Cast(env.searchValueDecl(g));
     Environment funcEnv = func->env();
     UAISO_EXPECT_TRUE(funcEnv.searchValueDecl(l));
 }

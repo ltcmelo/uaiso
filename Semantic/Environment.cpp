@@ -55,9 +55,9 @@ struct SymbolTable
         return it->second.get();
     }
 
-    void insert(std::unique_ptr<const SymbolT> symbol)
+    void insert(std::unique_ptr<const SymbolT> sym)
     {
-        table_.emplace(symbol->name(), std::move(symbol));
+        table_.emplace(sym->name(), std::move(sym));
     }
 
     void takeOver(HashTable& hashTable)
@@ -197,18 +197,27 @@ const ValueDecl* Environment::searchValueDecl(const Ident* name) const
     return P->recursivelySearch<ValueDecl>(name, &EnvironmentImpl::values_);
 }
 
-void Environment::insertTypeDecl(std::unique_ptr<const TypeDecl> symbol)
+void Environment::insertDecl(std::unique_ptr<const Decl> sym)
 {
-    UAISO_ASSERT(symbol, return);
+    UAISO_ASSERT(sym, return);
 
-    P->types_.insert(std::move(symbol));
+    if (isValueDecl(sym.get()))
+        insertValueDecl(std::unique_ptr<const ValueDecl>(ConstValueDecl_Cast(sym.release())));
+    insertTypeDecl(std::unique_ptr<const TypeDecl>(ConstTypeDecl_Cast(sym.release())));
 }
 
-void Environment::insertValueDecl(std::unique_ptr<const ValueDecl> symbol)
+void Environment::insertTypeDecl(std::unique_ptr<const TypeDecl> sym)
 {
-    UAISO_ASSERT(symbol, return);
+    UAISO_ASSERT(sym, return);
 
-    P->values_.insert(std::move(symbol));
+    P->types_.insert(std::move(sym));
+}
+
+void Environment::insertValueDecl(std::unique_ptr<const ValueDecl> sym)
+{
+    UAISO_ASSERT(sym, return);
+
+    P->values_.insert(std::move(sym));
 }
 
 void Environment::takeOver(Environment env)
@@ -245,7 +254,7 @@ std::vector<const Import*> Environment::imports() const
     std::vector<const Import*> imports;
     for (const auto& import : P->imports_)
         imports.push_back(import.get());
-    return imports; // RVO
+    return imports;
 }
 
 Environment::Range<TypeDecl> Environment::searchTypeDecls(const Ident* name) const

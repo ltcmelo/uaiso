@@ -151,26 +151,26 @@ Builtin::TypeDeclPtr PyBuiltin::createRootTypeDecl(LexemeMap* lexs) const
 {
     // The `object` class
     Environment env;
-    env.insertTypeDecl(createFunc<RecordType>(lexs, "__new__"));
-    env.insertTypeDecl(createFunc<EmptyType>(lexs, "__init__"));
-    env.insertTypeDecl(createFunc<EmptyType>(lexs, "__del__"));
-    env.insertTypeDecl(createFunc<StrType>(lexs, "__repr__"));
-    env.insertTypeDecl(createFunc<StrType>(lexs, "__str__"));
-    //env.insertTypeDecl(createFunc<ArrayType>(lexs, "__bytes__"));
-    env.insertTypeDecl(createFunc<StrType>(lexs, "__format__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexs, "__lt__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexs, "__le__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexs, "__eq__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexs, "__ne__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexs, "__gt__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexs, "__ge__"));
-    env.insertTypeDecl(createFunc<IntType>(lexs, "__hash__"));
-    env.insertTypeDecl(createFunc<BoolType>(lexs, "__bool__"));
-    env.insertTypeDecl(createFunc<InferredType>(lexs, "__getattr__"));
-    env.insertTypeDecl(createFunc<InferredType>(lexs, "__getattribute__"));
-    env.insertTypeDecl(createFunc<EmptyType>(lexs, "__setattr__"));
-    env.insertTypeDecl(createFunc<EmptyType>(lexs, "__delattr__"));
-    //env.insertTypeDecl(createFunc<ArrayType>(lexs, "__dir__"));
+    env.insertValueDecl(createFunc<RecordType>(lexs, "__new__"));
+    env.insertValueDecl(createFunc<EmptyType>(lexs, "__init__"));
+    env.insertValueDecl(createFunc<EmptyType>(lexs, "__del__"));
+    env.insertValueDecl(createFunc<StrType>(lexs, "__repr__"));
+    env.insertValueDecl(createFunc<StrType>(lexs, "__str__"));
+    //env.insertValueDecl(createFunc<ArrayType>(lexs, "__bytes__"));
+    env.insertValueDecl(createFunc<StrType>(lexs, "__format__"));
+    env.insertValueDecl(createFunc<BoolType>(lexs, "__lt__"));
+    env.insertValueDecl(createFunc<BoolType>(lexs, "__le__"));
+    env.insertValueDecl(createFunc<BoolType>(lexs, "__eq__"));
+    env.insertValueDecl(createFunc<BoolType>(lexs, "__ne__"));
+    env.insertValueDecl(createFunc<BoolType>(lexs, "__gt__"));
+    env.insertValueDecl(createFunc<BoolType>(lexs, "__ge__"));
+    env.insertValueDecl(createFunc<IntType>(lexs, "__hash__"));
+    env.insertValueDecl(createFunc<BoolType>(lexs, "__bool__"));
+    env.insertValueDecl(createFunc<InferredType>(lexs, "__getattr__"));
+    env.insertValueDecl(createFunc<InferredType>(lexs, "__getattribute__"));
+    env.insertValueDecl(createFunc<EmptyType>(lexs, "__setattr__"));
+    env.insertValueDecl(createFunc<EmptyType>(lexs, "__delattr__"));
+    //env.insertValueDecl(createFunc<ArrayType>(lexs, "__dir__"));
     std::unique_ptr<RecordType> recTy(new RecordType);
     recTy->setEnv(env);
     auto ident = insertOrFindIdent(lexs, "object");
@@ -187,60 +187,60 @@ template <class NumT>
 void addCommonNumOprtrs(Environment env, LexemeMap* lexs)
 {
     // Unary
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__pos__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__neg__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__abs__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__invert__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__round__"));
-    env.insertTypeDecl(createFunc<IntType>(lexs, "__floor_"));
-    env.insertTypeDecl(createFunc<IntType>(lexs, "__ceil__"));
-    env.insertTypeDecl(createFunc<IntType>(lexs, "__trunc__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__pos__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__neg__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__abs__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__invert__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__round__"));
+    env.insertValueDecl(createFunc<IntType>(lexs, "__floor_"));
+    env.insertValueDecl(createFunc<IntType>(lexs, "__ceil__"));
+    env.insertValueDecl(createFunc<IntType>(lexs, "__trunc__"));
 
     // Binary
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__add__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__sub__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__mul__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__floordiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__div__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__truediv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__mod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__divmod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__pow__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__lshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rand__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__ror__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rxor__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__radd__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rsub__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rmul__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rfloordiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rdiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rtruediv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rmod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rdivmod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rpow__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rlshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rrshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rand__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__ror__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__rxor__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__add__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__sub__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__mul__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__floordiv__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__div__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__truediv__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__mod__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__divmod__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__pow__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__lshift__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rshift__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rand__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__ror__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rxor__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__radd__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rsub__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rmul__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rfloordiv__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rdiv__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rtruediv__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rmod__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rdivmod__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rpow__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rlshift__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rrshift__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rand__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__ror__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__rxor__"));
 
     // Augmented assignment
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__iadd__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__isub__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__imul__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__ifloordiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__idiv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__itruediv__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__imod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__idivmod__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__ipow__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__ilshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__irshift__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__iand__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__ior__"));
-    env.insertTypeDecl(createFunc<NumT>(lexs, "__ixor__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__iadd__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__isub__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__imul__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__ifloordiv__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__idiv__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__itruediv__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__imod__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__idivmod__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__ipow__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__ilshift__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__irshift__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__iand__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__ior__"));
+    env.insertValueDecl(createFunc<NumT>(lexs, "__ixor__"));
 }
 
 std::unique_ptr<Record> createBasicRecord(LexemeMap* lexs,
@@ -271,19 +271,19 @@ PyBuiltin::createBasicTypeDecl(LexemeMap* lexs, Type::Kind kind) const
     case Type::Kind::Int: {
         Environment env;
         addCommonNumOprtrs<IntType>(env, lexs);
-        env.insertTypeDecl(createFunc<IntType>(lexs, "bit_length"));
-        env.insertTypeDecl(createFunc<IntType>(lexs, "to_bytes"));
-        env.insertTypeDecl(createFunc<IntType>(lexs, "from_bytes"));
+        env.insertValueDecl(createFunc<IntType>(lexs, "bit_length"));
+        env.insertValueDecl(createFunc<IntType>(lexs, "to_bytes"));
+        env.insertValueDecl(createFunc<IntType>(lexs, "from_bytes"));
         return TypeDeclPtr(createBasicRecord(lexs, env, kPyBuiltinInt));
     }
 
     case Type::Kind::Float: {
         Environment env;
         addCommonNumOprtrs<FloatType>(env, lexs);
-        env.insertTypeDecl(createFunc<IntType>(lexs, "as_integer_ratio"));
-        env.insertTypeDecl(createFunc<BoolType>(lexs, "is_integer"));
-        env.insertTypeDecl(createFunc<StrType>(lexs, "hex"));
-        env.insertTypeDecl(createFunc<FloatType>(lexs, "from_hex"));
+        env.insertValueDecl(createFunc<IntType>(lexs, "as_integer_ratio"));
+        env.insertValueDecl(createFunc<BoolType>(lexs, "is_integer"));
+        env.insertValueDecl(createFunc<StrType>(lexs, "hex"));
+        env.insertValueDecl(createFunc<FloatType>(lexs, "from_hex"));
         return TypeDeclPtr(createBasicRecord(lexs, env, kPyBuiltinFloat));
     }
 

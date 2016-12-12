@@ -248,16 +248,16 @@ void Manager::processDeps(const std::string& fullFileName) const
                 // which have already been filter during import resolution.
                 if (import->targetEntity() == Import::Module) {
                     for (auto actualName : import->selectedItems()) {
-                        auto tySym = otherProg->env().searchTypeDecl(actualName);
-                        if (!tySym)
+                        auto sym = otherProg->env().searchDecl(actualName);
+                        if (!sym)
                             continue;
 
-                        const TypeDecl* cloned = nullptr;
+                        const Decl* cloned = nullptr;
                         if (auto altName = import->alternateName(actualName))
-                            cloned = tySym->clone(altName);
+                            cloned = DeclSymbol_Cast(sym->clone(altName));
                         else
-                            cloned = TypeDecl_Cast(tySym->clone());
-                        curProgEnv.insertTypeDecl(std::unique_ptr<const TypeDecl>(cloned));
+                            cloned = DeclSymbol_Cast(sym->clone());
+                        curProgEnv.insertDecl(std::unique_ptr<const Decl>(cloned));
                     }
                 } else {
                     auto baseName = FileInfo(fileName).fileBaseName();

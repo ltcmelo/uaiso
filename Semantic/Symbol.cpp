@@ -250,9 +250,9 @@ Alias* Alias::clone() const
     return trivialClone<Alias>(P_CAST->name_);
 }
 
-Alias* Alias::clone(const Ident *alternateName) const
+Alias* Alias::clone(const Ident *altName) const
 {
-    return trivialClone<Alias>(alternateName);
+    return trivialClone<Alias>(altName);
 }
 
     //--- Placeholder ---//
@@ -275,26 +275,28 @@ Placeholder *Placeholder::clone() const
     return clone(P_CAST->name_);
 }
 
-Placeholder* Placeholder::clone(const Ident* alternateName) const
+Placeholder* Placeholder::clone(const Ident* altName) const
 {
-    auto holder = trivialClone<Placeholder>(alternateName);
+    auto holder = trivialClone<Placeholder>(altName);
     holder->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
     return holder;
 }
 
     //--- Func ---//
 
-struct uaiso::Func::FuncImpl : TypeDecl::TypeDeclImpl
+struct uaiso::Func::FuncImpl : ValueDecl::ValueDeclImpl
 {
-    using TypeDeclImpl::TypeDeclImpl;
+    using ValueDeclImpl::ValueDeclImpl;
 
     Environment env_;
+    std::vector<std::unique_ptr<Type>> paramsTy_;
+    // The return type is stored in the base's value type.
 };
 
 DEF_PIMPL_CAST(Func)
 
 Func::Func(const Ident *name)
-    : TypeDecl(new FuncImpl(name, Kind::Func))
+    : ValueDecl(new FuncImpl(name, Kind::Func))
 {}
 
 Func::~Func()
@@ -302,12 +304,11 @@ Func::~Func()
 
 void Func::setType(std::unique_ptr<FuncType> ty)
 {
-    TypeDecl::setType(std::unique_ptr<Type>(ty.release()));
-}
-
-const FuncType *Func::type() const
-{
-    return ConstFuncType_Cast(TypeDecl::type());
+    // TODO: Function type interface that allows ownership transfer.
+    if (ty->returnType())
+        P_CAST->valueTy_.reset(ty->returnType()->clone());
+    for (const auto& param : ty->paramsType())
+        P_CAST->paramsTy_.push_back(std::unique_ptr<Type>(param->clone()));
 }
 
 void Func::setEnv(Environment env)
@@ -325,11 +326,13 @@ Func* Func::clone() const
     return clone(P_CAST->name_);
 }
 
-Func* Func::clone(const Ident* alternateName) const
+Func* Func::clone(const Ident* altName) const
 {
-    auto func = trivialClone<Func>(alternateName);
-    func->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
-    func->P_CAST->env_ = P_CAST->env_;
+    auto func = trivialClone<Func>(altName);
+    if (P_CAST->valueTy_)
+        func->P_CAST->valueTy_ = std::unique_ptr<Type>(P_CAST->valueTy_->clone());
+    for (auto const& param : P_CAST->paramsTy_)
+        func->P_CAST->paramsTy_.push_back(std::unique_ptr<Type>(param->clone()));
     return func;
 }
 
@@ -378,7 +381,12 @@ Environment Namespace::env() const
 
 Namespace* Namespace::clone() const
 {
-    auto space = trivialClone<Namespace>(P_CAST->name_);
+    return clone(P_CAST->name_);
+}
+
+Namespace* Namespace::clone(const Ident* altName) const
+{
+    auto space = trivialClone<Namespace>(altName);
     space->P_CAST->env_ = P_CAST->env_;
     return space;
 }
@@ -414,9 +422,9 @@ Record* Record::clone() const
     return clone(P_CAST->name_);
 }
 
-Record* Record::clone(const Ident* alternateName) const
+Record* Record::clone(const Ident* altName) const
 {
-    auto rec = trivialClone<Record>(alternateName);
+    auto rec = trivialClone<Record>(altName);
     rec->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
     return rec;
 }
@@ -454,9 +462,9 @@ Enum* Enum::clone() const
     return clone(P_CAST->name_);
 }
 
-Enum* Enum::clone(const Ident* alternateName) const
+Enum* Enum::clone(const Ident* altName) const
 {
-    auto enun = trivialClone<Enum>(alternateName);
+    auto enun = trivialClone<Enum>(altName);
     enun->P_CAST->ty_ = std::unique_ptr<Type>(P_CAST->ty_->clone());
     enun->P_CAST->underTy_ = std::unique_ptr<Type>(P_CAST->underTy_->clone());
     return enun;
@@ -478,9 +486,14 @@ BaseRecord::BaseRecord(const Ident* name)
     : Decl(new DeclImpl(name, Kind::BaseRecord))
 {}
 
-BaseRecord *BaseRecord::clone() const
+BaseRecord* BaseRecord::clone() const
 {
-    return trivialClone<BaseRecord>(P_CAST->name_);
+    return clone(P_CAST->name_);
+}
+
+BaseRecord* BaseRecord::clone(const Ident* altName) const
+{
+    return trivialClone<BaseRecord>(altName);
 }
 
     //--- Param ---//
@@ -525,7 +538,12 @@ Param::EvalStrategy Param::evalStrategy() const
 
 Param* Param::clone() const
 {
-    auto param = trivialClone<Param>(P_CAST->name_);
+    return clone(P_CAST->name_);
+}
+
+Param* Param::clone(const Ident* altName) const
+{
+    auto param = trivialClone<Param>(altName);
     param->P_CAST->valueTy_ = std::unique_ptr<Type>(P_CAST->valueTy_->clone());
     return param;
 }
@@ -548,7 +566,12 @@ Var::~Var()
 
 Var* Var::clone() const
 {
-    auto var = trivialClone<Var>(P_CAST->name_);
+    return clone(P_CAST->name_);
+}
+
+Var* Var::clone(const Ident* altName) const
+{
+    auto var = trivialClone<Var>(altName);
     var->P_CAST->valueTy_ = std::unique_ptr<Type>(P_CAST->valueTy_->clone());
     return var;
 }
@@ -561,7 +584,12 @@ EnumItem::EnumItem(const Ident* name)
 
 EnumItem* EnumItem::clone() const
 {
-    auto item = trivialClone<EnumItem>(P_CAST->name_);
+    return clone(P_CAST->name_);
+}
+
+EnumItem* EnumItem::clone(const Ident* altName) const
+{
+    auto item = trivialClone<EnumItem>(altName);
     item->P_CAST->valueTy_ = std::unique_ptr<Type>(P_CAST->valueTy_->clone());
     return item;
 }

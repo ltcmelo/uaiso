@@ -469,7 +469,7 @@ struct uaiso::FuncType::FuncTypeImpl : Type::TypeImpl
     using TypeImpl::TypeImpl;
 
     std::unique_ptr<Type> returnType_;
-    std::unique_ptr<Type> paramType_;
+    std::unique_ptr<Type> paramType_; // TODO: Make paramsType_ vector.
 };
 
 DEF_PIMPL_CAST(FuncType)
@@ -490,6 +490,14 @@ FuncType::FuncType()
 
 FuncType::~FuncType()
 {}
+
+void FuncType::addParamType(std::unique_ptr<Type> type)
+{}
+
+std::vector<const Type *> FuncType::paramsType() const
+{
+    return std::vector<const Type*>(); // TODO: Implement.
+}
 
 void FuncType::setReturnType(std::unique_ptr<Type> type)
 {

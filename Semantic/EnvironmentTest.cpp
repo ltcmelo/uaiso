@@ -94,12 +94,12 @@ public:
         std::unique_ptr<Ident> b(new Ident("b"));
         Func* t = new Func(b.get());
         t->setEnv(env.createSubEnv());
-        t->env().insertTypeDecl(std::unique_ptr<const TypeDecl>(t));
-        env.insertTypeDecl(std::unique_ptr<const TypeDecl>(t));
+        t->env().insertValueDecl(std::unique_ptr<const ValueDecl>(t));
+        env.insertValueDecl(std::unique_ptr<const ValueDecl>(t));
 
         UAISO_EXPECT_TRUE(env.searchValueDecl(a.get()));
-        UAISO_EXPECT_TRUE(env.searchTypeDecl(b.get()));
-        const Func* t_env = ConstFunc_Cast(env.searchTypeDecl(b.get()));
+        UAISO_EXPECT_TRUE(env.searchValueDecl(b.get()));
+        const Func* t_env = ConstFunc_Cast(env.searchValueDecl(b.get()));
         UAISO_EXPECT_TRUE(t_env->env().searchValueDecl(a.get()));
     }
 

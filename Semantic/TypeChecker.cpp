@@ -373,7 +373,7 @@ TypeChecker::VisitResult TypeChecker::traverseRecordDecl(RecordDeclAst *ast)
 
 TypeChecker::VisitResult TypeChecker::traverseFuncDecl(FuncDeclAst* ast)
 {
-    ENSURE_VALID_TYPE_SYMBOL;
+    ENSURE_ANNOTATED_SYMBOL;
 
     if (P->lang_->hasFuncLevelScope()) {
         P->env_ = ast->sym_->env();

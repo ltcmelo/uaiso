@@ -328,6 +328,9 @@ public:
     FuncType();
     ~FuncType();
 
+    void addParamType(std::unique_ptr<Type> type);
+    std::vector<const Type*> paramsType() const;
+
     void setReturnType(std::unique_ptr<Type> type);
     const Type* returnType() const;
 
