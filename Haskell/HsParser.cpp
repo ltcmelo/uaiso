@@ -238,6 +238,7 @@ Parser::DeclList HsParser::parseTopDecls()
             break;
 
         case TK_TYPE:
+            parseTypeAlias();
             break;
 
         case TK_NEWTYPE:
@@ -884,12 +885,12 @@ Parser::Decl HsParser::parseData()
     Decl decl;
     std::vector<Spec> alphas;
 
-ParseTyCon:
+ParseType:
     switch (ahead_) {
     case TK_IDENT:
         consumeToken();
         alphas.push_back(AlphaSpecAst::create(SimpleNameAst::create(prevLoc_)));
-        goto ParseTyCon;
+        goto ParseType;
 
     case TK_EQ:
         consumeToken();
@@ -912,8 +913,16 @@ Parser::Decl HsParser::parseDataCon(Decl decl)
         parseConOp();
         return finishDataConInfix(std::move(decl));
 
+    case TK_LPAREN: {
+        const Token peek = peekToken(2);
+        if (peek == TK_COLON || peek == TK_SPECIAL_IDENT) {
+            parseConSymParen();
+            return finishDataConPrefix(std::move(decl));
+        }
+        // Fallthrough.
+    }
+
     case TK_LBRACKET:
-    case TK_LPAREN:
     case TK_IDENT:
     case TK_PROPER_IDENT_QUAL:
         parseBType();
@@ -922,47 +931,51 @@ Parser::Decl HsParser::parseDataCon(Decl decl)
 
     default:
         parseConId();
+        return finishDataConPrefix(std::move(decl));
+    }
+}
 
-        switch (ahead_) {
-        case TK_PIPE:
-            consumeToken();
-            return parseDataCon(std::move(decl));
+Parser::Decl HsParser::finishDataConPrefix(Decl decl)
+{
+    switch (ahead_) {
+    case TK_PIPE:
+        consumeToken();
+        return parseDataCon(std::move(decl));
 
-        case TK_DERIVING:
-            return parseDeriving(std::move(decl));
+    case TK_DERIVING:
+        return parseDeriving(std::move(decl));
 
-        case TK_BACKTICK:
-            parseConIdTick();
-            return finishDataConInfix(std::move(decl));
+    case TK_BACKTICK:
+        parseConIdTick();
+        return finishDataConInfix(std::move(decl));
 
-        case TK_COLON:
-        case TK_SPECIAL_IDENT:
-            consumeToken();
-            SpecialNameAst::create(prevLoc_);
-            return finishDataConInfix(std::move(decl));
+    case TK_COLON:
+    case TK_SPECIAL_IDENT:
+        consumeToken();
+        SpecialNameAst::create(prevLoc_);
+        return finishDataConInfix(std::move(decl));
 
-        case TK_LBRACE: {
-            ParenMatcher<> wrap(this, "closing record brace");
-            do {
-                // TODO: Parse fields.
-            } while (maybeConsume(TK_COMMA));
-            return Decl();
-        }
+    case TK_LBRACE: {
+        ParenMatcher<> wrap(this, "closing record brace");
+        do {
+            // TODO: Parse fields.
+        } while (maybeConsume(TK_COMMA));
+        return Decl();
+    }
 
-        case TK_EXCLAM:
-            consumeToken();
-            // Fallthrough.
+    case TK_EXCLAM:
+        consumeToken();
+        // Fallthrough.
 
-        case TK_LBRACKET:
-        case TK_LPAREN:
-        case TK_IDENT:
-        case TK_PROPER_IDENT:
-        case TK_PROPER_IDENT_QUAL:
-            return parseDataConType(std::move(decl), false);
+    case TK_LBRACKET:
+    case TK_LPAREN:
+    case TK_IDENT:
+    case TK_PROPER_IDENT:
+    case TK_PROPER_IDENT_QUAL:
+        return parseDataConType(std::move(decl), false);
 
-        default:
-            return decl;
-        }
+    default:
+        return decl;
     }
 }
 
@@ -1030,6 +1043,31 @@ Parser::Decl HsParser::parseDeriving(Decl decl)
         parseModid();
         return decl;
     }
+}
+
+Parser::Decl HsParser::parseTypeAlias()
+{
+    UAISO_ASSERT(ahead_ == TK_TYPE, return Decl());
+
+    consumeToken();
+    auto alias = AliasDeclAst::create();
+    alias->setKeyLoc(prevLoc_);
+    parseConId();
+    while (maybeConsume(TK_IDENT)) {
+        auto alpha = AlphaSpecAst::create(SimpleNameAst::create(prevLoc_));
+    }
+    match(TK_EQ);
+
+    alias->setSpec(parseType());
+
+    return std::move(alias);
+}
+
+Parser::Decl HsParser::parseNewType()
+{
+    UAISO_ASSERT(ahead_ == TK_NEWTYPE, return Decl());
+
+    return Decl();
 }
 
     //--- Specifiers ---//

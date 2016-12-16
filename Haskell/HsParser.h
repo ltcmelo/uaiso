@@ -96,8 +96,11 @@ private:
     Decl finishData(Decl decl);
     Decl parseDataCon(Decl decl);
     Decl parseDataConType(Decl decl, bool strict);
+    Decl finishDataConPrefix(Decl decl);
     Decl finishDataConInfix(Decl decl);
     Decl parseDeriving(Decl decl);
+    Decl parseTypeAlias();
+    Decl parseNewType();
 
     //--- Specifiers ---//
 
