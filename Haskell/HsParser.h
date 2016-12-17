@@ -102,6 +102,9 @@ private:
     Decl parseTypeAlias();
     Decl parseNewType();
 
+    template <class AstT>
+    std::unique_ptr<AstT> parseTypeAliasOrNewType();
+
     //--- Specifiers ---//
 
     Spec parseContextType();

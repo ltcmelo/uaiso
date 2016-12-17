@@ -90,7 +90,7 @@ Parser::Decl HsParser::parseExport()
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Decl());
 
     auto xport = ExportDeclAst::create();
-    ParenMatcher<ExportDeclAst> wrap(this, "closing export paren", xport.get());
+    ParenMatcher<ExportDeclAst> m(this, "closing export paren", xport.get());
     xport->setSelections(parseSelection(true));
 
     return std::move(xport);
@@ -130,7 +130,7 @@ Parser::Decl HsParser::parseImport()
     if (contextKeyAhead(kHiding))
         consumeToken(); // TODO: Store hidden names.
     if (ahead_ == TK_LPAREN) {
-        ParenMatcher<ImportDeclAst> wrap(this, "closing import paren", import.get());
+        ParenMatcher<ImportDeclAst> m(this, "closing import paren", import.get());
         import->setSelections(parseSelection(false));
     }
 
@@ -188,7 +188,7 @@ Parser::DeclList HsParser::parseSelection(bool isExport)
             // we try skipping to a coma.
             if (name) {
                 if (ahead_ == TK_LPAREN) {
-                    ParenMatcher<> wrap(this, "closing paren on import/export selection");
+                    ParenMatcher<> m(this, "closing paren on import/export selection");
                     if (maybeConsume(TK_DOT_DOT)) {
                         // TODO: Mark export all.
                     } else {
@@ -215,7 +215,7 @@ Parser::DeclList HsParser::parseBody()
 {
     UAISO_ASSERT(ahead_ == TK_LBRACE, return DeclList());
 
-    BraceMatcher<> wraper(this, "closing body brace");
+    BraceMatcher<> m(this, "closing body brace");
     while (ahead_ == TK_IMPORT) {
         parseImport();
         if (!maybeConsume(TK_SEMICOLON))
@@ -242,6 +242,7 @@ Parser::DeclList HsParser::parseTopDecls()
             break;
 
         case TK_NEWTYPE:
+            parseNewType();
             break;
 
         case TK_CLASS:
@@ -812,7 +813,7 @@ Parser::Decl HsParser::finishPatBindOrInfixFunc(Parser::Decl pat)
 
     case TK_BACKTICK: {
         func = FuncDeclAst::create();
-        Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "infix function name");
+        Matcher<TK_BACKTICK, TK_BACKTICK> m(this, "infix function name");
         func->setName(parseVarId());
         // Fallthrough.
     }
@@ -956,7 +957,7 @@ Parser::Decl HsParser::finishDataConPrefix(Decl decl)
         return finishDataConInfix(std::move(decl));
 
     case TK_LBRACE: {
-        ParenMatcher<> wrap(this, "closing record brace");
+        ParenMatcher<> m(this, "closing record brace");
         do {
             // TODO: Parse fields.
         } while (maybeConsume(TK_COMMA));
@@ -1034,7 +1035,7 @@ Parser::Decl HsParser::parseDeriving(Decl decl)
     consumeToken();
     switch (ahead_) {
     case TK_LPAREN: {
-        ParenMatcher<> wrap(this, "closing deriving paren");
+        ParenMatcher<> m(this, "closing deriving paren");
         parseDSeq<NameAstList, HsParser>(TK_COMMA, &HsParser::parseModid);
         return decl;
     }
@@ -1049,15 +1050,7 @@ Parser::Decl HsParser::parseTypeAlias()
 {
     UAISO_ASSERT(ahead_ == TK_TYPE, return Decl());
 
-    consumeToken();
-    auto alias = AliasDeclAst::create();
-    alias->setKeyLoc(prevLoc_);
-    parseConId();
-    while (maybeConsume(TK_IDENT)) {
-        auto alpha = AlphaSpecAst::create(SimpleNameAst::create(prevLoc_));
-    }
-    match(TK_EQ);
-
+    auto alias = parseTypeAliasOrNewType<AliasDeclAst>();
     alias->setSpec(parseType());
 
     return std::move(alias);
@@ -1067,7 +1060,36 @@ Parser::Decl HsParser::parseNewType()
 {
     UAISO_ASSERT(ahead_ == TK_NEWTYPE, return Decl());
 
-    return Decl();
+    auto rec = parseTypeAliasOrNewType<RecordDeclAst>();
+    parseCon();
+    if (ahead_ == TK_LBRACE) {
+        BraceMatcher<> m(this, "closing newtype brace");
+        parseVar();
+        match(TK_COLON_COLON);
+        parseType();
+    } else {
+        parseAType();
+    }
+
+    if (ahead_ == TK_DERIVING)
+        return parseDeriving(std::move(rec));
+
+    return std::move(rec);
+}
+
+template <class AstT>
+std::unique_ptr<AstT> HsParser::parseTypeAliasOrNewType()
+{
+    consumeToken();
+    auto decl = AstT::create();
+    decl->setKeyLoc(prevLoc_);
+    parseConId();
+    while (maybeConsume(TK_IDENT)) {
+        auto alpha = AlphaSpecAst::create(SimpleNameAst::create(prevLoc_));
+    }
+    match(TK_EQ);
+
+    return decl;
 }
 
     //--- Specifiers ---//
@@ -1278,7 +1300,7 @@ Parser::Name HsParser::parseModid()
 Parser::Name HsParser::parseVarOrCon()
 {
     if (ahead_ == TK_LPAREN) {
-        ParenMatcher<> wrap(this, "closing var/con sym paren");
+        ParenMatcher<> m(this, "closing var/con sym paren");
         if (ahead_ == TK_COLON || ahead_ == TK_SPECIAL_IDENT) {
             consumeToken();
             return SpecialNameAst::create(prevLoc_);
@@ -1351,42 +1373,42 @@ Parser::Name HsParser::parseQVarId()
 Parser::Name HsParser::parseQConSymParen()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Name());
-    ParenMatcher<> wrap(this, "qconsym in parens");
+    ParenMatcher<> m(this, "qconsym in parens");
     return parseQName(TK_SPECIAL_IDENT_QUAL, &HsParser::parseConSym);
 }
 
 Parser::Name HsParser::parseQVarSymParen()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Name());
-    ParenMatcher<> wrap(this, "qvarsym in parens");
+    ParenMatcher<> m(this, "qvarsym in parens");
     return parseQName(TK_PUNC_IDENT_QUAL, &HsParser::parseVarSym);
 }
 
 Parser::Name HsParser::parseConSymParen()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Name());
-    ParenMatcher<> wrap(this, "consym in parens");
+    ParenMatcher<> m(this, "consym in parens");
     return parseConSym();
 }
 
 Parser::Name HsParser::parseVarSymParen()
 {
     UAISO_ASSERT(ahead_ == TK_LPAREN, return Name());
-    ParenMatcher<> wrap(this, "varsym in parens");
+    ParenMatcher<> m(this, "varsym in parens");
     return parseVarSym();
 }
 
 Parser::Name HsParser::parseConIdTick()
 {
     UAISO_ASSERT(ahead_ == TK_BACKTICK, return Name());
-    Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "conid in backticks");
+    Matcher<TK_BACKTICK, TK_BACKTICK> m(this, "conid in backticks");
     return parseConId();
 }
 
 Parser::Name HsParser::parseVarIdTick()
 {
     UAISO_ASSERT(ahead_ == TK_BACKTICK, return Name());
-    Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "varid in backticks");
+    Matcher<TK_BACKTICK, TK_BACKTICK> m(this, "varid in backticks");
     return parseVarId();
 }
 
@@ -1426,7 +1448,7 @@ Parser::Name HsParser::parseVarId()
 Parser::Name HsParser::parseQConIdTick()
 {
     UAISO_ASSERT(ahead_ == TK_BACKTICK, return Name());
-    Matcher<TK_BACKTICK, TK_BACKTICK> wrap(this, "conid in backticks");
+    Matcher<TK_BACKTICK, TK_BACKTICK> m(this, "conid in backticks");
     return parseQConId();
 }
 

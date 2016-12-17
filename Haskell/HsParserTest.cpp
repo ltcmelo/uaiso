@@ -1589,10 +1589,45 @@ data Bar = (:<>:) | Bar
         )raw");
 }
 
-void HsParser::HsParserTest::testCase153() {}
-void HsParser::HsParserTest::testCase154() {}
-void HsParser::HsParserTest::testCase155() {}
-void HsParser::HsParserTest::testCase156() {}
-void HsParser::HsParserTest::testCase157() {}
+void HsParser::HsParserTest::testCase153()
+{
+    core(R"raw(
+module Foo where
+newtype N = N Int
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase154()
+{
+    core(R"raw(
+module Foo where
+newtype Age = Age { unAge :: Int }
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase155()
+{
+    core(R"raw(
+module Foo where
+newtype N = N Int Int
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase156()
+{
+    core(R"raw(
+module Foo where
+newtype N = N
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase157()
+{
+    core(R"raw(
+module Foo where
+newtype N = N Int deriving (Eq, Ord)
+        )raw");
+}
+
 void HsParser::HsParserTest::testCase158() {}
 void HsParser::HsParserTest::testCase159() {}
