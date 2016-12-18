@@ -117,8 +117,7 @@ Parser::Decl HsParser::parseImport()
     if (contextKeyAhead(kQualified))
         import->setMode(parseName(TK_IDENT));
 
-    auto target = IdentExprAst::create();
-    target->setName(parseModid());
+    auto target = IdentExprAst::create(parseModid());
     import->setTarget(std::move(target));
     if (contextKeyAhead(kAs)) {
         consumeToken();
@@ -161,7 +160,8 @@ Parser::DeclList HsParser::parseSelection(bool isExport)
             break;
 
         case TK_IDENT:
-            select->setName(parseVarId());
+            consumeToken();
+            select->setName(SimpleNameAst::create(prevLoc_));
             break;
 
         case TK_IDENT_QUAL:
@@ -1227,6 +1227,17 @@ Parser::Expr HsParser::parseExpr()
 
 Parser::Expr HsParser::parseAExpr()
 {
+    auto maybeCall = [this] (Expr base, FuncVariety v) -> Expr {
+        if (!isAExpFIRST(ahead_))
+            return base;
+        auto call = CallExprAst::create(std::move(base));
+        call->setVariety(v);
+        call->setArgs(parseSeq<ExprAstList, HsParser>(
+                [this] (const Token tk) { return !isAExpFIRST(tk); },
+                &HsParser::parseAExpr));
+        return std::move(call);
+    };
+
     switch (ahead_) {
     case TK_INT_LIT:
         return parseIntLit();
@@ -1237,6 +1248,26 @@ Parser::Expr HsParser::parseAExpr()
     case TK_TRUE_VALUE:
     case TK_FALSE_VALUE:
         return parseBoolLit();
+
+    case TK_CHAR_LIT:
+        return parseCharLit();
+
+    case TK_STR_LIT:
+        return parseStrLit();
+
+    case TK_PROPER_IDENT:
+        consumeToken();
+        return maybeCall(IdentExprAst::create(SimpleNameAst::create()), FuncVariety::Ctor);
+
+    case TK_PROPER_IDENT_QUAL:
+        return maybeCall(IdentExprAst::create(parseQConId()), FuncVariety::Ctor);
+
+    case TK_IDENT:
+        consumeToken();
+        return maybeCall(IdentExprAst::create(SimpleNameAst::create()), FuncVariety::Plain);
+
+    case TK_IDENT_QUAL:
+        return maybeCall(IdentExprAst::create(parseQVarId()), FuncVariety::Plain);
 
     default:
         fail();
@@ -1367,7 +1398,7 @@ Parser::Name HsParser::parseQConId()
 
 Parser::Name HsParser::parseQVarId()
 {
-    return parseQName(TK_PROPER_IDENT_QUAL, &HsParser::parseVarId);
+    return parseQName(TK_IDENT_QUAL, &HsParser::parseVarId);
 }
 
 Parser::Name HsParser::parseQConSymParen()

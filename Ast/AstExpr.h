@@ -832,10 +832,14 @@ class UAISO_API CallExprAst final : public ExprAst
 {
 public:
     AST_CLASS(Call, Expr)
+    CREATE_WITH_AST(Base, Expr)
+    VARIETY_AST(FuncVariety)
 
     CallExprAst()
         : ExprAst(Kind::CallExpr)
-    {}
+    {
+        INIT_VARIETY(FuncVariety::Unknown);
+    }
 
     NAMED_AST_PARAM(Base, base, ExprAst)
     NAMED_LOC_PARAM(LDelim, lDelim)

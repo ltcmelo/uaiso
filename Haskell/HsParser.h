@@ -142,6 +142,7 @@ private:
     bool isVarSym(const Token tk) const;
     bool isConSym(const Token tk) const;
     bool isAPatFIRST(const Token tk) const;
+    bool isAExpFIRST(const Token tk) const;
     bool isATypeFIRST(const Token tk) const;
 
     // Helpers
@@ -206,6 +207,26 @@ inline bool HsParser::isAPatFIRST(const Token tk) const
     case TK_CHAR_LIT:
     case TK_STR_LIT:
     case TK_UNDERSCORE:
+        return true;
+    default:
+        return false;
+    }
+}
+
+inline bool HsParser::isAExpFIRST(const Token tk) const
+{
+    switch (tk) {
+    case TK_IDENT:
+    case TK_PROPER_IDENT:
+    case TK_PROPER_IDENT_QUAL:
+    case TK_LPAREN:
+    case TK_LBRACKET:
+    case TK_INT_LIT:
+    case TK_FLOAT_LIT:
+    case TK_TRUE_VALUE:
+    case TK_FALSE_VALUE:
+    case TK_CHAR_LIT:
+    case TK_STR_LIT:
         return true;
     default:
         return false;
