@@ -45,3 +45,9 @@ MyTODO.txt
 dummy.d
 dummy.go
 dummy.py
+
+# Qt Creator project files
+*.creator
+*.config
+*.files
+*.includes
