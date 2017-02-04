@@ -30,7 +30,7 @@
    function literals, member access expression, and to get completion. */
 
 
-%define api.prefix "D_yy"
+%define api.prefix {D_yy}
 %define api.pure
 %lex-param   { yyscan_t scanner }
 %parse-param { yyscan_t scanner }
@@ -77,7 +77,7 @@ typedef struct D_YYLTYPE
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
     do                                                                  \
-      if (YYID (N))                                                     \
+      if (N)                                                            \
       {                                                                 \
          (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;         \
          (Current).first_column = YYRHSLOC (Rhs, 1).first_column;       \
@@ -93,7 +93,7 @@ typedef struct D_YYLTYPE
            YYRHSLOC (Rhs, 0).last_column;                               \
          (Current).filename     = 0;                                    \
       }                                                                 \
-    while (YYID (0))
+    while (0)
 }
 
 %code provides {
@@ -184,7 +184,6 @@ void D_yyerror(YYLTYPE* yylloc,
 %destructor { delete $$; } <*>
 %destructor { delete $$->finishSR(); } <names_>
 %destructor { delete $$->finishSR(); } <attrs_>
-%destructor { delete $$->finishSR(); } <specs_>
 %destructor { delete $$->finishSR(); } <decls_>
 %destructor { delete $$->finishSR(); } <exprs_>
 %destructor { delete $$->finishSR(); } <stmts_>

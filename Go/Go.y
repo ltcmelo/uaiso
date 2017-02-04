@@ -32,7 +32,7 @@
    - In the expression part of a type switch statement. */
 
 
-%define api.prefix "GO_yy"
+%define api.prefix {GO_yy}
 %define api.pure
 %lex-param   { yyscan_t scanner }
 %parse-param { yyscan_t scanner }
@@ -78,7 +78,7 @@ typedef struct GO_YYLTYPE
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
     do                                                                  \
-      if (YYID (N))                                                     \
+      if (N)                                                     \
       {                                                                 \
          (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;         \
          (Current).first_column = YYRHSLOC (Rhs, 1).first_column;       \
@@ -94,7 +94,7 @@ typedef struct GO_YYLTYPE
            YYRHSLOC (Rhs, 0).last_column;                               \
          (Current).filename     = 0;                                    \
       }                                                                 \
-    while (YYID (0))
+    while (0)
 }
 
 %code provides {
