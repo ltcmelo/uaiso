@@ -152,6 +152,7 @@
     GEN_CODE_FOR(Is, BinExpr) \
     GEN_CODE_FOR(Lambda, PriExpr) \
     GEN_CODE_FOR(ListCompre, Expr) \
+    GEN_CODE_FOR(List, Expr) \
     GEN_CODE_FOR(LogicAnd, BinExpr) \
     GEN_CODE_FOR(LogicNot, UnaryExpr) \
     GEN_CODE_FOR(LogicOr, BinExpr) \

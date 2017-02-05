@@ -861,15 +861,15 @@ Parser::Decl HsParser::finishListConOrListPat()
 {
     const SourceLoc lBrackLoc = std::move(prevLoc_);
 
-    // A `)' with nothing inside is the list data constructor.
+    // Empty list match.
     if (maybeConsume(TK_RBRACKET))
-        return VarPatDeclAst::create();
+        return ListPatDeclAst::create();
 
-    // Otherwise, we expect a `,' delimited sequence to match a list pattern.
+    // Non-empty list match.
     auto list = ListPatDeclAst::create();
     list->setLDelimLoc(lBrackLoc);
     list->mergePats(parseDSeq<DeclAstList, HsParser>(TK_COMMA, &HsParser::parsePat));
-    matchOrSkipTo(TK_RBRACKET, "list pattern");
+    matchOrSkipTo(TK_RBRACKET, "non-empty list pattern");
     list->setRDelimLoc(prevLoc_);
 
     return std::move(list);
@@ -1269,6 +1269,10 @@ Parser::Expr HsParser::parseAExpr()
     case TK_IDENT_QUAL:
         return maybeCall(IdentExprAst::create(parseQVarId()), FuncVariety::Plain);
 
+    case TK_LBRACKET:
+        consumeToken();
+        return finishListOrListComOrArithSeq();
+
     default:
         fail();
         return ErrorExprAst::create(prevLoc_);
@@ -1319,6 +1323,71 @@ Parser::Expr HsParser::parseBoolLit()
                  || ahead_ == TK_FALSE_VALUE, return Expr());
     consumeToken();
     return BoolLitExprAst::create(prevLoc_);
+}
+
+Parser::Expr HsParser::finishListOrListComOrArithSeq()
+{
+    const SourceLoc lDelim = std::move(prevLoc_);
+
+    // Empty list.
+    if (maybeConsume(TK_RBRACKET))
+        return ListExprAst::create();
+
+    ExprList exprs;
+NextExpr:
+    parseExpr();
+    switch (ahead_) {
+    case TK_RBRACKET:
+        consumeToken();
+        return ListExprAst::create();
+
+    case TK_PIPE:
+        return finishListCom(std::move(exprs));
+
+    case TK_DOT_DOT:
+        return finishArithSeq(std::move(exprs));
+
+    case TK_COMMA:
+        consumeToken();
+        goto NextExpr;
+
+    default:
+        fail();
+        skipTo(TK_RBRACKET);
+        return ListExprAst::create();
+    }
+}
+
+Parser::Expr HsParser::finishListCom(ExprList exprs)
+{
+    UAISO_ASSERT(ahead_ == TK_PIPE, return Expr());
+
+    //    if (exprs.size() > 1)
+    //        context_->trackReport(Diagnostic::UnexpectedToken, prevLoc_);
+
+    consumeToken();
+
+    return Expr();
+}
+
+Parser::Expr HsParser::finishArithSeq(ExprList exprs)
+{
+    UAISO_ASSERT(ahead_ == TK_DOT_DOT, return Expr());
+
+//    if (exprs.size() > 2)
+//        context_->trackReport(Diagnostic::UnexpectedToken, prevLoc_);
+
+    consumeToken();
+    switch (ahead_) {
+    case TK_RBRACKET:
+        consumeToken();
+        return Expr();
+
+    default:
+        parseExpr();
+        matchOrSkipTo(TK_RBRACKET, "arithmetic sequence");
+        return Expr();
+    }
 }
 
     //--- Names ---//

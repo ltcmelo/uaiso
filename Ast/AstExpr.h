@@ -716,6 +716,24 @@ public:
     SourceLoc rDelimLoc_;
 };
 
+class UAISO_API ListExprAst final : public ExprAst
+{
+public:
+    AST_CLASS(List, Expr)
+
+    ListExprAst()
+        : ExprAst(Kind::ListExpr)
+    {}
+
+    NAMED_LOC_PARAM(LDelim, lDelim)
+    NAMED_AST_LIST_PARAM(Expr, exprs, ExprAst)
+    NAMED_LOC_PARAM(RDelim, rDelim)
+
+    SourceLoc lDelimLoc_;
+    std::unique_ptr<ExprAstList> exprs_;
+    SourceLoc rDelimLoc_;
+};
+
 class UAISO_API TupleLitExprAst final : public ExprAst
 {
 public:

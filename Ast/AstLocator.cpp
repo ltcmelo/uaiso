@@ -978,6 +978,16 @@ const SourceLoc& AstLocator::lastLoc(ArrayInitExprAst* ast) const
     return ast->rDelimLoc_;
 }
 
+const SourceLoc& AstLocator::loc(ListExprAst* ast) const
+{
+    return ast->lDelimLoc_;
+}
+
+const SourceLoc& AstLocator::lastLoc(ListExprAst* ast) const
+{
+    return ast->rDelimLoc_;
+}
+
 const SourceLoc& AstLocator::loc(TupleLitExprAst* ast) const
 {
     return ast->lDelimLoc_;

@@ -61,6 +61,9 @@ private:
     Expr parseWildcard();
     Expr parsePlainRhs();
     Expr parseGuardRhs();
+    Expr finishListOrListComOrArithSeq();
+    Expr finishListCom(ExprList expr);
+    Expr finishArithSeq(ExprList exprs);
 
     //--- Declarations ---//
 

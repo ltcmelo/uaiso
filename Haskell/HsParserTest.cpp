@@ -1733,16 +1733,86 @@ a = 1 x y
         )raw", true);
 }
 
-void HsParser::HsParserTest::testCase166() {}
-void HsParser::HsParserTest::testCase167() {}
-void HsParser::HsParserTest::testCase168() {}
-void HsParser::HsParserTest::testCase169() {}
-void HsParser::HsParserTest::testCase170() {}
-void HsParser::HsParserTest::testCase171() {}
-void HsParser::HsParserTest::testCase172() {}
-void HsParser::HsParserTest::testCase173() {}
-void HsParser::HsParserTest::testCase174() {}
-void HsParser::HsParserTest::testCase175() {}
+void HsParser::HsParserTest::testCase166()
+{
+    core(R"raw(
+module Foo where
+a = []
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase167()
+{
+    core(R"raw(
+module Foo where
+a = [] []
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase168()
+{
+    core(R"raw(
+module Foo where
+a = [1]
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase169()
+{
+    core(R"raw(
+module Foo where
+a = [1, 2]
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase170()
+{
+    core(R"raw(
+module Foo where
+a = [1, 2 3]
+        )raw", true);
+}
+
+void HsParser::HsParserTest::testCase171()
+{
+    core(R"raw(
+module Foo where
+a = [1 .. 10]
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase172()
+{
+    core(R"raw(
+module Foo where
+a = [0, 1 .. 10]
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase173()
+{
+    core(R"raw(
+module Foo where
+a = [1 ..]
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase174()
+{
+    core(R"raw(
+module Foo where
+a = [1, 2 ..]
+        )raw");
+}
+
+void HsParser::HsParserTest::testCase175()
+{
+    core(R"raw(
+module Foo where
+a = [1 .. 2 .. 3]
+        )raw", true);
+}
+
 void HsParser::HsParserTest::testCase176() {}
 void HsParser::HsParserTest::testCase177() {}
 void HsParser::HsParserTest::testCase178() {}

@@ -719,6 +719,14 @@ AstVisitor<DerivedT>::traverseArrayInitExpr(ArrayInitExprAst *ast)
 }
 
 template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
+AstVisitor<DerivedT>::traverseListExpr(ListExprAst *ast)
+{
+    EVAL_RESULT_0(recursivelyVisitListExpr(ast));
+    EVAL_RESULT_LIST_N(traverseList<ExprAst>(ast->exprs_.get(), &DerivedT::traverseExpr));
+    return Continue;
+}
+
+template <class DerivedT> typename AstVisitor<DerivedT>::VisitResult
 AstVisitor<DerivedT>::traverseTupleLitExpr(TupleLitExprAst *ast)
 {
     EVAL_RESULT_0(recursivelyVisitTupleLitExpr(ast));
