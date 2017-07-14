@@ -37,7 +37,7 @@ void ParserLLk::init()
     UAISO_ASSERT(buffer_.empty(), return);
 
     buffer_.reserve(100); // Ad-hoc.
-    buffer_.push_back(TK_INVALID); // First valid position is 1.
+    buffer_.push_back(std::make_tuple(TK_INVALID,SourceLoc())); // First valid position is 1.
 
     Token tk;
     do {
